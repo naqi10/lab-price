@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const search = searchParams.get("search") || undefined;
 
-    const quotations = await getQuotations(page, limit, search);
+    const quotations = await getQuotations({ page, pageSize: limit, search });
     return NextResponse.json({ success: true, data: quotations });
   } catch (error) {
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });

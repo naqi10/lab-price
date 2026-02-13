@@ -40,22 +40,11 @@ export const laboratorySchema = z.object({
     .email("Format d'email invalide")
     .optional()
     .nullable(),
-  website: z
-    .string()
-    .url("Format d'URL invalide")
-    .optional()
-    .nullable(),
-  contactPerson: z
+  contactName: z
     .string()
     .max(200, "Le nom du contact ne peut pas dépasser 200 caractères")
     .optional()
     .nullable(),
-  notes: z
-    .string()
-    .max(1000, "Les notes ne peuvent pas dépasser 1000 caractères")
-    .optional()
-    .nullable(),
-  isActive: z.boolean().default(true),
 });
 
 export type LaboratoryInput = z.infer<typeof laboratorySchema>;
@@ -80,9 +69,7 @@ export const priceListUploadSchema = z.object({
     .transform((val) => (typeof val === "string" ? new Date(val) : val))
     .refine((date) => !isNaN(date.getTime()), "Date invalide"),
   fileType: z.enum(["EXCEL", "PDF"], {
-    errorMap: () => ({
-      message: "Le type de fichier doit être EXCEL ou PDF",
-    }),
+    message: "Le type de fichier doit être EXCEL ou PDF",
   }),
   setAsActive: z.boolean().default(false),
 });

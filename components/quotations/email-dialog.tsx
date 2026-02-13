@@ -25,7 +25,7 @@ export default function EmailDialog({ open, onClose, quotationId, defaultTo }: {
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
         <DialogHeader><DialogTitle className="flex items-center gap-2"><Mail className="h-5 w-5" /> Envoyer le devis par email</DialogTitle></DialogHeader>
-        {success ? <div className="text-center py-6 text-green-600 font-medium">Email envoyé avec succès !</div> : (
+        {success ? <div className="text-center py-6 text-green-400 font-medium">Email envoyé avec succès !</div> : (
           <div className="space-y-4">
             <div className="space-y-2"><Label>Destinataire *</Label><Input type="email" value={to} onChange={e => setTo(e.target.value)} placeholder="client@example.com" /></div>
             <div className="space-y-2"><Label>Sujet</Label><Input value={subject} onChange={e => setSubject(e.target.value)} /></div>

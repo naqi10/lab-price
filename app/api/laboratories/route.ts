@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || undefined;
-    const laboratories = await getLaboratories(search);
+    const laboratories = await getLaboratories({ search });
 
     return NextResponse.json({ success: true, data: laboratories });
   } catch (error) {

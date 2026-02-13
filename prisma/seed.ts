@@ -63,23 +63,7 @@ async function main() {
     console.log(` Laboratory created: ${created.name}`);
   }
 
-  // Create default email config
-  await prisma.emailConfig.upsert({
-    where: { id: "default" },
-    update: {},
-    create: {
-      id: "default",
-      smtpHost: "smtp.example.com",
-      smtpPort: 587,
-      smtpUser: "",
-      smtpPassword: "",
-      fromEmail: "noreply@labprice.com",
-      fromName: "Lab Price Comparator",
-    },
-  });
-  console.log(" Default email config created");
-
-  console.log("🎉 Seeding completed!");
+  console.log(" Seeding completed!");
 }
 
 main()

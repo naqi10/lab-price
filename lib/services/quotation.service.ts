@@ -23,19 +23,18 @@ export async function createQuotation(data: {
   const validUntil = new Date(now);
   validUntil.setDate(validUntil.getDate() + validityDays);
 
-  const labTestMappings = await prisma.labTestMapping.findMany({
+  const entries = await prisma.testMappingEntry.findMany({
     where: { testMappingId: { in: testMappingIds }, laboratoryId },
     include: {
-      labTest: { select: { id: true, name: true, price: true, code: true } },
-      testMapping: { select: { id: true, referenceTestName: true, referenceTestCode: true } },
+      testMapping: { select: { id: true, canonicalName: true } },
     },
   });
 
-  if (labTestMappings.length === 0) {
+  if (entries.length === 0) {
     throw new Error("Aucun test trouvé pour ce laboratoire");
   }
 
-  const totalPrice = labTestMappings.reduce((sum, m) => sum + m.labTest.price, 0);
+  const totalPrice = entries.reduce((sum, e) => sum + (e.price ?? 0), 0);
 
   return prisma.$transaction(async (tx) => {
     const quotation = await tx.quotation.create({
@@ -46,15 +45,14 @@ export async function createQuotation(data: {
         status: "DRAFT", createdById,
         items: {
           createMany: {
-            data: labTestMappings.map((mapping, index) => ({
+            data: entries.map((entry, index) => ({
               position: index + 1,
-              testName: mapping.testMapping.referenceTestName,
-              testCode: mapping.testMapping.referenceTestCode,
-              labTestName: mapping.labTest.name,
-              labTestCode: mapping.labTest.code,
-              price: mapping.labTest.price,
-              testMappingId: mapping.testMappingId,
-              labTestId: mapping.labTestId,
+              testName: entry.testMapping.canonicalName,
+              testCode: null,
+              labTestName: entry.localTestName,
+              labTestCode: null,
+              price: entry.price ?? 0,
+              testMappingId: entry.testMappingId,
             })),
           },
         },

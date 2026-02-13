@@ -6,7 +6,7 @@ generator client {
 
 datasource db {
   provider   = "postgresql"
-  extensions = [pgTrgm, unaccent, uuidOssp(map: "uuid-ossp")]
+  extensions = [pg_trgm(map: "pg_trgm"), unaccent, uuidOssp(map: "uuid-ossp")]
 }
 
 enum Role {
@@ -31,6 +31,7 @@ enum QuotationStatus {
   SENT
   ACCEPTED
   REJECTED
+  CANCELLED
 }
 
 enum EmailStatus {
@@ -142,18 +143,19 @@ model TestMappingEntry {
 }
 
 model Quotation {
-  id              String          @id @default(uuid())
-  quotationNumber String          @unique @map("quotation_number")
-  laboratoryId    String          @map("laboratory_id")
-  createdById     String          @map("created_by_id")
-  clientName      String?         @map("client_name")
-  clientEmail     String?         @map("client_email")
-  clientPhone     String?         @map("client_phone")
-  notes           String?
-  totalAmount     Float           @map("total_amount")
-  status          QuotationStatus @default(DRAFT)
-  createdAt       DateTime        @default(now()) @map("created_at")
-  updatedAt       DateTime        @updatedAt @map("updated_at")
+  id               String          @id @default(uuid())
+  quotationNumber  String          @unique @map("quotation_number")
+  title            String
+  laboratoryId     String          @map("laboratory_id")
+  createdById      String          @map("created_by_id")
+  clientReference  String?         @map("client_reference")
+  notes            String?
+  totalPrice       Float           @map("total_price")
+  validUntil       DateTime        @map("valid_until")
+  sentAt           DateTime?       @map("sent_at")
+  status           QuotationStatus @default(DRAFT)
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
 
   laboratory Laboratory      @relation(fields: [laboratoryId], references: [id])
   createdBy  User             @relation(fields: [createdById], references: [id])
@@ -164,12 +166,16 @@ model Quotation {
 }
 
 model QuotationItem {
-  id            String @id @default(uuid())
-  quotationId   String @map("quotation_id")
-  testMappingId String @map("test_mapping_id")
-  testName      String @map("test_name")
+  id            String  @id @default(uuid())
+  quotationId   String  @map("quotation_id")
+  testMappingId String  @map("test_mapping_id")
+  position      Int     @default(0)
+  testName      String  @map("test_name")
+  testCode      String? @map("test_code")
+  labTestName   String  @map("lab_test_name")
+  labTestCode   String? @map("lab_test_code")
   price         Float
-  quantity      Int    @default(1)
+  quantity      Int     @default(1)
 
   quotation   Quotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
   testMapping TestMapping @relation(fields: [testMappingId], references: [id])
@@ -209,15 +215,3 @@ model AuditLog {
   @@map("audit_logs")
 }
 
-model EmailConfig {
-  id           String @id @default("default")
-  smtpHost     String @map("smtp_host")
-  smtpPort     Int    @default(587) @map("smtp_port")
-  smtpUser     String @default("") @map("smtp_user")
-  smtpPassword String @default("") @map("smtp_password")
-  fromEmail    String @map("from_email")
-  fromName     String @map("from_name")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-
-  @@map("email_config")
-}

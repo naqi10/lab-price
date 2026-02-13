@@ -27,7 +27,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div key={toast.id} className={cn(
             "flex items-center gap-3 rounded-lg border p-4 shadow-lg min-w-[300px]",
             toast.variant === "destructive" && "border-destructive bg-destructive text-destructive-foreground",
-            toast.variant === "success" && "border-green-200 bg-green-50 text-green-900",
+            toast.variant === "success" && "border-green-800 bg-green-900/40 text-green-400",
             (!toast.variant || toast.variant === "default") && "bg-background"
           )}>
             <div className="flex-1">

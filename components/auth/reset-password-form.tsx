@@ -31,18 +31,18 @@ export default function ResetPasswordForm() {
 
   if (success) return (
     <Card className="w-full max-w-md"><CardContent className="pt-6 text-center">
-      <p className="text-green-600 font-medium">Mot de passe réinitialisé avec succès</p>
+      <p className="text-green-400 font-medium">Mot de passe réinitialisé avec succès</p>
       <a href="/login" className="text-sm text-primary hover:underline mt-2 inline-block">Retour à la connexion</a>
     </CardContent></Card>
   );
 
   return (
     <Card className="w-full max-w-md">
-      <CardHeader><CardTitle className="text-2xl font-bold text-center">Réinitialiser le mot de passe</CardTitle><CardDescription className="text-center">Entrez votre email et nouveau mot de passe</CardDescription></CardHeader>
+      <CardHeader><CardTitle className="text-2xl font-bold text-center">Réinitialiser le mot de passe</CardTitle><CardDescription className="text-center">Entrez votre mot de passe actuel et le nouveau</CardDescription></CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {error && <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
-          <div className="space-y-2"><Label htmlFor="email">Adresse e-mail</Label><Input id="email" type="email" {...register("email")} />{errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}</div>
+          <div className="space-y-2"><Label htmlFor="currentPassword">Mot de passe actuel</Label><Input id="currentPassword" type="password" {...register("currentPassword")} />{errors.currentPassword && <p className="text-sm text-destructive">{errors.currentPassword.message}</p>}</div>
           <div className="space-y-2"><Label htmlFor="newPassword">Nouveau mot de passe</Label><Input id="newPassword" type="password" {...register("newPassword")} />{errors.newPassword && <p className="text-sm text-destructive">{errors.newPassword.message}</p>}</div>
           <div className="space-y-2"><Label htmlFor="confirmPassword">Confirmer le mot de passe</Label><Input id="confirmPassword" type="password" {...register("confirmPassword")} />{errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>}</div>
           <Button type="submit" className="w-full" disabled={isLoading}>{isLoading ? "Réinitialisation..." : "Réinitialiser"}</Button>

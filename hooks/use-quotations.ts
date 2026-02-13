@@ -13,7 +13,7 @@ export function useQuotations() {
     try {
       const res = await fetch("/api/quotations");
       const data = await res.json();
-      if (data.success) setQuotations(data.data.items || data.data || []);
+      if (data.success) setQuotations(data.data.quotations || data.data.items || data.data || []);
       else setError(data.message);
     } catch {
       setError("Erreur lors du chargement");
