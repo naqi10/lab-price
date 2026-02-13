@@ -1,0 +1,223 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../app/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [pgTrgm, unaccent, uuidOssp(map: "uuid-ossp")]
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum FileType {
+  EXCEL
+  PDF
+}
+
+enum MatchType {
+  EXACT
+  FUZZY
+  MANUAL
+  NONE
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  quotations     Quotation[]
+  quotationEmails QuotationEmail[]
+  auditLogs      AuditLog[]
+
+  @@map("users")
+}
+
+model Laboratory {
+  id          String    @id @default(uuid())
+  name        String
+  code        String    @unique
+  city        String?
+  address     String?
+  phone       String?
+  email       String?
+  contactName String?   @map("contact_name")
+  isActive    Boolean   @default(true) @map("is_active")
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  priceLists         PriceList[]
+  testMappingEntries TestMappingEntry[]
+  quotations         Quotation[]
+
+  @@map("laboratories")
+}
+
+model PriceList {
+  id           String   @id @default(uuid())
+  laboratoryId String   @map("laboratory_id")
+  fileName     String   @map("file_name")
+  fileType     FileType @map("file_type")
+  fileSize     Int      @map("file_size")
+  isActive     Boolean  @default(true) @map("is_active")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  laboratory Laboratory @relation(fields: [laboratoryId], references: [id])
+  tests      Test[]
+
+  @@map("price_lists")
+}
+
+model Test {
+  id          String  @id @default(uuid())
+  priceListId String  @map("price_list_id")
+  name        String
+  code        String?
+  price       Float
+  unit        String?
+  category    String?
+  description String?
+
+  priceList PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+
+  @@index([name])
+  @@index([code])
+  @@map("tests")
+}
+
+model TestMapping {
+  id            String   @id @default(uuid())
+  canonicalName String   @unique @map("canonical_name")
+  description   String?
+  category      String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  entries        TestMappingEntry[]
+  quotationItems QuotationItem[]
+
+  @@map("test_mappings")
+}
+
+model TestMappingEntry {
+  id            String    @id @default(uuid())
+  testMappingId String    @map("test_mapping_id")
+  laboratoryId  String    @map("laboratory_id")
+  localTestName String    @map("local_test_name")
+  matchType     MatchType @map("match_type")
+  similarity    Float     @default(0)
+  price         Float?
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  testMapping TestMapping @relation(fields: [testMappingId], references: [id], onDelete: Cascade)
+  laboratory  Laboratory  @relation(fields: [laboratoryId], references: [id])
+
+  @@unique([testMappingId, laboratoryId])
+  @@map("test_mapping_entries")
+}
+
+model Quotation {
+  id              String          @id @default(uuid())
+  quotationNumber String          @unique @map("quotation_number")
+  laboratoryId    String          @map("laboratory_id")
+  createdById     String          @map("created_by_id")
+  clientName      String?         @map("client_name")
+  clientEmail     String?         @map("client_email")
+  clientPhone     String?         @map("client_phone")
+  notes           String?
+  totalAmount     Float           @map("total_amount")
+  status          QuotationStatus @default(DRAFT)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  laboratory Laboratory      @relation(fields: [laboratoryId], references: [id])
+  createdBy  User             @relation(fields: [createdById], references: [id])
+  items      QuotationItem[]
+  emails     QuotationEmail[]
+
+  @@map("quotations")
+}
+
+model QuotationItem {
+  id            String @id @default(uuid())
+  quotationId   String @map("quotation_id")
+  testMappingId String @map("test_mapping_id")
+  testName      String @map("test_name")
+  price         Float
+  quantity      Int    @default(1)
+
+  quotation   Quotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  testMapping TestMapping @relation(fields: [testMappingId], references: [id])
+
+  @@map("quotation_items")
+}
+
+model QuotationEmail {
+  id          String      @id @default(uuid())
+  quotationId String      @map("quotation_id")
+  sentById    String      @map("sent_by_id")
+  toEmail     String      @map("to_email")
+  subject     String
+  message     String?
+  status      EmailStatus @default(PENDING)
+  sentAt      DateTime?   @map("sent_at")
+  error       String?
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  sentBy    User      @relation(fields: [sentById], references: [id])
+
+  @@map("quotation_emails")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  action    String
+  entity    String
+  entityId  String?  @map("entity_id")
+  details   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model EmailConfig {
+  id           String @id @default("default")
+  smtpHost     String @map("smtp_host")
+  smtpPort     Int    @default(587) @map("smtp_port")
+  smtpUser     String @default("") @map("smtp_user")
+  smtpPassword String @default("") @map("smtp_password")
+  fromEmail    String @map("from_email")
+  fromName     String @map("from_name")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("email_config")
+}
