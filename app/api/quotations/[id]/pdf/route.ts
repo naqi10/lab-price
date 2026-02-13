@@ -14,13 +14,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     const pdfBuffer = await generateQuotationPdf(quotation);
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="devis-${quotation.quotationNumber}.pdf"`,
       },
     });
   } catch (error) {
+    console.error("[GET /api/quotations/:id/pdf]", error);
     return NextResponse.json({ success: false, message: "Erreur lors de la génération du PDF" }, { status: 500 });
   }
 }

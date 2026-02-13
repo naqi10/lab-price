@@ -10,10 +10,10 @@ interface LabComparisonResult {
   laboratoryCode: string;
   tests: Array<{
     testMappingId: string;
-    referenceTestName: string;
-    labTestName: string;
+    canonicalName: string;
+    localTestName: string;
     price: number;
-    confidence: number;
+    similarity: number;
   }>;
   totalPrice: number;
   testCount: number;
@@ -22,8 +22,10 @@ interface LabComparisonResult {
 
 /**
  * Compare prices across laboratories for a given set of test mappings.
- * Finds the single laboratory with the lowest total price.
- * Only labs with complete coverage are considered.
+ *
+ * Schema mapping:
+ *   TestMapping.entries → TestMappingEntry[]
+ *   TestMappingEntry has: localTestName, price, similarity, laboratoryId
  *
  * @param testMappingIds - Array of TestMapping IDs
  * @returns Comparison results sorted by total price (ascending)
@@ -38,10 +40,9 @@ export async function compareLabPrices(
   const testMappings = await prisma.testMapping.findMany({
     where: { id: { in: testMappingIds } },
     include: {
-      labTestMappings: {
+      entries: {
         include: {
           laboratory: { select: { id: true, name: true, code: true, isActive: true } },
-          labTest: { select: { id: true, name: true, price: true } },
         },
       },
     },
@@ -54,26 +55,30 @@ export async function compareLabPrices(
   const labResults = new Map<string, LabComparisonResult>();
 
   for (const mapping of testMappings) {
-    for (const labMapping of mapping.labTestMappings) {
-      if (!labMapping.laboratory.isActive) continue;
-      const labId = labMapping.laboratory.id;
+    for (const entry of mapping.entries) {
+      if (!entry.laboratory.isActive) continue;
+      const labId = entry.laboratory.id;
       if (!labResults.has(labId)) {
         labResults.set(labId, {
           laboratoryId: labId,
-          laboratoryName: labMapping.laboratory.name,
-          laboratoryCode: labMapping.laboratory.code,
-          tests: [], totalPrice: 0, testCount: 0, isComplete: false,
+          laboratoryName: entry.laboratory.name,
+          laboratoryCode: entry.laboratory.code,
+          tests: [],
+          totalPrice: 0,
+          testCount: 0,
+          isComplete: false,
         });
       }
       const result = labResults.get(labId)!;
+      const price = entry.price ?? 0;
       result.tests.push({
         testMappingId: mapping.id,
-        referenceTestName: mapping.referenceTestName,
-        labTestName: labMapping.labTest.name,
-        price: labMapping.labTest.price,
-        confidence: labMapping.confidence,
+        canonicalName: mapping.canonicalName,
+        localTestName: entry.localTestName,
+        price,
+        similarity: entry.similarity,
       });
-      result.totalPrice += labMapping.labTest.price;
+      result.totalPrice += price;
       result.testCount += 1;
     }
   }
@@ -97,15 +102,19 @@ export async function compareLabPrices(
 export async function getComparisonDetails(testMappingIds: string[]) {
   const results = await compareLabPrices(testMappingIds);
   const laboratories = results.map((r) => ({
-    id: r.laboratoryId, name: r.laboratoryName, code: r.laboratoryCode,
-    totalPrice: r.totalPrice, formattedTotalPrice: formatCurrency(r.totalPrice),
-    isComplete: r.isComplete, testCount: r.testCount,
+    id: r.laboratoryId,
+    name: r.laboratoryName,
+    code: r.laboratoryCode,
+    totalPrice: r.totalPrice,
+    formattedTotalPrice: formatCurrency(r.totalPrice),
+    isComplete: r.isComplete,
+    testCount: r.testCount,
   }));
 
   const testMappings = await prisma.testMapping.findMany({
     where: { id: { in: testMappingIds } },
-    select: { id: true, referenceTestName: true, referenceTestCode: true },
-    orderBy: { referenceTestName: "asc" },
+    select: { id: true, canonicalName: true, category: true },
+    orderBy: { canonicalName: "asc" },
   });
 
   const priceMatrix: Record<string, Record<string, number | null>> = {};
@@ -119,7 +128,9 @@ export async function getComparisonDetails(testMappingIds: string[]) {
   }
 
   return {
-    laboratories, testMappings, priceMatrix,
+    laboratories,
+    testMappings,
+    priceMatrix,
     bestLaboratory: laboratories.find((l) => l.isComplete) ?? laboratories[0] ?? null,
   };
 }
@@ -127,8 +138,6 @@ export async function getComparisonDetails(testMappingIds: string[]) {
 /**
  * Find the single best (cheapest) laboratory for a set of tests.
  * Only considers laboratories with complete coverage.
- * @param testMappingIds - Array of TestMapping IDs
- * @returns The best laboratory result, or null
  */
 export async function findBestLaboratory(
   testMappingIds: string[]

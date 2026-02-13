@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: laboratories });
   } catch (error) {
+    console.error("[GET /api/laboratories]", error);
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
   }
 }
@@ -33,6 +34,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: laboratory }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ success: false, message: "Erreur lors de la création" }, { status: 500 });
+    console.error("[POST /api/laboratories]", error);
+    const message = error instanceof Error ? error.message : "Erreur lors de la création";
+    const status = message.includes("existe déjà") ? 409 : 500;
+    return NextResponse.json({ success: false, message }, { status });
   }
 }

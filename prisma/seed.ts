@@ -7,10 +7,10 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log(" Seeding database...");
+  console.log("🌱 Seeding database...");
 
-  // Create admin user
-  const hashedPassword = await bcrypt.hash("admin123", 12);
+  // ── Admin user ──────────────────────────────────────────────────────
+  const hashedPassword = await bcrypt.hash("Admin123", 12);
   const admin = await prisma.user.upsert({
     where: { email: "admin@labprice.com" },
     update: {},
@@ -21,10 +21,10 @@ async function main() {
       role: "ADMIN",
     },
   });
-  console.log(` Admin user created: ${admin.email}`);
+  console.log(`  ✓ Admin user: ${admin.email}`);
 
-  // Create sample laboratories
-  const labs = [
+  // ── Laboratories ────────────────────────────────────────────────────
+  const labDefs = [
     {
       name: "Laboratoire Central",
       code: "LAB-CENTRAL",
@@ -54,16 +54,277 @@ async function main() {
     },
   ];
 
-  for (const lab of labs) {
+  const labs: Record<string, { id: string; name: string; code: string }> = {};
+  for (const lab of labDefs) {
     const created = await prisma.laboratory.upsert({
       where: { code: lab.code },
       update: {},
       create: lab,
     });
-    console.log(` Laboratory created: ${created.name}`);
+    labs[lab.code] = created;
+    console.log(`  ✓ Laboratory: ${created.name}`);
   }
 
-  console.log(" Seeding completed!");
+  // ── Test definitions per lab ────────────────────────────────────────
+  // Each lab uses slightly different naming conventions and prices
+
+  const labCentralTests = [
+    // Biochimie
+    { name: "Glycémie à jeun", code: "BIO-001", price: 30, unit: "g/L", category: "Biochimie" },
+    { name: "Hémoglobine glyquée (HbA1c)", code: "BIO-002", price: 120, unit: "%", category: "Biochimie" },
+    { name: "Cholestérol total", code: "BIO-003", price: 40, unit: "g/L", category: "Biochimie" },
+    { name: "HDL-Cholestérol", code: "BIO-004", price: 50, unit: "g/L", category: "Biochimie" },
+    { name: "LDL-Cholestérol", code: "BIO-005", price: 50, unit: "g/L", category: "Biochimie" },
+    { name: "Triglycérides", code: "BIO-006", price: 40, unit: "g/L", category: "Biochimie" },
+    { name: "Créatinine sérique", code: "BIO-007", price: 35, unit: "mg/L", category: "Biochimie" },
+    { name: "Urée sanguine", code: "BIO-008", price: 30, unit: "g/L", category: "Biochimie" },
+    { name: "Acide urique", code: "BIO-009", price: 35, unit: "mg/L", category: "Biochimie" },
+    { name: "Transaminases ASAT (TGO)", code: "BIO-010", price: 40, unit: "UI/L", category: "Biochimie" },
+    { name: "Transaminases ALAT (TGP)", code: "BIO-011", price: 40, unit: "UI/L", category: "Biochimie" },
+    { name: "Gamma GT", code: "BIO-012", price: 40, unit: "UI/L", category: "Biochimie" },
+    { name: "Bilirubine totale", code: "BIO-013", price: 35, unit: "mg/L", category: "Biochimie" },
+    { name: "Protéines totales", code: "BIO-014", price: 30, unit: "g/L", category: "Biochimie" },
+    { name: "CRP (Protéine C-réactive)", code: "BIO-015", price: 60, unit: "mg/L", category: "Biochimie" },
+    // Hématologie
+    { name: "NFS (Numération Formule Sanguine)", code: "HEM-001", price: 60, unit: "", category: "Hématologie" },
+    { name: "Vitesse de sédimentation (VS)", code: "HEM-002", price: 25, unit: "mm", category: "Hématologie" },
+    { name: "TP / INR", code: "HEM-003", price: 50, unit: "%", category: "Hématologie" },
+    { name: "TCA", code: "HEM-004", price: 50, unit: "sec", category: "Hématologie" },
+    { name: "Fibrinogène", code: "HEM-005", price: 50, unit: "g/L", category: "Hématologie" },
+    { name: "Groupage sanguin ABO-Rh", code: "HEM-006", price: 45, unit: "", category: "Hématologie" },
+    // Hormonologie
+    { name: "TSH (Thyréostimuline)", code: "HOR-001", price: 100, unit: "mUI/L", category: "Hormonologie" },
+    { name: "T3 libre", code: "HOR-002", price: 90, unit: "pmol/L", category: "Hormonologie" },
+    { name: "T4 libre", code: "HOR-003", price: 90, unit: "pmol/L", category: "Hormonologie" },
+    { name: "PSA total", code: "HOR-004", price: 120, unit: "ng/mL", category: "Hormonologie" },
+    { name: "Vitamine D (25-OH)", code: "HOR-005", price: 200, unit: "ng/mL", category: "Hormonologie" },
+    { name: "Ferritine", code: "HOR-006", price: 100, unit: "ng/mL", category: "Hormonologie" },
+    // Sérologie
+    { name: "Sérologie Hépatite B (AgHBs)", code: "SER-001", price: 80, unit: "", category: "Sérologie" },
+    { name: "Sérologie Hépatite C (Anti-HCV)", code: "SER-002", price: 100, unit: "", category: "Sérologie" },
+    { name: "Sérologie HIV 1+2", code: "SER-003", price: 100, unit: "", category: "Sérologie" },
+    { name: "Sérologie Toxoplasmose IgG/IgM", code: "SER-004", price: 120, unit: "", category: "Sérologie" },
+    { name: "Sérologie Rubéole IgG/IgM", code: "SER-005", price: 120, unit: "", category: "Sérologie" },
+    // Microbiologie
+    { name: "ECBU (Examen cytobactériologique des urines)", code: "MIC-001", price: 80, unit: "", category: "Microbiologie" },
+    { name: "Hémoculture", code: "MIC-002", price: 150, unit: "", category: "Microbiologie" },
+    { name: "Coproculture", code: "MIC-003", price: 120, unit: "", category: "Microbiologie" },
+  ];
+
+  const bioLabTests = [
+    // Biochimie — slightly different names, different prices
+    { name: "Glucose sanguin à jeun", code: "GL-01", price: 28, unit: "g/L", category: "Biochimie" },
+    { name: "HbA1c", code: "HBA-01", price: 110, unit: "%", category: "Biochimie" },
+    { name: "Cholestérol Total", code: "CHO-01", price: 38, unit: "g/L", category: "Biochimie" },
+    { name: "HDL Cholestérol", code: "CHO-02", price: 45, unit: "g/L", category: "Biochimie" },
+    { name: "LDL Cholestérol", code: "CHO-03", price: 45, unit: "g/L", category: "Biochimie" },
+    { name: "Triglycérides sériques", code: "TG-01", price: 38, unit: "g/L", category: "Biochimie" },
+    { name: "Créatinine", code: "CR-01", price: 32, unit: "mg/L", category: "Biochimie" },
+    { name: "Urée", code: "UR-01", price: 28, unit: "g/L", category: "Biochimie" },
+    { name: "Acide Urique sérique", code: "AU-01", price: 32, unit: "mg/L", category: "Biochimie" },
+    { name: "ASAT / GOT", code: "TRA-01", price: 38, unit: "UI/L", category: "Biochimie" },
+    { name: "ALAT / GPT", code: "TRA-02", price: 38, unit: "UI/L", category: "Biochimie" },
+    { name: "Gamma-Glutamyl Transférase", code: "GGT-01", price: 42, unit: "UI/L", category: "Biochimie" },
+    { name: "Bilirubine Totale", code: "BIL-01", price: 32, unit: "mg/L", category: "Biochimie" },
+    { name: "Protéines Totales sériques", code: "PT-01", price: 28, unit: "g/L", category: "Biochimie" },
+    { name: "CRP ultra-sensible", code: "CRP-01", price: 55, unit: "mg/L", category: "Biochimie" },
+    // Hématologie
+    { name: "Hémogramme complet (NFS)", code: "NFS-01", price: 55, unit: "", category: "Hématologie" },
+    { name: "VS (Vitesse de sédimentation)", code: "VS-01", price: 22, unit: "mm", category: "Hématologie" },
+    { name: "Taux de Prothrombine (TP)", code: "TP-01", price: 48, unit: "%", category: "Hématologie" },
+    { name: "Temps de Céphaline Activée", code: "TCA-01", price: 48, unit: "sec", category: "Hématologie" },
+    { name: "Fibrinogène plasmatique", code: "FIB-01", price: 48, unit: "g/L", category: "Hématologie" },
+    { name: "Groupage ABO Rhésus", code: "GR-01", price: 42, unit: "", category: "Hématologie" },
+    // Hormonologie
+    { name: "TSH ultra-sensible", code: "TSH-01", price: 95, unit: "mUI/L", category: "Hormonologie" },
+    { name: "FT3 (T3 libre)", code: "FT3-01", price: 85, unit: "pmol/L", category: "Hormonologie" },
+    { name: "FT4 (T4 libre)", code: "FT4-01", price: 85, unit: "pmol/L", category: "Hormonologie" },
+    { name: "PSA Total", code: "PSA-01", price: 115, unit: "ng/mL", category: "Hormonologie" },
+    { name: "25-OH Vitamine D", code: "VD-01", price: 180, unit: "ng/mL", category: "Hormonologie" },
+    { name: "Ferritine sérique", code: "FER-01", price: 95, unit: "ng/mL", category: "Hormonologie" },
+    // Sérologie
+    { name: "Ag HBs (Hépatite B)", code: "HB-01", price: 75, unit: "", category: "Sérologie" },
+    { name: "Anti-HCV (Hépatite C)", code: "HC-01", price: 95, unit: "", category: "Sérologie" },
+    { name: "HIV 1 et 2 (Sérologie)", code: "HIV-01", price: 95, unit: "", category: "Sérologie" },
+    { name: "Toxoplasmose IgG + IgM", code: "TOX-01", price: 110, unit: "", category: "Sérologie" },
+    { name: "Rubéole IgG + IgM", code: "RUB-01", price: 110, unit: "", category: "Sérologie" },
+    // Microbiologie
+    { name: "Examen Cytobactériologique Urinaire", code: "ECB-01", price: 75, unit: "", category: "Microbiologie" },
+    { name: "Hémoculture (aéro + anaéro)", code: "HEM-01", price: 140, unit: "", category: "Microbiologie" },
+    { name: "Coproculture + Antibiogramme", code: "COP-01", price: 115, unit: "", category: "Microbiologie" },
+  ];
+
+  const medAnalyseTests = [
+    // Biochimie — yet another naming style, different prices
+    { name: "Glycémie", code: "G001", price: 35, unit: "g/L", category: "Biochimie" },
+    { name: "Hémoglobine Glyquée A1c", code: "G002", price: 130, unit: "%", category: "Biochimie" },
+    { name: "Dosage Cholestérol", code: "L001", price: 42, unit: "g/L", category: "Biochimie" },
+    { name: "Dosage HDL", code: "L002", price: 55, unit: "g/L", category: "Biochimie" },
+    { name: "Dosage LDL", code: "L003", price: 55, unit: "g/L", category: "Biochimie" },
+    { name: "Dosage Triglycérides", code: "L004", price: 42, unit: "g/L", category: "Biochimie" },
+    { name: "Créatininémie", code: "R001", price: 38, unit: "mg/L", category: "Biochimie" },
+    { name: "Dosage Urée", code: "R002", price: 32, unit: "g/L", category: "Biochimie" },
+    { name: "Uricémie", code: "R003", price: 38, unit: "mg/L", category: "Biochimie" },
+    { name: "TGO (ASAT)", code: "H001", price: 42, unit: "UI/L", category: "Biochimie" },
+    { name: "TGP (ALAT)", code: "H002", price: 42, unit: "UI/L", category: "Biochimie" },
+    { name: "GGT", code: "H003", price: 38, unit: "UI/L", category: "Biochimie" },
+    { name: "Bilirubine T", code: "H004", price: 38, unit: "mg/L", category: "Biochimie" },
+    { name: "Protidémie", code: "P001", price: 32, unit: "g/L", category: "Biochimie" },
+    { name: "CRP quantitative", code: "I001", price: 65, unit: "mg/L", category: "Biochimie" },
+    // Hématologie
+    { name: "Numération Formule Sanguine", code: "N001", price: 65, unit: "", category: "Hématologie" },
+    { name: "Vitesse Sédimentation", code: "N002", price: 28, unit: "mm", category: "Hématologie" },
+    { name: "TP-INR", code: "C001", price: 55, unit: "%", category: "Hématologie" },
+    { name: "TCA (Temps Céphaline)", code: "C002", price: 55, unit: "sec", category: "Hématologie" },
+    { name: "Dosage Fibrinogène", code: "C003", price: 55, unit: "g/L", category: "Hématologie" },
+    { name: "Groupe Sanguin ABO-Rhésus", code: "N003", price: 48, unit: "", category: "Hématologie" },
+    // Hormonologie
+    { name: "Dosage TSH", code: "T001", price: 105, unit: "mUI/L", category: "Hormonologie" },
+    { name: "T3 Libre", code: "T002", price: 95, unit: "pmol/L", category: "Hormonologie" },
+    { name: "T4 Libre", code: "T003", price: 95, unit: "pmol/L", category: "Hormonologie" },
+    { name: "Antigène Prostatique Spécifique", code: "M001", price: 125, unit: "ng/mL", category: "Hormonologie" },
+    { name: "Vitamine D totale", code: "V001", price: 220, unit: "ng/mL", category: "Hormonologie" },
+    { name: "Dosage Ferritine", code: "F001", price: 105, unit: "ng/mL", category: "Hormonologie" },
+    // Sérologie
+    { name: "Antigène HBs", code: "S001", price: 85, unit: "", category: "Sérologie" },
+    { name: "Anticorps Anti-HCV", code: "S002", price: 105, unit: "", category: "Sérologie" },
+    { name: "Sérologie VIH 1+2", code: "S003", price: 105, unit: "", category: "Sérologie" },
+    { name: "Sérologie Toxoplasmose", code: "S004", price: 125, unit: "", category: "Sérologie" },
+    { name: "Sérologie Rubéole", code: "S005", price: 125, unit: "", category: "Sérologie" },
+    // Microbiologie
+    { name: "ECBU", code: "B001", price: 85, unit: "", category: "Microbiologie" },
+    { name: "Hémoculture", code: "B002", price: 160, unit: "", category: "Microbiologie" },
+    { name: "Coproculture", code: "B003", price: 125, unit: "", category: "Microbiologie" },
+  ];
+
+  // ── Price Lists & Tests ─────────────────────────────────────────────
+  // Clean existing data (in order to avoid duplicate key errors on re-seed)
+  await prisma.testMappingEntry.deleteMany();
+  await prisma.testMapping.deleteMany();
+  await prisma.test.deleteMany();
+  await prisma.priceList.deleteMany();
+  console.log("  ✓ Cleaned existing test data");
+
+  const labTestSets: [string, typeof labCentralTests, string][] = [
+    [labs["LAB-CENTRAL"].id, labCentralTests, "tarifs-lab-central-2025.xlsx"],
+    [labs["BIOLAB"].id, bioLabTests, "biolab-prix-catalogue.xlsx"],
+    [labs["MEDANALYSE"].id, medAnalyseTests, "medanalyse-grille-tarifaire.pdf"],
+  ];
+
+  const priceListIds: Record<string, string> = {};
+
+  for (const [labId, tests, fileName] of labTestSets) {
+    const priceList = await prisma.priceList.create({
+      data: {
+        laboratoryId: labId,
+        fileName,
+        fileType: fileName.endsWith(".pdf") ? "PDF" : "EXCEL",
+        fileSize: Math.floor(Math.random() * 500000) + 50000,
+        isActive: true,
+        tests: {
+          create: tests,
+        },
+      },
+      include: { tests: true },
+    });
+    priceListIds[labId] = priceList.id;
+    console.log(`  ✓ Price list "${fileName}" with ${priceList.tests.length} tests`);
+  }
+
+  // ── Test Mappings (canonical names → lab-specific names) ────────────
+  // Each mapping links the same test across all 3 labs for comparison
+
+  const mappingDefs: {
+    canonicalName: string;
+    category: string;
+    labCentral: string;
+    bioLab: string;
+    medAnalyse: string;
+    // prices per lab in same order
+    prices: [number, number, number];
+  }[] = [
+    // Biochimie
+    { canonicalName: "Glycémie à jeun", category: "Biochimie", labCentral: "Glycémie à jeun", bioLab: "Glucose sanguin à jeun", medAnalyse: "Glycémie", prices: [30, 28, 35] },
+    { canonicalName: "Hémoglobine glyquée (HbA1c)", category: "Biochimie", labCentral: "Hémoglobine glyquée (HbA1c)", bioLab: "HbA1c", medAnalyse: "Hémoglobine Glyquée A1c", prices: [120, 110, 130] },
+    { canonicalName: "Cholestérol total", category: "Biochimie", labCentral: "Cholestérol total", bioLab: "Cholestérol Total", medAnalyse: "Dosage Cholestérol", prices: [40, 38, 42] },
+    { canonicalName: "HDL-Cholestérol", category: "Biochimie", labCentral: "HDL-Cholestérol", bioLab: "HDL Cholestérol", medAnalyse: "Dosage HDL", prices: [50, 45, 55] },
+    { canonicalName: "LDL-Cholestérol", category: "Biochimie", labCentral: "LDL-Cholestérol", bioLab: "LDL Cholestérol", medAnalyse: "Dosage LDL", prices: [50, 45, 55] },
+    { canonicalName: "Triglycérides", category: "Biochimie", labCentral: "Triglycérides", bioLab: "Triglycérides sériques", medAnalyse: "Dosage Triglycérides", prices: [40, 38, 42] },
+    { canonicalName: "Créatinine", category: "Biochimie", labCentral: "Créatinine sérique", bioLab: "Créatinine", medAnalyse: "Créatininémie", prices: [35, 32, 38] },
+    { canonicalName: "Urée", category: "Biochimie", labCentral: "Urée sanguine", bioLab: "Urée", medAnalyse: "Dosage Urée", prices: [30, 28, 32] },
+    { canonicalName: "Acide urique", category: "Biochimie", labCentral: "Acide urique", bioLab: "Acide Urique sérique", medAnalyse: "Uricémie", prices: [35, 32, 38] },
+    { canonicalName: "ASAT (TGO)", category: "Biochimie", labCentral: "Transaminases ASAT (TGO)", bioLab: "ASAT / GOT", medAnalyse: "TGO (ASAT)", prices: [40, 38, 42] },
+    { canonicalName: "ALAT (TGP)", category: "Biochimie", labCentral: "Transaminases ALAT (TGP)", bioLab: "ALAT / GPT", medAnalyse: "TGP (ALAT)", prices: [40, 38, 42] },
+    { canonicalName: "Gamma GT", category: "Biochimie", labCentral: "Gamma GT", bioLab: "Gamma-Glutamyl Transférase", medAnalyse: "GGT", prices: [40, 42, 38] },
+    { canonicalName: "Bilirubine totale", category: "Biochimie", labCentral: "Bilirubine totale", bioLab: "Bilirubine Totale", medAnalyse: "Bilirubine T", prices: [35, 32, 38] },
+    { canonicalName: "CRP", category: "Biochimie", labCentral: "CRP (Protéine C-réactive)", bioLab: "CRP ultra-sensible", medAnalyse: "CRP quantitative", prices: [60, 55, 65] },
+    // Hématologie
+    { canonicalName: "NFS", category: "Hématologie", labCentral: "NFS (Numération Formule Sanguine)", bioLab: "Hémogramme complet (NFS)", medAnalyse: "Numération Formule Sanguine", prices: [60, 55, 65] },
+    { canonicalName: "Vitesse de sédimentation", category: "Hématologie", labCentral: "Vitesse de sédimentation (VS)", bioLab: "VS (Vitesse de sédimentation)", medAnalyse: "Vitesse Sédimentation", prices: [25, 22, 28] },
+    { canonicalName: "TP / INR", category: "Hématologie", labCentral: "TP / INR", bioLab: "Taux de Prothrombine (TP)", medAnalyse: "TP-INR", prices: [50, 48, 55] },
+    { canonicalName: "TCA", category: "Hématologie", labCentral: "TCA", bioLab: "Temps de Céphaline Activée", medAnalyse: "TCA (Temps Céphaline)", prices: [50, 48, 55] },
+    { canonicalName: "Groupage sanguin", category: "Hématologie", labCentral: "Groupage sanguin ABO-Rh", bioLab: "Groupage ABO Rhésus", medAnalyse: "Groupe Sanguin ABO-Rhésus", prices: [45, 42, 48] },
+    // Hormonologie
+    { canonicalName: "TSH", category: "Hormonologie", labCentral: "TSH (Thyréostimuline)", bioLab: "TSH ultra-sensible", medAnalyse: "Dosage TSH", prices: [100, 95, 105] },
+    { canonicalName: "T3 libre", category: "Hormonologie", labCentral: "T3 libre", bioLab: "FT3 (T3 libre)", medAnalyse: "T3 Libre", prices: [90, 85, 95] },
+    { canonicalName: "T4 libre", category: "Hormonologie", labCentral: "T4 libre", bioLab: "FT4 (T4 libre)", medAnalyse: "T4 Libre", prices: [90, 85, 95] },
+    { canonicalName: "PSA total", category: "Hormonologie", labCentral: "PSA total", bioLab: "PSA Total", medAnalyse: "Antigène Prostatique Spécifique", prices: [120, 115, 125] },
+    { canonicalName: "Vitamine D", category: "Hormonologie", labCentral: "Vitamine D (25-OH)", bioLab: "25-OH Vitamine D", medAnalyse: "Vitamine D totale", prices: [200, 180, 220] },
+    { canonicalName: "Ferritine", category: "Hormonologie", labCentral: "Ferritine", bioLab: "Ferritine sérique", medAnalyse: "Dosage Ferritine", prices: [100, 95, 105] },
+    // Sérologie
+    { canonicalName: "Sérologie Hépatite B", category: "Sérologie", labCentral: "Sérologie Hépatite B (AgHBs)", bioLab: "Ag HBs (Hépatite B)", medAnalyse: "Antigène HBs", prices: [80, 75, 85] },
+    { canonicalName: "Sérologie Hépatite C", category: "Sérologie", labCentral: "Sérologie Hépatite C (Anti-HCV)", bioLab: "Anti-HCV (Hépatite C)", medAnalyse: "Anticorps Anti-HCV", prices: [100, 95, 105] },
+    { canonicalName: "Sérologie HIV", category: "Sérologie", labCentral: "Sérologie HIV 1+2", bioLab: "HIV 1 et 2 (Sérologie)", medAnalyse: "Sérologie VIH 1+2", prices: [100, 95, 105] },
+    { canonicalName: "Sérologie Toxoplasmose", category: "Sérologie", labCentral: "Sérologie Toxoplasmose IgG/IgM", bioLab: "Toxoplasmose IgG + IgM", medAnalyse: "Sérologie Toxoplasmose", prices: [120, 110, 125] },
+    { canonicalName: "Sérologie Rubéole", category: "Sérologie", labCentral: "Sérologie Rubéole IgG/IgM", bioLab: "Rubéole IgG + IgM", medAnalyse: "Sérologie Rubéole", prices: [120, 110, 125] },
+    // Microbiologie
+    { canonicalName: "ECBU", category: "Microbiologie", labCentral: "ECBU (Examen cytobactériologique des urines)", bioLab: "Examen Cytobactériologique Urinaire", medAnalyse: "ECBU", prices: [80, 75, 85] },
+    { canonicalName: "Hémoculture", category: "Microbiologie", labCentral: "Hémoculture", bioLab: "Hémoculture (aéro + anaéro)", medAnalyse: "Hémoculture", prices: [150, 140, 160] },
+    { canonicalName: "Coproculture", category: "Microbiologie", labCentral: "Coproculture", bioLab: "Coproculture + Antibiogramme", medAnalyse: "Coproculture", prices: [120, 115, 125] },
+  ];
+
+  const labIds = [labs["LAB-CENTRAL"].id, labs["BIOLAB"].id, labs["MEDANALYSE"].id];
+
+  for (const m of mappingDefs) {
+    await prisma.testMapping.create({
+      data: {
+        canonicalName: m.canonicalName,
+        category: m.category,
+        entries: {
+          create: [
+            {
+              laboratoryId: labIds[0],
+              localTestName: m.labCentral,
+              matchType: "EXACT",
+              similarity: 1.0,
+              price: m.prices[0],
+            },
+            {
+              laboratoryId: labIds[1],
+              localTestName: m.bioLab,
+              matchType: "FUZZY",
+              similarity: 0.85,
+              price: m.prices[1],
+            },
+            {
+              laboratoryId: labIds[2],
+              localTestName: m.medAnalyse,
+              matchType: "FUZZY",
+              similarity: 0.8,
+              price: m.prices[2],
+            },
+          ],
+        },
+      },
+    });
+  }
+  console.log(`  ✓ ${mappingDefs.length} test mappings with cross-lab entries created`);
+
+  console.log("\n✅ Seeding completed!");
+  console.log(`   - 1 admin user`);
+  console.log(`   - 3 laboratories`);
+  console.log(`   - 3 price lists (35 tests each = 105 tests total)`);
+  console.log(`   - ${mappingDefs.length} test mappings (${mappingDefs.length * 3} entries)`);
 }
 
 main()

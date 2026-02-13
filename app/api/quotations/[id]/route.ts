@@ -13,6 +13,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json({ success: true, data: quotation });
   } catch (error) {
+    console.error("[GET /api/quotations/:id]", error);
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
   }
 }

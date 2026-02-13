@@ -14,6 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json({ success: true, data: laboratory });
   } catch (error) {
+    console.error("[GET /api/laboratories/:id]", error);
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
   }
 }
@@ -30,7 +31,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json({ success: true, data: laboratory });
   } catch (error) {
-    return NextResponse.json({ success: false, message: "Erreur lors de la mise à jour" }, { status: 500 });
+    console.error("[PUT /api/laboratories/:id]", error);
+    const message = error instanceof Error ? error.message : "Erreur lors de la mise à jour";
+    const status = message.includes("existe déjà") ? 409 : 500;
+    return NextResponse.json({ success: false, message }, { status });
   }
 }
 
@@ -44,6 +48,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     return NextResponse.json({ success: true, message: "Laboratoire supprimé" });
   } catch (error) {
+    console.error("[DELETE /api/laboratories/:id]", error);
     return NextResponse.json({ success: false, message: "Erreur lors de la suppression" }, { status: 500 });
   }
 }

@@ -20,6 +20,8 @@ export async function POST(request: NextRequest) {
     const results = await compareLabPrices(testMappingIds);
     return NextResponse.json({ success: true, data: results });
   } catch (error) {
-    return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
+    console.error("[POST /api/comparison]", error);
+    const message = error instanceof Error ? error.message : "Erreur serveur";
+    return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }

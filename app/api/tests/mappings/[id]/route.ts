@@ -9,11 +9,24 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     const { id } = await params;
     const body = await request.json();
-    const mapping = await updateTestMapping(id, body);
+
+    const mapping = await updateTestMapping(id, {
+      canonicalName: body.canonicalName,
+      category: body.category || null,
+      entries: (body.entries || []).map((e: any) => ({
+        laboratoryId: e.laboratoryId,
+        localTestName: e.testName || e.localTestName,
+        matchType: e.matchType || "MANUAL",
+        similarity: e.similarity ?? 1.0,
+        price: e.price ?? null,
+      })),
+    });
 
     return NextResponse.json({ success: true, data: mapping });
   } catch (error) {
-    return NextResponse.json({ success: false, message: "Erreur lors de la mise à jour" }, { status: 500 });
+    console.error("[PUT /api/tests/mappings/:id]", error);
+    const message = error instanceof Error ? error.message : "Erreur lors de la mise à jour";
+    return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }
 
@@ -27,6 +40,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     return NextResponse.json({ success: true, message: "Correspondance supprimée" });
   } catch (error) {
+    console.error("[DELETE /api/tests/mappings/:id]", error);
     return NextResponse.json({ success: false, message: "Erreur lors de la suppression" }, { status: 500 });
   }
 }

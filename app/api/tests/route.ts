@@ -10,14 +10,16 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("q") || "";
     const laboratoryId = searchParams.get("laboratoryId") || undefined;
-    const category = searchParams.get("category") || undefined;
-    const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
 
-    const results = await searchTests({ query, laboratoryId, category, page, limit });
+    if (query.length < 2) {
+      return NextResponse.json({ success: true, data: [] });
+    }
 
+    const results = await searchTests(query, { laboratoryId, limit });
     return NextResponse.json({ success: true, data: results });
   } catch (error) {
+    console.error("[GET /api/tests]", error);
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
   }
 }

@@ -52,35 +52,26 @@ export type TestSearchInput = z.infer<typeof testSearchSchema>;
  * enabling cross-lab comparison even when naming differs.
  */
 export const testMappingSchema = z.object({
-  referenceTestName: z
+  canonicalName: z
     .string()
-    .min(1, "Le nom du test de référence est requis")
+    .min(1, "Le nom canonique du test est requis")
     .max(300, "Le nom du test ne peut pas dépasser 300 caractères"),
-  referenceTestCode: z
-    .string()
-    .max(50, "Le code du test ne peut pas dépasser 50 caractères")
-    .optional()
-    .nullable(),
   category: z
     .string()
     .max(100, "La catégorie ne peut pas dépasser 100 caractères")
     .optional()
     .nullable(),
-  labTestMappings: z
+  entries: z
     .array(
       z.object({
         laboratoryId: z.string().min(1, "Le laboratoire est requis"),
-        labTestId: z.string().min(1, "Le test du laboratoire est requis"),
-        /** Similarity confidence score from fuzzy matching (0-1) */
-        confidence: z
-          .number()
-          .min(0)
-          .max(1)
-          .optional()
-          .default(1),
+        localTestName: z.string().min(1, "Le nom du test est requis"),
+        matchType: z.enum(["EXACT", "FUZZY", "MANUAL", "NONE"]).default("MANUAL"),
+        similarity: z.number().min(0).max(1).default(1),
+        price: z.number().min(0).optional().nullable(),
       })
     )
-    .min(1, "Au moins un mapping de laboratoire est requis"),
+    .min(1, "Au moins une correspondance de laboratoire est requise"),
 });
 
 export type TestMappingInput = z.infer<typeof testMappingSchema>;

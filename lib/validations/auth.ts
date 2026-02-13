@@ -67,9 +67,8 @@ export const userSchema = z.object({
     )
     .optional(),
   role: z.enum(["ADMIN", "USER"], {
-    errorMap: () => ({ message: "Le rôle doit être ADMIN ou USER" }),
+    message: "Le rôle doit être ADMIN ou USER",
   }),
-  isActive: z.boolean().default(true),
 });
 
 export type UserInput = z.infer<typeof userSchema>;

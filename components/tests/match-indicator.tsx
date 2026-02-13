@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 
 const config: Record<string, { label: string; variant: "info" | "success" | "warning" | "destructive" }> = {
-  MANUAL: { label: "Manuel", variant: "info" }, AUTO_EXACT: { label: "Exact", variant: "success" }, AUTO_FUZZY: { label: "Approx.", variant: "warning" }, NONE: { label: "Aucun", variant: "destructive" },
+  MANUAL: { label: "Manuel", variant: "info" }, EXACT: { label: "Exact", variant: "success" }, FUZZY: { label: "Approx.", variant: "warning" }, NONE: { label: "Aucun", variant: "destructive" },
 };
 
 export default function MatchIndicator({ type, confidence }: { type: string; confidence?: number }) {

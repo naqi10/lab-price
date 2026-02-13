@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
     const quotations = await getQuotations({ page, pageSize: limit, search });
     return NextResponse.json({ success: true, data: quotations });
   } catch (error) {
+    console.error("[GET /api/quotations]", error);
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
   }
 }
@@ -31,6 +32,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: quotation }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ success: false, message: "Erreur lors de la création" }, { status: 500 });
+    console.error("[POST /api/quotations]", error);
+    const message = error instanceof Error ? error.message : "Erreur lors de la création";
+    return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }
