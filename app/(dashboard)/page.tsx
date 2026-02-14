@@ -3,54 +3,72 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/dashboard/header";
 import StatsCards from "@/components/dashboard/stats-cards";
-import OverviewChart from "@/components/dashboard/overview-chart";
+import EmailStats from "@/components/dashboard/overview-chart";
+import RecentQuotations from "@/components/dashboard/recent-quotations";
+import PriceListUpdates from "@/components/dashboard/price-list-updates";
+import RecentActivity from "@/components/dashboard/recent-activity";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<any>(null);
+  const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/laboratories").then((r) => r.json()),
-      fetch("/api/quotations").then((r) => r.json()),
-      fetch("/api/tests/mappings").then((r) => r.json()),
-    ])
-      .then(([labs, quotations, tests]) => {
-        setStats({
-          totalLaboratories: labs.success ? (labs.data?.length || 0) : 0,
-          totalTests: tests.success ? (tests.data?.items?.length || tests.data?.length || 0) : 0,
-          totalQuotations: quotations.success ? (quotations.data?.items?.length || quotations.data?.length || 0) : 0,
-          recentQuotations: quotations.success ? (quotations.data?.items?.slice(0, 5) || []) : [],
-        });
+    fetch("/api/dashboard")
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) {
+          setData(res.data);
+        } else {
+          setError(res.message || "Erreur lors du chargement");
+        }
       })
+      .catch(() => setError("Erreur de connexion"))
       .finally(() => setIsLoading(false));
   }, []);
 
   return (
     <>
       <Header title="Tableau de bord" />
+
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-6">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-32 rounded-xl" />
-          ))}
+        <div className="space-y-6 mt-6">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-28 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-48 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
         </div>
-      ) : (
-        <>
+      ) : error ? (
+        <p className="text-red-500 mt-6">{error}</p>
+      ) : data ? (
+        <div className="space-y-6">
+          {/* Stats cards: Labs, Tests, Manual Mappings, Active Users */}
           <StatsCards
             stats={{
-              laboratories: stats?.totalLaboratories || 0,
-              tests: stats?.totalTests || 0,
-              quotations: stats?.totalQuotations || 0,
-              pending: 0,
+              laboratories: data.stats.totalLaboratories,
+              tests: data.stats.totalTests,
+              mappings: data.stats.totalMappings,
+              users: data.stats.totalUsers,
             }}
           />
-          <div className="mt-6">
-            <OverviewChart />
-          </div>
-        </>
-      )}
+
+          {/* Email delivery statistics */}
+          <EmailStats stats={data.emailStats} />
+
+          {/* Last price list update per laboratory */}
+          <PriceListUpdates updates={data.priceListUpdates} />
+
+          {/* Recent quotations (last 10) */}
+          <RecentQuotations quotations={data.recentQuotations} />
+
+          {/* Recent activity log */}
+          <RecentActivity activity={data.recentActivity} />
+        </div>
+      ) : null}
     </>
   );
 }

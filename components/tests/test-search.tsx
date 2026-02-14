@@ -25,7 +25,7 @@ export default function TestSearch({ onSelect }: { onSelect: (test: any) => void
         <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-lg max-h-[300px] overflow-auto">
           {isLoading ? <p className="p-3 text-sm text-muted-foreground">Recherche en cours...</p> : results.map((test) => (
             <div key={test.id} onClick={() => { onSelect(test); setQuery(""); setResults([]); }} className="flex items-center justify-between p-3 hover:bg-accent cursor-pointer border-b last:border-0">
-              <div><p className="text-sm font-medium">{test.testName}</p><p className="text-xs text-muted-foreground">{test.laboratoryName}</p></div>
+              <div><p className="text-sm font-medium">{test.name}</p><p className="text-xs text-muted-foreground">{test.laboratoryName}</p></div>
               <div className="flex items-center gap-2">{test.matchType && <MatchIndicator type={test.matchType} confidence={test.confidence} />}<span className="text-sm font-medium">{test.price} MAD</span></div>
             </div>
           ))}

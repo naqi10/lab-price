@@ -35,10 +35,14 @@ export async function searchTests(
     '  l.id AS "laboratoryId",',
     '  l.name AS "laboratoryName",',
     '  l.code AS "laboratoryCode",',
-    "  similarity(t.name, $1) AS similarity",
+    "  similarity(t.name, $1) AS similarity,",
+    '  tme."test_mapping_id" AS "testMappingId",',
+    '  tm."canonical_name" AS "canonicalName"',
     'FROM "tests" t',
     'INNER JOIN "price_lists" pl ON t."price_list_id" = pl.id',
     'INNER JOIN "laboratories" l ON pl."laboratory_id" = l.id',
+    'LEFT JOIN "test_mapping_entries" tme ON tme."local_test_name" = t.name AND tme."laboratory_id" = l.id',
+    'LEFT JOIN "test_mappings" tm ON tm.id = tme."test_mapping_id"',
     'WHERE pl."is_active" = true',
     '  AND l."deleted_at" IS NULL',
     "  " + labFilterClause,
@@ -60,6 +64,8 @@ export async function searchTests(
       laboratoryName: string;
       laboratoryCode: string;
       similarity: number;
+      testMappingId: string | null;
+      canonicalName: string | null;
     }>
   >(sql, query, threshold, limit);
 }
@@ -113,6 +119,7 @@ export async function findMatchingTests(
 export async function createTestMapping(data: {
   canonicalName: string;
   category?: string | null;
+  description?: string | null;
   entries: Array<{
     laboratoryId: string;
     localTestName: string;
@@ -125,6 +132,7 @@ export async function createTestMapping(data: {
     data: {
       canonicalName: data.canonicalName,
       category: data.category ?? null,
+      description: data.description ?? null,
       entries: {
         createMany: {
           data: data.entries.map((e) => ({
@@ -156,7 +164,11 @@ export async function getTestMappings(options?: {
   const where: Record<string, unknown> = {};
   if (category) where.category = category;
   if (search) {
-    where.canonicalName = { contains: search, mode: "insensitive" };
+    // Search by canonical name OR by mapped local test names
+    where.OR = [
+      { canonicalName: { contains: search, mode: "insensitive" } },
+      { entries: { some: { localTestName: { contains: search, mode: "insensitive" } } } },
+    ];
   }
 
   return prisma.testMapping.findMany({
@@ -178,6 +190,7 @@ export async function updateTestMapping(
   data: {
     canonicalName?: string;
     category?: string | null;
+    description?: string | null;
     entries?: Array<{
       laboratoryId: string;
       localTestName: string;
@@ -206,6 +219,7 @@ export async function updateTestMapping(
       data: {
         ...(data.canonicalName && { canonicalName: data.canonicalName }),
         ...(data.category !== undefined && { category: data.category }),
+        ...(data.description !== undefined && { description: data.description }),
       },
       include: {
         entries: {

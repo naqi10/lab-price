@@ -36,6 +36,10 @@ const authConfig: NextAuthConfig = {
           throw new Error("Identifiants invalides");
         }
 
+        if (!user.isActive) {
+          throw new Error("Votre compte a été désactivé. Contactez un administrateur.");
+        }
+
         // Compare the supplied password against the stored hash
         const isPasswordValid = await bcryptjs.compare(password, user.password);
 

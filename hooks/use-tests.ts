@@ -31,8 +31,26 @@ export function useTestMappings() {
   return { mappings, isLoading, error, refetch: fetchMappings };
 }
 
+const CART_KEY = "lab-price-test-cart";
+
 export function useTestCart() {
   const [items, setItems] = useState<{ id: string; testMappingId: string; canonicalName: string }[]>([]);
+
+  // Hydrate from sessionStorage on mount
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(CART_KEY);
+      if (stored) setItems(JSON.parse(stored));
+    } catch { /* ignore */ }
+  }, []);
+
+  // Persist to sessionStorage on every change
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(CART_KEY, JSON.stringify(items));
+    } catch { /* ignore */ }
+  }, [items]);
+
   const addItem = useCallback((item: { id: string; testMappingId: string; canonicalName: string }) => { setItems(prev => prev.find(i => i.id === item.id) ? prev : [...prev, item]); }, []);
   const removeItem = useCallback((id: string) => { setItems(prev => prev.filter(i => i.id !== id)); }, []);
   const clearCart = useCallback(() => setItems([]), []);

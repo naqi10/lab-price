@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { compareLabPrices } from "@/lib/services/comparison.service";
+import { getComparisonDetails } from "@/lib/services/comparison.service";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const results = await compareLabPrices(testMappingIds);
+    const results = await getComparisonDetails(testMappingIds);
     return NextResponse.json({ success: true, data: results });
   } catch (error) {
     console.error("[POST /api/comparison]", error);

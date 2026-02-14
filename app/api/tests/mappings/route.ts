@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
     const mapping = await createTestMapping({
       canonicalName: body.canonicalName,
       category: body.category || null,
+      description: body.description || null,
       entries: (body.entries || []).map((e: any) => ({
         laboratoryId: e.laboratoryId,
         localTestName: e.testName || e.localTestName,

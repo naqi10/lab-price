@@ -20,7 +20,7 @@ export default auth((req) => {
   }
 
   if (isLoggedIn && isPublicPath) {
-    return NextResponse.redirect(new URL("/laboratories", req.nextUrl.origin));
+    return NextResponse.redirect(new URL("/", req.nextUrl.origin));
   }
 
   return NextResponse.next();

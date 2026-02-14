@@ -37,6 +37,7 @@ export async function sendQuotationEmail(data: {
           content: pdfBase64,
         },
       ],
+      source: "quotation",
     });
 
     // Log success

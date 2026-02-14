@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     if (!session) return NextResponse.json({ success: false, message: "Non autorisé" }, { status: 401 });
 
     const users = await prisma.user.findMany({
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      select: { id: true, name: true, email: true, role: true, isActive: true, createdAt: true },
       orderBy: { createdAt: "desc" },
     });
 
@@ -24,6 +24,10 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     if (!session) return NextResponse.json({ success: false, message: "Non autorisé" }, { status: 401 });
+
+    if ((session.user as any).role !== "ADMIN") {
+      return NextResponse.json({ success: false, message: "Accès réservé aux administrateurs" }, { status: 403 });
+    }
 
     const userCount = await prisma.user.count();
     if (userCount >= 5) {
@@ -46,8 +50,8 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(body.password, 12);
 
     const user = await prisma.user.create({
-      data: { name: body.name, email: body.email, password: hashedPassword, role: body.role || "USER" },
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      data: { name: body.name, email: body.email, password: hashedPassword, role: body.role || "ADMIN" },
+      select: { id: true, name: true, email: true, role: true, isActive: true, createdAt: true },
     });
 
     return NextResponse.json({ success: true, data: user }, { status: 201 });

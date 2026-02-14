@@ -46,6 +46,7 @@ model User {
   name      String
   password  String
   role      Role     @default(USER)
+  isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -213,5 +214,17 @@ model AuditLog {
   user User @relation(fields: [userId], references: [id])
 
   @@map("audit_logs")
+}
+
+model EmailLog {
+  id        String      @id @default(uuid())
+  toEmail   String      @map("to_email")
+  subject   String
+  status    EmailStatus @default(SENT)
+  source    String      @default("system")
+  error     String?
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  @@map("email_logs")
 }
 
