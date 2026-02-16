@@ -9,94 +9,110 @@ import prisma from "@/lib/db";
  * - Uses CredentialsProvider for email/password login
  * - JWT strategy with 30-minute session expiry
  * - Custom callbacks to attach user role and id to the JWT / session
+ * - Dynamic initialization to ensure environment variables are loaded
  */
 
-const authConfig: NextAuthConfig = {
-  providers: [
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Mot de passe", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email et mot de passe requis");
-        }
+/**
+ * Creates the NextAuth configuration object.
+ * This function is called lazily to ensure environment variables are loaded.
+ */
+function createAuthConfig(): NextAuthConfig {
+  // Validate required environment variables
+  if (!process.env.NEXTAUTH_SECRET) {
+    throw new Error(
+      "NEXTAUTH_SECRET environment variable is required. " +
+      "Generate one with: npx auth secret"
+    );
+  }
 
-        const email = credentials.email as string;
-        const password = credentials.password as string;
+  return {
+    providers: [
+      CredentialsProvider({
+        name: "credentials",
+        credentials: {
+          email: { label: "Email", type: "email" },
+          password: { label: "Mot de passe", type: "password" },
+        },
+        async authorize(credentials) {
+          if (!credentials?.email || !credentials?.password) {
+            throw new Error("Email et mot de passe requis");
+          }
 
-        // Look up the user by email
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
+          const email = credentials.email as string;
+          const password = credentials.password as string;
 
-        if (!user) {
-          throw new Error("Identifiants invalides");
-        }
+          // Look up the user by email
+          const user = await prisma.user.findUnique({
+            where: { email },
+          });
 
-        if (!user.isActive) {
-          throw new Error("Votre compte a été désactivé. Contactez un administrateur.");
-        }
+          if (!user) {
+            throw new Error("Identifiants invalides");
+          }
 
-        // Compare the supplied password against the stored hash
-        const isPasswordValid = await bcryptjs.compare(password, user.password);
+          if (!user.isActive) {
+            throw new Error("Votre compte a été désactivé. Contactez un administrateur.");
+          }
 
-        if (!isPasswordValid) {
-          throw new Error("Identifiants invalides");
-        }
+          // Compare the supplied password against the stored hash
+          const isPasswordValid = await bcryptjs.compare(password, user.password);
 
-        // Return the user object (will be available in the jwt callback)
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
-      },
-    }),
-  ],
+          if (!isPasswordValid) {
+            throw new Error("Identifiants invalides");
+          }
 
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 60, // 30 minutes in seconds
-  },
+          // Return the user object (will be available in the jwt callback)
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        },
+      }),
+    ],
 
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
-
-  callbacks: {
-    /**
-     * JWT callback – runs whenever a JWT is created or updated.
-     * We attach the user id and role to the token so they are
-     * available in the session callback.
-     */
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.role = (user as { role?: string }).role;
-      }
-      return token;
+    session: {
+      strategy: "jwt",
+      maxAge: 30 * 60, // 30 minutes in seconds
     },
 
-    /**
-     * Session callback – runs whenever the session is checked.
-     * Copies the id and role from the JWT token into the session
-     * object that is exposed to the client.
-     */
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        (session.user as { role?: string }).role = token.role as string;
-      }
-      return session;
+    pages: {
+      signIn: "/login",
+      error: "/login",
     },
-  },
 
-  secret: process.env.NEXTAUTH_SECRET,
-};
+    callbacks: {
+      /**
+       * JWT callback – runs whenever a JWT is created or updated.
+       * We attach the user id and role to the token so they are
+       * available in the session callback.
+       */
+      async jwt({ token, user }) {
+        if (user) {
+          token.id = user.id;
+          token.role = (user as { role?: string }).role;
+        }
+        return token;
+      },
 
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+      /**
+       * Session callback – runs whenever the session is checked.
+       * Copies the id and role from the JWT token into the session
+       * object that is exposed to the client.
+       */
+      async session({ session, token }) {
+        if (session.user) {
+          session.user.id = token.id as string;
+          (session.user as { role?: string }).role = token.role as string;
+        }
+        return session;
+      },
+    },
+
+    secret: process.env.NEXTAUTH_SECRET,
+  };
+}
+
+// Initialize NextAuth with the dynamically created configuration
+export const { handlers, auth, signIn, signOut } = NextAuth(createAuthConfig());
