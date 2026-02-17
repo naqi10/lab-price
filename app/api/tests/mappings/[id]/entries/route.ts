@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import logger from "@/lib/logger";
+import { logAudit } from "@/lib/services/audit.service";
 
 /**
  * POST /api/tests/mappings/:id/entries
@@ -81,9 +83,11 @@ export async function POST(
       },
     });
 
+    logAudit({ userId: session.user.id, action: "CREATE", entity: "test_mapping_entry", entityId: entry.id, details: { testMappingId: id, laboratoryId: body.laboratoryId } });
+
     return NextResponse.json({ success: true, data: entry }, { status: 201 });
   } catch (error) {
-    console.error("[POST /api/tests/mappings/:id/entries]", error);
+    logger.error({ err: error }, "[POST /api/tests/mappings/:id/entries]");
     return NextResponse.json(
       { success: false, message: "Erreur serveur" },
       { status: 500 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getComparisonDetails } from "@/lib/services/comparison.service";
+import logger from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
     const results = await getComparisonDetails(testMappingIds);
     return NextResponse.json({ success: true, data: results });
   } catch (error) {
-    console.error("[POST /api/comparison]", error);
+    logger.error({ err: error }, "[POST /api/comparison]");
     const message = error instanceof Error ? error.message : "Erreur serveur";
     return NextResponse.json({ success: false, message }, { status: 500 });
   }

@@ -1,8 +1,9 @@
+import { differenceInDays } from "date-fns";
 import { formatDate } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Upload } from "lucide-react";
+import { Upload, AlertTriangle } from "lucide-react";
 
 interface PriceListUpdate {
   labId: string;
@@ -51,9 +52,25 @@ export default function PriceListUpdates({ updates }: { updates: PriceListUpdate
                   </TableCell>
                   <TableCell>
                     {u.lastUpdate ? (
-                      formatDate(u.lastUpdate)
+                      <span className="flex items-center gap-2 flex-wrap">
+                        {formatDate(u.lastUpdate)}
+                        {differenceInDays(new Date(), new Date(u.lastUpdate)) > 90 && (
+                          <>
+                            <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+                            <Badge variant="destructive" className="text-xs">
+                              Données obsolètes
+                            </Badge>
+                          </>
+                        )}
+                      </span>
                     ) : (
-                      <span className="text-muted-foreground text-sm">Jamais</span>
+                      <span className="flex items-center gap-2 flex-wrap">
+                        <span className="text-muted-foreground text-sm">Jamais</span>
+                        <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+                        <Badge variant="destructive" className="text-xs">
+                          Données obsolètes
+                        </Badge>
+                      </span>
                     )}
                   </TableCell>
                 </TableRow>

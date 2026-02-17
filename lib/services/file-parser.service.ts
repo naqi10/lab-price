@@ -29,7 +29,7 @@ export interface ParsedTest {
  */
 export async function parseExcelFile(buffer: Buffer): Promise<ParsedTest[]> {
   const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.load(buffer);
+  await workbook.xlsx.load(buffer as unknown as ArrayBuffer);
 
   const tests: ParsedTest[] = [];
   const worksheet = workbook.worksheets[0];
@@ -92,7 +92,8 @@ export async function parseExcelFile(buffer: Buffer): Promise<ParsedTest[]> {
  */
 export async function parsePdfFile(buffer: Buffer): Promise<ParsedTest[]> {
   // Dynamic import to avoid issues with pdf-parse in certain bundling contexts
-  const pdfParse = (await import("pdf-parse")).default;
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const pdfParse = (await import("pdf-parse" as string)) as any;
   const pdfData = await pdfParse(buffer);
 
   const text = pdfData.text;
@@ -211,7 +212,7 @@ function detectColumns(headerRow: ExcelJS.Row): ColumnMap {
     const value = String(cell.value ?? "").toLowerCase().trim();
     for (const [field, keywords] of Object.entries(COLUMN_KEYWORDS)) {
       if (keywords.some((kw) => value.includes(kw))) {
-        (map as Record<string, number | null>)[field] = colNumber;
+        (map as unknown as Record<string, number | null>)[field] = colNumber;
       }
     }
   });

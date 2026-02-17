@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { searchTests } from "@/lib/services/test-matching.service";
+import logger from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
     const results = await searchTests(query, { laboratoryId, limit });
     return NextResponse.json({ success: true, data: results });
   } catch (error) {
-    console.error("[GET /api/tests]", error);
+    logger.error({ err: error }, "[GET /api/tests]");
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
   }
 }

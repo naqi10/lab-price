@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-export function useQuotations() {
+export function useQuotations(filters?: { dateFrom?: string; dateTo?: string; search?: string }) {
   const [quotations, setQuotations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -11,7 +11,12 @@ export function useQuotations() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/quotations");
+      const params = new URLSearchParams();
+      if (filters?.dateFrom) params.set("dateFrom", filters.dateFrom);
+      if (filters?.dateTo) params.set("dateTo", filters.dateTo);
+      if (filters?.search) params.set("search", filters.search);
+      const qs = params.toString();
+      const res = await fetch(`/api/quotations${qs ? `?${qs}` : ""}`);
       const data = await res.json();
       if (data.success) setQuotations(data.data.quotations || data.data.items || data.data || []);
       else setError(data.message);
@@ -20,7 +25,7 @@ export function useQuotations() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [filters?.dateFrom, filters?.dateTo, filters?.search]);
 
   useEffect(() => {
     fetchQuotations();

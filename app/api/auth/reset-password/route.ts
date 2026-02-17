@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { resetPasswordSchema } from "@/lib/validations/auth";
+import logger from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: "Mot de passe réinitialisé avec succès" });
   } catch (error) {
-    console.error("[POST /api/auth/reset-password]", error);
+    logger.error({ err: error }, "[POST /api/auth/reset-password]");
     return NextResponse.json(
       { success: false, message: "Erreur lors de la réinitialisation" },
       { status: 500 }

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-const publicPaths = ["/login", "/reset-password"];
+const publicPaths = ["/login", "/reset-password", "/change-password"];
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
@@ -13,6 +13,11 @@ export default auth((req) => {
 
   if (isAuthApi) return NextResponse.next();
 
+  const mustChangePassword = (req.auth?.user as { mustChangePassword?: boolean } | undefined)?.mustChangePassword;
+  if (isLoggedIn && mustChangePassword && !pathname.startsWith("/change-password")) {
+    return NextResponse.redirect(new URL("/change-password", req.nextUrl.origin));
+  }
+
   if (!isLoggedIn && !isPublicPath) {
     const loginUrl = new URL("/login", req.nextUrl.origin);
     loginUrl.searchParams.set("callbackUrl", pathname);
@@ -20,6 +25,9 @@ export default auth((req) => {
   }
 
   if (isLoggedIn && isPublicPath) {
+    if (pathname.startsWith("/change-password") && mustChangePassword) {
+      return NextResponse.next();
+    }
     return NextResponse.redirect(new URL("/", req.nextUrl.origin));
   }
 

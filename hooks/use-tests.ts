@@ -54,5 +54,30 @@ export function useTestCart() {
   const addItem = useCallback((item: { id: string; testMappingId: string; canonicalName: string }) => { setItems(prev => prev.find(i => i.id === item.id) ? prev : [...prev, item]); }, []);
   const removeItem = useCallback((id: string) => { setItems(prev => prev.filter(i => i.id !== id)); }, []);
   const clearCart = useCallback(() => setItems([]), []);
-  return { items, addItem, removeItem, clearCart, totalItems: items.length };
+
+  const loadFromMappingIds = useCallback(async (testMappingIds: string[]) => {
+    if (testMappingIds.length === 0) {
+      setItems([]);
+      return;
+    }
+    try {
+      const res = await fetch("/api/tests/mappings");
+      const data = await res.json();
+      const mappings = (data.success && data.data) ? data.data : [];
+      const idSet = new Set(testMappingIds);
+      const byId = mappings.filter((m: { id: string }) => idSet.has(m.id));
+      const order = new Map(testMappingIds.map((id, i) => [id, i]));
+      byId.sort((a: { id: string }, b: { id: string }) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+      const newItems = byId.map((m: { id: string; canonicalName?: string }) => ({
+        id: m.id,
+        testMappingId: m.id,
+        canonicalName: m.canonicalName ?? m.id,
+      }));
+      setItems(newItems);
+    } catch {
+      setItems([]);
+    }
+  }, []);
+
+  return { items, addItem, removeItem, clearCart, loadFromMappingIds, totalItems: items.length };
 }

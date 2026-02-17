@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -13,6 +12,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Mail, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
+import CustomerCombobox from "@/components/customers/customer-combobox";
 
 interface EmailComparisonDialogProps {
   open: boolean;
@@ -27,8 +27,11 @@ export default function EmailComparisonDialog({
   testMappingIds,
   testNames,
 }: EmailComparisonDialogProps) {
-  const [clientEmail, setClientEmail] = useState("");
-  const [clientName, setClientName] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<{
+    id: string;
+    name: string;
+    email: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{
     success: boolean;
@@ -38,7 +41,7 @@ export default function EmailComparisonDialog({
   } | null>(null);
 
   const handleSend = async () => {
-    if (!clientEmail) return;
+    if (!selectedCustomer) return;
     setIsLoading(true);
     setResult(null);
 
@@ -48,8 +51,9 @@ export default function EmailComparisonDialog({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           testMappingIds,
-          clientEmail,
-          clientName: clientName || undefined,
+          clientEmail: selectedCustomer.email,
+          clientName: selectedCustomer.name,
+          customerId: selectedCustomer.id,
         }),
       });
 
@@ -74,12 +78,11 @@ export default function EmailComparisonDialog({
 
   const handleClose = () => {
     setResult(null);
-    setClientEmail("");
-    setClientName("");
+    setSelectedCustomer(null);
     onClose();
   };
 
-  const isValid = testMappingIds.length > 0 && clientEmail.includes("@");
+  const isValid = testMappingIds.length > 0 && selectedCustomer !== null;
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
@@ -135,23 +138,10 @@ export default function EmailComparisonDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="clientEmail">Email du client *</Label>
-              <Input
-                id="clientEmail"
-                type="email"
-                value={clientEmail}
-                onChange={(e) => setClientEmail(e.target.value)}
-                placeholder="client@example.com"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="clientName">Nom du client (optionnel)</Label>
-              <Input
-                id="clientName"
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-                placeholder="Nom du destinataire"
+              <Label>Client *</Label>
+              <CustomerCombobox
+                selectedCustomer={selectedCustomer}
+                onSelect={setSelectedCustomer}
               />
             </div>
           </div>

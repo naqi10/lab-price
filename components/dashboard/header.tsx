@@ -10,7 +10,7 @@ export default function Header({ title }: { title: string }) {
     <header className="flex items-center justify-between border-b bg-card px-6 py-4">
       <h2 className="text-xl font-semibold">{title}</h2>
       <DropdownMenu>
-        <DropdownMenuTrigger><div className="flex items-center gap-2 rounded-md border px-3 py-2 hover:bg-accent cursor-pointer"><User className="h-4 w-4" /><span className="text-sm">{session?.user?.name || "Admin"}</span></div></DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild><button type="button" className="flex items-center gap-2 rounded-md border px-3 py-2 hover:bg-accent cursor-pointer" aria-label="Menu utilisateur"><User className="h-4 w-4" /><span className="text-sm">{session?.user?.name || "Admin"}</span></button></DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem className="text-sm text-muted-foreground">{session?.user?.email}</DropdownMenuItem>
           <DropdownMenuSeparator />

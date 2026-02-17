@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import logger from "@/lib/logger";
+import { logAudit } from "@/lib/services/audit.service";
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -28,9 +30,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       select: { id: true, name: true, email: true, role: true, isActive: true, createdAt: true },
     });
 
+    logAudit({ userId: session.user!.id!, action: "UPDATE", entity: "user", entityId: id, details: updateData });
+
     return NextResponse.json({ success: true, data: user });
   } catch (error) {
-    console.error("[PUT /api/users/:id]", error);
+    logger.error({ err: error }, "[PUT /api/users/:id]");
     return NextResponse.json({ success: false, message: "Erreur lors de la mise à jour" }, { status: 500 });
   }
 }
@@ -50,9 +54,12 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     }
 
     await prisma.user.delete({ where: { id } });
+
+    logAudit({ userId: session.user.id!, action: "DELETE", entity: "user", entityId: id });
+
     return NextResponse.json({ success: true, message: "Utilisateur supprimé" });
   } catch (error) {
-    console.error("[DELETE /api/users/:id]", error);
+    logger.error({ err: error }, "[DELETE /api/users/:id]");
     return NextResponse.json({ success: false, message: "Erreur lors de la suppression" }, { status: 500 });
   }
 }

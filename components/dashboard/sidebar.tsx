@@ -4,13 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, FlaskConical, TestTubes, GitCompare, FileText, Settings, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, FlaskConical, TestTubes, Contact, FileText, Settings, ChevronLeft, ChevronRight } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Tableau de bord", icon: LayoutDashboard },
   { href: "/laboratories", label: "Laboratoires", icon: FlaskConical },
   { href: "/tests", label: "Tests & Correspondances", icon: TestTubes },
-  { href: "/comparison", label: "Comparaison", icon: GitCompare },
+  { href: "/customers", label: "Clients", icon: Contact },
   { href: "/quotations", label: "Devis", icon: FileText },
   { href: "/settings", label: "Paramètres", icon: Settings },
 ];
@@ -23,7 +23,7 @@ export default function Sidebar() {
     <aside className={cn("flex flex-col border-r bg-card transition-all duration-300 h-screen sticky top-0", collapsed ? "w-16" : "w-64")}>
       <div className="flex items-center justify-between p-4 border-b">
         {!collapsed && <h1 className="text-lg font-bold text-primary">Lab Price</h1>}
-        <button onClick={() => setCollapsed(!collapsed)} className="p-1 rounded-md hover:bg-accent">
+        <button onClick={() => setCollapsed(!collapsed)} className="p-1 rounded-md hover:bg-accent" aria-label={collapsed ? "Déplier le menu" : "Replier le menu"}>
           {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
         </button>
       </div>

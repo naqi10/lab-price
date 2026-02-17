@@ -11,8 +11,11 @@ interface QuotationFormProps {
     title: string;
     laboratoryId: string;
     testMappingIds: string[];
+    clientName?: string;
+    clientEmail?: string;
     clientReference?: string;
     notes?: string;
+    taxRate?: number;
   }) => Promise<any>;
   isLoading?: boolean;
   laboratoryId?: string;
@@ -27,8 +30,11 @@ export default function QuotationForm({
   testMappingIds: initialTestIds,
 }: QuotationFormProps) {
   const [title, setTitle] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
   const [clientReference, setClientReference] = useState("");
   const [notes, setNotes] = useState("");
+  const [taxRate, setTaxRate] = useState<number>(20);
   const [laboratoryId, setLaboratoryId] = useState(initialLabId || "");
   const [testMappingIds, setTestMappingIds] = useState<string[]>(initialTestIds || []);
   const [error, setError] = useState<string | null>(null);
@@ -61,8 +67,11 @@ export default function QuotationForm({
       title: title.trim(),
       laboratoryId,
       testMappingIds,
+      clientName: clientName.trim() || undefined,
+      clientEmail: clientEmail.trim() || undefined,
       clientReference: clientReference.trim() || undefined,
       notes: notes.trim() || undefined,
+      taxRate: taxRate ?? 20,
     });
 
     if (result && !result.success) {
@@ -93,8 +102,9 @@ export default function QuotationForm({
       {/* Laboratory selector - only show if not pre-filled */}
       {!initialLabId ? (
         <div className="space-y-2">
-          <Label>Laboratoire *</Label>
+          <Label htmlFor="laboratoryId">Laboratoire *</Label>
           <select
+            id="laboratoryId"
             value={laboratoryId}
             onChange={(e) => setLaboratoryId(e.target.value)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -137,6 +147,43 @@ export default function QuotationForm({
             )}
           </div>
         )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="clientName">Nom du client</Label>
+        <Input
+          id="clientName"
+          type="text"
+          value={clientName}
+          onChange={(e) => setClientName(e.target.value)}
+          placeholder="Nom du client"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="clientEmail">Email du client</Label>
+        <Input
+          id="clientEmail"
+          type="email"
+          value={clientEmail}
+          onChange={(e) => setClientEmail(e.target.value)}
+          placeholder="email@exemple.com"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="taxRate">Taux de TVA (%)</Label>
+        <Input
+          id="taxRate"
+          type="number"
+          min={0}
+          max={100}
+          step={0.01}
+          value={taxRate}
+          onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
+          placeholder="20"
+        />
+        <p className="text-xs text-muted-foreground">0 pour aucun impôt</p>
       </div>
 
       <div className="space-y-2">

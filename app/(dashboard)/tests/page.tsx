@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/dashboard/header";
 import TestSearch from "@/components/tests/test-search";
 import TestCart from "@/components/tests/test-cart";
+import DraftManager from "@/components/comparison/draft-manager";
 import { useTestCart } from "@/hooks/use-tests";
 import { Button } from "@/components/ui/button";
 
 export default function TestsPage() {
   const router = useRouter();
-  const { items, addItem, removeItem, clearCart, totalItems } = useTestCart();
+  const { items, addItem, removeItem, clearCart, loadFromMappingIds, totalItems } = useTestCart();
 
   return (
     <>
@@ -32,7 +32,7 @@ export default function TestsPage() {
             }
           />
         </div>
-        <div>
+        <div className="space-y-6">
           <TestCart
             items={items}
             onRemove={removeItem}
@@ -43,6 +43,10 @@ export default function TestsPage() {
               ids.forEach((id) => params.append("tests", id));
               router.push(`/comparison?${params.toString()}`);
             }}
+          />
+          <DraftManager
+            currentTestMappingIds={items.map((i) => i.testMappingId)}
+            onLoad={(ids) => loadFromMappingIds(ids)}
           />
         </div>
       </div>

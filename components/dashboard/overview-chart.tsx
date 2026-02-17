@@ -15,7 +15,7 @@ export default function EmailStats({ stats }: EmailStatsProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="flex items-center gap-3 rounded-lg border p-3">
             <CheckCircle2 className="h-8 w-8 text-green-500 shrink-0" />
             <div>

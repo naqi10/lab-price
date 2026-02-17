@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import logger from "@/lib/logger";
 
 /**
  * GET /api/dashboard
@@ -22,11 +23,15 @@ export async function GET() {
       );
     }
 
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
     const [
       totalLaboratories,
       totalTests,
       totalMappings,
       totalUsers,
+      totalCustomers,
       labPriceListUpdates,
       recentQuotations,
       // Centralized email_logs (new — tracks all emails)
@@ -37,6 +42,8 @@ export async function GET() {
       legacySent,
       legacyFailed,
       recentActivity,
+      recentCustomers,
+      recentMappings,
     ] = await Promise.all([
       // Total active laboratories
       prisma.laboratory.count({ where: { isActive: true, deletedAt: null } }),
@@ -49,6 +56,9 @@ export async function GET() {
 
       // Number of active users
       prisma.user.count(),
+
+      // Total customers
+      prisma.customer.count(),
 
       // Last price list update per laboratory
       prisma.laboratory.findMany({
@@ -109,6 +119,32 @@ export async function GET() {
           user: { select: { name: true } },
         },
       }),
+
+      // Recent customers (last 5)
+      prisma.customer.findMany({
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          company: true,
+          createdAt: true,
+        },
+      }),
+
+      // Recently created test mappings (last 10)
+      prisma.testMapping.findMany({
+        take: 10,
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          canonicalName: true,
+          category: true,
+          createdAt: true,
+          _count: { select: { entries: true } },
+        },
+      }),
     ]);
 
     // Combine counts from both tables (no double-counting: legacy covers old, emailLog covers new)
@@ -126,6 +162,11 @@ export async function GET() {
       lastFileType: lab.priceLists[0]?.fileType || null,
     }));
 
+    // Count labs with stale (>90 days) or missing price lists
+    const stalePriceListCount = priceListUpdates.filter(
+      (u) => !u.lastUpdate || new Date(u.lastUpdate) < ninetyDaysAgo
+    ).length;
+
     return NextResponse.json({
       success: true,
       data: {
@@ -134,6 +175,8 @@ export async function GET() {
           totalTests,
           totalMappings,
           totalUsers,
+          totalCustomers,
+          stalePriceListCount,
         },
         priceListUpdates,
         recentQuotations,
@@ -144,10 +187,12 @@ export async function GET() {
           total: sent + failed + pending,
         },
         recentActivity,
+        recentCustomers,
+        recentMappings,
       },
     });
   } catch (error) {
-    console.error("[GET /api/dashboard]", error);
+    logger.error({ err: error }, "[GET /api/dashboard]");
     return NextResponse.json(
       { success: false, message: "Erreur serveur" },
       { status: 500 }

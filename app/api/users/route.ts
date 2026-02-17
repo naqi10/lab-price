@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import logger from "@/lib/logger";
+import { logAudit } from "@/lib/services/audit.service";
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,7 +17,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: users });
   } catch (error) {
-    console.error("[GET /api/users]", error);
+    logger.error({ err: error }, "[GET /api/users]");
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
   }
 }
@@ -54,9 +56,11 @@ export async function POST(request: NextRequest) {
       select: { id: true, name: true, email: true, role: true, isActive: true, createdAt: true },
     });
 
+    logAudit({ userId: session.user!.id!, action: "CREATE", entity: "user", entityId: user.id, details: { name: user.name, email: user.email, role: user.role } });
+
     return NextResponse.json({ success: true, data: user }, { status: 201 });
   } catch (error) {
-    console.error("[POST /api/users]", error);
+    logger.error({ err: error }, "[POST /api/users]");
     const message = error instanceof Error ? error.message : "Erreur lors de la création";
     return NextResponse.json({ success: false, message }, { status: 500 });
   }

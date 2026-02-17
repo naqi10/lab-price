@@ -2,9 +2,31 @@ import prisma from "@/lib/db";
 import { sendEmail, getEmailConfig } from "@/lib/email/config";
 import { generateQuotationPdf } from "@/lib/services/pdf.service";
 import { getQuotationById } from "@/lib/services/quotation.service";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import {
+  renderTemplate,
+  renderSubject,
+  getRawHtmlVariableNames,
+  getVariablesForType,
+  type TemplateVariables,
+} from "@/lib/email/template-renderer";
 
 /**
- * Send a quotation PDF via email using Brevo API.
+ * Fetch the default EmailTemplate for a given type from the DB.
+ * Returns null when no default template has been configured.
+ */
+async function getDefaultTemplate(type: "QUOTATION" | "COMPARISON" | "GENERAL") {
+  return prisma.emailTemplate.findFirst({
+    where: { type, isDefault: true },
+  });
+}
+
+/**
+ * Send a quotation PDF via email.
+ *
+ * When a default QUOTATION email template exists in the database it is
+ * rendered with the quotation's variables (number, client, lab, total, etc.)
+ * and sent as HTML.  Otherwise a plain-text fallback is used.
  */
 export async function sendQuotationEmail(data: {
   quotationId: string;
@@ -20,17 +42,58 @@ export async function sendQuotationEmail(data: {
 
   // Generate PDF buffer
   const pdfBuffer = await generateQuotationPdf(quotation);
-
-  // Convert to base64 for Brevo attachment
   const pdfBase64 = Buffer.from(pdfBuffer).toString("base64");
+
+  // Fetch DB template + email settings in parallel
+  const [template, emailConfig] = await Promise.all([
+    getDefaultTemplate("QUOTATION"),
+    getEmailConfig(),
+  ]);
+
+  let htmlContent: string | undefined;
+  let textContent: string | undefined;
+  let resolvedSubject = subject;
+
+  if (template) {
+    const variables: TemplateVariables = {
+      quotationNumber: quotation.quotationNumber,
+      title: quotation.title,
+      clientName: quotation.clientName || undefined,
+      clientEmail: quotation.clientEmail || undefined,
+      laboratoryName: quotation.laboratory?.name || undefined,
+      totalPrice: formatCurrency(quotation.totalPrice),
+      validUntil: formatDate(quotation.validUntil),
+      itemCount: String(quotation.items?.length ?? 0),
+      customMessage: message || "",
+      companyLogoUrl: emailConfig?.companyLogoUrl || undefined,
+      signatureHtml: emailConfig?.signatureHtml || undefined,
+    };
+
+    const rawHtmlVars = getRawHtmlVariableNames(getVariablesForType("QUOTATION"));
+
+    htmlContent = renderTemplate(template.htmlBody, variables, {
+      missingStrategy: "remove",
+      rawHtmlVariables: rawHtmlVars,
+    });
+
+    // Use the caller-provided subject; only fall back to the template subject
+    // when no explicit subject was given.
+    if (!subject) {
+      resolvedSubject = renderSubject(template.subject, variables, "remove");
+    }
+  } else {
+    // No DB template – plain-text fallback
+    textContent =
+      message ||
+      `Veuillez trouver ci-joint le devis ${quotation.quotationNumber}.`;
+  }
 
   try {
     const result = await sendEmail({
       to: [{ email: to }],
-      subject,
-      textContent:
-        message ||
-        `Veuillez trouver ci-joint le devis ${quotation.quotationNumber}.`,
+      subject: resolvedSubject,
+      htmlContent,
+      textContent,
       attachments: [
         {
           name: `Devis-${quotation.quotationNumber}.pdf`,
@@ -46,7 +109,7 @@ export async function sendQuotationEmail(data: {
         quotationId,
         sentById,
         toEmail: to,
-        subject,
+        subject: resolvedSubject,
         message: message || null,
         status: "SENT",
         sentAt: new Date(),
@@ -61,7 +124,7 @@ export async function sendQuotationEmail(data: {
         quotationId,
         sentById,
         toEmail: to,
-        subject,
+        subject: resolvedSubject,
         message: message || null,
         status: "FAILED",
         error: error instanceof Error ? error.message : "Erreur inconnue",
@@ -75,7 +138,7 @@ export async function sendQuotationEmail(data: {
   }
 }
 
-/** Check if email is configured (env vars present). */
-export function isEmailConfigured(): boolean {
-  return getEmailConfig() !== null;
+/** Check if email is configured (DB settings or env vars present). */
+export async function isEmailConfigured(): Promise<boolean> {
+  return (await getEmailConfig()) !== null;
 }

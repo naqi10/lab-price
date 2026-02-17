@@ -21,6 +21,25 @@ export const quotationSchema = z.object({
   testMappingIds: z
     .array(z.string().min(1))
     .min(1, "Au moins un test doit être sélectionné"),
+  /** Optional client name */
+  clientName: z
+    .string()
+    .max(200, "Le nom du client ne peut pas dépasser 200 caractères")
+    .optional()
+    .nullable(),
+  /** Optional client email */
+  clientEmail: z
+    .string()
+    .email("Format d'email invalide")
+    .max(200, "L'email ne peut pas dépasser 200 caractères")
+    .optional()
+    .nullable(),
+  /** Tax rate in percent (0 = no tax) */
+  taxRate: z
+    .number()
+    .min(0, "Le taux de TVA ne peut pas être négatif")
+    .max(100, "Le taux de TVA ne peut pas dépasser 100 %")
+    .default(20),
   /** Optional patient or client reference */
   clientReference: z
     .string()

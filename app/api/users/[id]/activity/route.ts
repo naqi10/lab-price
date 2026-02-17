@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import logger from "@/lib/logger";
 
 /**
  * GET /api/users/[id]/activity
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json({ success: true, data: activity });
   } catch (error) {
-    console.error("[GET /api/users/:id/activity]", error);
+    logger.error({ err: error }, "[GET /api/users/:id/activity]");
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
   }
 }

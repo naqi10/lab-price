@@ -79,12 +79,14 @@ export default function LaboratoryDetailPage() {
             <p className="text-center text-muted-foreground py-8">Chargement...</p>
           ) : (
             <PriceListTable
+              labId={id}
               priceLists={priceLists}
               onDelete={async (listId) => {
                 if (!confirm("Supprimer cette liste de prix ?")) return;
                 await fetch(`/api/laboratories/${id}/price-lists/${listId}`, { method: "DELETE" });
                 fetchPriceLists();
               }}
+              onActivate={fetchPriceLists}
             />
           )}
         </TabsContent>

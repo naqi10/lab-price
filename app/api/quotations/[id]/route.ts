@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getQuotationById } from "@/lib/services/quotation.service";
+import logger from "@/lib/logger";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json({ success: true, data: quotation });
   } catch (error) {
-    console.error("[GET /api/quotations/:id]", error);
+    logger.error({ err: error }, "[GET /api/quotations/:id]");
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
   }
 }

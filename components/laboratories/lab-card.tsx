@@ -12,7 +12,7 @@ export default function LabCard({
   onSelect?: (id: string) => void;
 }) {
   return (
-    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => onSelect?.(laboratory.id)}>
+    <Card className="hover:shadow-md transition-shadow cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none" onClick={() => onSelect?.(laboratory.id)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect?.(laboratory.id); } }} tabIndex={0} role="button" aria-label={`Voir le laboratoire ${laboratory.name}`}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
         <div className="flex items-center gap-2"><FlaskConical className="h-5 w-5 text-primary" /><CardTitle className="text-lg">{laboratory.name}</CardTitle></div>
         <Badge variant={laboratory.isActive ? "success" : "secondary"}>{laboratory.isActive ? "Actif" : "Inactif"}</Badge>

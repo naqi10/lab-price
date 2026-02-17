@@ -26,6 +26,17 @@ enum MatchType {
   NONE
 }
 
+enum EmailConfigMode {
+  API
+  SMTP
+}
+
+enum EmailTemplateType {
+  QUOTATION
+  COMPARISON
+  GENERAL
+}
+
 enum QuotationStatus {
   DRAFT
   SENT
@@ -41,20 +52,37 @@ enum EmailStatus {
 }
 
 model User {
+  id                 String   @id @default(uuid())
+  email              String   @unique
+  name               String
+  password           String
+  role               Role     @default(USER)
+  isActive           Boolean  @default(true) @map("is_active")
+  mustChangePassword Boolean  @default(false) @map("must_change_password")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  quotations         Quotation[]
+  quotationEmails    QuotationEmail[]
+  auditLogs          AuditLog[]
+  uploadedPriceLists PriceList[]        @relation("UploadedPriceLists")
+  comparisonDrafts   ComparisonDraft[]
+
+  @@map("users")
+}
+
+model Customer {
   id        String   @id @default(uuid())
-  email     String   @unique
   name      String
-  password  String
-  role      Role     @default(USER)
-  isActive  Boolean  @default(true) @map("is_active")
+  email     String   @unique
+  phone     String?
+  company   String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  quotations     Quotation[]
-  quotationEmails QuotationEmail[]
-  auditLogs      AuditLog[]
+  emailLogs EmailLog[]
 
-  @@map("users")
+  @@map("customers")
 }
 
 model Laboratory {
@@ -81,6 +109,7 @@ model Laboratory {
 model PriceList {
   id           String   @id @default(uuid())
   laboratoryId String   @map("laboratory_id")
+  uploadedById String?  @map("uploaded_by_id")
   fileName     String   @map("file_name")
   fileType     FileType @map("file_type")
   fileSize     Int      @map("file_size")
@@ -90,6 +119,7 @@ model PriceList {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   laboratory Laboratory @relation(fields: [laboratoryId], references: [id])
+  uploadedBy User?      @relation("UploadedPriceLists", fields: [uploadedById], references: [id])
   tests      Test[]
 
   @@map("price_lists")
@@ -104,6 +134,7 @@ model Test {
   unit        String?
   category    String?
   description String?
+  isActive    Boolean @default(true) @map("is_active")
 
   priceList PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
 
@@ -149,8 +180,13 @@ model Quotation {
   title            String
   laboratoryId     String          @map("laboratory_id")
   createdById      String          @map("created_by_id")
+  clientName       String?         @map("client_name")
+  clientEmail      String?         @map("client_email")
   clientReference  String?         @map("client_reference")
   notes            String?
+  subtotal         Float?
+  taxRate          Float?          @map("tax_rate")
+  taxAmount        Float?          @map("tax_amount")
   totalPrice       Float           @map("total_price")
   validUntil       DateTime        @map("valid_until")
   sentAt           DateTime?       @map("sent_at")
@@ -217,14 +253,61 @@ model AuditLog {
 }
 
 model EmailLog {
-  id        String      @id @default(uuid())
-  toEmail   String      @map("to_email")
-  subject   String
-  status    EmailStatus @default(SENT)
-  source    String      @default("system")
-  error     String?
-  createdAt DateTime    @default(now()) @map("created_at")
+  id         String      @id @default(uuid())
+  toEmail    String      @map("to_email")
+  subject    String
+  status     EmailStatus @default(SENT)
+  source     String      @default("system")
+  error      String?
+  customerId String?     @map("customer_id")
+  createdAt  DateTime    @default(now()) @map("created_at")
+
+  customer Customer? @relation(fields: [customerId], references: [id])
 
   @@map("email_logs")
+}
+
+model ComparisonDraft {
+  id             String   @id @default(uuid())
+  name           String
+  userId         String   @map("user_id")
+  testMappingIds String[] @map("test_mapping_ids")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("comparison_drafts")
+}
+
+model EmailSettings {
+  id             String          @id @default(uuid())
+  mode           EmailConfigMode @default(SMTP)
+  smtpHost       String?         @map("smtp_host")
+  smtpPort       Int?            @map("smtp_port")
+  smtpUser       String?         @map("smtp_user")
+  smtpPass       String?         @map("smtp_pass")
+  apiKey         String?         @map("api_key")
+  fromEmail      String?         @map("from_email")
+  fromName       String?         @map("from_name")
+  companyLogoUrl String?         @map("company_logo_url")
+  signatureHtml  String?         @map("signature_html")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  @@map("email_settings")
+}
+
+model EmailTemplate {
+  id        String            @id @default(uuid())
+  type      EmailTemplateType
+  name      String
+  subject   String
+  htmlBody  String            @map("html_body")
+  isDefault Boolean           @default(false) @map("is_default")
+  variables Json?
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+
+  @@map("email_templates")
 }
 

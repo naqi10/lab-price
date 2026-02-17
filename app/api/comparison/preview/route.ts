@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import logger from "@/lib/logger";
 
 /**
  * POST /api/comparison/preview
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: totals });
   } catch (error) {
-    console.error("[POST /api/comparison/preview]", error);
+    logger.error({ err: error }, "[POST /api/comparison/preview]");
     return NextResponse.json(
       { success: false, message: "Erreur serveur" },
       { status: 500 }

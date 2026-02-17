@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import logger from "@/lib/logger";
+import { logAudit } from "@/lib/services/audit.service";
 
 /**
  * POST /api/users/[id]/reset-password
@@ -42,9 +44,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       data: { password: hashedPassword },
     });
 
+    logAudit({ userId: session.user.id!, action: "UPDATE", entity: "user", entityId: id, details: { action: "reset_password" } });
+
     return NextResponse.json({ success: true, message: "Mot de passe réinitialisé avec succès" });
   } catch (error) {
-    console.error("[POST /api/users/:id/reset-password]", error);
+    logger.error({ err: error }, "[POST /api/users/:id/reset-password]");
     return NextResponse.json(
       { success: false, message: "Erreur lors de la réinitialisation" },
       { status: 500 }

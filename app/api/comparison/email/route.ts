@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { compareTestsWithEmail } from "@/lib/services/comparison.service";
+import logger from "@/lib/logger";
 
 /**
  * POST /api/comparison/email
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { testMappingIds, clientEmail, clientName } = body;
+    const { testMappingIds, clientEmail, clientName, customerId } = body;
 
     // ── Validation ─────────────────────────────────────────────────────────
     if (!testMappingIds || !Array.isArray(testMappingIds) || testMappingIds.length === 0) {
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest) {
       testMappingIds,
       clientEmail,
       clientName: clientName || undefined,
+      customerId: customerId || undefined,
     });
 
     return NextResponse.json({
@@ -51,7 +53,7 @@ export async function POST(request: NextRequest) {
       data: result,
     });
   } catch (error) {
-    console.error("[POST /api/comparison/email]", error);
+    logger.error({ err: error }, "[POST /api/comparison/email]");
     const message = error instanceof Error ? error.message : "Erreur serveur";
     return NextResponse.json({ success: false, message }, { status: 500 });
   }

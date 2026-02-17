@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { updateTestMapping, deleteTestMapping } from "@/lib/services/test-matching.service";
+import logger from "@/lib/logger";
+import { logAudit } from "@/lib/services/audit.service";
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,9 +25,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       })),
     });
 
+    logAudit({ userId: session.user.id, action: "UPDATE", entity: "test_mapping", entityId: id, details: { canonicalName: body.canonicalName } });
+
     return NextResponse.json({ success: true, data: mapping });
   } catch (error) {
-    console.error("[PUT /api/tests/mappings/:id]", error);
+    logger.error({ err: error }, "[PUT /api/tests/mappings/:id]");
     const message = error instanceof Error ? error.message : "Erreur lors de la mise à jour";
     return NextResponse.json({ success: false, message }, { status: 500 });
   }
@@ -39,9 +43,11 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     const { id } = await params;
     await deleteTestMapping(id);
 
+    logAudit({ userId: session.user!.id!, action: "DELETE", entity: "test_mapping", entityId: id });
+
     return NextResponse.json({ success: true, message: "Correspondance supprimée" });
   } catch (error) {
-    console.error("[DELETE /api/tests/mappings/:id]", error);
+    logger.error({ err: error }, "[DELETE /api/tests/mappings/:id]");
     return NextResponse.json({ success: false, message: "Erreur lors de la suppression" }, { status: 500 });
   }
 }

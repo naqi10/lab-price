@@ -1,6 +1,13 @@
 import prisma from "@/lib/db";
 import { formatCurrency } from "@/lib/utils";
-import { sendEmail } from "@/lib/email/config";
+import { sendEmail, getEmailConfig } from "@/lib/email/config";
+import {
+  renderTemplate,
+  renderSubject,
+  getRawHtmlVariableNames,
+  getVariablesForType,
+  type TemplateVariables,
+} from "@/lib/email/template-renderer";
 
 /**
  * Represents the comparison result for a single laboratory.
@@ -194,8 +201,9 @@ export async function compareTestsWithEmail(data: {
   testMappingIds: string[];
   clientEmail: string;
   clientName?: string;
+  customerId?: string;
 }): Promise<ComparisonEmailResult> {
-  const { testMappingIds, clientEmail, clientName } = data;
+  const { testMappingIds, clientEmail, clientName, customerId } = data;
 
   // ── Validation ───────────────────────────────────────────────────────────
   if (!testMappingIds || testMappingIds.length === 0) {
@@ -307,19 +315,100 @@ export async function compareTestsWithEmail(data: {
   };
 
   // ── Auto-send email ──────────────────────────────────────────────────────
-  const htmlContent = buildComparisonEmailHtml(result, clientName);
+  const [template, emailConfig] = await Promise.all([
+    prisma.emailTemplate.findFirst({
+      where: { type: "COMPARISON", isDefault: true },
+    }),
+    getEmailConfig(),
+  ]);
+
+  let htmlContent: string;
+  let emailSubject: string;
+
+  if (template) {
+    const comparisonTableHtml = buildComparisonTableHtml(result);
+
+    const variables: TemplateVariables = {
+      clientName: clientName || undefined,
+      testNames: result.testNames.join(", "),
+      cheapestLabName: cheapest.name,
+      cheapestLabPrice: formatCurrency(cheapest.totalPrice),
+      comparisonTableHtml,
+      companyLogoUrl: emailConfig?.companyLogoUrl || undefined,
+      signatureHtml: emailConfig?.signatureHtml || undefined,
+    };
+
+    const rawHtmlVars = getRawHtmlVariableNames(getVariablesForType("COMPARISON"));
+
+    htmlContent = renderTemplate(template.htmlBody, variables, {
+      missingStrategy: "remove",
+      rawHtmlVariables: rawHtmlVars,
+    });
+    emailSubject = renderSubject(template.subject, variables, "remove");
+  } else {
+    // Fallback: use the hard-coded HTML builder
+    htmlContent = buildComparisonEmailHtml(result, clientName);
+    emailSubject = `Comparaison de prix — ${result.testNames.join(" & ")} — ${cheapest.name}`;
+  }
 
   await sendEmail({
     to: [{ email: clientEmail, name: clientName }],
-    subject: `Comparaison de prix — ${result.testNames.join(" & ")} — ${cheapest.name}`,
+    subject: emailSubject,
     htmlContent,
     source: "comparison",
+    customerId,
   });
 
   return result;
 }
 
-/** Build a professional HTML email body for the comparison result. */
+/**
+ * Build just the comparison `<table>` HTML for use as the
+ * `{{comparisonTableHtml}}` template variable.
+ */
+function buildComparisonTableHtml(result: ComparisonEmailResult): string {
+  const testHeaders = result.testNames
+    .map(
+      (name) =>
+        `<th style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;background:#f8fafc;font-weight:600;">${name}</th>`
+    )
+    .join("");
+
+  const cheapestLab = result.laboratories.find((lab) => lab.isCheapest);
+  const labsToShow = cheapestLab
+    ? [cheapestLab]
+    : result.laboratories.slice(0, 1);
+
+  const rows = labsToShow
+    .map((lab) => {
+      const priceCells = lab.tests
+        .map(
+          (t) =>
+            `<td style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;">${t.formattedPrice}</td>`
+        )
+        .join("");
+
+      return `<tr style="background-color:#f0fdf4;">
+        <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:500;">${lab.name}</td>
+        ${priceCells}
+        <td style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;font-weight:700;">${lab.formattedTotalPrice}</td>
+      </tr>`;
+    })
+    .join("");
+
+  return `<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
+  <thead>
+    <tr>
+      <th style="padding:10px 14px;border:1px solid #e2e8f0;text-align:left;background:#f8fafc;font-weight:600;">Laboratoire</th>
+      ${testHeaders}
+      <th style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;background:#f8fafc;font-weight:600;">Total</th>
+    </tr>
+  </thead>
+  <tbody>${rows}</tbody>
+</table>`;
+}
+
+/** Build a professional HTML email body for the comparison result (hard-coded fallback). */
 function buildComparisonEmailHtml(
   result: ComparisonEmailResult,
   clientName?: string
@@ -333,7 +422,9 @@ function buildComparisonEmailHtml(
     )
     .join("");
 
-  const testRows = result.laboratories
+  const cheapestLab = result.laboratories.find(lab => lab.isCheapest);
+  const labsToShow = cheapestLab ? [cheapestLab] : result.laboratories.slice(0, 1);
+  const testRows = labsToShow
     .map((lab) => {
       const priceCells = lab.tests
         .map(
@@ -342,13 +433,8 @@ function buildComparisonEmailHtml(
         )
         .join("");
 
-      const rowBg = lab.isCheapest ? "background-color:#f0fdf4;" : "";
-      const badge = lab.isCheapest
-        ? ' <span style="background:#16a34a;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px;">Meilleur prix</span>'
-        : "";
-
-      return `<tr style="${rowBg}">
-        <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:500;">${lab.name}${badge}</td>
+      return `<tr style="background-color:#f0fdf4;">
+        <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:500;">${lab.name}</td>
         ${priceCells}
         <td style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;font-weight:700;">${lab.formattedTotalPrice}</td>
       </tr>`;
@@ -367,9 +453,9 @@ function buildComparisonEmailHtml(
     <div style="padding:32px;">
       <p style="margin:0 0 16px;color:#334155;font-size:15px;">${greeting}</p>
       <p style="margin:0 0 24px;color:#334155;font-size:15px;">
-        Voici le résultat de la comparaison des prix pour
+        Voici le meilleur prix trouvé pour
         <strong>${result.testNames.join("</strong>, <strong>")}</strong>
-        dans ${result.laboratories.length} laboratoire(s).
+        auprès du laboratoire le moins cher.
       </p>
       <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
         <thead>

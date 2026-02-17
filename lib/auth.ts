@@ -35,20 +35,12 @@ function createAuthConfig(): NextAuthConfig {
           password: { label: "Mot de passe", type: "password" },
         },
         async authorize(credentials) {
-          console.log("🔐 NextAuth authorize called with:", {
-            email: credentials?.email,
-            passwordLength: credentials?.password ? (credentials.password as string).length : 0,
-          });
-
           if (!credentials?.email || !credentials?.password) {
-            console.log("❌ Missing credentials");
             throw new Error("Email et mot de passe requis");
           }
 
           const email = credentials.email as string;
           const password = credentials.password as string;
-
-          console.log("🔍 Looking up user:", email);
 
           // Look up the user by email
           const user = await prisma.user.findUnique({
@@ -56,36 +48,19 @@ function createAuthConfig(): NextAuthConfig {
           });
 
           if (!user) {
-            console.log("❌ User not found in database:", email);
             throw new Error("Identifiants invalides");
           }
 
-          console.log("✅ User found:", {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-            isActive: user.isActive,
-            hasPassword: !!user.password,
-            passwordHashLength: user.password ? user.password.length : 0,
-          });
-
           if (!user.isActive) {
-            console.log("❌ User account is not active");
             throw new Error("Votre compte a été désactivé. Contactez un administrateur.");
           }
 
           // Compare the supplied password against the stored hash
-          console.log("🔐 Comparing password with hash...");
           const isPasswordValid = await bcryptjs.compare(password, user.password);
-          console.log("🔐 Password comparison result:", isPasswordValid);
 
           if (!isPasswordValid) {
-            console.log("❌ Password validation failed");
             throw new Error("Identifiants invalides");
           }
-
-          console.log("✅ Authentication successful for:", user.email);
 
           // Return the user object (will be available in the jwt callback)
           return {
@@ -93,6 +68,7 @@ function createAuthConfig(): NextAuthConfig {
             email: user.email,
             name: user.name,
             role: user.role,
+            mustChangePassword: user.mustChangePassword,
           };
         },
       }),
@@ -115,16 +91,10 @@ function createAuthConfig(): NextAuthConfig {
        * available in the session callback.
        */
       async jwt({ token, user }) {
-        console.log("🎫 JWT callback called:", {
-          hasUser: !!user,
-          userEmail: user?.email,
-          tokenSub: token.sub,
-        });
-        
         if (user) {
           token.id = user.id;
           token.role = (user as { role?: string }).role;
-          console.log("✅ JWT token updated with user data");
+          token.mustChangePassword = (user as { mustChangePassword?: boolean }).mustChangePassword;
         }
         return token;
       },
@@ -138,6 +108,7 @@ function createAuthConfig(): NextAuthConfig {
         if (session.user) {
           session.user.id = token.id as string;
           (session.user as { role?: string }).role = token.role as string;
+          (session.user as { mustChangePassword?: boolean }).mustChangePassword = token.mustChangePassword as boolean;
         }
         return session;
       },

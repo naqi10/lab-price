@@ -45,12 +45,12 @@ export default function QuotationDetailPage() {
       <div className="mt-6">
         <QuotationPreview quotation={quotation} />
       </div>
-      {showEmailDialog && (
-        <EmailDialog
-          quotationId={id}
-          onClose={() => setShowEmailDialog(false)}
-        />
-      )}
+      <EmailDialog
+        open={showEmailDialog}
+        quotationId={id}
+        quotation={quotation}
+        onClose={() => setShowEmailDialog(false)}
+      />
     </>
   );
 }

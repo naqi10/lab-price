@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/dashboard/header";
 import QuotationForm from "@/components/quotations/quotation-form";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function NewQuotationPage() {
+  return (
+    <Suspense fallback={<><Header title="Nouveau devis" /><Skeleton className="h-64 mt-6 max-w-2xl" /></>}>
+      <NewQuotationContent />
+    </Suspense>
+  );
+}
+
+function NewQuotationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const laboratoryId = searchParams.get("laboratoryId") || undefined;
@@ -16,8 +25,11 @@ export default function NewQuotationPage() {
     title: string;
     laboratoryId: string;
     testMappingIds: string[];
+    clientName?: string;
+    clientEmail?: string;
     clientReference?: string;
     notes?: string;
+    taxRate?: number;
   }) => {
     setIsLoading(true);
     try {

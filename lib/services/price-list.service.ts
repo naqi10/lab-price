@@ -12,6 +12,7 @@ export async function uploadPriceList(data: {
   fileType: "EXCEL" | "PDF";
   fileSize: number;
   setAsActive?: boolean;
+  uploadedById?: string | null;
   tests: Array<{
     name: string;
     code?: string | null;
@@ -36,6 +37,7 @@ export async function uploadPriceList(data: {
         fileType: data.fileType,
         fileSize: data.fileSize,
         isActive: data.setAsActive ?? false,
+        uploadedById: data.uploadedById ?? null,
         tests: {
           createMany: {
             data: data.tests.map((test) => ({

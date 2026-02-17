@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getQuotationById } from "@/lib/services/quotation.service";
 import { generateQuotationPdf } from "@/lib/services/pdf.service";
+import logger from "@/lib/logger";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -13,15 +14,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     if (!quotation) return NextResponse.json({ success: false, message: "Devis non trouvé" }, { status: 404 });
 
     const pdfBuffer = await generateQuotationPdf(quotation);
+    const dateStr = new Date().toISOString().split("T")[0];
 
     return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="devis-${quotation.quotationNumber}.pdf"`,
+        "Content-Disposition": `attachment; filename="Devis_${quotation.quotationNumber}_${dateStr}.pdf"`,
       },
     });
   } catch (error) {
-    console.error("[GET /api/quotations/:id/pdf]", error);
+    logger.error({ err: error }, "[GET /api/quotations/:id/pdf]");
     return NextResponse.json({ success: false, message: "Erreur lors de la génération du PDF" }, { status: 500 });
   }
 }
