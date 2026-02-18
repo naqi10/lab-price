@@ -41,7 +41,7 @@ export default function EmailComparisonDialog({
   } | null>(null);
 
   const handleSend = async () => {
-    if (!selectedCustomer) return;
+    if (!selectedCustomer || isLoading) return;
     setIsLoading(true);
     setResult(null);
 

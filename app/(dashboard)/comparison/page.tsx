@@ -50,19 +50,34 @@ function ComparisonContent() {
 
     const bestLabId = comparison.bestLaboratory?.id || "";
 
-    const labs = (comparison.laboratories || []).map((l: any) => ({
-      id: l.id,
-      name: l.name,
-      total: l.totalPrice,
-      missingTests: testIds.length - l.testCount,
-      isComplete: l.isComplete,
-    }));
+    // Build per-lab turnaround times with test names
+    const tatMatrix = comparison.tatMatrix || {};
+    const testMappings = comparison.testMappings || [];
+
+    const labs = (comparison.laboratories || []).map((l: any) => {
+      const turnaroundTimes: { testName: string; tat: string }[] = [];
+      for (const tm of testMappings) {
+        const tat = tatMatrix[tm.id]?.[l.id];
+        if (tat) {
+          turnaroundTimes.push({ testName: tm.canonicalName, tat });
+        }
+      }
+      return {
+        id: l.id,
+        name: l.name,
+        total: l.totalPrice,
+        missingTests: testIds.length - l.testCount,
+        isComplete: l.isComplete,
+        turnaroundTimes,
+      };
+    });
 
     const tableData = {
       tests: (comparison.testMappings || []).map((tm: any) => ({
         id: tm.id,
         canonicalName: tm.canonicalName,
         prices: comparison.priceMatrix?.[tm.id] || {},
+        turnaroundTimes: comparison.tatMatrix?.[tm.id] || {},
       })),
       laboratories: (comparison.laboratories || []).map((l: any) => ({ id: l.id, name: l.name })),
       totals: Object.fromEntries((comparison.laboratories || []).map((l: any) => [l.id, l.totalPrice])),

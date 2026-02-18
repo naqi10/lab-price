@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Link2, Pencil, Check, Trash2, Zap, DollarSign, RotateCcw } from "lucide-react";
+import { Link2, Pencil, Check, Trash2, Zap, DollarSign, RotateCcw, Clock } from "lucide-react";
 
 export type PriceOverride = {
   price: number;
@@ -41,6 +41,7 @@ interface ComparisonTableData {
     id: string;
     canonicalName: string;
     prices: Record<string, number | null>;
+    turnaroundTimes?: Record<string, string | null>;
   }[];
   laboratories: { id: string; name: string }[];
   totals: Record<string, number>;
@@ -262,6 +263,7 @@ export default function ComparisonTable({
                   <TableCell className="font-medium">{test.canonicalName}</TableCell>
                   {data.laboratories.map((lab) => {
                     const match = data.matchMatrix?.[test.id]?.[lab.id];
+                    const tat = test.turnaroundTimes?.[lab.id];
                     const rawPrice = test.prices[lab.id];
                     const override = data.overrides?.[test.id]?.[lab.id];
                     const effectivePrice = getEffectivePrice(
@@ -393,6 +395,12 @@ export default function ComparisonTable({
                                   })()
                                 )}
                               </>
+                            )}
+                            {tat && (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                <span>{tat}</span>
+                              </div>
                             )}
                             {match && (
                               <div className="flex items-center gap-1">

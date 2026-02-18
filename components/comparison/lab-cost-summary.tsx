@@ -1,7 +1,7 @@
 import { formatCurrency, cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy } from "lucide-react";
+import { Trophy, Clock } from "lucide-react";
 
 export default function LabCostSummary({
   labs,
@@ -13,6 +13,7 @@ export default function LabCostSummary({
     total: number;
     missingTests: number;
     isComplete: boolean;
+    turnaroundTimes: { testName: string; tat: string }[];
   }[];
   bestLabId: string;
 }) {
@@ -48,6 +49,20 @@ export default function LabCostSummary({
                 <p className="text-sm text-muted-foreground mt-1">
                   +{formatCurrency(diff)} vs {bestLab.name} ({pct}% plus cher)
                 </p>
+              )}
+              {lab.turnaroundTimes.length > 0 && (
+                <div className="mt-3 space-y-1">
+                  {lab.turnaroundTimes.map(({ testName, tat }) => (
+                    <div key={testName} className="flex items-start gap-1.5 text-sm text-muted-foreground">
+                      <Clock className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                      <span>
+                        <span className="font-medium text-foreground">{testName}</span>
+                        {" — "}
+                        {tat}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               )}
               {lab.missingTests > 0 && (
                 <Badge variant="destructive" className="mt-2">

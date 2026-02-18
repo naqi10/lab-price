@@ -8,6 +8,7 @@ import {
   getVariablesForType,
   type TemplateVariables,
 } from "@/lib/email/template-renderer";
+import { generateComparisonPdf } from "@/lib/services/pdf.service";
 
 /**
  * Represents the comparison result for a single laboratory.
@@ -21,12 +22,49 @@ interface LabComparisonResult {
     canonicalName: string;
     localTestName: string;
     price: number;
+    turnaroundTime: string | null;
     similarity: number;
     matchType: string;
   }>;
   totalPrice: number;
   testCount: number;
   isComplete: boolean;
+}
+
+/**
+ * Fetch turnaround times from Test records in active price lists.
+ * Returns a Map keyed by "laboratoryId:testName" → turnaroundTime.
+ */
+async function fetchTurnaroundTimes(
+  labTestPairs: { laboratoryId: string; localTestName: string }[]
+): Promise<Map<string, string | null>> {
+  if (labTestPairs.length === 0) return new Map();
+
+  const labIds = [...new Set(labTestPairs.map((p) => p.laboratoryId))];
+  const testNames = [...new Set(labTestPairs.map((p) => p.localTestName))];
+
+  const tests = await prisma.test.findMany({
+    where: {
+      priceList: {
+        laboratoryId: { in: labIds },
+        isActive: true,
+      },
+      name: { in: testNames },
+      isActive: true,
+    },
+    select: {
+      name: true,
+      turnaroundTime: true,
+      priceList: { select: { laboratoryId: true } },
+    },
+  });
+
+  const map = new Map<string, string | null>();
+  for (const test of tests) {
+    const key = `${test.priceList.laboratoryId}:${test.name}`;
+    map.set(key, test.turnaroundTime);
+  }
+  return map;
 }
 
 /**
@@ -61,6 +99,16 @@ export async function compareLabPrices(
     throw new Error("Aucun test mapping trouvé");
   }
 
+  // Collect all (lab, testName) pairs to fetch turnaround times in one query
+  const labTestPairs: { laboratoryId: string; localTestName: string }[] = [];
+  for (const mapping of testMappings) {
+    for (const entry of mapping.entries) {
+      if (!entry.laboratory.isActive) continue;
+      labTestPairs.push({ laboratoryId: entry.laboratory.id, localTestName: entry.localTestName });
+    }
+  }
+  const tatMap = await fetchTurnaroundTimes(labTestPairs);
+
   const labResults = new Map<string, LabComparisonResult>();
 
   for (const mapping of testMappings) {
@@ -80,11 +128,13 @@ export async function compareLabPrices(
       }
       const result = labResults.get(labId)!;
       const price = entry.price ?? 0;
+      const turnaroundTime = tatMap.get(`${labId}:${entry.localTestName}`) ?? null;
       result.tests.push({
         testMappingId: mapping.id,
         canonicalName: mapping.canonicalName,
         localTestName: entry.localTestName,
         price,
+        turnaroundTime,
         similarity: entry.similarity,
         matchType: entry.matchType,
       });
@@ -128,14 +178,17 @@ export async function getComparisonDetails(testMappingIds: string[]) {
   });
 
   const priceMatrix: Record<string, Record<string, number | null>> = {};
+  const tatMatrix: Record<string, Record<string, string | null>> = {};
   const matchMatrix: Record<string, Record<string, { matchType: string; similarity: number; localTestName: string } | null>> = {};
   for (const mapping of testMappings) {
     priceMatrix[mapping.id] = {};
+    tatMatrix[mapping.id] = {};
     matchMatrix[mapping.id] = {};
     for (const lab of laboratories) {
       const labResult = results.find((r) => r.laboratoryId === lab.id);
       const test = labResult?.tests.find((t) => t.testMappingId === mapping.id);
       priceMatrix[mapping.id][lab.id] = test?.price ?? null;
+      tatMatrix[mapping.id][lab.id] = test?.turnaroundTime ?? null;
       matchMatrix[mapping.id][lab.id] = test
         ? { matchType: test.matchType, similarity: test.similarity, localTestName: test.localTestName }
         : null;
@@ -146,6 +199,7 @@ export async function getComparisonDetails(testMappingIds: string[]) {
     laboratories,
     testMappings,
     priceMatrix,
+    tatMatrix,
     matchMatrix,
     bestLaboratory: laboratories.find((l) => l.isComplete) ?? laboratories[0] ?? null,
   };
@@ -173,7 +227,7 @@ export interface ComparisonEmailResult {
     id: string;
     name: string;
     code: string;
-    tests: { canonicalName: string; localTestName: string; price: number; formattedPrice: string }[];
+    tests: { canonicalName: string; localTestName: string; price: number; formattedPrice: string; turnaroundTime: string | null }[];
     totalPrice: number;
     formattedTotalPrice: string;
     isCheapest: boolean;
@@ -237,6 +291,16 @@ export async function compareTestsWithEmail(data: {
     );
   }
 
+  // ── Collect (lab, testName) pairs for turnaround time lookup ─────────────
+  const emailLabTestPairs: { laboratoryId: string; localTestName: string }[] = [];
+  for (const mapping of testMappings) {
+    for (const entry of mapping.entries) {
+      if (!entry.laboratory.isActive || entry.price == null) continue;
+      emailLabTestPairs.push({ laboratoryId: entry.laboratory.id, localTestName: entry.localTestName });
+    }
+  }
+  const emailTatMap = await fetchTurnaroundTimes(emailLabTestPairs);
+
   // ── Build per-lab price map ──────────────────────────────────────────────
   const labMap = new Map<
     string,
@@ -244,7 +308,7 @@ export async function compareTestsWithEmail(data: {
       id: string;
       name: string;
       code: string;
-      tests: { canonicalName: string; localTestName: string; price: number }[];
+      tests: { canonicalName: string; localTestName: string; price: number; turnaroundTime: string | null }[];
       totalPrice: number;
     }
   >();
@@ -270,6 +334,7 @@ export async function compareTestsWithEmail(data: {
         canonicalName: mapping.canonicalName,
         localTestName: entry.localTestName,
         price: entry.price,
+        turnaroundTime: emailTatMap.get(`${labId}:${entry.localTestName}`) ?? null,
       });
       lab.totalPrice += entry.price;
     }
@@ -300,6 +365,7 @@ export async function compareTestsWithEmail(data: {
         localTestName: t.localTestName,
         price: t.price,
         formattedPrice: formatCurrency(t.price),
+        turnaroundTime: t.turnaroundTime,
       })),
       totalPrice: lab.totalPrice,
       formattedTotalPrice: formatCurrency(lab.totalPrice),
@@ -351,10 +417,20 @@ export async function compareTestsWithEmail(data: {
     emailSubject = `Comparaison de prix — ${result.testNames.join(" & ")} — ${cheapest.name}`;
   }
 
+  // ── Generate comparison PDF ─────────────────────────────────────────────
+  const pdfBuffer = await generateComparisonPdf(result, clientName);
+  const pdfBase64 = pdfBuffer.toString("base64");
+
   await sendEmail({
     to: [{ email: clientEmail, name: clientName }],
     subject: emailSubject,
     htmlContent,
+    attachments: [
+      {
+        name: `Comparaison_${result.testNames.join("_").replace(/\s+/g, "-").substring(0, 60)}.pdf`,
+        content: pdfBase64,
+      },
+    ],
     source: "comparison",
     customerId,
   });
@@ -367,10 +443,22 @@ export async function compareTestsWithEmail(data: {
  * `{{comparisonTableHtml}}` template variable.
  */
 function buildComparisonTableHtml(result: ComparisonEmailResult): string {
+  const thStyle = "padding:10px 14px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;";
+  const tdStyle = "padding:10px 14px;border:1px solid #e2e8f0;";
+
+  // Build header: one column per test with sub-columns for price + TAT
   const testHeaders = result.testNames
     .map(
       (name) =>
-        `<th style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;background:#f8fafc;font-weight:600;">${name}</th>`
+        `<th colspan="2" style="${thStyle}text-align:center;">${name}</th>`
+    )
+    .join("");
+
+  const subHeaders = result.testNames
+    .map(
+      () =>
+        `<th style="${thStyle}text-align:right;font-size:12px;">Prix</th>` +
+        `<th style="${thStyle}text-align:center;font-size:12px;">Délai</th>`
     )
     .join("");
 
@@ -381,17 +469,18 @@ function buildComparisonTableHtml(result: ComparisonEmailResult): string {
 
   const rows = labsToShow
     .map((lab) => {
-      const priceCells = lab.tests
+      const cells = lab.tests
         .map(
           (t) =>
-            `<td style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;">${t.formattedPrice}</td>`
+            `<td style="${tdStyle}text-align:right;">${t.formattedPrice}</td>` +
+            `<td style="${tdStyle}text-align:center;">${t.turnaroundTime ?? "—"}</td>`
         )
         .join("");
 
       return `<tr style="background-color:#f0fdf4;">
-        <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:500;">${lab.name}</td>
-        ${priceCells}
-        <td style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;font-weight:700;">${lab.formattedTotalPrice}</td>
+        <td style="${tdStyle}font-weight:500;">${lab.name}</td>
+        ${cells}
+        <td style="${tdStyle}text-align:right;font-weight:700;">${lab.formattedTotalPrice}</td>
       </tr>`;
     })
     .join("");
@@ -399,10 +488,11 @@ function buildComparisonTableHtml(result: ComparisonEmailResult): string {
   return `<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
   <thead>
     <tr>
-      <th style="padding:10px 14px;border:1px solid #e2e8f0;text-align:left;background:#f8fafc;font-weight:600;">Laboratoire</th>
+      <th rowspan="2" style="${thStyle}text-align:left;">Laboratoire</th>
       ${testHeaders}
-      <th style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;background:#f8fafc;font-weight:600;">Total</th>
+      <th rowspan="2" style="${thStyle}text-align:right;">Total</th>
     </tr>
+    <tr>${subHeaders}</tr>
   </thead>
   <tbody>${rows}</tbody>
 </table>`;
@@ -414,11 +504,21 @@ function buildComparisonEmailHtml(
   clientName?: string
 ): string {
   const greeting = clientName ? `Bonjour ${clientName},` : "Bonjour,";
+  const thStyle = "padding:10px 14px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;";
+  const tdStyle = "padding:10px 14px;border:1px solid #e2e8f0;";
 
   const testHeaders = result.testNames
     .map(
       (name) =>
-        `<th style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;background:#f8fafc;font-weight:600;">${name}</th>`
+        `<th colspan="2" style="${thStyle}text-align:center;">${name}</th>`
+    )
+    .join("");
+
+  const subHeaders = result.testNames
+    .map(
+      () =>
+        `<th style="${thStyle}text-align:right;font-size:12px;">Prix</th>` +
+        `<th style="${thStyle}text-align:center;font-size:12px;">Délai</th>`
     )
     .join("");
 
@@ -426,17 +526,18 @@ function buildComparisonEmailHtml(
   const labsToShow = cheapestLab ? [cheapestLab] : result.laboratories.slice(0, 1);
   const testRows = labsToShow
     .map((lab) => {
-      const priceCells = lab.tests
+      const cells = lab.tests
         .map(
           (t) =>
-            `<td style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;">${t.formattedPrice}</td>`
+            `<td style="${tdStyle}text-align:right;">${t.formattedPrice}</td>` +
+            `<td style="${tdStyle}text-align:center;">${t.turnaroundTime ?? "—"}</td>`
         )
         .join("");
 
       return `<tr style="background-color:#f0fdf4;">
-        <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:500;">${lab.name}</td>
-        ${priceCells}
-        <td style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;font-weight:700;">${lab.formattedTotalPrice}</td>
+        <td style="${tdStyle}font-weight:500;">${lab.name}</td>
+        ${cells}
+        <td style="${tdStyle}text-align:right;font-weight:700;">${lab.formattedTotalPrice}</td>
       </tr>`;
     })
     .join("");
@@ -445,7 +546,7 @@ function buildComparisonEmailHtml(
 <html lang="fr">
 <head><meta charset="utf-8" /></head>
 <body style="margin:0;padding:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f1f5f9;">
-  <div style="max-width:640px;margin:24px auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+  <div style="max-width:720px;margin:24px auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
     <div style="background:#0f172a;padding:24px 32px;">
       <h1 style="margin:0;color:#ffffff;font-size:20px;">Lab Price Comparator</h1>
       <p style="margin:4px 0 0;color:#94a3b8;font-size:14px;">Comparaison automatique des prix</p>
@@ -455,15 +556,16 @@ function buildComparisonEmailHtml(
       <p style="margin:0 0 24px;color:#334155;font-size:15px;">
         Voici le meilleur prix trouvé pour
         <strong>${result.testNames.join("</strong>, <strong>")}</strong>
-        auprès du laboratoire le moins cher.
+        auprès du laboratoire le moins cher. Le document PDF détaillé est joint à cet email.
       </p>
       <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
         <thead>
           <tr>
-            <th style="padding:10px 14px;border:1px solid #e2e8f0;text-align:left;background:#f8fafc;font-weight:600;">Laboratoire</th>
+            <th rowspan="2" style="${thStyle}text-align:left;">Laboratoire</th>
             ${testHeaders}
-            <th style="padding:10px 14px;border:1px solid #e2e8f0;text-align:right;background:#f8fafc;font-weight:600;">Total</th>
+            <th rowspan="2" style="${thStyle}text-align:right;">Total</th>
           </tr>
+          <tr>${subHeaders}</tr>
         </thead>
         <tbody>${testRows}</tbody>
       </table>

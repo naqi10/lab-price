@@ -49,7 +49,7 @@ export default function DashboardPage() {
       ) : error ? (
         <p className="text-red-500 mt-6" role="alert">{error}</p>
       ) : data ? (
-        <div className="space-y-6">
+        <div className="mt-6 space-y-6">
           {/* Quick-action buttons */}
           <QuickActions />
 
