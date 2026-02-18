@@ -49,7 +49,18 @@ export interface RenderTemplateOptions {
 const PLACEHOLDER_RE = /\{\{(\w+)\}\}/g;
 
 /**
- * Render an email template by replacing `{{variable}}` placeholders.
+ * Matches conditional blocks: {{#varName}}...content...{{/varName}}
+ * Used to conditionally include template sections when a variable is truthy.
+ */
+const CONDITIONAL_BLOCK_RE = /\{\{#(\w+)\}\}([\s\S]*?)\{\{\/\1\}\}/g;
+
+/**
+ * Render an email template by replacing `{{variable}}` placeholders
+ * and processing `{{#variable}}...{{/variable}}` conditional blocks.
+ *
+ * Conditional blocks are included when the variable is truthy and
+ * removed when it is falsy/missing. Inner placeholders are substituted
+ * after the block decision.
  *
  * @param template  - HTML string containing `{{variableName}}` placeholders
  * @param variables - Key/value map of variables to substitute
@@ -73,10 +84,22 @@ export function renderTemplate(
 
   const rawSet = new Set(rawHtmlVariables);
 
-  return template.replace(PLACEHOLDER_RE, (match, varName: string) => {
+  // First pass: resolve conditional blocks {{#var}}...{{/var}}
+  let result = template.replace(
+    CONDITIONAL_BLOCK_RE,
+    (_match, varName: string, blockContent: string) => {
+      const value = variables[varName];
+      if (value === undefined || value === null || value === "") {
+        return "";
+      }
+      return blockContent;
+    },
+  );
+
+  // Second pass: replace simple {{variable}} placeholders
+  result = result.replace(PLACEHOLDER_RE, (match, varName: string) => {
     const value = variables[varName];
 
-    // Variable not supplied
     if (value === undefined || value === null) {
       switch (missingStrategy) {
         case "remove":
@@ -94,13 +117,14 @@ export function renderTemplate(
 
     const strValue = String(value);
 
-    // Trusted HTML variables are injected without escaping
     if (rawSet.has(varName)) {
       return strValue;
     }
 
     return escapeHtml(strValue);
   });
+
+  return result;
 }
 
 // ---------------------------------------------------------------------------
@@ -116,7 +140,17 @@ export function renderSubject(
   variables: TemplateVariables,
   missingStrategy: RenderTemplateOptions["missingStrategy"] = "keep",
 ): string {
-  return subject.replace(PLACEHOLDER_RE, (match, varName: string) => {
+  // Resolve conditional blocks first
+  let result = subject.replace(
+    CONDITIONAL_BLOCK_RE,
+    (_match, varName: string, blockContent: string) => {
+      const value = variables[varName];
+      if (value === undefined || value === null || value === "") return "";
+      return blockContent;
+    },
+  );
+
+  result = result.replace(PLACEHOLDER_RE, (match, varName: string) => {
     const value = variables[varName];
 
     if (value === undefined || value === null) {
@@ -136,6 +170,8 @@ export function renderSubject(
 
     return String(value);
   });
+
+  return result;
 }
 
 // ---------------------------------------------------------------------------
