@@ -47,6 +47,8 @@ export async function GET(
       { header: "Prix", key: "price", width: 12 },
       { header: "Unité", key: "unit", width: 12 },
       { header: "Catégorie", key: "category", width: 20 },
+      { header: "Délai", key: "turnaroundTime", width: 15 },
+      { header: "Tube / Échantillon", key: "tubeType", width: 25 },
       { header: "Statut", key: "status", width: 12 },
     ];
 
@@ -65,6 +67,8 @@ export async function GET(
         price: test.price,
         unit: test.unit || "",
         category: test.category || "",
+        turnaroundTime: test.turnaroundTime || "",
+        tubeType: test.tubeType || "",
         status: test.isActive ? "Actif" : "Inactif",
       });
     }

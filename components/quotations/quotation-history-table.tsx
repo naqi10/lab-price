@@ -86,8 +86,11 @@ export default function QuotationHistoryTable({
               <TableRow key={q.id}>
                 <TableCell className="font-medium">{q.quotationNumber}</TableCell>
                 <TableCell>
-                  <p className="text-sm">{q.clientName}</p>
-                  <p className="text-xs text-muted-foreground">{q.clientEmail}</p>
+                  <p className="text-sm">{q.customer?.name || q.clientName || "—"}</p>
+                  <p className="text-xs text-muted-foreground">{q.customer?.email || q.clientEmail || ""}</p>
+                  {q.customer?.company && (
+                    <p className="text-xs text-muted-foreground">{q.customer.company}</p>
+                  )}
                 </TableCell>
                 <TableCell>{q.laboratory?.name || "-"}</TableCell>
                 <TableCell>

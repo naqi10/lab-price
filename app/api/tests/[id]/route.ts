@@ -25,10 +25,14 @@ export async function PATCH(
     const body = await _req.json();
     const price = body.price != null ? Number(body.price) : undefined;
     const isActive = body.isActive;
+    const turnaroundTime = body.turnaroundTime;
+    const tubeType = body.tubeType;
 
-    const data: { price?: number; isActive?: boolean } = {};
+    const data: { price?: number; isActive?: boolean; turnaroundTime?: string | null; tubeType?: string | null } = {};
     if (price !== undefined) data.price = price;
     if (typeof isActive === "boolean") data.isActive = isActive;
+    if (turnaroundTime !== undefined) data.turnaroundTime = turnaroundTime;
+    if (tubeType !== undefined) data.tubeType = tubeType;
 
     if (Object.keys(data).length === 0) {
       return NextResponse.json(

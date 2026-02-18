@@ -20,6 +20,8 @@ export async function uploadPriceList(data: {
     price: number;
     unit?: string | null;
     description?: string | null;
+    turnaroundTime?: string | null;
+    tubeType?: string | null;
   }>;
 }) {
   return prisma.$transaction(async (tx) => {
@@ -47,6 +49,8 @@ export async function uploadPriceList(data: {
               price: test.price,
               unit: test.unit ?? null,
               description: test.description ?? null,
+              turnaroundTime: test.turnaroundTime ?? null,
+              tubeType: test.tubeType ?? null,
             })),
           },
         },
@@ -78,6 +82,7 @@ export async function getPriceLists(options?: {
     orderBy: { createdAt: "desc" },
     include: {
       laboratory: { select: { id: true, name: true, code: true } },
+      uploadedBy: { select: { id: true, name: true } },
       _count: { select: { tests: true } },
     },
   });

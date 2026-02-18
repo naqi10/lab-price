@@ -313,6 +313,8 @@ export async function sendEmail(params: SendEmailParams): Promise<{ messageId: s
   const toEmail = params.to.map((r) => r.email).join(", ");
   const label = `[${config.mode.toUpperCase()}→${toEmail}]`;
 
+  console.log(`[Email] Config source: ${config.configSource}, mode: ${config.mode}, from: ${config.fromEmail}, to: ${toEmail}`);
+
   try {
     const result = await sendWithRetry(
       () =>
@@ -441,5 +443,7 @@ async function sendViaBrevoApi(
   }
 
   const result = await response.json();
-  return { messageId: result.messageId || result.messageIds?.[0] || "sent" };
+  const messageId = result.messageId || result.messageIds?.[0] || "sent";
+  console.log(`[Brevo API] Success! Status: ${response.status}, messageId: ${messageId}, full response:`, JSON.stringify(result));
+  return { messageId };
 }

@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/utils";
-import { ArrowLeft, Pencil, Save, X, Mail, Loader2 } from "lucide-react";
+import { formatDate, formatCurrency } from "@/lib/utils";
+import { ArrowLeft, Pencil, Save, X, Mail, FileText, Loader2 } from "lucide-react";
 
 interface Customer {
   id: string;
@@ -19,7 +19,7 @@ interface Customer {
   phone: string | null;
   company: string | null;
   createdAt: string;
-  _count: { emailLogs: number };
+  _count: { emailLogs: number; quotations: number };
 }
 
 interface EmailHistoryItem {
@@ -32,10 +32,29 @@ interface EmailHistoryItem {
   createdAt: string;
 }
 
+interface QuotationHistoryItem {
+  id: string;
+  quotationNumber: string;
+  title: string;
+  status: string;
+  totalPrice: number;
+  createdAt: string;
+  laboratory: { id: string; name: string; code: string };
+  _count: { items: number };
+}
+
 const statusMap: Record<string, { label: string; variant: "default" | "destructive" | "secondary" }> = {
   SENT: { label: "Envoyé", variant: "default" },
   FAILED: { label: "Échoué", variant: "destructive" },
   PENDING: { label: "En attente", variant: "secondary" },
+};
+
+const quotationStatusMap: Record<string, { label: string; variant: "default" | "destructive" | "secondary" | "outline" }> = {
+  DRAFT: { label: "Brouillon", variant: "secondary" },
+  SENT: { label: "Envoyé", variant: "default" },
+  ACCEPTED: { label: "Accepté", variant: "default" },
+  REJECTED: { label: "Refusé", variant: "destructive" },
+  CANCELLED: { label: "Annulé", variant: "outline" },
 };
 
 const sourceMap: Record<string, string> = {
@@ -50,6 +69,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
 
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [history, setHistory] = useState<EmailHistoryItem[]>([]);
+  const [quotations, setQuotations] = useState<QuotationHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,8 +82,9 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
     Promise.all([
       fetch(`/api/customers/${id}`).then((r) => r.json()),
       fetch(`/api/customers/${id}/history`).then((r) => r.json()),
+      fetch(`/api/customers/${id}/quotations`).then((r) => r.json()),
     ])
-      .then(([customerRes, historyRes]) => {
+      .then(([customerRes, historyRes, quotationsRes]) => {
         if (customerRes.success) {
           setCustomer(customerRes.data);
           setForm({
@@ -76,6 +97,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           setError(customerRes.message);
         }
         if (historyRes.success) setHistory(historyRes.data);
+        if (quotationsRes.success) setQuotations(quotationsRes.data);
       })
       .catch(() => setError("Erreur de connexion"))
       .finally(() => setLoading(false));
@@ -217,10 +239,14 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="text-center">
+                <p className="text-2xl font-bold">{quotations.length}</p>
+                <p className="text-xs text-muted-foreground">Devis</p>
+              </div>
               <div className="text-center">
                 <p className="text-2xl font-bold">{history.length}</p>
-                <p className="text-xs text-muted-foreground">Total emails</p>
+                <p className="text-xs text-muted-foreground">Emails</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-green-600">
@@ -239,7 +265,62 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
         </Card>
       </div>
 
-      {/* Quote history */}
+      {/* Quotation history */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Historique des devis
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {quotations.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">
+              Aucun devis pour ce client.
+            </p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>N° Devis</TableHead>
+                  <TableHead>Titre</TableHead>
+                  <TableHead>Laboratoire</TableHead>
+                  <TableHead>Tests</TableHead>
+                  <TableHead>Montant</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {quotations.map((q) => {
+                  const st = quotationStatusMap[q.status] || quotationStatusMap.DRAFT;
+                  return (
+                    <TableRow
+                      key={q.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => router.push(`/quotations/${q.id}`)}
+                    >
+                      <TableCell className="font-mono text-xs">{q.quotationNumber}</TableCell>
+                      <TableCell className="max-w-[200px] truncate">{q.title}</TableCell>
+                      <TableCell>{q.laboratory.name}</TableCell>
+                      <TableCell>{q._count.items}</TableCell>
+                      <TableCell className="font-medium">{formatCurrency(q.totalPrice)}</TableCell>
+                      <TableCell>
+                        <Badge variant={st.variant as "default" | "destructive" | "secondary" | "outline"}>
+                          {st.label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{formatDate(q.createdAt)}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Email history */}
       <Card className="mt-6">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">

@@ -5,12 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import CustomerCombobox from "@/components/customers/customer-combobox";
+
+interface CustomerOption {
+  id: string;
+  name: string;
+  email: string;
+  company?: string | null;
+}
 
 interface QuotationFormProps {
   onSubmit: (data: {
     title: string;
     laboratoryId: string;
     testMappingIds: string[];
+    customerId?: string;
     clientName?: string;
     clientEmail?: string;
     clientReference?: string;
@@ -30,6 +39,7 @@ export default function QuotationForm({
   testMappingIds: initialTestIds,
 }: QuotationFormProps) {
   const [title, setTitle] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerOption | null>(null);
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [clientReference, setClientReference] = useState("");
@@ -55,6 +65,17 @@ export default function QuotationForm({
     });
   }, [initialLabId]);
 
+  const handleCustomerSelect = (customer: CustomerOption | null) => {
+    setSelectedCustomer(customer);
+    if (customer) {
+      setClientName(customer.name);
+      setClientEmail(customer.email);
+    } else {
+      setClientName("");
+      setClientEmail("");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -67,6 +88,7 @@ export default function QuotationForm({
       title: title.trim(),
       laboratoryId,
       testMappingIds,
+      customerId: selectedCustomer?.id || undefined,
       clientName: clientName.trim() || undefined,
       clientEmail: clientEmail.trim() || undefined,
       clientReference: clientReference.trim() || undefined,
@@ -149,6 +171,16 @@ export default function QuotationForm({
         )}
       </div>
 
+      {/* Customer selection with combobox */}
+      <div className="space-y-2">
+        <Label>Client</Label>
+        <CustomerCombobox
+          onSelect={handleCustomerSelect}
+          selectedCustomer={selectedCustomer}
+        />
+      </div>
+
+      {/* Client name - auto-filled from customer or manual entry */}
       <div className="space-y-2">
         <Label htmlFor="clientName">Nom du client</Label>
         <Input
@@ -157,9 +189,14 @@ export default function QuotationForm({
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
           placeholder="Nom du client"
+          disabled={!!selectedCustomer}
         />
+        {selectedCustomer && (
+          <p className="text-xs text-muted-foreground">Rempli automatiquement depuis le client sélectionné</p>
+        )}
       </div>
 
+      {/* Client email - auto-filled from customer or manual entry */}
       <div className="space-y-2">
         <Label htmlFor="clientEmail">Email du client</Label>
         <Input
@@ -168,7 +205,11 @@ export default function QuotationForm({
           value={clientEmail}
           onChange={(e) => setClientEmail(e.target.value)}
           placeholder="email@exemple.com"
+          disabled={!!selectedCustomer}
         />
+        {selectedCustomer && (
+          <p className="text-xs text-muted-foreground">Rempli automatiquement depuis le client sélectionné</p>
+        )}
       </div>
 
       <div className="space-y-2">

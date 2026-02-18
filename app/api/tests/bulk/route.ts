@@ -24,6 +24,8 @@ export async function PATCH(req: Request) {
       id: string;
       price?: number;
       isActive?: boolean;
+      turnaroundTime?: string | null;
+      tubeType?: string | null;
     }>;
 
     if (!Array.isArray(updates) || updates.length === 0) {
@@ -35,9 +37,11 @@ export async function PATCH(req: Request) {
 
     const updated = await prisma.$transaction(
       updates.map((u) => {
-        const data: { price?: number; isActive?: boolean } = {};
+        const data: { price?: number; isActive?: boolean; turnaroundTime?: string | null; tubeType?: string | null } = {};
         if (u.price != null) data.price = Number(u.price);
         if (typeof u.isActive === "boolean") data.isActive = u.isActive;
+        if (u.turnaroundTime !== undefined) data.turnaroundTime = u.turnaroundTime;
+        if (u.tubeType !== undefined) data.tubeType = u.tubeType;
         return prisma.test.update({
           where: { id: u.id },
           data,

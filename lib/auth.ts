@@ -8,16 +8,60 @@ import prisma from "@/lib/db";
  *
  * - Uses CredentialsProvider for email/password login
  * - JWT strategy with 30-minute session expiry
+ * - Failed login lockout: 5 attempts → 15-minute lock
  * - Custom callbacks to attach user role and id to the JWT / session
- * - Dynamic initialization to ensure environment variables are loaded
  */
 
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MIN = 15;
+
 /**
- * Creates the NextAuth configuration object.
- * This function is called lazily to ensure environment variables are loaded.
+ * Check if an email is currently locked out due to too many failed attempts.
+ * Returns the number of minutes remaining if locked, or 0 if not locked.
  */
+async function checkLockout(email: string): Promise<number> {
+  const windowStart = new Date(Date.now() - LOCKOUT_DURATION_MIN * 60 * 1000);
+
+  const recentAttempts = await prisma.loginAttempt.findMany({
+    where: {
+      email,
+      createdAt: { gte: windowStart },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  // Count consecutive failures (reset on any success)
+  let failureCount = 0;
+  for (const attempt of recentAttempts) {
+    if (attempt.success) break;
+    failureCount++;
+  }
+
+  if (failureCount >= MAX_LOGIN_ATTEMPTS) {
+    const lastFailure = recentAttempts[0]?.createdAt;
+    if (lastFailure) {
+      const unlockAt = new Date(lastFailure.getTime() + LOCKOUT_DURATION_MIN * 60 * 1000);
+      const remaining = Math.ceil((unlockAt.getTime() - Date.now()) / 60000);
+      if (remaining > 0) return remaining;
+    }
+  }
+
+  return 0;
+}
+
+/** Record a login attempt (success or failure). */
+async function recordAttempt(email: string, success: boolean) {
+  try {
+    await prisma.loginAttempt.create({
+      data: { email, success },
+    });
+  } catch {
+    // Never let logging break authentication
+    console.error("[Auth] Failed to record login attempt");
+  }
+}
+
 function createAuthConfig(): NextAuthConfig {
-  // Validate required environment variables
   if (!process.env.NEXTAUTH_SECRET) {
     throw new Error(
       "NEXTAUTH_SECRET environment variable is required. " +
@@ -39,15 +83,23 @@ function createAuthConfig(): NextAuthConfig {
             throw new Error("Email et mot de passe requis");
           }
 
-          const email = credentials.email as string;
+          const email = (credentials.email as string).toLowerCase().trim();
           const password = credentials.password as string;
 
-          // Look up the user by email
+          // Check lockout before attempting authentication
+          const lockoutMinutes = await checkLockout(email);
+          if (lockoutMinutes > 0) {
+            throw new Error(
+              `Compte verrouillé suite à trop de tentatives. Réessayez dans ${lockoutMinutes} minute${lockoutMinutes > 1 ? "s" : ""}.`
+            );
+          }
+
           const user = await prisma.user.findUnique({
             where: { email },
           });
 
           if (!user) {
+            await recordAttempt(email, false);
             throw new Error("Identifiants invalides");
           }
 
@@ -55,14 +107,16 @@ function createAuthConfig(): NextAuthConfig {
             throw new Error("Votre compte a été désactivé. Contactez un administrateur.");
           }
 
-          // Compare the supplied password against the stored hash
           const isPasswordValid = await bcryptjs.compare(password, user.password);
 
           if (!isPasswordValid) {
+            await recordAttempt(email, false);
             throw new Error("Identifiants invalides");
           }
 
-          // Return the user object (will be available in the jwt callback)
+          // Successful login — record and return user
+          await recordAttempt(email, true);
+
           return {
             id: user.id,
             email: user.email,
@@ -76,7 +130,7 @@ function createAuthConfig(): NextAuthConfig {
 
     session: {
       strategy: "jwt",
-      maxAge: 30 * 60, // 30 minutes in seconds
+      maxAge: 30 * 60,
     },
 
     pages: {
@@ -85,11 +139,6 @@ function createAuthConfig(): NextAuthConfig {
     },
 
     callbacks: {
-      /**
-       * JWT callback – runs whenever a JWT is created or updated.
-       * We attach the user id and role to the token so they are
-       * available in the session callback.
-       */
       async jwt({ token, user }) {
         if (user) {
           token.id = user.id;
@@ -99,11 +148,6 @@ function createAuthConfig(): NextAuthConfig {
         return token;
       },
 
-      /**
-       * Session callback – runs whenever the session is checked.
-       * Copies the id and role from the JWT token into the session
-       * object that is exposed to the client.
-       */
       async session({ session, token }) {
         if (session.user) {
           session.user.id = token.id as string;
@@ -118,5 +162,4 @@ function createAuthConfig(): NextAuthConfig {
   };
 }
 
-// Initialize NextAuth with the dynamically created configuration
 export const { handlers, auth, signIn, signOut } = NextAuth(createAuthConfig());

@@ -18,6 +18,7 @@ export interface QuotationItem {
 }
 
 export interface QuotationFormData {
+  customerId?: string;
   clientName: string;
   clientEmail: string;
   clientCompany: string;

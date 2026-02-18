@@ -21,6 +21,11 @@ export const quotationSchema = z.object({
   testMappingIds: z
     .array(z.string().min(1))
     .min(1, "Au moins un test doit être sélectionné"),
+  /** Optional customer ID (linked to Customer entity) */
+  customerId: z
+    .string()
+    .optional()
+    .nullable(),
   /** Optional client name */
   clientName: z
     .string()

@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { parseExcelFile, parsePdfFile } from "@/lib/services/file-parser.service";
 import logger from "@/lib/logger";
 
-const HEADERS = ["Nom", "Code", "Prix", "Catégorie", "Unité"] as const;
+const HEADERS = ["Nom", "Code", "Prix", "Catégorie", "Unité", "Délai", "Tube / Échantillon"] as const;
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -34,6 +34,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       String(t.price),
       t.category ?? "",
       t.unit ?? "",
+      t.turnaroundTime ?? "",
+      t.tubeType ?? "",
     ]);
 
     return NextResponse.json({

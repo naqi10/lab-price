@@ -22,6 +22,8 @@ type TestRow = {
   code: string | null;
   price: number;
   category: string | null;
+  turnaroundTime: string | null;
+  tubeType: string | null;
   isActive: boolean;
 };
 
@@ -143,6 +145,7 @@ export default function PriceListTable({
           <TableHead>Type</TableHead>
           <TableHead>Tests</TableHead>
           <TableHead>Date</TableHead>
+          <TableHead>Importé par</TableHead>
           <TableHead>Statut</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
@@ -150,7 +153,7 @@ export default function PriceListTable({
       <TableBody>
         {priceLists.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+            <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
               Aucune liste de prix
             </TableCell>
           </TableRow>
@@ -179,6 +182,9 @@ export default function PriceListTable({
                 </TableCell>
                 <TableCell>{pl._count?.tests ?? 0}</TableCell>
                 <TableCell>{formatDate(new Date(pl.createdAt))}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {pl.uploadedBy?.name ?? "—"}
+                </TableCell>
                 <TableCell>
                   <Badge variant={pl.isActive ? "success" : "secondary"}>
                     {pl.isActive ? "Actif" : "Inactif"}
@@ -196,7 +202,7 @@ export default function PriceListTable({
               </TableRow>
               {expandedId === pl.id && (
                 <TableRow key={`${pl.id}-expanded`}>
-                  <TableCell colSpan={7} className="bg-muted/30 p-4">
+                  <TableCell colSpan={8} className="bg-muted/30 p-4">
                     {loadingListId === pl.id ? (
                       <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground" role="status" aria-live="polite">
                         <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
@@ -316,13 +322,15 @@ function ExpandedTestsSection({
             <TableHead>Code</TableHead>
             <TableHead>Prix</TableHead>
             <TableHead>Catégorie</TableHead>
+            <TableHead>Délai</TableHead>
+            <TableHead>Tube / Échantillon</TableHead>
             <TableHead className="text-center">Actif</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {tests.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-muted-foreground py-4">
+              <TableCell colSpan={7} className="text-center text-muted-foreground py-4">
                 Aucun test à afficher
               </TableCell>
             </TableRow>
@@ -372,6 +380,8 @@ function ExpandedTestsSection({
                     <span className="text-muted-foreground">—</span>
                   )}
                 </TableCell>
+                <TableCell className="text-sm text-muted-foreground">{t.turnaroundTime ?? "—"}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{t.tubeType ?? "—"}</TableCell>
                 <TableCell className="text-center">
                   <Button
                     variant="ghost"

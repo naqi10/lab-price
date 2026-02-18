@@ -131,6 +131,7 @@ export default function CustomersPage() {
                     <TableHead>Email</TableHead>
                     <TableHead>Téléphone</TableHead>
                     <TableHead>Entreprise</TableHead>
+                    <TableHead>Devis</TableHead>
                     <TableHead>Emails envoyés</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -147,6 +148,7 @@ export default function CustomersPage() {
                       <TableCell>{c.email}</TableCell>
                       <TableCell>{c.phone || "—"}</TableCell>
                       <TableCell>{c.company || "—"}</TableCell>
+                      <TableCell>{c._count?.quotations ?? 0}</TableCell>
                       <TableCell>{c._count?.emailLogs ?? 0}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">

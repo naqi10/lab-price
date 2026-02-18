@@ -10,6 +10,7 @@ export async function createQuotation(data: {
   title: string;
   laboratoryId: string;
   testMappingIds: string[];
+  customerId?: string | null;
   clientName?: string | null;
   clientEmail?: string | null;
   clientReference?: string | null;
@@ -18,7 +19,7 @@ export async function createQuotation(data: {
   validityDays?: number;
   createdById: string;
 }) {
-  const { title, laboratoryId, testMappingIds, clientName, clientEmail,
+  const { title, laboratoryId, testMappingIds, customerId, clientName, clientEmail,
     clientReference, notes, taxRate = 20, validityDays = 30, createdById } = data;
 
   const quotationNumber = generateQuotationNumber();
@@ -45,6 +46,7 @@ export async function createQuotation(data: {
     const quotation = await tx.quotation.create({
       data: {
         quotationNumber, title, laboratoryId,
+        customerId: customerId ?? null,
         clientName: clientName ?? null,
         clientEmail: clientEmail ?? null,
         clientReference: clientReference ?? null,
@@ -71,6 +73,7 @@ export async function createQuotation(data: {
       },
       include: {
         laboratory: { select: { id: true, name: true, code: true } },
+        customer: { select: { id: true, name: true, email: true, company: true } },
         items: { orderBy: { position: "asc" } },
         createdBy: { select: { id: true, name: true, email: true } },
       },
@@ -98,6 +101,9 @@ export async function getQuotations(options?: {
       { quotationNumber: { contains: search, mode: "insensitive" } },
       { title: { contains: search, mode: "insensitive" } },
       { clientReference: { contains: search, mode: "insensitive" } },
+      { clientName: { contains: search, mode: "insensitive" } },
+      { customer: { name: { contains: search, mode: "insensitive" } } },
+      { customer: { email: { contains: search, mode: "insensitive" } } },
     ];
   }
   if (dateFrom || dateTo) {
@@ -116,6 +122,7 @@ export async function getQuotations(options?: {
       skip: (page - 1) * pageSize, take: pageSize,
       include: {
         laboratory: { select: { id: true, name: true, code: true } },
+        customer: { select: { id: true, name: true, email: true, company: true } },
         _count: { select: { items: true } },
         createdBy: { select: { id: true, name: true } },
         emails: {
@@ -136,6 +143,7 @@ export async function getQuotationById(id: string) {
     where: { id },
     include: {
       laboratory: true,
+      customer: { select: { id: true, name: true, email: true, company: true } },
       items: { orderBy: { position: "asc" } },
       createdBy: { select: { id: true, name: true, email: true } },
     },

@@ -10,6 +10,8 @@ export interface ParsedTest {
   price: number;
   unit: string | null;
   description: string | null;
+  turnaroundTime: string | null;
+  tubeType: string | null;
 }
 
 /**
@@ -69,6 +71,12 @@ export async function parseExcelFile(buffer: Buffer): Promise<ParsedTest[]> {
       unit: columnMap.unit ? getCellString(row, columnMap.unit) : null,
       description: columnMap.description
         ? getCellString(row, columnMap.description)
+        : null,
+      turnaroundTime: columnMap.turnaroundTime
+        ? getCellString(row, columnMap.turnaroundTime)
+        : null,
+      tubeType: columnMap.tubeType
+        ? getCellString(row, columnMap.tubeType)
         : null,
     });
   });
@@ -154,6 +162,8 @@ export function extractTestsFromData(text: string): ParsedTest[] {
         price: parsePrice(match[3]),
         unit: null,
         description: null,
+        turnaroundTime: null,
+        tubeType: null,
       });
       continue;
     }
@@ -168,6 +178,8 @@ export function extractTestsFromData(text: string): ParsedTest[] {
         price: parsePrice(match[2]),
         unit: null,
         description: null,
+        turnaroundTime: null,
+        tubeType: null,
       });
     }
   }
@@ -186,6 +198,8 @@ interface ColumnMap {
   price: number | null;
   unit: number | null;
   description: number | null;
+  turnaroundTime: number | null;
+  tubeType: number | null;
 }
 
 /** Header keyword sets for column detection (case-insensitive) */
@@ -196,6 +210,8 @@ const COLUMN_KEYWORDS: Record<keyof ColumnMap, string[]> = {
   price: ["prix", "price", "tarif", "montant", "coût", "cout"],
   unit: ["unité", "unite", "unit"],
   description: ["description", "détail", "detail", "commentaire", "note"],
+  turnaroundTime: ["délai", "delai", "turnaround", "tat", "durée", "duree", "temps", "délais", "delais"],
+  tubeType: ["tube", "échantillon", "echantillon", "sample", "prélèvement", "prelevement", "type d'échantillon", "type d'echantillon", "type échantillon", "type echantillon"],
 };
 
 function detectColumns(headerRow: ExcelJS.Row): ColumnMap {
@@ -206,6 +222,8 @@ function detectColumns(headerRow: ExcelJS.Row): ColumnMap {
     price: null,
     unit: null,
     description: null,
+    turnaroundTime: null,
+    tubeType: null,
   };
 
   headerRow.eachCell((cell, colNumber) => {

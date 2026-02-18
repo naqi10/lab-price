@@ -18,6 +18,8 @@ export interface QuotationPreviewData {
   status: string;
   createdAt: string | Date;
   validUntil: string | Date;
+  customerId?: string | null;
+  customer?: { id: string; name: string; email: string; company?: string | null } | null;
   clientName?: string | null;
   clientEmail?: string | null;
   clientReference?: string | null;
@@ -127,17 +129,27 @@ export default function QuotationPreview({
         </div>
         <div>
           <h2 className="font-semibold text-[#1e3a5f] mb-2 text-base">Client</h2>
-          {quotation.clientName ? (
-            <p className="text-sm">{quotation.clientName}</p>
-          ) : null}
-          {quotation.clientEmail ? (
-            <p className="text-sm text-muted-foreground">
-              {quotation.clientEmail}
-            </p>
-          ) : null}
-          {!quotation.clientName && !quotation.clientEmail && (
-            <p className="text-sm text-muted-foreground">—</p>
-          )}
+          {(() => {
+            const name = quotation.customer?.name || quotation.clientName;
+            const email = quotation.customer?.email || quotation.clientEmail;
+            const company = quotation.customer?.company;
+            return (
+              <>
+                {name ? (
+                  <p className="text-sm">{name}</p>
+                ) : null}
+                {email ? (
+                  <p className="text-sm text-muted-foreground">{email}</p>
+                ) : null}
+                {company ? (
+                  <p className="text-sm text-muted-foreground">{company}</p>
+                ) : null}
+                {!name && !email && (
+                  <p className="text-sm text-muted-foreground">—</p>
+                )}
+              </>
+            );
+          })()}
           {quotation.clientReference && (
             <p className="text-sm text-muted-foreground mt-1">
               Réf. client : {quotation.clientReference}

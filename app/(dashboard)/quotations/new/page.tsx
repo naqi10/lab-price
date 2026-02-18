@@ -25,6 +25,7 @@ function NewQuotationContent() {
     title: string;
     laboratoryId: string;
     testMappingIds: string[];
+    customerId?: string;
     clientName?: string;
     clientEmail?: string;
     clientReference?: string;

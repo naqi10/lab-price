@@ -80,7 +80,8 @@ model Customer {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  emailLogs EmailLog[]
+  emailLogs  EmailLog[]
+  quotations Quotation[]
 
   @@map("customers")
 }
@@ -126,15 +127,17 @@ model PriceList {
 }
 
 model Test {
-  id          String  @id @default(uuid())
-  priceListId String  @map("price_list_id")
-  name        String
-  code        String?
-  price       Float
-  unit        String?
-  category    String?
-  description String?
-  isActive    Boolean @default(true) @map("is_active")
+  id             String  @id @default(uuid())
+  priceListId    String  @map("price_list_id")
+  name           String
+  code           String?
+  price          Float
+  unit           String?
+  category       String?
+  description    String?
+  turnaroundTime String? @map("turnaround_time")
+  tubeType       String? @map("tube_type")
+  isActive       Boolean @default(true) @map("is_active")
 
   priceList PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
 
@@ -180,6 +183,7 @@ model Quotation {
   title            String
   laboratoryId     String          @map("laboratory_id")
   createdById      String          @map("created_by_id")
+  customerId       String?         @map("customer_id")
   clientName       String?         @map("client_name")
   clientEmail      String?         @map("client_email")
   clientReference  String?         @map("client_reference")
@@ -196,6 +200,7 @@ model Quotation {
 
   laboratory Laboratory      @relation(fields: [laboratoryId], references: [id])
   createdBy  User             @relation(fields: [createdById], references: [id])
+  customer   Customer?        @relation(fields: [customerId], references: [id])
   items      QuotationItem[]
   emails     QuotationEmail[]
 
@@ -295,6 +300,17 @@ model EmailSettings {
   updatedAt      DateTime        @updatedAt @map("updated_at")
 
   @@map("email_settings")
+}
+
+model LoginAttempt {
+  id        String   @id @default(uuid())
+  email     String
+  success   Boolean  @default(false)
+  ipAddress String?  @map("ip_address")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email, createdAt])
+  @@map("login_attempts")
 }
 
 model EmailTemplate {
