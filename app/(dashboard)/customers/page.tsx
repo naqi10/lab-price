@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import { Button } from "@/components/ui/button";
@@ -19,14 +19,21 @@ export default function CustomersPage() {
    const [search, setSearch] = useState("");
    const debouncedSearch = useDebounce(search, 300);
    const { customers, isLoading, error, refetch } = useCustomers(debouncedSearch);
+   const [displayedCustomers, setDisplayedCustomers] = useState(customers);
    useDashboardTitle("Clients");
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", company: "" });
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+   const [dialogOpen, setDialogOpen] = useState(false);
+   const [editingId, setEditingId] = useState<string | null>(null);
+   const [form, setForm] = useState({ name: "", email: "", phone: "", company: "" });
+   const [saving, setSaving] = useState(false);
+   const [formError, setFormError] = useState<string | null>(null);
+   const [deleteId, setDeleteId] = useState<string | null>(null);
+   const [deleting, setDeleting] = useState(false);
+
+   // Sync displayed customers with fetched customers when they change
+   useEffect(() => {
+     setDisplayedCustomers(customers);
+   }, [customers]);
 
   const openCreate = () => {
     setEditingId(null);
@@ -47,49 +54,99 @@ export default function CustomersPage() {
     setDialogOpen(true);
   };
 
-  const handleSave = async () => {
-    if (!form.name || !form.email) {
-      setFormError("Le nom et l'email sont requis");
-      return;
-    }
-    setSaving(true);
-    setFormError(null);
-    try {
-      const url = editingId ? `/api/customers/${editingId}` : "/api/customers";
-      const method = editingId ? "PUT" : "POST";
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          phone: form.phone || null,
-          company: form.company || null,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setDialogOpen(false);
-        refetch();
-      } else {
-        setFormError(data.message);
-      }
-    } catch {
-      setFormError("Erreur de connexion");
-    } finally {
-      setSaving(false);
-    }
-  };
+   const handleSave = async () => {
+     if (!form.name || !form.email) {
+       setFormError("Le nom et l'email sont requis");
+       return;
+     }
+     setSaving(true);
+     setFormError(null);
+     try {
+       const url = editingId ? `/api/customers/${editingId}` : "/api/customers";
+       const method = editingId ? "PUT" : "POST";
+       
+       // Optimistic update
+       const newCustomer = {
+         id: editingId || `temp-${Date.now()}`,
+         name: form.name,
+         email: form.email,
+         phone: form.phone || null,
+         company: form.company || null,
+         _count: { estimates: 0, emailLogs: 0 },
+       };
 
-  const handleDelete = async () => {
-    if (!deleteId) return;
-    const res = await fetch(`/api/customers/${deleteId}`, { method: "DELETE" });
-    const data = await res.json();
-    if (data.success) {
-      setDeleteId(null);
-      refetch();
-    }
-  };
+       if (editingId) {
+         // Update existing customer optimistically
+         setDisplayedCustomers((prev) =>
+           prev.map((c) => (c.id === editingId ? newCustomer : c))
+         );
+       } else {
+         // Add new customer optimistically
+         setDisplayedCustomers((prev) => [newCustomer, ...prev]);
+       }
+
+       const res = await fetch(url, {
+         method,
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({
+           name: form.name,
+           email: form.email,
+           phone: form.phone || null,
+           company: form.company || null,
+         }),
+       });
+       const data = await res.json();
+       if (data.success) {
+         setDialogOpen(false);
+         refetch();
+       } else {
+         setFormError(data.message);
+         // Revert optimistic update on error
+         refetch();
+       }
+     } catch (err) {
+       setFormError("Erreur de connexion");
+       // Revert optimistic update on error
+       refetch();
+     } finally {
+       setSaving(false);
+     }
+   };
+
+   const handleDelete = async () => {
+     if (!deleteId) return;
+     
+     // Optimistic update: remove from display immediately
+     const deletedCustomer = displayedCustomers.find((c) => c.id === deleteId);
+     setDisplayedCustomers((prev) => prev.filter((c) => c.id !== deleteId));
+     
+     setDeleting(true);
+     try {
+       const res = await fetch(`/api/customers/${deleteId}`, { method: "DELETE" });
+       const data = await res.json();
+       if (data.success) {
+         setDeleteId(null);
+         refetch();
+       } else {
+         // Revert optimistic update on error
+         if (deletedCustomer) {
+           setDisplayedCustomers((prev) => [...prev, deletedCustomer]);
+         }
+       }
+     } catch (error) {
+       console.error("Error deleting customer:", error);
+       // Revert optimistic update on error
+       if (deletedCustomer) {
+         setDisplayedCustomers((prev) => [...prev, deletedCustomer]);
+       }
+     } finally {
+       setDeleting(false);
+     }
+   };
+
+   const onDeleteClick = (id: string) => {
+     setDeleteId(id);
+   };
 
     return (
       <>
@@ -121,18 +178,18 @@ export default function CustomersPage() {
 
         {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
 
-        <div className="mt-6">
-          {isLoading ? (
-            <p className="text-center text-muted-foreground py-8">Chargement...</p>
-          ) : (
-            <CustomersTable
-              customers={customers}
-              onEdit={openEdit}
-              onDelete={handleDelete}
-              onNew={openCreate}
-            />
-          )}
-        </div>
+         <div className="mt-6">
+           {isLoading ? (
+             <p className="text-center text-muted-foreground py-8">Chargement...</p>
+           ) : (
+             <CustomersTable
+               customers={displayedCustomers}
+               onEdit={openEdit}
+               onDelete={onDeleteClick}
+               onNew={openCreate}
+             />
+           )}
+         </div>
 
       <Dialog open={dialogOpen} onOpenChange={(o) => !o && setDialogOpen(false)}>
         <DialogContent>
