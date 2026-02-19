@@ -194,9 +194,11 @@ model EmailLog {
    source     String      @default("system")
    error      String?
    customerId String?     @map("customer_id")
+   estimateId String?     @map("estimate_id")
    createdAt  DateTime    @default(now()) @map("created_at")
 
    customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+   estimate Estimate? @relation(fields: [estimateId], references: [id], onDelete: Cascade)
 
    @@map("email_logs")
 }
@@ -285,6 +287,7 @@ model Estimate {
     customer          Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
     createdBy         User      @relation(fields: [createdById], references: [id])
     emails            EstimateEmail[]
+    emailLogs         EmailLog[]
 
     @@map("estimates")
 }

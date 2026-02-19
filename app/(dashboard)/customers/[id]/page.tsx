@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { ExpandableEstimateRow } from "@/components/estimates/expandable-estimate-row";
+import ExpandableEmailRow from "@/components/email/expandable-email-row";
 import { ArrowLeft, Pencil, Save, X, Mail, FileText, Loader2 } from "lucide-react";
 
 interface TestMappingEntry {
@@ -45,6 +46,12 @@ interface EmailHistoryItem {
   error: string | null;
   createdAt: string;
   estimateNumber?: string | null;
+  estimate?: {
+    testMappingIds: string[];
+    selections?: Record<string, string> | null;
+    customPrices?: Record<string, number>;
+    testMappingDetails?: TestMappingDetail[];
+  };
 }
 
 interface EstimateHistoryItem {
@@ -90,6 +97,17 @@ const sourceMap: Record<string, string> = {
   comparison: "Comparaison",
   estimate: "Estimation",
   system: "Système",
+};
+
+type TimelineItem = 
+  | { type: "email"; data: EmailHistoryItem; timestamp: number }
+  | { type: "estimate"; data: EstimateHistoryItem; timestamp: number };
+
+const getTimelineTimestamp = (item: TimelineItem): number => {
+  if (item.type === "email") {
+    return new Date(item.data.createdAt).getTime();
+  }
+  return new Date(item.data.sentAt || item.data.createdAt).getTime();
 };
 
 export default function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -292,95 +310,57 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
          </Card>
       </div>
 
-      {/* Estimates history */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            Historique des estimations
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {estimates.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">
-              Aucune estimation pour ce client.
-            </p>
+       {/* Combined Timeline */}
+       <Card className="mt-6">
+         <CardHeader>
+           <CardTitle className="text-base flex items-center gap-2">
+             <Mail className="h-4 w-4" />
+             Historique combiné
+           </CardTitle>
+         </CardHeader>
+         <CardContent>
+           {history.length === 0 && estimates.length === 0 ? (
+             <p className="text-sm text-muted-foreground text-center py-6">
+               Aucune activité pour ce client.
+             </p>
            ) : (
-             <Table>
-               <TableHeader>
-                 <TableRow>
-                   <TableHead>N° Estimation</TableHead>
-                   <TableHead>Client</TableHead>
-                   <TableHead>Date</TableHead>
-                   <TableHead>Prix</TableHead>
-                   <TableHead>Statut</TableHead>
-                 </TableRow>
-               </TableHeader>
-               <TableBody>
-                 {estimates.map((est) => (
+             <div className="space-y-0 border rounded-lg overflow-hidden">
+               {history.map((item, idx) => {
+                 if (item.source === "comparison" || item.source === "estimate" || item.source === "system") {
+                   // This is an email item
+                   const emailItem = item as EmailHistoryItem;
+                   return (
+                     <ExpandableEmailRow
+                       key={emailItem.id}
+                       email={{
+                         id: emailItem.id,
+                         toEmail: emailItem.toEmail,
+                         subject: emailItem.subject,
+                         status: (emailItem.status as "SENT" | "FAILED"),
+                         error: emailItem.error,
+                         source: emailItem.source,
+                         createdAt: new Date(emailItem.createdAt),
+                         estimate: (emailItem as any).estimate,
+                       }}
+                     />
+                   );
+                 }
+                 return null;
+               })}
+               
+               {estimates.map((est) => (
+                 <div key={est.id} className="border-b last:border-b-0 hover:bg-muted/30 transition-colors">
                    <ExpandableEstimateRow
-                     key={est.id}
                      estimate={est}
                      getStatusBadge={getStatusBadge}
                      onRowClick={() => router.push(`/estimates/${est.id}`)}
                    />
-                 ))}
-               </TableBody>
-             </Table>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Email history */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            Historique des emails envoyés
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {history.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">
-              Aucun email envoyé à ce client.
-            </p>
-          ) : (
-             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Sujet</TableHead>
-                  <TableHead>Estimation</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Statut</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {history.map((item) => {
-                  const st = statusMap[item.status] || statusMap.PENDING;
-                  return (
-                    <TableRow key={item.id}>
-                      <TableCell className="text-sm">{formatDate(item.createdAt)}</TableCell>
-                      <TableCell className="max-w-[250px] truncate text-sm">{item.subject}</TableCell>
-                      <TableCell className="text-sm font-mono">
-                        {item.estimateNumber ? (
-                          <span className="text-primary font-medium">{item.estimateNumber}</span>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm">{sourceMap[item.source] || item.source}</TableCell>
-                      <TableCell>
-                        <Badge variant={st.variant}>{st.label}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                 </div>
+               ))}
+             </div>
+           )}
+         </CardContent>
+       </Card>
     </>
   );
 }
