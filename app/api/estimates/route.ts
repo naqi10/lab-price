@@ -78,22 +78,41 @@ export async function GET(request: NextRequest) {
        prisma.estimate.count({ where }),
      ]);
 
-     // Enhance estimates with test mapping details
-     const enhancedEstimates = await Promise.all(
-       estimates.map(async (est) => {
-         const testMappings = await prisma.testMapping.findMany({
-           where: { id: { in: est.testMappingIds } },
-           include: {
-             entries: {
-               include: {
-                 laboratory: { select: { id: true, name: true } },
-               },
-             },
-           },
-         });
-         return { ...est, testMappingDetails: testMappings };
-       })
-     );
+      // Enhance estimates with test mapping details
+      const enhancedEstimates = await Promise.all(
+        estimates.map(async (est) => {
+          // If testDetails exists, parse it and use that (has all price info)
+          if (est.testDetails) {
+            try {
+              const testDetails = typeof est.testDetails === 'string' 
+                ? JSON.parse(est.testDetails) 
+                : est.testDetails;
+              
+              // Return with parsed testDetails as testMappingDetails
+              return {
+                ...est,
+                testMappingDetails: testDetails,
+              };
+            } catch (e) {
+              // Fall back to fetching from database
+            }
+          }
+
+          // Fallback: fetch from database with lab codes
+          const testMappings = await prisma.testMapping.findMany({
+            where: { id: { in: est.testMappingIds } },
+            include: {
+              entries: {
+                include: {
+                  laboratory: { select: { id: true, name: true, code: true } },
+                },
+              },
+            },
+          });
+          
+          return { ...est, testMappingDetails: testMappings };
+        })
+      );
 
      return NextResponse.json({
        success: true,

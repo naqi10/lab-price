@@ -44,6 +44,18 @@ function transformEstimateForDisplay(estimate: Estimate): any {
     return estimate;
   }
 
+  // Parse customPrices if it's a string
+  let customPricesObj: Record<string, number> = {};
+  if (estimate.customPrices) {
+    try {
+      customPricesObj = typeof estimate.customPrices === 'string' 
+        ? JSON.parse(estimate.customPrices) 
+        : estimate.customPrices;
+    } catch (e) {
+      customPricesObj = {};
+    }
+  }
+
   const transformedDetails = estimate.testMappingDetails.map((detail) => ({
     id: detail.id,
     canonicalName: detail.canonicalName,
@@ -52,7 +64,7 @@ function transformEstimateForDisplay(estimate: Estimate): any {
       laboratoryName: entry.laboratory.name,
       laboratoryCode: entry.laboratory.code || "",
       price: entry.price || 0,
-      customPrice: estimate.customPrices?.[`${detail.id}-${entry.laboratory.id}`],
+      customPrice: customPricesObj[`${detail.id}-${entry.laboratory.id}`],
     })),
   }));
 
