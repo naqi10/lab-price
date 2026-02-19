@@ -115,15 +115,18 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
    const router = useRouter();
 
    const [customer, setCustomer] = useState<Customer | null>(null);
-  const [history, setHistory] = useState<EmailHistoryItem[]>([]);
-  const [estimates, setEstimates] = useState<EstimateHistoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+   const [history, setHistory] = useState<EmailHistoryItem[]>([]);
+   const [estimates, setEstimates] = useState<EstimateHistoryItem[]>([]);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState<string | null>(null);
 
-  const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", company: "" });
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+   const [editing, setEditing] = useState(false);
+   const [form, setForm] = useState({ name: "", email: "", phone: "", company: "" });
+   const [saving, setSaving] = useState(false);
+   const [saveError, setSaveError] = useState<string | null>(null);
+   
+   // Resend state
+   const [resendingId, setResendingId] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -152,33 +155,68 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
 
   useDashboardTitle(customer?.name || "Détail client");
 
-  const handleSave = async () => {
-    setSaving(true);
-    setSaveError(null);
-    try {
-      const res = await fetch(`/api/customers/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          phone: form.phone || null,
-          company: form.company || null,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setCustomer(data.data);
-        setEditing(false);
-      } else {
-        setSaveError(data.message);
-      }
-    } catch {
-      setSaveError("Erreur de connexion");
-    } finally {
-      setSaving(false);
-    }
-  };
+   const handleSave = async () => {
+     setSaving(true);
+     setSaveError(null);
+     try {
+       const res = await fetch(`/api/customers/${id}`, {
+         method: "PUT",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({
+           name: form.name,
+           email: form.email,
+           phone: form.phone || null,
+           company: form.company || null,
+         }),
+       });
+       const data = await res.json();
+       if (data.success) {
+         setCustomer(data.data);
+         setEditing(false);
+       } else {
+         setSaveError(data.message);
+       }
+     } catch {
+       setSaveError("Erreur de connexion");
+     } finally {
+       setSaving(false);
+     }
+   };
+
+   const handleResendEmail = async (emailId: string) => {
+     const email = history.find((e) => e.id === emailId);
+     if (!email || !email.estimate?.testMappingIds) {
+       alert("Impossible de renvoyer cet email");
+       return;
+     }
+
+     setResendingId(emailId);
+     try {
+       // Find the estimate ID from the email
+       const estimateId = estimates.find((e) => e.estimateNumber === email.estimateNumber)?.id;
+       if (!estimateId) {
+         alert("Estimation non trouvée");
+         return;
+       }
+
+       const res = await fetch(`/api/estimates/${estimateId}/resend`, {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({ customerIds: [id] }),
+       });
+
+       if (res.ok) {
+         alert("Email renvoyé avec succès");
+       } else {
+         alert("Erreur lors du renvoi de l'email");
+       }
+     } catch (err) {
+       alert("Erreur de connexion");
+       console.error(err);
+     } finally {
+       setResendingId(null);
+     }
+   };
 
    if (loading) {
      return (
@@ -330,19 +368,21 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
                    // This is an email item
                    const emailItem = item as EmailHistoryItem;
                    return (
-                     <ExpandableEmailRow
-                       key={emailItem.id}
-                       email={{
-                         id: emailItem.id,
-                         toEmail: emailItem.toEmail,
-                         subject: emailItem.subject,
-                         status: (emailItem.status as "SENT" | "FAILED"),
-                         error: emailItem.error,
-                         source: emailItem.source,
-                         createdAt: new Date(emailItem.createdAt),
-                         estimate: (emailItem as any).estimate,
-                       }}
-                     />
+                      <ExpandableEmailRow
+                        key={emailItem.id}
+                        email={{
+                          id: emailItem.id,
+                          toEmail: emailItem.toEmail,
+                          subject: emailItem.subject,
+                          status: (emailItem.status as "SENT" | "FAILED"),
+                          error: emailItem.error,
+                          source: emailItem.source,
+                          createdAt: new Date(emailItem.createdAt),
+                          estimate: (emailItem as any).estimate,
+                        }}
+                        onResend={() => handleResendEmail(emailItem.id)}
+                        resendingId={resendingId}
+                      />
                    );
                  }
                  return null;
