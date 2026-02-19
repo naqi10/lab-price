@@ -215,8 +215,8 @@ export async function generateQuotationPdf(quotation: QuotationData): Promise<Bu
 }
 
 /**
- * Generate a single combined PDF for a comparison result.
- * Shows all laboratories in a table with price + turnaround time per test.
+ * Generate a portrait A4 PDF for the recommended laboratory only.
+ * Shows the cheapest lab's tests with price and turnaround time.
  */
 export async function generateComparisonPdf(
   result: ComparisonEmailResult,
@@ -226,7 +226,6 @@ export async function generateComparisonPdf(
     try {
       const doc = new PDFDocument({
         size: "A4",
-        layout: "landscape",
         margin: MARGIN,
         info: {
           Title: "Comparaison de prix",
@@ -240,134 +239,120 @@ export async function generateComparisonPdf(
       doc.on("end", () => resolve(Buffer.concat(chunks)));
       doc.on("error", reject);
 
-      const pageWidth = 841.89; // A4 landscape
-      let currentY = 50;
+      const contentWidth = PAGE_WIDTH - MARGIN * 2;
+      let currentY = MARGIN;
 
       // --- Header ---
-      doc.rect(50, currentY, HEADER_LOGO_WIDTH, HEADER_LOGO_HEIGHT).fill("#1e3a5f");
+      doc.rect(MARGIN, currentY, HEADER_LOGO_WIDTH, HEADER_LOGO_HEIGHT).fill("#1e3a5f");
       doc.fillColor("#ffffff").fontSize(12).font("Helvetica-Bold");
-      doc.text("Lab Price Comparator", 58, currentY + 10, { width: HEADER_LOGO_WIDTH - 16 });
+      doc.text("Lab Price Comparator", MARGIN + 8, currentY + 10, { width: HEADER_LOGO_WIDTH - 16 });
       doc.fillColor("#000000");
 
-      doc.fontSize(16).font("Helvetica-Bold").text("COMPARAISON DE PRIX", pageWidth - MARGIN - 250, currentY + 6);
+      doc.fontSize(16).font("Helvetica-Bold").text("COMPARAISON DE PRIX", PAGE_WIDTH - MARGIN - 220, currentY + 4);
       doc.fontSize(10).font("Helvetica");
-      doc.text("Date : " + formatDate(new Date()), pageWidth - MARGIN - 250, currentY + 24);
+      doc.text("Date : " + formatDate(new Date()), PAGE_WIDTH - MARGIN - 220, currentY + 22);
       if (clientName) {
-        doc.text("Client : " + clientName, pageWidth - MARGIN - 250, currentY + 37);
+        doc.text("Client : " + clientName, PAGE_WIDTH - MARGIN - 220, currentY + 35);
       }
 
-      currentY += HEADER_LOGO_HEIGHT + 20;
+      currentY += HEADER_LOGO_HEIGHT + 28;
 
-      // --- Test list ---
-      doc.fontSize(11).font("Helvetica-Bold").fillColor("#1e3a5f");
-      doc.text("Tests comparés :", 50, currentY);
-      doc.font("Helvetica").fontSize(10).fillColor("#000000");
-      currentY += 16;
-      doc.text(result.testNames.join("  •  "), 50, currentY, { width: pageWidth - 100 });
-      currentY += 20;
-
-      // --- Comparison table ---
-      const testCount = result.testNames.length;
-      // Columns: Lab name | (price + TAT) per test | Total
-      const labColW = 120;
-      const totalColW = 70;
-      const availableW = pageWidth - 100 - labColW - totalColW;
-      const perTestW = Math.min(availableW / testCount, 140);
-      const priceSubW = perTestW * 0.55;
-      const tatSubW = perTestW * 0.45;
-
-      const tableLeft = 50;
-      const rowHeight = 18;
-      const headerHeight = 32;
-
-      // Header row 1: Lab | Test names (spanning 2 sub-cols each) | Total
-      doc.fontSize(8).font("Helvetica-Bold");
-      const drawHeaderBg = (x: number, w: number) => {
-        doc.save().rect(x, currentY, w, headerHeight).fill("#f1f5f9").restore();
-        doc.fillColor("#0f172a");
-      };
-
-      drawHeaderBg(tableLeft, labColW);
-      doc.text("Laboratoire", tableLeft + 4, currentY + 4, { width: labColW - 8 });
-
-      let colX = tableLeft + labColW;
-      for (const testName of result.testNames) {
-        drawHeaderBg(colX, perTestW);
-        doc.text(testName, colX + 2, currentY + 2, { width: perTestW - 4, align: "center" });
-        // Sub-header labels
-        doc.fontSize(7).font("Helvetica");
-        doc.text("Prix", colX + 2, currentY + 16, { width: priceSubW - 4, align: "center" });
-        doc.text("Délai", colX + priceSubW + 2, currentY + 16, { width: tatSubW - 4, align: "center" });
-        doc.fontSize(8).font("Helvetica-Bold");
-        colX += perTestW;
+      // --- Recommended lab box ---
+      const lab = result.laboratories.find((l) => l.isCheapest) ?? result.laboratories[0];
+      if (!lab) {
+        doc.fontSize(12).text("Aucun laboratoire disponible.", MARGIN, currentY);
+        doc.end();
+        return;
       }
 
-      drawHeaderBg(colX, totalColW);
-      doc.text("Total", colX + 4, currentY + 10, { width: totalColW - 8, align: "center" });
-      doc.fillColor("#000000");
-
-      // Header border
-      doc.save().rect(tableLeft, currentY, labColW + perTestW * testCount + totalColW, headerHeight).stroke("#cbd5e1").restore();
-
-      currentY += headerHeight;
-
-      // Data rows
-      doc.fontSize(8).font("Helvetica");
-      for (let i = 0; i < result.laboratories.length; i++) {
-        const lab = result.laboratories[i];
-        if (currentY > 500) {
-          doc.addPage();
-          currentY = 50;
-        }
-
-        const bgColor = lab.isCheapest ? "#f0fdf4" : i % 2 === 0 ? "#ffffff" : "#f8fafc";
-        const rowW = labColW + perTestW * testCount + totalColW;
-
-        doc.save().rect(tableLeft, currentY, rowW, rowHeight).fill(bgColor).restore();
-        doc.save().rect(tableLeft, currentY, rowW, rowHeight).stroke("#e2e8f0").restore();
-
-        doc.fillColor(lab.isCheapest ? "#15803d" : "#1e293b");
-        doc.font(lab.isCheapest ? "Helvetica-Bold" : "Helvetica");
-        doc.text(lab.name, tableLeft + 4, currentY + 4, { width: labColW - 8 });
-
-        colX = tableLeft + labColW;
-        doc.font("Helvetica");
-        for (const test of lab.tests) {
-          doc.fillColor(lab.isCheapest ? "#15803d" : "#334155");
-          doc.text(test.formattedPrice, colX + 2, currentY + 4, { width: priceSubW - 4, align: "right" });
-          doc.fillColor("#64748b");
-          doc.text(test.turnaroundTime ?? "—", colX + priceSubW + 2, currentY + 4, { width: tatSubW - 4, align: "center" });
-          colX += perTestW;
-        }
-
-        // Total
-        doc.fillColor(lab.isCheapest ? "#15803d" : "#1e293b");
-        doc.font("Helvetica-Bold");
-        doc.text(lab.formattedTotalPrice, colX + 4, currentY + 4, { width: totalColW - 8, align: "right" });
-
-        currentY += rowHeight;
-      }
-
-      // --- Recommendation box ---
-      currentY += 16;
-      const boxWidth = 300;
-      doc.save().roundedRect(tableLeft, currentY, boxWidth, 50, 4).fill("#f0fdf4").restore();
-      doc.save().roundedRect(tableLeft, currentY, boxWidth, 50, 4).stroke("#bbf7d0").restore();
+      doc.save().roundedRect(MARGIN, currentY, contentWidth, 52, 4).fill("#f0fdf4").restore();
+      doc.save().roundedRect(MARGIN, currentY, contentWidth, 52, 4).stroke("#bbf7d0").restore();
 
       doc.fontSize(9).font("Helvetica-Bold").fillColor("#16a34a");
-      doc.text("LABORATOIRE RECOMMANDÉ", tableLeft + 12, currentY + 8);
-      doc.fontSize(14).fillColor("#15803d");
-      doc.text(result.cheapestLaboratory.name, tableLeft + 12, currentY + 22);
-      doc.fontSize(10).font("Helvetica").fillColor("#166534");
-      doc.text("Prix total : " + result.cheapestLaboratory.formattedTotalPrice, tableLeft + 12 + 200, currentY + 26);
+      doc.text("LABORATOIRE RECOMMANDÉ", MARGIN + 14, currentY + 8);
+      doc.fontSize(16).fillColor("#15803d");
+      doc.text(lab.name, MARGIN + 14, currentY + 24);
+      doc.fontSize(11).font("Helvetica").fillColor("#166534");
+      doc.text("Prix total : " + lab.formattedTotalPrice, PAGE_WIDTH - MARGIN - 180, currentY + 26, { width: 166, align: "right" });
+
+      currentY += 68;
+
+      // --- Tests table ---
+      const cols = {
+        num: MARGIN,
+        test: MARGIN + 30,
+        price: MARGIN + contentWidth - 210,
+        tat: MARGIN + contentWidth - 120,
+      };
+      const colWidths = {
+        num: 30,
+        test: cols.price - cols.test - 4,
+        price: 90,
+        tat: 120,
+      };
+      const headerH = 22;
+
+      // Header background
+      doc.save().rect(MARGIN, currentY, contentWidth, headerH).fill("#f1f5f9").restore();
+      doc.save().rect(MARGIN, currentY, contentWidth, headerH).stroke("#cbd5e1").restore();
+
+      doc.fontSize(9).font("Helvetica-Bold").fillColor("#0f172a");
+      doc.text("N°", cols.num + 4, currentY + 6, { width: colWidths.num });
+      doc.text("Analyse", cols.test + 4, currentY + 6, { width: colWidths.test });
+      doc.text("Prix (MAD)", cols.price, currentY + 6, { width: colWidths.price, align: "right" });
+      doc.text("Délai", cols.tat + 4, currentY + 6, { width: colWidths.tat });
+
+      currentY += headerH;
+      doc.font("Helvetica").fontSize(9).fillColor("#000000");
+
+      for (let i = 0; i < lab.tests.length; i++) {
+        const test = lab.tests[i];
+        const rowH = 22;
+
+        if (currentY + rowH > 750) {
+          doc.addPage();
+          currentY = MARGIN;
+        }
+
+        const bg = i % 2 === 0 ? "#ffffff" : "#f8fafc";
+        doc.save().rect(MARGIN, currentY, contentWidth, rowH).fill(bg).restore();
+        doc.save().rect(MARGIN, currentY, contentWidth, rowH).stroke("#e2e8f0").restore();
+
+        doc.fillColor("#334155");
+        doc.text(String(i + 1), cols.num + 4, currentY + 6, { width: colWidths.num });
+        doc.text(test.canonicalName, cols.test + 4, currentY + 6, { width: colWidths.test });
+        doc.font("Helvetica-Bold").fillColor("#15803d");
+        doc.text(test.formattedPrice, cols.price, currentY + 6, { width: colWidths.price, align: "right" });
+        doc.font("Helvetica").fillColor("#64748b");
+        doc.text(test.turnaroundTime ?? "—", cols.tat + 4, currentY + 6, { width: colWidths.tat });
+
+        currentY += rowH;
+      }
+
+      // --- Total row ---
+      const totalH = 24;
+      doc.save().rect(MARGIN, currentY, contentWidth, totalH).fill("#f0fdf4").restore();
+      doc.save().rect(MARGIN, currentY, contentWidth, totalH).stroke("#bbf7d0").restore();
+      doc.fontSize(10).font("Helvetica-Bold").fillColor("#15803d");
+      doc.text("Total", cols.test + 4, currentY + 7, { width: colWidths.test });
+      doc.text(lab.formattedTotalPrice, cols.price, currentY + 7, { width: colWidths.price, align: "right" });
+
+      currentY += totalH + 24;
+
+      // --- Note ---
+      doc.fontSize(9).font("Helvetica").fillColor("#64748b");
+      doc.text(
+        "Ce document présente le meilleur tarif trouvé parmi les laboratoires référencés pour les tests sélectionnés.",
+        MARGIN, currentY, { width: contentWidth }
+      );
 
       // --- Footer ---
-      const footerY = 530;
+      const footerY = 780;
       doc.fontSize(8).fillColor("#94a3b8");
       doc.text(
         `Généré le ${formatDate(new Date())} — Lab Price Comparator`,
-        50, footerY,
-        { align: "center", width: pageWidth - 100 }
+        MARGIN, footerY,
+        { align: "center", width: contentWidth }
       );
 
       doc.end();

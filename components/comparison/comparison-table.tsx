@@ -155,12 +155,14 @@ export default function ComparisonTable({
   selections,
   onSelectLab,
   onPresetCheapest,
+  onPresetQuickest,
   onClearSelections,
 }: {
   data: ComparisonTableData;
   selections?: Record<string, string>;
   onSelectLab?: (testId: string, labId: string) => void;
   onPresetCheapest?: () => void;
+  onPresetQuickest?: () => void;
   onClearSelections?: () => void;
 }) {
   const bestTotal = data.totals[data.bestLabId] ?? 0;
@@ -197,6 +199,14 @@ export default function ComparisonTable({
             >
               <DollarSign className="mr-1.5 h-3.5 w-3.5" />
               Le moins cher par test
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onPresetQuickest}
+            >
+              <Clock className="mr-1.5 h-3.5 w-3.5" />
+              Le plus rapide par test
             </Button>
             {hasSelections && (
               <Button

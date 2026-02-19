@@ -441,60 +441,41 @@ export async function compareTestsWithEmail(data: {
 /**
  * Build just the comparison `<table>` HTML for use as the
  * `{{comparisonTableHtml}}` template variable.
+ * Shows only the recommended (cheapest) lab's tests.
  */
 function buildComparisonTableHtml(result: ComparisonEmailResult): string {
   const thStyle = "padding:10px 14px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;";
   const tdStyle = "padding:10px 14px;border:1px solid #e2e8f0;";
 
-  // Build header: one column per test with sub-columns for price + TAT
-  const testHeaders = result.testNames
+  const lab = result.laboratories.find((l) => l.isCheapest) ?? result.laboratories[0];
+  if (!lab) return "";
+
+  const rows = lab.tests
     .map(
-      (name) =>
-        `<th colspan="2" style="${thStyle}text-align:center;">${name}</th>`
+      (t) => `<tr>
+        <td style="${tdStyle}">${t.canonicalName}</td>
+        <td style="${tdStyle}text-align:right;font-weight:600;">${t.formattedPrice}</td>
+        <td style="${tdStyle}">${t.turnaroundTime ?? "—"}</td>
+      </tr>`
     )
-    .join("");
-
-  const subHeaders = result.testNames
-    .map(
-      () =>
-        `<th style="${thStyle}text-align:right;font-size:12px;">Prix</th>` +
-        `<th style="${thStyle}text-align:center;font-size:12px;">Délai</th>`
-    )
-    .join("");
-
-  const cheapestLab = result.laboratories.find((lab) => lab.isCheapest);
-  const labsToShow = cheapestLab
-    ? [cheapestLab]
-    : result.laboratories.slice(0, 1);
-
-  const rows = labsToShow
-    .map((lab) => {
-      const cells = lab.tests
-        .map(
-          (t) =>
-            `<td style="${tdStyle}text-align:right;">${t.formattedPrice}</td>` +
-            `<td style="${tdStyle}text-align:center;">${t.turnaroundTime ?? "—"}</td>`
-        )
-        .join("");
-
-      return `<tr style="background-color:#f0fdf4;">
-        <td style="${tdStyle}font-weight:500;">${lab.name}</td>
-        ${cells}
-        <td style="${tdStyle}text-align:right;font-weight:700;">${lab.formattedTotalPrice}</td>
-      </tr>`;
-    })
     .join("");
 
   return `<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
   <thead>
     <tr>
-      <th rowspan="2" style="${thStyle}text-align:left;">Laboratoire</th>
-      ${testHeaders}
-      <th rowspan="2" style="${thStyle}text-align:right;">Total</th>
+      <th style="${thStyle}text-align:left;">Analyse</th>
+      <th style="${thStyle}text-align:right;">Prix (MAD)</th>
+      <th style="${thStyle}text-align:left;">Délai</th>
     </tr>
-    <tr>${subHeaders}</tr>
   </thead>
   <tbody>${rows}</tbody>
+  <tfoot>
+    <tr style="background-color:#f0fdf4;">
+      <td style="${tdStyle}font-weight:700;">Total</td>
+      <td style="${tdStyle}text-align:right;font-weight:700;">${lab.formattedTotalPrice}</td>
+      <td style="${tdStyle}"></td>
+    </tr>
+  </tfoot>
 </table>`;
 }
 
@@ -507,40 +488,27 @@ function buildComparisonEmailHtml(
   const thStyle = "padding:10px 14px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;";
   const tdStyle = "padding:10px 14px;border:1px solid #e2e8f0;";
 
-  const testHeaders = result.testNames
-    .map(
-      (name) =>
-        `<th colspan="2" style="${thStyle}text-align:center;">${name}</th>`
-    )
-    .join("");
+  const lab = result.laboratories.find((l) => l.isCheapest) ?? result.laboratories[0];
 
-  const subHeaders = result.testNames
-    .map(
-      () =>
-        `<th style="${thStyle}text-align:right;font-size:12px;">Prix</th>` +
-        `<th style="${thStyle}text-align:center;font-size:12px;">Délai</th>`
-    )
-    .join("");
-
-  const cheapestLab = result.laboratories.find(lab => lab.isCheapest);
-  const labsToShow = cheapestLab ? [cheapestLab] : result.laboratories.slice(0, 1);
-  const testRows = labsToShow
-    .map((lab) => {
-      const cells = lab.tests
+  const testRows = lab
+    ? lab.tests
         .map(
-          (t) =>
-            `<td style="${tdStyle}text-align:right;">${t.formattedPrice}</td>` +
-            `<td style="${tdStyle}text-align:center;">${t.turnaroundTime ?? "—"}</td>`
+          (t) => `<tr>
+            <td style="${tdStyle}">${t.canonicalName}</td>
+            <td style="${tdStyle}text-align:right;font-weight:600;">${t.formattedPrice}</td>
+            <td style="${tdStyle}">${t.turnaroundTime ?? "—"}</td>
+          </tr>`
         )
-        .join("");
+        .join("")
+    : "";
 
-      return `<tr style="background-color:#f0fdf4;">
-        <td style="${tdStyle}font-weight:500;">${lab.name}</td>
-        ${cells}
+  const totalRow = lab
+    ? `<tr style="background-color:#f0fdf4;">
+        <td style="${tdStyle}font-weight:700;">Total</td>
         <td style="${tdStyle}text-align:right;font-weight:700;">${lab.formattedTotalPrice}</td>
-      </tr>`;
-    })
-    .join("");
+        <td style="${tdStyle}"></td>
+      </tr>`
+    : "";
 
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -556,18 +524,18 @@ function buildComparisonEmailHtml(
       <p style="margin:0 0 24px;color:#334155;font-size:15px;">
         Voici le meilleur prix trouvé pour
         <strong>${result.testNames.join("</strong>, <strong>")}</strong>
-        auprès du laboratoire le moins cher. Le document PDF détaillé est joint à cet email.
+        auprès de <strong>${result.cheapestLaboratory.name}</strong>. Le document PDF détaillé est joint à cet email.
       </p>
       <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
         <thead>
           <tr>
-            <th rowspan="2" style="${thStyle}text-align:left;">Laboratoire</th>
-            ${testHeaders}
-            <th rowspan="2" style="${thStyle}text-align:right;">Total</th>
+            <th style="${thStyle}text-align:left;">Analyse</th>
+            <th style="${thStyle}text-align:right;">Prix (MAD)</th>
+            <th style="${thStyle}text-align:left;">Délai</th>
           </tr>
-          <tr>${subHeaders}</tr>
         </thead>
         <tbody>${testRows}</tbody>
+        <tfoot>${totalRow}</tfoot>
       </table>
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:20px;margin-bottom:24px;">
         <p style="margin:0 0 4px;font-size:13px;color:#16a34a;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Laboratoire recommandé</p>

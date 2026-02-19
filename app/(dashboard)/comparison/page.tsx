@@ -13,6 +13,28 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 
+/**
+ * Parse a human-readable turnaround time string into hours for comparison.
+ * Lower value = faster. Returns Infinity if unparseable.
+ */
+function parseTatToHours(tat: string | null | undefined): number {
+  if (!tat) return Infinity;
+  const s = tat.toLowerCase().trim();
+
+  // "même jour" / "same day"
+  if (s.includes("même jour") || s.includes("same day")) return 0;
+
+  // "résultats en X heures" / "résultats en X–Y heures" / "results in X hours"
+  const hoursMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*h/);
+  if (hoursMatch) return Number(hoursMatch[1]);
+
+  // "X jours ouvrables" / "X–Y jours ouvrables" / "X business days"
+  const daysMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*(?:jour|day|business)/);
+  if (daysMatch) return Number(daysMatch[1]) * 24;
+
+  return Infinity;
+}
+
 export default function ComparisonPage() {
   return (
     <Suspense fallback={<><Header title="Comparaison des prix" /><div className="mt-6 space-y-4"><Skeleton className="h-12 w-full" /><Skeleton className="h-64 w-full" /></div></>}>
@@ -145,6 +167,30 @@ function ComparisonContent() {
     setSelections(next);
   }, [tableData]);
 
+  // Preset: select quickest lab per test (by turnaround time)
+  const handlePresetQuickest = useCallback(() => {
+    if (!tableData) return;
+    const next: Record<string, string> = {};
+    for (const test of tableData.tests) {
+      let quickestLabId: string | null = null;
+      let quickestHours = Infinity;
+      for (const lab of tableData.laboratories) {
+        // Only consider labs that have a price for this test
+        if (test.prices[lab.id] == null) continue;
+        const tat = test.turnaroundTimes?.[lab.id];
+        const hours = parseTatToHours(tat);
+        if (hours < quickestHours) {
+          quickestHours = hours;
+          quickestLabId = lab.id;
+        }
+      }
+      if (quickestLabId) {
+        next[test.id] = quickestLabId;
+      }
+    }
+    setSelections(next);
+  }, [tableData]);
+
   // Clear all selections
   const handleClearSelections = useCallback(() => {
     setSelections({});
@@ -197,6 +243,7 @@ function ComparisonContent() {
               selections={selections}
               onSelectLab={handleSelectLab}
               onPresetCheapest={handlePresetCheapest}
+              onPresetQuickest={handlePresetQuickest}
               onClearSelections={handleClearSelections}
             />
           )}
