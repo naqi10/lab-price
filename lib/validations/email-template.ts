@@ -8,8 +8,8 @@ import { z } from "zod";
  */
 
 export const emailTemplateCreateSchema = z.object({
-  type: z.enum(["QUOTATION", "COMPARISON", "GENERAL"], {
-    message: "Le type doit être QUOTATION, COMPARISON ou GENERAL",
+  type: z.enum(["COMPARISON", "GENERAL"], {
+    message: "Le type doit être COMPARISON ou GENERAL",
   }),
   name: z
     .string()
@@ -42,8 +42,8 @@ export type EmailTemplateCreateInput = z.infer<typeof emailTemplateCreateSchema>
 
 export const emailTemplateUpdateSchema = z.object({
   type: z
-    .enum(["QUOTATION", "COMPARISON", "GENERAL"], {
-      message: "Le type doit être QUOTATION, COMPARISON ou GENERAL",
+    .enum(["COMPARISON", "GENERAL"], {
+      message: "Le type doit être COMPARISON ou GENERAL",
     })
     .optional(),
   name: z
@@ -89,7 +89,7 @@ export const emailTemplatePreviewSchema = z.object({
     .max(500, "Le sujet ne peut pas dépasser 500 caractères")
     .optional(),
   type: z
-    .enum(["QUOTATION", "COMPARISON", "GENERAL"])
+    .enum(["COMPARISON", "GENERAL"])
     .optional(),
   variables: z.record(z.string(), z.union([z.string(), z.number(), z.null()])).optional(),
 }).refine(

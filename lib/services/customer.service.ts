@@ -16,7 +16,7 @@ export async function getCustomers(options?: { search?: string }) {
     where,
     orderBy: { name: "asc" },
     include: {
-      _count: { select: { emailLogs: true, quotations: true } },
+      _count: { select: { emailLogs: true, estimates: true } },
     },
   });
 }
@@ -25,7 +25,7 @@ export async function getCustomerById(id: string) {
   return prisma.customer.findUnique({
     where: { id },
     include: {
-      _count: { select: { emailLogs: true, quotations: true } },
+      _count: { select: { emailLogs: true, estimates: true } },
     },
   });
 }
@@ -99,18 +99,6 @@ export async function getCustomerHistory(customerId: string) {
   return prisma.emailLog.findMany({
     where: { customerId },
     orderBy: { createdAt: "desc" },
-    take: 50,
-  });
-}
-
-export async function getCustomerQuotations(customerId: string) {
-  return prisma.quotation.findMany({
-    where: { customerId },
-    orderBy: { createdAt: "desc" },
-    include: {
-      laboratory: { select: { id: true, name: true, code: true } },
-      _count: { select: { items: true } },
-    },
     take: 50,
   });
 }

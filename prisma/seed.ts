@@ -199,10 +199,9 @@ async function main() {
 
   // ── Price Lists & Tests ─────────────────────────────────────────────
   // Clean existing data (in order to avoid duplicate key errors on re-seed)
-  // Must respect FK constraints: quotation items → test mappings, etc.
-  await prisma.quotationEmail.deleteMany();
-  await prisma.quotationItem.deleteMany();
-  await prisma.quotation.deleteMany();
+  // Must respect FK constraints: test mappings → tests, etc.
+  await prisma.estimateEmail.deleteMany();
+  await prisma.estimate.deleteMany();
   await prisma.testMappingEntry.deleteMany();
   await prisma.testMapping.deleteMany();
   await prisma.test.deleteMany();
@@ -327,47 +326,6 @@ async function main() {
   // ── Email Templates (defaults) ──────────────────────────────────────
   await prisma.emailTemplate.deleteMany();
 
-  const quotationHtml = `<!DOCTYPE html>
-<html lang="fr">
-<head><meta charset="utf-8" /></head>
-<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#f7fafc;">
-  <div style="max-width:600px;margin:0 auto;padding:20px;">
-    <div style="background:#1a365d;padding:20px 30px;border-radius:8px 8px 0 0;text-align:center;">
-      {{#companyLogoUrl}}<img src="{{companyLogoUrl}}" alt="Logo" style="max-height:48px;margin-bottom:8px;" />{{/companyLogoUrl}}
-      <h1 style="color:#ffffff;font-size:22px;font-weight:700;margin:0;">Lab Price Comparator</h1>
-    </div>
-    <div style="background:#ffffff;padding:30px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
-      <p style="font-size:16px;color:#2d3748;margin-bottom:16px;">Bonjour {{clientName}},</p>
-      <p style="font-size:14px;color:#4a5568;line-height:1.6;margin-bottom:12px;">
-        {{customMessage}}
-      </p>
-      <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin:20px 0;">
-        <h2 style="font-size:16px;color:#1a365d;font-weight:700;margin:0 0 16px;">Devis N° {{quotationNumber}}</h2>
-        <table style="width:100%;font-size:13px;">
-          <tr><td style="color:#718096;padding:4px 0;width:180px;">Titre :</td><td style="color:#2d3748;font-weight:500;">{{title}}</td></tr>
-          <tr><td style="color:#718096;padding:4px 0;">Laboratoire :</td><td style="color:#2d3748;font-weight:500;">{{laboratoryName}}</td></tr>
-          <tr><td style="color:#718096;padding:4px 0;">Nombre d'analyses :</td><td style="color:#2d3748;font-weight:500;">{{itemCount}}</td></tr>
-        </table>
-        <hr style="border:0;border-top:1px solid #e2e8f0;margin:12px 0;" />
-        <table style="width:100%;font-size:13px;">
-          <tr><td style="color:#718096;padding:4px 0;width:180px;"><strong>Montant total :</strong></td><td style="font-size:16px;color:#1a365d;font-weight:700;">{{totalPrice}}</td></tr>
-          <tr><td style="color:#718096;padding:4px 0;">Valide jusqu'au :</td><td style="color:#2d3748;font-weight:500;">{{validUntil}}</td></tr>
-        </table>
-      </div>
-      <p style="font-size:14px;color:#4a5568;line-height:1.6;margin-bottom:12px;">Le détail complet du devis est disponible dans le fichier PDF joint.</p>
-      <p style="font-size:14px;color:#4a5568;line-height:1.6;margin-bottom:12px;">Pour toute question, n'hésitez pas à nous contacter.</p>
-      <p style="font-size:14px;color:#4a5568;margin-bottom:4px;">Cordialement,</p>
-      <p style="font-size:14px;color:#4a5568;margin-bottom:4px;">L'équipe Lab Price Comparator</p>
-      {{#signatureHtml}}<div style="margin-top:16px;border-top:1px solid #e2e8f0;padding-top:16px;">{{signatureHtml}}</div>{{/signatureHtml}}
-    </div>
-    <div style="background:#f7fafc;padding:20px 30px;border-radius:0 0 8px 8px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;">
-      <p style="font-size:11px;color:#a0aec0;text-align:center;margin:4px 0;">Ce message a été envoyé automatiquement par Lab Price Comparator.</p>
-      <p style="font-size:11px;color:#a0aec0;text-align:center;margin:4px 0;">Merci de ne pas répondre directement à cet email.</p>
-    </div>
-  </div>
-</body>
-</html>`;
-
   const comparisonHtml = `<!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="utf-8" /></head>
@@ -404,30 +362,6 @@ async function main() {
   </div>
 </body>
 </html>`;
-
-  await prisma.emailTemplate.create({
-    data: {
-      type: "QUOTATION",
-      name: "Devis — Modèle par défaut",
-      subject: "Devis {{quotationNumber}} — {{title}}",
-      htmlBody: quotationHtml,
-      isDefault: true,
-      variables: [
-        { name: "quotationNumber", label: "N° Devis", sampleValue: "QT-20260217-A3F1" },
-        { name: "title", label: "Titre du devis", sampleValue: "Devis analyses biochimiques" },
-        { name: "clientName", label: "Nom du client", sampleValue: "Jean Dupont" },
-        { name: "clientEmail", label: "Email du client", sampleValue: "jean@example.com" },
-        { name: "laboratoryName", label: "Nom du laboratoire", sampleValue: "Laboratoire Central" },
-        { name: "totalPrice", label: "Montant total", sampleValue: "1 250,00 MAD" },
-        { name: "validUntil", label: "Date de validité", sampleValue: "17/03/2026" },
-        { name: "itemCount", label: "Nombre d'analyses", sampleValue: "5" },
-        { name: "customMessage", label: "Message personnalisé", sampleValue: "" },
-        { name: "companyLogoUrl", label: "URL du logo", sampleValue: "https://example.com/logo.png" },
-        { name: "signatureHtml", label: "Signature HTML", isHtml: true, sampleValue: "<p>Cordialement,<br/>L'équipe Lab Price Comparator</p>" },
-      ],
-    },
-  });
-  console.log("  ✓ Default quotation email template");
 
   await prisma.emailTemplate.create({
     data: {

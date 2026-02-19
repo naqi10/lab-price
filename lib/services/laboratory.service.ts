@@ -105,12 +105,11 @@ export async function deleteLaboratory(id: string) {
 }
 
 export async function getLaboratoryStats(id: string) {
-  const [laboratory, priceListCount, testCount, quotationCount] =
+  const [laboratory, priceListCount, testCount] =
     await Promise.all([
       prisma.laboratory.findUnique({ where: { id } }),
       prisma.priceList.count({ where: { laboratoryId: id } }),
       prisma.test.count({ where: { priceList: { laboratoryId: id } } }),
-      prisma.quotation.count({ where: { laboratoryId: id } }),
     ]);
 
   if (!laboratory) throw new Error("Laboratoire non trouvé");
@@ -128,5 +127,5 @@ export async function getLaboratoryStats(id: string) {
     averageTestPrice = aggregation._avg.price;
   }
 
-  return { laboratory, priceListCount, testCount, quotationCount, averageTestPrice };
+  return { laboratory, priceListCount, testCount, averageTestPrice };
 }
