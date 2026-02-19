@@ -1,16 +1,16 @@
 "use client";
 
-import Header from "@/components/dashboard/header";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import UserManagement from "@/components/settings/user-management";
 import EmailSettings from "@/components/settings/email-settings";
 import EmailTemplateEditor from "@/components/settings/email-template-editor";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function SettingsPage() {
-  return (
-    <>
-      <Header title="Paramètres" />
-      <div className="mt-6">
+   useDashboardTitle("Paramètres");
+   return (
+     <>
+       <div className="mt-6">
         <Tabs defaultValue="users">
           <TabsList>
             <TabsTrigger value="users">Utilisateurs</TabsTrigger>

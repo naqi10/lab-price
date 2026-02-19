@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Header from "@/components/dashboard/header";
 import TestMappingTable from "@/components/tests/test-mapping-table";
 import TestMappingForm from "@/components/tests/test-mapping-form";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -11,6 +11,7 @@ import { Search } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 
 export default function TestMappingsPage() {
+  useDashboardTitle("Gestion des correspondances");
   const [mappings, setMappings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,17 +98,16 @@ export default function TestMappingsPage() {
     fetchMappings();
   };
 
-  return (
-    <>
-      <Header title="Correspondances de tests" />
-      <ConfirmDialog
-        open={!!deletingId}
-        onOpenChange={(o) => !o && setDeletingId(null)}
-        title="Supprimer cette correspondance ?"
-        description="Cette action est irréversible. La correspondance sera définitivement supprimée."
-        confirmLabel="Supprimer"
-        onConfirm={confirmDelete}
-      />
+   return (
+     <>
+       <ConfirmDialog
+         open={!!deletingId}
+         onOpenChange={(o) => !o && setDeletingId(null)}
+         title="Supprimer cette correspondance ?"
+         description="Cette action est irréversible. La correspondance sera définitivement supprimée."
+         confirmLabel="Supprimer"
+         onConfirm={confirmDelete}
+       />
 
       {/* Search bar + filter + action */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4">

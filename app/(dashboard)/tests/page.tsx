@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Header from "@/components/dashboard/header";
 import TestCart from "@/components/tests/test-cart";
 import AllTestsTable from "@/components/tests/all-tests-table";
 import DraftManager from "@/components/comparison/draft-manager";
 import { useTestCart } from "@/hooks/use-tests";
 import { useLabColors } from "@/hooks/use-lab-colors";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import { Button } from "@/components/ui/button";
 import { GitCompare } from "lucide-react";
 
@@ -14,6 +14,7 @@ export default function TestsPage() {
   const router = useRouter();
   const { items, addItem, removeItem, clearCart, loadFromMappingIds, isReady } = useTestCart();
   const { colorMap, getColor } = useLabColors();
+  useDashboardTitle("Tests & Analyses");
 
   const cartItemIds = new Set(items.map((i) => i.testMappingId));
 
@@ -26,8 +27,6 @@ export default function TestsPage() {
 
   return (
     <>
-      <Header title="Tests & Analyses" />
-
       <div className="flex items-center justify-end mt-4">
         <Button variant="outline" size="sm" onClick={() => router.push("/tests/mappings")}>
           <GitCompare className="h-4 w-4" />

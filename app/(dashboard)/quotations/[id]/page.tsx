@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import Header from "@/components/dashboard/header";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import QuotationPreview from "@/components/quotations/quotation-preview";
 import EmailDialog from "@/components/quotations/email-dialog";
 import { useQuotation } from "@/hooks/use-quotations";
@@ -12,11 +12,12 @@ import { useState } from "react";
 import { Download, Mail, FileText, Eye, Loader2 } from "lucide-react";
 
 export default function QuotationDetailPage() {
-  const params = useParams();
-  const id = params.id as string;
-  const { quotation, isLoading, error } = useQuotation(id);
-  const [showEmailDialog, setShowEmailDialog] = useState(false);
-  const [downloading, setDownloading] = useState(false);
+   const params = useParams();
+   const id = params.id as string;
+   const { quotation, isLoading, error } = useQuotation(id);
+   const [showEmailDialog, setShowEmailDialog] = useState(false);
+   const [downloading, setDownloading] = useState(false);
+   useDashboardTitle(`Devis ${quotation?.quotationNumber || ""}`);
 
   const handleDownloadPdf = async () => {
     setDownloading(true);
@@ -50,11 +51,9 @@ export default function QuotationDetailPage() {
   }
   if (error) return <p className="text-destructive mt-4">{error}</p>;
 
-  return (
-    <>
-      <Header title={`Devis ${quotation?.quotationNumber || ""}`} />
-
-      {/* Action bar */}
+   return (
+     <>
+       {/* Action bar */}
       <div className="flex items-center justify-end gap-2 mt-4">
         <Button variant="outline" size="sm" onClick={handleViewPdf}>
           <Eye className="h-4 w-4" />

@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Header from "@/components/dashboard/header";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import LabForm from "@/components/laboratories/lab-form";
 
 export default function NewLaboratoryPage() {
-  const router = useRouter();
+   const router = useRouter();
+   useDashboardTitle("Nouveau laboratoire");
 
   const handleSubmit = async (data: any) => {
     const res = await fetch("/api/laboratories", {
@@ -20,10 +21,9 @@ export default function NewLaboratoryPage() {
     return result;
   };
 
-  return (
-    <>
-      <Header title="Nouveau laboratoire" />
-      <div className="mt-6 max-w-2xl">
+   return (
+     <>
+       <div className="mt-6 max-w-2xl">
         <LabForm onSubmit={handleSubmit} />
       </div>
     </>

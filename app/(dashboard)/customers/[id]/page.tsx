@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/components/dashboard/header";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,10 +64,10 @@ const sourceMap: Record<string, string> = {
 };
 
 export default function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const router = useRouter();
+   const { id } = use(params);
+   const router = useRouter();
 
-  const [customer, setCustomer] = useState<Customer | null>(null);
+   const [customer, setCustomer] = useState<Customer | null>(null);
   const [history, setHistory] = useState<EmailHistoryItem[]>([]);
   const [quotations, setQuotations] = useState<QuotationHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,6 +103,8 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
       .finally(() => setLoading(false));
   }, [id]);
 
+  useDashboardTitle(customer?.name || "Détail client");
+
   const handleSave = async () => {
     setSaving(true);
     setSaveError(null);
@@ -131,31 +133,27 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
     }
   };
 
-  if (loading) {
-    return (
-      <>
-        <Header title="Détail client" />
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
-      </>
-    );
-  }
+   if (loading) {
+     return (
+       <>
+         <div className="flex justify-center py-12">
+           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+         </div>
+       </>
+     );
+   }
 
-  if (error || !customer) {
-    return (
-      <>
-        <Header title="Détail client" />
-        <p className="text-red-500 mt-6">{error || "Client non trouvé"}</p>
-      </>
-    );
-  }
+   if (error || !customer) {
+     return (
+       <>
+         <p className="text-red-500 mt-6">{error || "Client non trouvé"}</p>
+       </>
+     );
+   }
 
-  return (
-    <>
-      <Header title={customer.name} />
-
-      <div className="mt-4">
+   return (
+     <>
+       <div className="mt-4">
         <Button variant="ghost" size="sm" onClick={() => router.push("/customers")}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Retour à la liste

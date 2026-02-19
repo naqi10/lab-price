@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/components/dashboard/header";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,10 +16,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Contact, Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 
 export default function CustomersPage() {
-  const router = useRouter();
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 300);
-  const { customers, isLoading, error, refetch } = useCustomers(debouncedSearch);
+   const router = useRouter();
+   const [search, setSearch] = useState("");
+   const debouncedSearch = useDebounce(search, 300);
+   const { customers, isLoading, error, refetch } = useCustomers(debouncedSearch);
+   useDashboardTitle("Clients");
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -91,10 +92,9 @@ export default function CustomersPage() {
     }
   };
 
-  return (
-    <>
-      <Header title="Clients" />
-      <div className="flex items-center justify-between mt-4 gap-3">
+   return (
+     <>
+       <div className="flex items-center justify-between mt-4 gap-3">
         <div className="relative max-w-sm flex-1">
           <Contact className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input

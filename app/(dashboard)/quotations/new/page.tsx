@@ -2,13 +2,14 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Header from "@/components/dashboard/header";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import QuotationForm from "@/components/quotations/quotation-form";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function NewQuotationPage() {
-  return (
-    <Suspense fallback={<><Header title="Nouveau devis" /><Skeleton className="h-64 mt-6 max-w-2xl" /></>}>
+   useDashboardTitle("Nouveau devis");
+   return (
+    <Suspense fallback={<><Skeleton className="h-64 mt-6 max-w-2xl" /></>}>
       <NewQuotationContent />
     </Suspense>
   );
@@ -49,10 +50,9 @@ function NewQuotationContent() {
     }
   };
 
-  return (
-    <>
-      <Header title="Nouveau devis" />
-      <div className="max-w-2xl mt-6">
+   return (
+     <>
+       <div className="max-w-2xl mt-6">
         <QuotationForm
           onSubmit={handleSubmit}
           isLoading={isLoading}

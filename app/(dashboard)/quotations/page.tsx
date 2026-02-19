@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/components/dashboard/header";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import QuotationHistoryTable from "@/components/quotations/quotation-history-table";
 import EmailDialog from "@/components/quotations/email-dialog";
 import { useQuotations } from "@/hooks/use-quotations";
@@ -12,10 +12,11 @@ import { Label } from "@/components/ui/label";
 import { CalendarDays, X } from "lucide-react";
 
 export default function QuotationsPage() {
-  const router = useRouter();
+   const router = useRouter();
 
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+   const [dateFrom, setDateFrom] = useState("");
+   const [dateTo, setDateTo] = useState("");
+   useDashboardTitle("Devis");
 
   const filters = useMemo(
     () => ({
@@ -48,11 +49,9 @@ export default function QuotationsPage() {
 
   const hasDateFilter = dateFrom || dateTo;
 
-  return (
-    <>
-      <Header title="Devis" />
-
-      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mt-4">
+   return (
+     <>
+       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mt-4">
         <div className="flex flex-wrap items-end gap-3">
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground flex items-center gap-1">

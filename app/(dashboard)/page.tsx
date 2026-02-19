@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Header from "@/components/dashboard/header";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import QuickActions from "@/components/dashboard/quick-actions";
 import StatsCards from "@/components/dashboard/stats-cards";
 import EmailStats from "@/components/dashboard/overview-chart";
@@ -13,9 +13,10 @@ import RecentMappings from "@/components/dashboard/recent-mappings";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
-  const [data, setData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+   const [data, setData] = useState<any>(null);
+   const [isLoading, setIsLoading] = useState(true);
+   const [error, setError] = useState<string | null>(null);
+   useDashboardTitle("Tableau de bord");
 
   useEffect(() => {
     fetch("/api/dashboard")
@@ -31,11 +32,9 @@ export default function DashboardPage() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  return (
-    <>
-      <Header title="Tableau de bord" />
-
-      {isLoading ? (
+   return (
+     <>
+       {isLoading ? (
         <div className="space-y-6 mt-6" role="status" aria-live="polite">
           <span className="sr-only">Chargement du tableau de bord…</span>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

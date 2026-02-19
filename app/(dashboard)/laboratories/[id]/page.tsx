@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Header from "@/components/dashboard/header";
+import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import LabForm from "@/components/laboratories/lab-form";
 import PriceListUpload from "@/components/laboratories/price-list-upload";
 import PriceListTable from "@/components/laboratories/price-list-table";
@@ -14,14 +14,15 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ArrowLeft, Trash2 } from "lucide-react";
 
 export default function LaboratoryDetailPage() {
-  const params = useParams();
-  const router = useRouter();
-  const id = params.id as string;
-  const { laboratory, isLoading, error } = useLaboratory(id);
-  const [priceLists, setPriceLists] = useState<any[]>([]);
-  const [priceListsLoading, setPriceListsLoading] = useState(true);
-  const [showDeleteLab, setShowDeleteLab] = useState(false);
-  const [deletingPriceListId, setDeletingPriceListId] = useState<string | null>(null);
+   const params = useParams();
+   const router = useRouter();
+   const id = params.id as string;
+   const { laboratory, isLoading, error } = useLaboratory(id);
+   const [priceLists, setPriceLists] = useState<any[]>([]);
+   const [priceListsLoading, setPriceListsLoading] = useState(true);
+   const [showDeleteLab, setShowDeleteLab] = useState(false);
+   const [deletingPriceListId, setDeletingPriceListId] = useState<string | null>(null);
+   useDashboardTitle(laboratory?.name || "Laboratoire");
 
   const fetchPriceLists = async () => {
     setPriceListsLoading(true);
@@ -63,10 +64,9 @@ export default function LaboratoryDetailPage() {
   if (isLoading) return <Skeleton className="h-96" />;
   if (error) return <p className="text-red-400">{error}</p>;
 
-  return (
-    <>
-      <Header title={laboratory?.name || "Laboratoire"} />
-      <div className="flex items-center justify-between mt-4">
+   return (
+     <>
+       <div className="flex items-center justify-between mt-4">
         <Button variant="ghost" onClick={() => router.push("/laboratories")}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Retour
         </Button>
