@@ -11,7 +11,8 @@ import QuickMappingDialog from "@/components/comparison/quick-mapping-dialog";
 import { useComparison } from "@/hooks/use-comparison";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Mail } from "lucide-react";
+import { Mail, Zap } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 /**
  * Parse a human-readable turnaround time string into hours for comparison.
@@ -196,6 +197,16 @@ function ComparisonContent() {
     setSelections({});
   }, []);
 
+  const hasActiveSelections = Object.keys(selections).length > 0;
+
+  const selectionTotal = useMemo(() => {
+    if (!tableData || !hasActiveSelections) return 0;
+    return Object.entries(selections).reduce((sum, [testId, labId]) => {
+      const test = tableData.tests.find((t) => t.id === testId);
+      return sum + (test?.prices[labId] ?? 0);
+    }, 0);
+  }, [selections, tableData, hasActiveSelections]);
+
   if (!testIds.length) {
     return (
       <>
@@ -219,24 +230,37 @@ function ComparisonContent() {
         <p className="text-red-500 mt-6">{error}</p>
       ) : comparison ? (
         <div className="mt-6 space-y-6">
-          {/* Email action bar */}
-          <div className="flex items-center justify-between rounded-lg border bg-card p-4">
+          {/* Email action bar — keyed to avoid React 19 DOM reconciliation issues */}
+          <div key={hasActiveSelections ? "bar-sel" : "bar-def"} className="flex items-center justify-between rounded-lg border bg-card p-4">
             <div>
-              <p className="text-sm font-medium">Envoyer la comparaison au client</p>
+              <p className="text-sm font-medium">
+                {hasActiveSelections ? "Envoyer la sélection optimisée au client" : "Envoyer la comparaison au client"}
+              </p>
               <p className="text-xs text-muted-foreground">
-                Identifie le laboratoire le moins cher et envoie le résultat par email.
+                {hasActiveSelections
+                  ? `Sélection multi-laboratoires (${Object.keys(selections).length} tests) — ${formatCurrency(selectionTotal)}`
+                  : "Identifie le laboratoire le moins cher et envoie le résultat par email."}
               </p>
             </div>
             <Button onClick={() => setEmailDialogOpen(true)}>
-              <Mail className="mr-2 h-4 w-4" />
-              Envoyer par email
+              {hasActiveSelections
+                ? <><Zap className="mr-2 h-4 w-4" /><span>Envoyer la sélection</span></>
+                : <><Mail className="mr-2 h-4 w-4" /><span>Envoyer par email</span></>}
             </Button>
           </div>
 
           {missingTests.length > 0 && (
             <MissingTestsAlert missingTests={missingTests} />
           )}
-          <LabCostSummary labs={labs} bestLabId={bestLabId} />
+          <LabCostSummary
+            labs={labs}
+            bestLabId={bestLabId}
+            selections={hasActiveSelections ? selections : undefined}
+            selectionTotal={selectionTotal}
+            testNames={testNames}
+            testMappingIds={testIds}
+            laboratories={tableData?.laboratories}
+          />
           {tableData && (
             <ComparisonTable
               data={tableData}
@@ -255,6 +279,8 @@ function ComparisonContent() {
         onClose={() => setEmailDialogOpen(false)}
         testMappingIds={testIds}
         testNames={testNames}
+        selections={hasActiveSelections ? selections : undefined}
+        laboratories={tableData?.laboratories}
       />
 
       <QuickMappingDialog

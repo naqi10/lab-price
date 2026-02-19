@@ -220,6 +220,26 @@ export async function findBestLaboratory(
 // Comparison with Auto Email
 // ---------------------------------------------------------------------------
 
+/** One test's assignment in a multi-lab selection. */
+export interface SelectionTestAssignment {
+  testMappingId: string;
+  canonicalName: string;
+  localTestName: string;
+  laboratoryId: string;
+  laboratoryName: string;
+  price: number;
+  formattedPrice: string;
+  turnaroundTime: string | null;
+}
+
+/** Multi-lab selection summary (present when per-test selections are active). */
+export interface MultiLabSelection {
+  assignments: SelectionTestAssignment[];
+  totalPrice: number;
+  formattedTotalPrice: string;
+  laboratories: { id: string; name: string; code: string }[];
+}
+
 /** Structured result for comparison with email. */
 export interface ComparisonEmailResult {
   testNames: string[];
@@ -239,6 +259,8 @@ export interface ComparisonEmailResult {
     totalPrice: number;
     formattedTotalPrice: string;
   };
+  /** Present only when per-test lab selections are active. */
+  multiLabSelection?: MultiLabSelection;
 }
 
 /**
@@ -256,8 +278,9 @@ export async function compareTestsWithEmail(data: {
   clientEmail: string;
   clientName?: string;
   customerId?: string;
+  selections?: Record<string, string>;
 }): Promise<ComparisonEmailResult> {
-  const { testMappingIds, clientEmail, clientName, customerId } = data;
+  const { testMappingIds, clientEmail, clientName, customerId, selections } = data;
 
   // ── Validation ───────────────────────────────────────────────────────────
   if (!testMappingIds || testMappingIds.length === 0) {
@@ -345,13 +368,60 @@ export async function compareTestsWithEmail(data: {
     .filter((lab) => lab.tests.length === requiredCount)
     .sort((a, b) => a.totalPrice - b.totalPrice);
 
-  if (completeLabs.length === 0) {
+  const hasSelections = selections && Object.keys(selections).length === requiredCount;
+
+  if (completeLabs.length === 0 && !hasSelections) {
     throw new Error(
       "Aucun laboratoire ne propose tous les tests sélectionnés avec des prix disponibles"
     );
   }
 
-  const cheapest = completeLabs[0];
+  const cheapest = completeLabs[0] ?? Array.from(labMap.values())[0];
+
+  // ── Build multi-lab selection if selections provided ───────────────────
+  let multiLabSelection: MultiLabSelection | undefined;
+
+  if (hasSelections) {
+    const assignments: SelectionTestAssignment[] = [];
+    let selTotal = 0;
+    const involvedLabIds = new Set<string>();
+
+    for (const mapping of testMappings) {
+      const labId = selections[mapping.id];
+      if (!labId) continue;
+      const lab = labMap.get(labId);
+      if (!lab) continue;
+      const test = lab.tests.find((t) => t.canonicalName === mapping.canonicalName);
+      if (!test) continue;
+
+      involvedLabIds.add(labId);
+      selTotal += test.price;
+      assignments.push({
+        testMappingId: mapping.id,
+        canonicalName: mapping.canonicalName,
+        localTestName: test.localTestName,
+        laboratoryId: labId,
+        laboratoryName: lab.name,
+        price: test.price,
+        formattedPrice: formatCurrency(test.price),
+        turnaroundTime: test.turnaroundTime,
+      });
+    }
+
+    if (assignments.length > 0) {
+      const involvedLabs = Array.from(involvedLabIds).map((id) => {
+        const l = labMap.get(id)!;
+        return { id: l.id, name: l.name, code: l.code };
+      });
+
+      multiLabSelection = {
+        assignments,
+        totalPrice: selTotal,
+        formattedTotalPrice: formatCurrency(selTotal),
+        laboratories: involvedLabs,
+      };
+    }
+  }
 
   // ── Build structured result ──────────────────────────────────────────────
   const result: ComparisonEmailResult = {
@@ -378,7 +448,10 @@ export async function compareTestsWithEmail(data: {
       totalPrice: cheapest.totalPrice,
       formattedTotalPrice: formatCurrency(cheapest.totalPrice),
     },
+    multiLabSelection,
   };
+
+  const isMultiLab = !!result.multiLabSelection;
 
   // ── Auto-send email ──────────────────────────────────────────────────────
   const [template, emailConfig] = await Promise.all([
@@ -392,13 +465,17 @@ export async function compareTestsWithEmail(data: {
   let emailSubject: string;
 
   if (template) {
-    const comparisonTableHtml = buildComparisonTableHtml(result);
+    const comparisonTableHtml = isMultiLab
+      ? buildMultiLabComparisonTableHtml(result)
+      : buildComparisonTableHtml(result);
 
     const variables: TemplateVariables = {
       clientName: clientName || undefined,
       testNames: result.testNames.join(", "),
-      cheapestLabName: cheapest.name,
-      cheapestLabPrice: formatCurrency(cheapest.totalPrice),
+      cheapestLabName: isMultiLab ? "Sélection optimisée" : cheapest.name,
+      cheapestLabPrice: isMultiLab
+        ? result.multiLabSelection!.formattedTotalPrice
+        : formatCurrency(cheapest.totalPrice),
       comparisonTableHtml,
       companyLogoUrl: emailConfig?.companyLogoUrl || undefined,
       signatureHtml: emailConfig?.signatureHtml || undefined,
@@ -412,9 +489,12 @@ export async function compareTestsWithEmail(data: {
     });
     emailSubject = renderSubject(template.subject, variables, "remove");
   } else {
-    // Fallback: use the hard-coded HTML builder
-    htmlContent = buildComparisonEmailHtml(result, clientName);
-    emailSubject = `Comparaison de prix — ${result.testNames.join(" & ")} — ${cheapest.name}`;
+    htmlContent = isMultiLab
+      ? buildMultiLabComparisonEmailHtml(result, clientName)
+      : buildComparisonEmailHtml(result, clientName);
+    emailSubject = isMultiLab
+      ? `Comparaison de prix — ${result.testNames.join(" & ")} — Sélection optimisée`
+      : `Comparaison de prix — ${result.testNames.join(" & ")} — ${cheapest.name}`;
   }
 
   // ── Generate comparison PDF ─────────────────────────────────────────────
@@ -477,6 +557,127 @@ function buildComparisonTableHtml(result: ComparisonEmailResult): string {
     </tr>
   </tfoot>
 </table>`;
+}
+
+/**
+ * Build comparison table for multi-lab (per-test) selections.
+ * Each row shows the test, assigned lab, price and turnaround time.
+ */
+function buildMultiLabComparisonTableHtml(result: ComparisonEmailResult): string {
+  const sel = result.multiLabSelection;
+  if (!sel) return "";
+
+  const thStyle = "padding:10px 14px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;";
+  const tdStyle = "padding:10px 14px;border:1px solid #e2e8f0;";
+
+  const rows = sel.assignments
+    .map(
+      (a) => `<tr>
+        <td style="${tdStyle}">${a.canonicalName}</td>
+        <td style="${tdStyle}">${a.laboratoryName}</td>
+        <td style="${tdStyle}text-align:right;font-weight:600;">${a.formattedPrice}</td>
+        <td style="${tdStyle}">${a.turnaroundTime ?? "—"}</td>
+      </tr>`
+    )
+    .join("");
+
+  return `<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
+  <thead>
+    <tr>
+      <th style="${thStyle}text-align:left;">Analyse</th>
+      <th style="${thStyle}text-align:left;">Laboratoire</th>
+      <th style="${thStyle}text-align:right;">Prix (MAD)</th>
+      <th style="${thStyle}text-align:left;">Délai</th>
+    </tr>
+  </thead>
+  <tbody>${rows}</tbody>
+  <tfoot>
+    <tr style="background-color:#eff6ff;">
+      <td style="${tdStyle}font-weight:700;" colspan="2">Total</td>
+      <td style="${tdStyle}text-align:right;font-weight:700;">${sel.formattedTotalPrice}</td>
+      <td style="${tdStyle}"></td>
+    </tr>
+  </tfoot>
+</table>`;
+}
+
+/**
+ * Full HTML email for multi-lab (per-test) selections (hard-coded fallback).
+ */
+function buildMultiLabComparisonEmailHtml(
+  result: ComparisonEmailResult,
+  clientName?: string
+): string {
+  const greeting = clientName ? `Bonjour ${clientName},` : "Bonjour,";
+  const sel = result.multiLabSelection!;
+  const thStyle = "padding:10px 14px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;";
+  const tdStyle = "padding:10px 14px;border:1px solid #e2e8f0;";
+
+  const rows = sel.assignments
+    .map(
+      (a) => `<tr>
+        <td style="${tdStyle}">${a.canonicalName}</td>
+        <td style="${tdStyle}">${a.laboratoryName}</td>
+        <td style="${tdStyle}text-align:right;font-weight:600;">${a.formattedPrice}</td>
+        <td style="${tdStyle}">${a.turnaroundTime ?? "—"}</td>
+      </tr>`
+    )
+    .join("");
+
+  const labList = sel.laboratories.map((l) => l.name).join(", ");
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8" /></head>
+<body style="margin:0;padding:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f1f5f9;">
+  <div style="max-width:720px;margin:24px auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+    <div style="background:#0f172a;padding:24px 32px;">
+      <h1 style="margin:0;color:#ffffff;font-size:20px;">Lab Price Comparator</h1>
+      <p style="margin:4px 0 0;color:#94a3b8;font-size:14px;">Sélection optimisée multi-laboratoires</p>
+    </div>
+    <div style="padding:32px;">
+      <p style="margin:0 0 16px;color:#334155;font-size:15px;">${greeting}</p>
+      <p style="margin:0 0 24px;color:#334155;font-size:15px;">
+        Voici la sélection optimisée pour
+        <strong>${result.testNames.join("</strong>, <strong>")}</strong>
+        répartie entre <strong>${labList}</strong>. Le document PDF détaillé est joint à cet email.
+      </p>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
+        <thead>
+          <tr>
+            <th style="${thStyle}text-align:left;">Analyse</th>
+            <th style="${thStyle}text-align:left;">Laboratoire</th>
+            <th style="${thStyle}text-align:right;">Prix (MAD)</th>
+            <th style="${thStyle}text-align:left;">Délai</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr style="background-color:#eff6ff;">
+            <td style="${tdStyle}font-weight:700;" colspan="2">Total</td>
+            <td style="${tdStyle}text-align:right;font-weight:700;">${sel.formattedTotalPrice}</td>
+            <td style="${tdStyle}"></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:20px;margin-bottom:24px;">
+        <p style="margin:0 0 4px;font-size:13px;color:#2563eb;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Sélection optimisée</p>
+        <p style="margin:0;font-size:16px;color:#1e40af;font-weight:500;">Laboratoires : ${labList}</p>
+        <p style="margin:4px 0 0;font-size:22px;font-weight:700;color:#1d4ed8;">Prix total : ${sel.formattedTotalPrice}</p>
+      </div>
+      <p style="margin:0;color:#64748b;font-size:13px;">
+        Ce devis a été généré automatiquement par Lab Price Comparator.
+        Pour toute question, n'hésitez pas à nous contacter.
+      </p>
+    </div>
+    <div style="background:#f8fafc;padding:16px 32px;border-top:1px solid #e2e8f0;">
+      <p style="margin:0;color:#94a3b8;font-size:12px;text-align:center;">
+        &copy; ${new Date().getFullYear()} Lab Price Comparator — Email automatique
+      </p>
+    </div>
+  </div>
+</body>
+</html>`;
 }
 
 /** Build a professional HTML email body for the comparison result (hard-coded fallback). */

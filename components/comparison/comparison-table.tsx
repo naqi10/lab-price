@@ -186,9 +186,9 @@ export default function ComparisonTable({
   return (
     <TooltipProvider delayDuration={200}>
       <div className="space-y-4">
-        {/* Optimization toolbar */}
+        {/* Optimization toolbar — keyed to avoid React 19 DOM reconciliation issues */}
         {onSelectLab && (
-          <div className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-3">
+          <div key={hasSelections ? "toolbar-sel" : "toolbar-def"} className="flex flex-wrap items-center gap-3 rounded-lg border bg-card p-3">
             <span className="text-sm font-medium text-muted-foreground">
               Optimisation par test :
             </span>

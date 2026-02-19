@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { testMappingIds, clientEmail, clientName, customerId } = body;
+    const { testMappingIds, clientEmail, clientName, customerId, selections } = body;
 
     // ── Validation ─────────────────────────────────────────────────────────
     if (!testMappingIds || !Array.isArray(testMappingIds) || testMappingIds.length === 0) {
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
       clientEmail,
       clientName: clientName || undefined,
       customerId: customerId || undefined,
+      selections: selections || undefined,
     });
 
     return NextResponse.json({

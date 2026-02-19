@@ -33,31 +33,55 @@ export function useTestMappings() {
 
 const CART_KEY = "lab-price-test-cart";
 
-export function useTestCart() {
-  const [items, setItems] = useState<{ id: string; testMappingId: string; canonicalName: string }[]>([]);
+type CartItem = { id: string; testMappingId: string; canonicalName: string };
 
-  // Hydrate from sessionStorage on mount
+function persistCart(items: CartItem[]) {
+  try { sessionStorage.setItem(CART_KEY, JSON.stringify(items)); } catch { /* ignore */ }
+}
+
+export function useTestCart() {
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [isReady, setIsReady] = useState(false);
+
+  // Hydrate from sessionStorage on mount (read-only, no persist effect)
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem(CART_KEY);
-      if (stored) setItems(JSON.parse(stored));
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) setItems(parsed);
+      }
     } catch { /* ignore */ }
+    setIsReady(true);
   }, []);
 
-  // Persist to sessionStorage on every change
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(CART_KEY, JSON.stringify(items));
-    } catch { /* ignore */ }
-  }, [items]);
+  // Persist inline with every mutation — no separate persist effect
+  const addItem = useCallback((item: CartItem) => {
+    setItems(prev => {
+      if (prev.find(i => i.testMappingId === item.testMappingId)) return prev;
+      const next = [...prev, item];
+      persistCart(next);
+      return next;
+    });
+  }, []);
 
-  const addItem = useCallback((item: { id: string; testMappingId: string; canonicalName: string }) => { setItems(prev => prev.find(i => i.id === item.id) ? prev : [...prev, item]); }, []);
-  const removeItem = useCallback((id: string) => { setItems(prev => prev.filter(i => i.id !== id)); }, []);
-  const clearCart = useCallback(() => setItems([]), []);
+  const removeItem = useCallback((id: string) => {
+    setItems(prev => {
+      const next = prev.filter(i => i.id !== id);
+      persistCart(next);
+      return next;
+    });
+  }, []);
+
+  const clearCart = useCallback(() => {
+    setItems([]);
+    persistCart([]);
+  }, []);
 
   const loadFromMappingIds = useCallback(async (testMappingIds: string[]) => {
     if (testMappingIds.length === 0) {
       setItems([]);
+      persistCart([]);
       return;
     }
     try {
@@ -74,10 +98,12 @@ export function useTestCart() {
         canonicalName: m.canonicalName ?? m.id,
       }));
       setItems(newItems);
+      persistCart(newItems);
     } catch {
       setItems([]);
+      persistCart([]);
     }
   }, []);
 
-  return { items, addItem, removeItem, clearCart, loadFromMappingIds, totalItems: items.length };
+  return { items, addItem, removeItem, clearCart, loadFromMappingIds, totalItems: items.length, isReady };
 }

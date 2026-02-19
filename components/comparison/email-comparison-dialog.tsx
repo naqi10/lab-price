@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,7 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Mail, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Mail, Loader2, CheckCircle2, AlertTriangle, Zap } from "lucide-react";
 import CustomerCombobox from "@/components/customers/customer-combobox";
 
 interface EmailComparisonDialogProps {
@@ -19,6 +20,10 @@ interface EmailComparisonDialogProps {
   onClose: () => void;
   testMappingIds: string[];
   testNames: string[];
+  /** Per-test lab selections (testMappingId → labId). When provided, sends as multi-lab selection. */
+  selections?: Record<string, string>;
+  /** Lab lookup for display in multi-lab mode */
+  laboratories?: { id: string; name: string }[];
 }
 
 export default function EmailComparisonDialog({
@@ -26,6 +31,8 @@ export default function EmailComparisonDialog({
   onClose,
   testMappingIds,
   testNames,
+  selections,
+  laboratories,
 }: EmailComparisonDialogProps) {
   const [selectedCustomer, setSelectedCustomer] = useState<{
     id: string;
@@ -38,7 +45,10 @@ export default function EmailComparisonDialog({
     message: string;
     cheapestLab?: string;
     totalPrice?: string;
+    isMultiLab?: boolean;
   } | null>(null);
+
+  const hasSelections = selections && Object.keys(selections).length > 0;
 
   const handleSend = async () => {
     if (!selectedCustomer || isLoading) return;
@@ -54,17 +64,24 @@ export default function EmailComparisonDialog({
           clientEmail: selectedCustomer.email,
           clientName: selectedCustomer.name,
           customerId: selectedCustomer.id,
+          selections: hasSelections ? selections : undefined,
         }),
       });
 
       const data = await res.json();
 
       if (data.success) {
+        const ml = data.data?.multiLabSelection;
         setResult({
           success: true,
           message: data.message,
-          cheapestLab: data.data?.cheapestLaboratory?.name,
-          totalPrice: data.data?.cheapestLaboratory?.formattedTotalPrice,
+          cheapestLab: ml
+            ? ml.laboratories.map((l: { name: string }) => l.name).join(", ")
+            : data.data?.cheapestLaboratory?.name,
+          totalPrice: ml
+            ? ml.formattedTotalPrice
+            : data.data?.cheapestLaboratory?.formattedTotalPrice,
+          isMultiLab: !!ml,
         });
       } else {
         setResult({ success: false, message: data.message });
@@ -84,6 +101,8 @@ export default function EmailComparisonDialog({
 
   const isValid = testMappingIds.length > 0 && selectedCustomer !== null;
 
+  const labNameMap = new Map(laboratories?.map((l) => [l.id, l.name]) ?? []);
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent className="sm:max-w-md">
@@ -93,8 +112,9 @@ export default function EmailComparisonDialog({
             Envoyer la comparaison par email
           </DialogTitle>
           <DialogDescription>
-            Compare les prix et envoie automatiquement le meilleur tarif au
-            client.
+            {hasSelections
+              ? "Envoie la sélection optimisée multi-laboratoires au client."
+              : "Compare les prix et envoie automatiquement le meilleur tarif au client."}
           </DialogDescription>
         </DialogHeader>
 
@@ -105,12 +125,14 @@ export default function EmailComparisonDialog({
                 <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto" />
                 <p className="text-green-400 font-medium">{result.message}</p>
                 {result.cheapestLab && (
-                  <div className="bg-green-900/20 border border-green-800 rounded-lg p-4 mt-4 text-left">
-                    <p className="text-sm text-green-300">
-                      <span className="font-semibold">Laboratoire recommandé :</span>{" "}
+                  <div className={`${result.isMultiLab ? "bg-blue-900/20 border-blue-800" : "bg-green-900/20 border-green-800"} border rounded-lg p-4 mt-4 text-left`}>
+                    <p className={`text-sm ${result.isMultiLab ? "text-blue-300" : "text-green-300"}`}>
+                      <span className="font-semibold">
+                        {result.isMultiLab ? "Laboratoires :" : "Laboratoire recommandé :"}
+                      </span>{" "}
                       {result.cheapestLab}
                     </p>
-                    <p className="text-sm text-green-300 mt-1">
+                    <p className={`text-sm mt-1 ${result.isMultiLab ? "text-blue-300" : "text-green-300"}`}>
                       <span className="font-semibold">Prix total :</span>{" "}
                       {result.totalPrice}
                     </p>
@@ -126,16 +148,37 @@ export default function EmailComparisonDialog({
           </div>
         ) : (
           <div className="space-y-4 py-2">
-            <div className="bg-muted/50 rounded-lg p-3">
-              <p className="text-xs text-muted-foreground font-medium mb-1">
-                Tests sélectionnés
-              </p>
-              {testNames.map((name, i) => (
-                <p key={i} className="text-sm font-medium">
-                  {i + 1}. {name}
+            {hasSelections && (
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="h-4 w-4 text-blue-500" />
+                  <p className="text-xs font-semibold text-blue-400">Sélection optimisée</p>
+                </div>
+                {testNames.map((name, i) => {
+                  const labId = selections![testMappingIds[i]];
+                  const labName = labId ? labNameMap.get(labId) : undefined;
+                  return (
+                    <div key={i} className="flex items-center justify-between text-sm py-0.5">
+                      <span className="font-medium">{name}</span>
+                      {labName && <Badge variant="outline" className="text-xs">{labName}</Badge>}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {!hasSelections && (
+              <div className="bg-muted/50 rounded-lg p-3">
+                <p className="text-xs text-muted-foreground font-medium mb-1">
+                  Tests sélectionnés
                 </p>
-              ))}
-            </div>
+                {testNames.map((name, i) => (
+                  <p key={i} className="text-sm font-medium">
+                    {i + 1}. {name}
+                  </p>
+                ))}
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label>Client *</Label>
@@ -155,12 +198,12 @@ export default function EmailComparisonDialog({
             isLoading ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Comparaison en cours...</span>
+                <span>Envoi en cours...</span>
               </Button>
             ) : (
               <Button onClick={handleSend} disabled={!isValid}>
                 <Mail className="mr-2 h-4 w-4" />
-                <span>Comparer &amp; Envoyer</span>
+                <span>{hasSelections ? "Envoyer la sélection" : "Comparer & Envoyer"}</span>
               </Button>
             )
           )}

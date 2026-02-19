@@ -29,11 +29,13 @@ interface LabTotal {
 
 export default function TestCart({
   items,
+  isReady = true,
   onRemove,
   onClear,
   onCompare,
 }: {
   items: CartItem[];
+  isReady?: boolean;
   onRemove: (id: string) => void;
   onClear: () => void;
   onCompare: () => void;
@@ -70,7 +72,7 @@ export default function TestCart({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-lg">
-          Tests sélectionnés ({items.length})
+          Tests sélectionnés {isReady ? `(${items.length})` : ""}
         </CardTitle>
         {items.length > 0 && (
           <Button

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 export default function TestsPage() {
   const router = useRouter();
-  const { items, addItem, removeItem, clearCart, loadFromMappingIds, totalItems } = useTestCart();
+  const { items, addItem, removeItem, clearCart, loadFromMappingIds, isReady } = useTestCart();
 
   return (
     <>
@@ -23,18 +23,20 @@ export default function TestsPage() {
       <div className="grid gap-6 mt-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <TestSearch
-            onSelect={(test) =>
+            onSelect={(test) => {
+              const mappingId = test.testMappingId || test.id;
               addItem({
-                id: test.id,
-                testMappingId: test.testMappingId || test.id,
+                id: mappingId,
+                testMappingId: mappingId,
                 canonicalName: test.canonicalName || test.name,
-              })
-            }
+              });
+            }}
           />
         </div>
         <div className="space-y-6">
           <TestCart
             items={items}
+            isReady={isReady}
             onRemove={removeItem}
             onClear={clearCart}
             onCompare={() => {
