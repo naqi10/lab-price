@@ -19,7 +19,7 @@ interface Customer {
   phone: string | null;
   company: string | null;
   createdAt: string;
-  _count: { emailLogs: number; quotations: number };
+  _count: { emailLogs: number; estimates: number };
 }
 
 interface EmailHistoryItem {
@@ -30,17 +30,16 @@ interface EmailHistoryItem {
   source: string;
   error: string | null;
   createdAt: string;
+  estimateNumber?: string | null;
 }
 
-interface QuotationHistoryItem {
+interface EstimateHistoryItem {
   id: string;
-  quotationNumber: string;
-  title: string;
-  status: string;
+  estimateNumber: string;
   totalPrice: number;
+  status: string;
   createdAt: string;
-  laboratory: { id: string; name: string; code: string };
-  _count: { items: number };
+  validUntil: string | null;
 }
 
 const statusMap: Record<string, { label: string; variant: "default" | "destructive" | "secondary" }> = {
@@ -49,17 +48,16 @@ const statusMap: Record<string, { label: string; variant: "default" | "destructi
   PENDING: { label: "En attente", variant: "secondary" },
 };
 
-const quotationStatusMap: Record<string, { label: string; variant: "default" | "destructive" | "secondary" | "outline" }> = {
+const estimateStatusMap: Record<string, { label: string; variant: "default" | "destructive" | "secondary" | "outline" }> = {
   DRAFT: { label: "Brouillon", variant: "secondary" },
   SENT: { label: "Envoyé", variant: "default" },
   ACCEPTED: { label: "Accepté", variant: "default" },
-  REJECTED: { label: "Refusé", variant: "destructive" },
-  CANCELLED: { label: "Annulé", variant: "outline" },
+  REJECTED: { label: "Rejeté", variant: "destructive" },
 };
 
 const sourceMap: Record<string, string> = {
   comparison: "Comparaison",
-  quotation: "Devis",
+  estimate: "Estimation",
   system: "Système",
 };
 
@@ -69,7 +67,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
 
    const [customer, setCustomer] = useState<Customer | null>(null);
   const [history, setHistory] = useState<EmailHistoryItem[]>([]);
-  const [quotations, setQuotations] = useState<QuotationHistoryItem[]>([]);
+  const [estimates, setEstimates] = useState<EstimateHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -82,9 +80,9 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
     Promise.all([
       fetch(`/api/customers/${id}`).then((r) => r.json()),
       fetch(`/api/customers/${id}/history`).then((r) => r.json()),
-      fetch(`/api/customers/${id}/quotations`).then((r) => r.json()),
+      fetch(`/api/estimates?customerId=${id}&limit=50`).then((r) => r.json()),
     ])
-      .then(([customerRes, historyRes, quotationsRes]) => {
+      .then(([customerRes, historyRes, estimatesRes]) => {
         if (customerRes.success) {
           setCustomer(customerRes.data);
           setForm({
@@ -97,7 +95,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           setError(customerRes.message);
         }
         if (historyRes.success) setHistory(historyRes.data);
-        if (quotationsRes.success) setQuotations(quotationsRes.data);
+        if (estimatesRes.success) setEstimates(estimatesRes.data.estimates || []);
       })
       .catch(() => setError("Erreur de connexion"))
       .finally(() => setLoading(false));
@@ -228,87 +226,93 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           </CardContent>
         </Card>
 
-        {/* Stats */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              Résumé
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold">{quotations.length}</p>
-                <p className="text-xs text-muted-foreground">Devis</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold">{history.length}</p>
-                <p className="text-xs text-muted-foreground">Emails</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">
-                  {history.filter((h) => h.status === "SENT").length}
-                </p>
-                <p className="text-xs text-muted-foreground">Envoyés</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-red-600">
-                  {history.filter((h) => h.status === "FAILED").length}
-                </p>
-                <p className="text-xs text-muted-foreground">Échoués</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+         {/* Stats */}
+         <Card>
+           <CardHeader>
+             <CardTitle className="text-base flex items-center gap-2">
+               <Mail className="h-4 w-4" />
+               Résumé
+             </CardTitle>
+           </CardHeader>
+           <CardContent>
+             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+               <div className="text-center">
+                 <p className="text-2xl font-bold">{estimates.length}</p>
+                 <p className="text-xs text-muted-foreground">Estimations</p>
+               </div>
+               <div className="text-center">
+                 <p className="text-2xl font-bold">{history.length}</p>
+                 <p className="text-xs text-muted-foreground">Emails</p>
+               </div>
+               <div className="text-center">
+                 <p className="text-2xl font-bold text-green-600">
+                   {history.filter((h) => h.status === "SENT").length}
+                 </p>
+                 <p className="text-xs text-muted-foreground">Envoyés</p>
+               </div>
+               <div className="text-center">
+                 <p className="text-2xl font-bold text-red-600">
+                   {history.filter((h) => h.status === "FAILED").length}
+                 </p>
+                 <p className="text-xs text-muted-foreground">Échoués</p>
+               </div>
+             </div>
+           </CardContent>
+         </Card>
       </div>
 
-      {/* Quotation history */}
+      {/* Estimates history */}
       <Card className="mt-6">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <FileText className="h-4 w-4" />
-            Historique des devis
+            Historique des estimations
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {quotations.length === 0 ? (
+          {estimates.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-6">
-              Aucun devis pour ce client.
+              Aucune estimation pour ce client.
             </p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>N° Devis</TableHead>
-                  <TableHead>Titre</TableHead>
-                  <TableHead>Laboratoire</TableHead>
-                  <TableHead>Tests</TableHead>
+                  <TableHead>N° Estimation</TableHead>
                   <TableHead>Montant</TableHead>
+                  <TableHead>Validité</TableHead>
                   <TableHead>Statut</TableHead>
                   <TableHead>Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {quotations.map((q) => {
-                  const st = quotationStatusMap[q.status] || quotationStatusMap.DRAFT;
+                {estimates.map((est) => {
+                  const st = estimateStatusMap[est.status] || estimateStatusMap.DRAFT;
+                  const isExpired = est.validUntil && new Date(est.validUntil) < new Date();
                   return (
                     <TableRow
-                      key={q.id}
+                      key={est.id}
                       className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => router.push(`/quotations/${q.id}`)}
+                      onClick={() => router.push(`/estimates/${est.id}`)}
                     >
-                      <TableCell className="font-mono text-xs">{q.quotationNumber}</TableCell>
-                      <TableCell className="max-w-[200px] truncate">{q.title}</TableCell>
-                      <TableCell>{q.laboratory.name}</TableCell>
-                      <TableCell>{q._count.items}</TableCell>
-                      <TableCell className="font-medium">{formatCurrency(q.totalPrice)}</TableCell>
+                      <TableCell className="font-mono text-xs">{est.estimateNumber}</TableCell>
+                      <TableCell className="font-medium">{formatCurrency(est.totalPrice)}</TableCell>
+                      <TableCell className="text-sm">
+                        {est.validUntil ? (
+                          <>
+                            {formatDate(est.validUntil)}
+                            {isExpired && <span className="ml-2 text-xs text-red-600">(Expiré)</span>}
+                          </>
+                        ) : (
+                          "—"
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge variant={st.variant as "default" | "destructive" | "secondary" | "outline"}>
                           {st.label}
                         </Badge>
                       </TableCell>
-                      <TableCell>{formatDate(q.createdAt)}</TableCell>
+                      <TableCell>{formatDate(est.createdAt)}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -332,11 +336,12 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
               Aucun email envoyé à ce client.
             </p>
           ) : (
-            <Table>
+             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
                   <TableHead>Sujet</TableHead>
+                  <TableHead>Estimation</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Statut</TableHead>
                 </TableRow>
@@ -346,9 +351,16 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
                   const st = statusMap[item.status] || statusMap.PENDING;
                   return (
                     <TableRow key={item.id}>
-                      <TableCell>{formatDate(item.createdAt)}</TableCell>
-                      <TableCell className="max-w-[300px] truncate">{item.subject}</TableCell>
-                      <TableCell>{sourceMap[item.source] || item.source}</TableCell>
+                      <TableCell className="text-sm">{formatDate(item.createdAt)}</TableCell>
+                      <TableCell className="max-w-[250px] truncate text-sm">{item.subject}</TableCell>
+                      <TableCell className="text-sm font-mono">
+                        {item.estimateNumber ? (
+                          <span className="text-primary font-medium">{item.estimateNumber}</span>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm">{sourceMap[item.source] || item.source}</TableCell>
                       <TableCell>
                         <Badge variant={st.variant}>{st.label}</Badge>
                       </TableCell>

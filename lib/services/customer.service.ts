@@ -96,9 +96,44 @@ export async function searchCustomers(query: string) {
 }
 
 export async function getCustomerHistory(customerId: string) {
-  return prisma.emailLog.findMany({
-    where: { customerId },
-    orderBy: { createdAt: "desc" },
-    take: 50,
-  });
+  // Get both email logs and estimate emails for this customer
+  const [emailLogs, estimateEmails] = await Promise.all([
+    prisma.emailLog.findMany({
+      where: { customerId },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
+    prisma.estimateEmail.findMany({
+      where: { estimate: { customerId } },
+      include: { estimate: true },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
+  ]);
+
+  // Combine and sort by date
+  const combined = [
+    ...emailLogs.map((log) => ({
+      id: log.id,
+      toEmail: log.toEmail,
+      subject: log.subject,
+      status: log.status,
+      source: log.source || "system",
+      error: log.error,
+      createdAt: log.createdAt,
+      estimateNumber: null,
+    })),
+    ...estimateEmails.map((email) => ({
+      id: email.id,
+      toEmail: email.toEmail,
+      subject: email.subject,
+      status: email.status,
+      source: "estimate",
+      error: email.error,
+      createdAt: email.createdAt || new Date(),
+      estimateNumber: email.estimate.estimateNumber,
+    })),
+  ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+  return combined.slice(0, 50);
 }
