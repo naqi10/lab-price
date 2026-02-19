@@ -15,7 +15,8 @@ export type AuditEntity =
   | "user"
   | "email_settings"
   | "email_template"
-  | "comparison_draft";
+  | "comparison_draft"
+  | "estimate";
 
 /**
  * Create an audit log entry.
