@@ -90,27 +90,23 @@ export function ExpandableEstimateRow({
     return entry?.laboratoryName || "—";
   };
 
-  const getTestPrice = (testMappingId: string): number | null => {
-    if (!estimate.testMappingDetails) return null;
+  const getTestPriceInfo = (testMappingId: string): { original: number | null; custom: number | null; selectedLab: string } => {
+    if (!estimate.testMappingDetails) return { original: null, custom: null, selectedLab: "—" };
 
     const testMapping = estimate.testMappingDetails.find((t) => t.id === testMappingId);
-    if (!testMapping || !testMapping.entries) return null;
+    if (!testMapping || !testMapping.entries) return { original: null, custom: null, selectedLab: "—" };
 
     const labId = estimate.selections?.[testMappingId];
-    if (!labId) return null;
+    if (!labId) return { original: null, custom: null, selectedLab: "—" };
 
     const entry = testMapping.entries.find((e) => e.laboratoryId === labId);
-    return entry?.price || null;
-  };
+    if (!entry) return { original: null, custom: null, selectedLab: "—" };
 
-  const getCustomPriceOverride = (testMappingId: string): number | null => {
-    if (!estimate.customPrices || !estimate.selections) return null;
-
-    const labId = estimate.selections[testMappingId];
-    if (!labId) return null;
-
-    const key = `${testMappingId}-${labId}`;
-    return estimate.customPrices[key] || null;
+    return {
+      original: entry.price || null,
+      custom: entry.customPrice || null,
+      selectedLab: entry.laboratoryName || "—",
+    };
   };
 
   return (
@@ -223,49 +219,47 @@ export function ExpandableEstimateRow({
         )}
       </TableRow>
 
-      {expanded && estimate.testMappingDetails && (
-        <TableRow className="bg-muted/30 hover:bg-muted/30">
-          <TableCell colSpan={5} className="py-4">
-            <div className="ml-8 space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground mb-3">TESTS INCLUS</p>
-              <div className="space-y-2">
-                {estimate.testMappingDetails.map((testMapping) => {
-                  const customPrice = getCustomPriceOverride(testMapping.id);
-                  const originalPrice = getTestPrice(testMapping.id);
-                  const selectedLab = getSelectedLabName(testMapping.id);
+       {expanded && estimate.testMappingDetails && (
+         <TableRow className="bg-muted/30 hover:bg-muted/30">
+           <TableCell colSpan={5} className="py-4">
+             <div className="ml-8 space-y-2">
+               <p className="text-xs font-semibold text-muted-foreground mb-3">TESTS INCLUS</p>
+               <div className="space-y-2">
+                 {estimate.testMappingDetails.map((testMapping) => {
+                   const priceInfo = getTestPriceInfo(testMapping.id);
 
-                  return (
-                    <div key={testMapping.id} className="text-sm flex items-center justify-between p-2 bg-card rounded border border-border/50">
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">{testMapping.canonicalName}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Labo: <span className="font-mono text-foreground/70">{selectedLab}</span>
-                        </p>
-                      </div>
-                      <div className="text-right ml-4">
-                        {customPrice !== null ? (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground line-through">
-                              {originalPrice ? formatCurrency(originalPrice) : "—"}
-                            </span>
-                            <span className="font-medium text-foreground">
-                              {formatCurrency(customPrice)}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="font-medium text-foreground">
-                            {originalPrice ? formatCurrency(originalPrice) : "—"}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </TableCell>
-        </TableRow>
-      )}
+                   return (
+                     <div key={testMapping.id} className="text-sm flex items-center justify-between p-2 bg-card rounded border border-border/50">
+                       <div className="flex-1">
+                         <p className="font-medium text-foreground">{testMapping.canonicalName}</p>
+                         <p className="text-xs text-muted-foreground">
+                           Labo: <span className="font-mono text-foreground/70">{priceInfo.selectedLab}</span>
+                         </p>
+                       </div>
+                       <div className="text-right ml-4">
+                         {priceInfo.custom !== null ? (
+                           <div className="flex items-center gap-2">
+                             <span className="text-xs text-muted-foreground line-through">
+                               {priceInfo.original ? formatCurrency(priceInfo.original) : "—"}
+                             </span>
+                             <span className="font-medium text-foreground">
+                               {formatCurrency(priceInfo.custom)}
+                             </span>
+                           </div>
+                         ) : (
+                           <span className="font-medium text-foreground">
+                             {priceInfo.original ? formatCurrency(priceInfo.original) : "—"}
+                           </span>
+                         )}
+                       </div>
+                     </div>
+                   );
+                 })}
+               </div>
+             </div>
+           </TableCell>
+         </TableRow>
+       )}
     </>
   );
 }
