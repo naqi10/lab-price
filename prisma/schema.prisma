@@ -46,9 +46,15 @@ enum QuotationStatus {
 }
 
 enum EmailStatus {
-  PENDING
-  SENT
-  FAILED
+   PENDING
+   SENT
+   FAILED
+}
+
+enum EstimateSelectionMode {
+   CHEAPEST
+   FASTEST
+   CUSTOM
 }
 
 model User {
@@ -330,33 +336,34 @@ model EmailTemplate {
 }
 
 model Estimate {
-  id                String   @id @default(uuid())
-  estimateNumber    String   @unique @map("estimate_number")
-  customerId        String?  @map("customer_id")
-  createdById       String   @map("created_by_id")
+   id                String   @id @default(uuid())
+   estimateNumber    String   @unique @map("estimate_number")
+   customerId        String?  @map("customer_id")
+   createdById       String   @map("created_by_id")
 
-  // Estimate content
-  testMappingIds    String[] @map("test_mapping_ids")
-  selections        Json?    // Multi-lab selections per test: { testMappingId: labId }
-  customPrices      Json     @default("{}")   // Custom price overrides: { "${testId}-${labId}": price }
+   // Estimate content
+   testMappingIds    String[] @map("test_mapping_ids")
+   selections        Json?    // Multi-lab selections per test: { testMappingId: labId }
+   customPrices      Json     @default("{}")   // Custom price overrides: { "${testId}-${labId}": price }
+   selectionMode     EstimateSelectionMode? @map("selection_mode")  // CHEAPEST, FASTEST, or CUSTOM (null = single lab)
 
-  // Calculation
-  totalPrice        Float    @map("total_price")
-  subtotal          Float?
+   // Calculation
+   totalPrice        Float    @map("total_price")
+   subtotal          Float?
 
-  // Status & dates
-  status            String   @default("DRAFT")  // DRAFT, SENT, ACCEPTED, REJECTED
-  notes             String?
-  validUntil        DateTime? @map("valid_until")
-  sentAt            DateTime? @map("sent_at")
+   // Status & dates
+   status            String   @default("DRAFT")  // DRAFT, SENT, ACCEPTED, REJECTED
+   notes             String?
+   validUntil        DateTime? @map("valid_until")
+   sentAt            DateTime? @map("sent_at")
 
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+   createdAt         DateTime @default(now()) @map("created_at")
+   updatedAt         DateTime @updatedAt @map("updated_at")
 
-  // Relations
-  customer          Customer? @relation(fields: [customerId], references: [id])
-  createdBy         User      @relation(fields: [createdById], references: [id])
+   // Relations
+   customer          Customer? @relation(fields: [customerId], references: [id])
+   createdBy         User      @relation(fields: [createdById], references: [id])
 
-  @@map("estimates")
+   @@map("estimates")
 }
 

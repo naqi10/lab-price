@@ -18,12 +18,13 @@ import {
 import { cn } from "@/lib/utils";
 
 interface SaveEstimateDialogProps {
-  open: boolean;
-  onClose: () => void;
-  testMappingIds: string[];
-  selections?: Record<string, string>;
-  customPrices?: Record<string, number>;
-  totalPrice: number;
+   open: boolean;
+   onClose: () => void;
+   testMappingIds: string[];
+   selections?: Record<string, string>;
+   customPrices?: Record<string, number>;
+   totalPrice: number;
+   selectionMode?: "CHEAPEST" | "FASTEST" | "CUSTOM";  // The mode of selection
 }
 
 interface Customer {
@@ -33,12 +34,13 @@ interface Customer {
 }
 
 export default function SaveEstimateDialog({
-  open,
-  onClose,
-  testMappingIds,
-  selections,
-  customPrices = {},
-  totalPrice,
+   open,
+   onClose,
+   testMappingIds,
+   selections,
+   customPrices = {},
+   totalPrice,
+   selectionMode = "CUSTOM",
 }: SaveEstimateDialogProps) {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -69,25 +71,26 @@ export default function SaveEstimateDialog({
     c.email.toLowerCase().includes(customerSearch.toLowerCase())
   );
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      const validUntil = new Date();
-      validUntil.setDate(validUntil.getDate() + parseInt(validDays));
+   const handleSave = async () => {
+     setIsSaving(true);
+     try {
+       const validUntil = new Date();
+       validUntil.setDate(validUntil.getDate() + parseInt(validDays));
 
-      const res = await fetch("/api/estimates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          testMappingIds,
-          selections: selections || null,
-          customPrices,
-          totalPrice,
-          customerId: selectedCustomer?.id || null,
-          notes: notes || null,
-          validUntil: validUntil.toISOString(),
-        }),
-      });
+       const res = await fetch("/api/estimates", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({
+           testMappingIds,
+           selections: selections || null,
+           customPrices,
+           totalPrice,
+           customerId: selectedCustomer?.id || null,
+           notes: notes || null,
+           validUntil: validUntil.toISOString(),
+           selectionMode: selections && Object.keys(selections).length > 0 ? selectionMode : null,
+         }),
+       });
 
       if (!res.ok) {
         const error = await res.json();
@@ -135,12 +138,16 @@ export default function SaveEstimateDialog({
                   }).format(totalPrice)}
                 </p>
               </div>
-              {selections && Object.keys(selections).length > 0 && (
-                <div className="col-span-2">
-                  <p className="text-muted-foreground text-xs">Mode</p>
-                  <p className="font-medium text-xs">Sélection multi-laboratoires</p>
-                </div>
-              )}
+               {selections && Object.keys(selections).length > 0 && (
+                 <div className="col-span-2">
+                   <p className="text-muted-foreground text-xs">Mode</p>
+                   <p className="font-medium text-xs">
+                     {selectionMode === "CHEAPEST" && "Sélection optimisée par prix"}
+                     {selectionMode === "FASTEST" && "Sélection optimisée par délai"}
+                     {selectionMode === "CUSTOM" && "Sélection personnalisée"}
+                   </p>
+                 </div>
+               )}
             </div>
           </div>
 

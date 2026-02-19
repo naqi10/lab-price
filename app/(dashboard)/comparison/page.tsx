@@ -20,21 +20,86 @@ import { formatCurrency } from "@/lib/utils";
  * Lower value = faster. Returns Infinity if unparseable.
  */
 function parseTatToHours(tat: string | null | undefined): number {
-  if (!tat) return Infinity;
-  const s = tat.toLowerCase().trim();
+   if (!tat) return Infinity;
+   const s = tat.toLowerCase().trim();
 
-  // "même jour" / "same day"
-  if (s.includes("même jour") || s.includes("same day")) return 0;
+   // "même jour" / "same day"
+   if (s.includes("même jour") || s.includes("same day")) return 0;
 
-  // "résultats en X heures" / "résultats en X–Y heures" / "results in X hours"
-  const hoursMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*h/);
-  if (hoursMatch) return Number(hoursMatch[1]);
+   // "résultats en X heures" / "résultats en X–Y heures" / "results in X hours"
+   const hoursMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*h/);
+   if (hoursMatch) return Number(hoursMatch[1]);
 
-  // "X jours ouvrables" / "X–Y jours ouvrables" / "X business days"
-  const daysMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*(?:jour|day|business)/);
-  if (daysMatch) return Number(daysMatch[1]) * 24;
+   // "X jours ouvrables" / "X–Y jours ouvrables" / "X business days"
+   const daysMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*(?:jour|day|business)/);
+   if (daysMatch) return Number(daysMatch[1]) * 24;
 
-  return Infinity;
+   return Infinity;
+}
+
+/**
+ * Detect if the current selections match the cheapest preset
+ */
+function isSelectionModeCheapest(
+   selections: Record<string, string>,
+   tableData: any,
+   customPrices: Record<string, number>
+): boolean {
+   if (!tableData) return false;
+   
+   for (const test of tableData.tests) {
+     const selectedLabId = selections[test.id];
+     if (!selectedLabId) return false;
+     
+     // Find the cheapest lab for this test considering custom prices
+     let cheapestLabId: string | null = null;
+     let cheapestPrice = Infinity;
+     
+     for (const lab of tableData.laboratories) {
+       const price = customPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
+       if (price != null && price < cheapestPrice) {
+         cheapestPrice = price;
+         cheapestLabId = lab.id;
+       }
+     }
+     
+     if (selectedLabId !== cheapestLabId) return false;
+   }
+   
+   return true;
+}
+
+/**
+ * Detect if the current selections match the fastest preset
+ */
+function isSelectionModeFastest(
+   selections: Record<string, string>,
+   tableData: any
+): boolean {
+   if (!tableData) return false;
+   
+   for (const test of tableData.tests) {
+     const selectedLabId = selections[test.id];
+     if (!selectedLabId) return false;
+     
+     // Find the fastest lab for this test
+     let fastestLabId: string | null = null;
+     let fastestHours = Infinity;
+     
+     for (const lab of tableData.laboratories) {
+       if (test.prices[lab.id] == null) continue; // Skip labs that don't have this test
+       const tat = test.turnaroundTimes?.[lab.id];
+       const hours = parseTatToHours(tat);
+       if (hours < fastestHours) {
+         fastestHours = hours;
+         fastestLabId = lab.id;
+       }
+     }
+     
+     if (selectedLabId !== fastestLabId) return false;
+   }
+   
+   return true;
 }
 
 export default function ComparisonPage() {
@@ -56,10 +121,13 @@ function ComparisonContent() {
   // Per-test lab selection state
   const [selections, setSelections] = useState<Record<string, string>>({});;
 
-  // Custom prices for this session only (not persisted to DB)
-  const [customPrices, setCustomPrices] = useState<Record<string, number>>({});
+   // Custom prices for this session only (not persisted to DB)
+   const [customPrices, setCustomPrices] = useState<Record<string, number>>({});
 
-  // Quick mapping dialog state
+   // Track the current selection mode
+   const [selectionMode, setSelectionMode] = useState<"CHEAPEST" | "FASTEST" | "CUSTOM">("CUSTOM");
+
+   // Quick mapping dialog state
   const [mappingDialog, setMappingDialog] = useState<{
     open: boolean;
     testMappingId: string;
@@ -140,68 +208,73 @@ function ComparisonContent() {
     return { labs, bestLabId, tableData, missingTests, testNames };
   }, [comparison, testIds.length]);
 
-  // Per-test lab selection handler
-  const handleSelectLab = useCallback((testId: string, labId: string) => {
-    setSelections((prev) => {
-      // Toggle: deselect if same lab already selected
-      if (prev[testId] === labId) {
-        const next = { ...prev };
-        delete next[testId];
-        return next;
-      }
-      return { ...prev, [testId]: labId };
-    });
-  }, []);
+   // Per-test lab selection handler
+   const handleSelectLab = useCallback((testId: string, labId: string) => {
+     setSelections((prev) => {
+       // Toggle: deselect if same lab already selected
+       if (prev[testId] === labId) {
+         const next = { ...prev };
+         delete next[testId];
+         return next;
+       }
+       return { ...prev, [testId]: labId };
+     });
+     // Any manual change is custom mode
+     setSelectionMode("CUSTOM");
+   }, []);
 
-  // Preset: select cheapest lab per test
-  const handlePresetCheapest = useCallback(() => {
-    if (!tableData) return;
-    const next: Record<string, string> = {};
-    for (const test of tableData.tests) {
-      let cheapestLabId: string | null = null;
-      let cheapestPrice = Infinity;
-      for (const lab of tableData.laboratories) {
-        const price = test.prices[lab.id];
-        if (price != null && price < cheapestPrice) {
-          cheapestPrice = price;
-          cheapestLabId = lab.id;
-        }
-      }
-      if (cheapestLabId) {
-        next[test.id] = cheapestLabId;
-      }
-    }
-    setSelections(next);
-  }, [tableData]);
+   // Preset: select cheapest lab per test
+   const handlePresetCheapest = useCallback(() => {
+     if (!tableData) return;
+     const next: Record<string, string> = {};
+     for (const test of tableData.tests) {
+       let cheapestLabId: string | null = null;
+       let cheapestPrice = Infinity;
+       for (const lab of tableData.laboratories) {
+         const price = test.prices[lab.id];
+         if (price != null && price < cheapestPrice) {
+           cheapestPrice = price;
+           cheapestLabId = lab.id;
+         }
+       }
+       if (cheapestLabId) {
+         next[test.id] = cheapestLabId;
+       }
+     }
+     setSelections(next);
+     setSelectionMode("CHEAPEST");
+   }, [tableData]);
 
-  // Preset: select quickest lab per test (by turnaround time)
-  const handlePresetQuickest = useCallback(() => {
-    if (!tableData) return;
-    const next: Record<string, string> = {};
-    for (const test of tableData.tests) {
-      let quickestLabId: string | null = null;
-      let quickestHours = Infinity;
-      for (const lab of tableData.laboratories) {
-        // Only consider labs that have a price for this test
-        if (test.prices[lab.id] == null) continue;
-        const tat = test.turnaroundTimes?.[lab.id];
-        const hours = parseTatToHours(tat);
-        if (hours < quickestHours) {
-          quickestHours = hours;
-          quickestLabId = lab.id;
-        }
-      }
-      if (quickestLabId) {
-        next[test.id] = quickestLabId;
-      }
-    }
-    setSelections(next);
-  }, [tableData]);
+   // Preset: select quickest lab per test (by turnaround time)
+   const handlePresetQuickest = useCallback(() => {
+     if (!tableData) return;
+     const next: Record<string, string> = {};
+     for (const test of tableData.tests) {
+       let quickestLabId: string | null = null;
+       let quickestHours = Infinity;
+       for (const lab of tableData.laboratories) {
+         // Only consider labs that have a price for this test
+         if (test.prices[lab.id] == null) continue;
+         const tat = test.turnaroundTimes?.[lab.id];
+         const hours = parseTatToHours(tat);
+         if (hours < quickestHours) {
+           quickestHours = hours;
+           quickestLabId = lab.id;
+         }
+       }
+       if (quickestLabId) {
+         next[test.id] = quickestLabId;
+       }
+     }
+     setSelections(next);
+     setSelectionMode("FASTEST");
+   }, [tableData]);
 
-  // Clear all selections
-  const handleClearSelections = useCallback(() => {
-    setSelections({});
-  }, []);
+   // Clear all selections
+   const handleClearSelections = useCallback(() => {
+     setSelections({});
+     setSelectionMode("CUSTOM");
+   }, []);
 
   // Update a custom price (session-only, not persisted)
   const handleUpdateCustomPrice = useCallback((testId: string, labId: string, price: number) => {
@@ -383,14 +456,15 @@ function ComparisonContent() {
           customPrices={customPrices}
         />
 
-        <SaveEstimateDialog
-          open={saveDialogOpen}
-          onClose={() => setSaveDialogOpen(false)}
-          testMappingIds={testIds}
-          selections={hasActiveSelections ? selections : undefined}
-          customPrices={customPrices}
-          totalPrice={selectionTotal || 0}
-        />
+         <SaveEstimateDialog
+           open={saveDialogOpen}
+           onClose={() => setSaveDialogOpen(false)}
+           testMappingIds={testIds}
+           selections={hasActiveSelections ? selections : undefined}
+           customPrices={customPrices}
+           totalPrice={selectionTotal || 0}
+           selectionMode={selectionMode}
+         />
 
         <QuickMappingDialog
           open={mappingDialog.open}

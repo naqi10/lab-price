@@ -220,8 +220,9 @@ export async function generateQuotationPdf(quotation: QuotationData): Promise<Bu
  * Clean B&W format with minimal styling for universal printing.
  */
 export async function generateComparisonPdf(
-  result: ComparisonEmailResult,
-  clientName?: string
+   result: ComparisonEmailResult,
+   clientName?: string,
+   selectionMode?: string | null
 ): Promise<Buffer> {
   const isMultiLab = !!result.multiLabSelection;
 
@@ -264,68 +265,88 @@ export async function generateComparisonPdf(
       currentY += 18;
       currentY += 6; // Extra space
 
-      if (isMultiLab) {
-        // ===== Multi-lab PDF =====
-        const sel = result.multiLabSelection!;
+       if (isMultiLab) {
+         // ===== Multi-lab PDF =====
+         const sel = result.multiLabSelection!;
 
-        doc.fontSize(10).font("Helvetica-Bold").text("Laboratoires sélectionnés :", MARGIN, currentY);
-        currentY += 14;
-        doc.fontSize(10).font("Helvetica").text(sel.laboratories.map((l) => l.name).join(", "), MARGIN, currentY, { width: contentWidth });
-        currentY += 18;
+         doc.fontSize(10).font("Helvetica-Bold").text("Laboratoires sélectionnés :", MARGIN, currentY);
+         currentY += 14;
+         doc.fontSize(10).font("Helvetica").text(sel.laboratories.map((l) => l.name).join(", "), MARGIN, currentY, { width: contentWidth });
+         currentY += 18;
 
-        doc.fontSize(10).font("Helvetica-Bold").text("Prix total : " + sel.formattedTotalPrice, MARGIN, currentY);
-        currentY += 18;
-        currentY += 8; // Extra space before table
+         // Show selection mode if present
+         if (selectionMode) {
+           doc.fontSize(9).font("Helvetica").fillColor("#666666");
+           let modeText = "";
+           if (selectionMode === "CHEAPEST") {
+             modeText = "Sélection optimisée par prix";
+           } else if (selectionMode === "FASTEST") {
+             modeText = "Sélection optimisée par délai";
+           } else if (selectionMode === "CUSTOM") {
+             modeText = "Sélection personnalisée";
+           }
+           if (modeText) {
+             doc.text(modeText, MARGIN, currentY);
+             currentY += 12;
+           }
+         }
 
-        // Table header
-        const cols = { num: MARGIN, test: MARGIN + 28, lab: MARGIN + 190, price: PAGE_WIDTH - MARGIN - 90, tat: PAGE_WIDTH - MARGIN - 50 };
-        const headerH = 16;
+         doc.fontSize(10).font("Helvetica-Bold").fillColor("#000000").text("Prix total : " + sel.formattedTotalPrice, MARGIN, currentY);
+         currentY += 18;
+         currentY += 8; // Extra space before table
 
-        doc.fontSize(9).font("Helvetica-Bold").fillColor("#000000");
-        doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
-        doc.text("N°", cols.num + 2, currentY + 2, { width: 26 });
-        doc.text("Analyse", cols.test + 2, currentY + 2, { width: 160 });
-        doc.text("Laboratoire", cols.lab + 2, currentY + 2, { width: 120 });
-        doc.text("Prix (MAD)", cols.price - 30, currentY + 2, { width: 30, align: "right" });
-        doc.text("Délai", cols.tat - 30, currentY + 2, { width: 30, align: "right" });
-        currentY += headerH;
-        doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
-        currentY += 2;
+         // Table header - 4 columns: N° | Analyse | Laboratoire | Prix (MAD)
+         const cols = { 
+           num: MARGIN, 
+           test: MARGIN + 28, 
+           lab: MARGIN + 200, 
+           price: PAGE_WIDTH - MARGIN - 60 
+         };
+         const headerH = 16;
 
-        // Table rows
-        doc.fontSize(9).font("Helvetica").fillColor("#000000");
-        for (let i = 0; i < sel.assignments.length; i++) {
-          const a = sel.assignments[i];
-          const rowH = 14;
-          if (currentY + rowH > 750) {
-            doc.addPage();
-            currentY = MARGIN;
-          }
+         doc.fontSize(9).font("Helvetica-Bold").fillColor("#000000");
+         doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
+         doc.text("N°", cols.num + 2, currentY + 2, { width: 26 });
+         doc.text("Analyse", cols.test + 2, currentY + 2, { width: 170 });
+         doc.text("Laboratoire", cols.lab + 2, currentY + 2, { width: 120 });
+         doc.text("Prix (MAD)", cols.price - 30, currentY + 2, { width: 30, align: "right" });
+         currentY += headerH;
+         doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
+         currentY += 2;
 
-          doc.text(String(i + 1), cols.num + 2, currentY, { width: 26 });
-          doc.text(a.canonicalName, cols.test + 2, currentY, { width: 160 });
-          doc.text(a.laboratoryName, cols.lab + 2, currentY, { width: 120 });
-          doc.text(a.formattedPrice, cols.price - 30, currentY, { width: 30, align: "right" });
-          doc.text(a.turnaroundTime ?? "—", cols.tat - 30, currentY, { width: 30, align: "right" });
-          currentY += rowH;
-        }
+         // Table rows
+         doc.fontSize(9).font("Helvetica").fillColor("#000000");
+         for (let i = 0; i < sel.assignments.length; i++) {
+           const a = sel.assignments[i];
+           const rowH = 14;
+           if (currentY + rowH > 750) {
+             doc.addPage();
+             currentY = MARGIN;
+           }
 
-        // Total row
-        doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
-        currentY += 2;
-        doc.fontSize(10).font("Helvetica-Bold");
-        doc.text("Total", cols.test + 2, currentY, { width: 160 });
-        doc.text(sel.formattedTotalPrice, cols.price - 30, currentY, { width: 30, align: "right" });
-        currentY += 14;
-        doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
-        currentY += 12;
+           doc.text(String(i + 1), cols.num + 2, currentY, { width: 26 });
+           doc.text(a.canonicalName, cols.test + 2, currentY, { width: 170 });
+           doc.text(a.laboratoryName, cols.lab + 2, currentY, { width: 120 });
+           doc.text(a.formattedPrice, cols.price - 30, currentY, { width: 30, align: "right" });
+           currentY += rowH;
+         }
 
-        doc.fontSize(8).font("Helvetica").fillColor("#333333");
-        doc.text(
-          "Ce document présente une sélection optimisée répartie entre plusieurs laboratoires.",
-          MARGIN, currentY, { width: contentWidth }
-        );
-      } else {
+         // Total row
+         doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
+         currentY += 2;
+         doc.fontSize(10).font("Helvetica-Bold");
+         doc.text("Total", cols.test + 2, currentY, { width: 170 });
+         doc.text(sel.formattedTotalPrice, cols.price - 30, currentY, { width: 30, align: "right" });
+         currentY += 14;
+         doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
+         currentY += 12;
+
+         doc.fontSize(8).font("Helvetica").fillColor("#333333");
+         doc.text(
+           "Ce document présente une sélection optimisée répartie entre plusieurs laboratoires.",
+           MARGIN, currentY, { width: contentWidth }
+         );
+       } else {
         // ===== Single-lab PDF =====
         const lab = result.laboratories.find((l) => l.isCheapest) ?? result.laboratories[0];
         if (!lab) {

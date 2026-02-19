@@ -6,14 +6,15 @@ import { logAudit } from "@/lib/services/audit.service";
 import { z } from "zod";
 
 const createEstimateSchema = z.object({
-  testMappingIds: z.array(z.string()),
-  selections: z.record(z.string(), z.string()).optional(),
-  customPrices: z.record(z.string(), z.number()).default({}),
-  totalPrice: z.number(),
-  subtotal: z.number().optional(),
-  customerId: z.string().optional().nullable(),
-  notes: z.string().optional(),
-  validUntil: z.string().datetime().optional(),
+   testMappingIds: z.array(z.string()),
+   selections: z.record(z.string(), z.string()).optional(),
+   customPrices: z.record(z.string(), z.number()).default({}),
+   totalPrice: z.number(),
+   subtotal: z.number().optional(),
+   customerId: z.string().optional().nullable(),
+   notes: z.string().optional(),
+   validUntil: z.string().datetime().optional(),
+   selectionMode: z.enum(["CHEAPEST", "FASTEST", "CUSTOM"]).optional().nullable(),
 });
 
 type CreateEstimateInput = z.infer<typeof createEstimateSchema>;
@@ -112,27 +113,28 @@ export async function POST(request: NextRequest) {
 
     const estimateNumber = await generateEstimateNumber();
 
-    const estimate = await prisma.estimate.create({
-      data: {
-        estimateNumber,
-        createdById: session.user.id,
-        customerId: validated.customerId || null,
-        testMappingIds: validated.testMappingIds,
-        selections: validated.selections ? validated.selections : undefined,
-        customPrices: validated.customPrices,
-        totalPrice: validated.totalPrice,
-        subtotal: validated.subtotal,
-        notes: validated.notes || null,
-        validUntil: validated.validUntil
-          ? new Date(validated.validUntil)
-          : null,
-        status: "DRAFT",
-      },
-      include: {
-        customer: true,
-        createdBy: { select: { name: true } },
-      },
-    });
+     const estimate = await prisma.estimate.create({
+       data: {
+         estimateNumber,
+         createdById: session.user.id,
+         customerId: validated.customerId || null,
+         testMappingIds: validated.testMappingIds,
+         selections: validated.selections ? validated.selections : undefined,
+         customPrices: validated.customPrices,
+         totalPrice: validated.totalPrice,
+         subtotal: validated.subtotal,
+         notes: validated.notes || null,
+         validUntil: validated.validUntil
+           ? new Date(validated.validUntil)
+           : null,
+         status: "DRAFT",
+         selectionMode: validated.selectionMode || null,
+       },
+       include: {
+         customer: true,
+         createdBy: { select: { name: true } },
+       },
+     });
 
     logAudit({
       userId: session.user.id,

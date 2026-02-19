@@ -179,11 +179,12 @@ export async function GET(
       }
     }
 
-    // Generate PDF
-    const pdfBuffer = await generateComparisonPdf(
-      result,
-      estimate.customer?.name || undefined
-    );
+     // Generate PDF
+     const pdfBuffer = await generateComparisonPdf(
+       result,
+       estimate.customer?.name || undefined,
+       estimate.selectionMode || undefined
+     );
 
     // Return PDF as file download
     return new NextResponse(pdfBuffer as any, {
