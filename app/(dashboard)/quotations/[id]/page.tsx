@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import QuotationPreview from "@/components/quotations/quotation-preview";
+import QuotationEmailHistory from "@/components/quotations/quotation-email-history";
 import EmailDialog from "@/components/quotations/email-dialog";
 import { useQuotation } from "@/hooks/use-quotations";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -73,7 +74,7 @@ export default function QuotationDetailPage() {
         </Button>
       </div>
 
-      {/* Tabs: preview + pdf viewer */}
+      {/* Tabs: preview + pdf viewer + email history */}
       <Tabs defaultValue="preview" className="mt-4">
         <TabsList>
           <TabsTrigger value="preview" className="gap-2">
@@ -83,6 +84,10 @@ export default function QuotationDetailPage() {
           <TabsTrigger value="pdf" className="gap-2">
             <Eye className="h-3.5 w-3.5" />
             Vue PDF
+          </TabsTrigger>
+          <TabsTrigger value="history" className="gap-2">
+            <Mail className="h-3.5 w-3.5" />
+            Historique emails
           </TabsTrigger>
         </TabsList>
 
@@ -112,6 +117,11 @@ export default function QuotationDetailPage() {
               title={`Devis ${quotation?.quotationNumber}`}
             />
           </div>
+        </TabsContent>
+
+        {/* Email history tab */}
+        <TabsContent value="history" className="mt-4">
+          <QuotationEmailHistory quotation={quotation} quotationId={id} />
         </TabsContent>
       </Tabs>
 
