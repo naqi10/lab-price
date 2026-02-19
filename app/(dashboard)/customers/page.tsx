@@ -7,13 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useCustomers } from "@/hooks/use-customers";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Contact, Plus, Pencil, Trash2, Loader2 } from "lucide-react";
+import { Search, Plus, Loader2 } from "lucide-react";
+import CustomersTable from "@/components/customers/customers-table";
 
 export default function CustomersPage() {
    const router = useRouter();
@@ -92,137 +91,48 @@ export default function CustomersPage() {
     }
   };
 
-   return (
-     <>
-       <div className="flex items-center justify-between mt-4 gap-3">
-        <div className="relative max-w-sm flex-1">
-          <Contact className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-          <Input
-            placeholder="Rechercher un client..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+    return (
+      <>
+        <ConfirmDialog
+          open={!!deleteId}
+          onOpenChange={(o) => !o && setDeleteId(null)}
+          title="Supprimer ce client ?"
+          description="Cette action est irréversible. Toutes les données associées à ce client seront définitivement supprimées."
+          confirmLabel="Supprimer"
+          onConfirm={handleDelete}
+        />
+
+        {/* Search bar + action */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher un client..."
+              className="pl-9"
+            />
+          </div>
+          <Button onClick={openCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nouveau client
+          </Button>
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="h-4 w-4" />
-          Nouveau client
-        </Button>
-      </div>
 
-      <div className="mt-6">
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Contact className="h-5 w-5" />
-              Liste des clients
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : customers.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-14 gap-3">
-                <div className="h-12 w-12 rounded-full bg-muted/40 border border-border/50 flex items-center justify-center">
-                  <Contact className="h-5 w-5 text-muted-foreground/60" />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-medium text-foreground/70">
-                    {search ? "Aucun client trouvé" : "Aucun client pour le moment"}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {search ? "Essayez un autre terme de recherche" : "Ajoutez votre premier client pour commencer"}
-                  </p>
-                </div>
-                {!search && (
-                  <button
-                    onClick={openCreate}
-                    className="mt-1 inline-flex items-center gap-1.5 rounded-md border border-border/60 px-3 py-1.5 text-xs font-medium hover:bg-accent transition-colors"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Nouveau client
-                  </button>
-                )}
-              </div>
-            ) : (
-              <TooltipProvider>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Téléphone</TableHead>
-                    <TableHead>Entreprise</TableHead>
-                    <TableHead>Devis</TableHead>
-                    <TableHead>Emails envoyés</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                   {customers.map((c: any) => (
-                     <TableRow 
-                       key={c.id}
-                       className="cursor-pointer hover:bg-muted/50 transition-colors"
-                       onClick={() => router.push(`/customers/${c.id}`)}
-                     >
-                       <TableCell className="font-medium">{c.name}</TableCell>
-                       <TableCell className="text-muted-foreground">{c.email}</TableCell>
-                       <TableCell className="text-muted-foreground">{c.phone || "—"}</TableCell>
-                       <TableCell className="text-muted-foreground">{c.company || "—"}</TableCell>
-                       <TableCell>
-                         <span className="inline-flex items-center justify-center h-6 min-w-[1.5rem] rounded-full bg-primary/10 text-primary text-xs font-medium px-2">
-                           {c._count?.quotations ?? 0}
-                         </span>
-                       </TableCell>
-                       <TableCell>
-                         <span className="text-muted-foreground text-sm">{c._count?.emailLogs ?? 0}</span>
-                       </TableCell>
-                       <TableCell className="text-right">
-                         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                           <Tooltip>
-                             <TooltipTrigger asChild>
-                               <Button variant="ghost" size="sm" onClick={() => openEdit(c)}>
-                                 <Pencil className="h-3.5 w-3.5" />
-                               </Button>
-                             </TooltipTrigger>
-                             <TooltipContent>Modifier</TooltipContent>
-                           </Tooltip>
-                           <Tooltip>
-                             <TooltipTrigger asChild>
-                               <Button
-                                 variant="ghost"
-                                 size="sm"
-                                 onClick={() => setDeleteId(c.id)}
-                                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                               >
-                                 <Trash2 className="h-3.5 w-3.5" />
-                               </Button>
-                             </TooltipTrigger>
-                             <TooltipContent>Supprimer</TooltipContent>
-                           </Tooltip>
-                         </div>
-                       </TableCell>
-                     </TableRow>
-                   ))}
-                 </TableBody>
-              </Table>
-              </TooltipProvider>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+        {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
 
-      <ConfirmDialog
-        open={!!deleteId}
-        onOpenChange={(o) => !o && setDeleteId(null)}
-        title="Supprimer ce client ?"
-        description="Cette action est irréversible. Toutes les données associées à ce client seront définitivement supprimées."
-        confirmLabel="Supprimer"
-        onConfirm={handleDelete}
-      />
+        <div className="mt-6">
+          {isLoading ? (
+            <p className="text-center text-muted-foreground py-8">Chargement...</p>
+          ) : (
+            <CustomersTable
+              customers={customers}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+              onNew={openCreate}
+            />
+          )}
+        </div>
 
       <Dialog open={dialogOpen} onOpenChange={(o) => !o && setDialogOpen(false)}>
         <DialogContent>
