@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,6 +35,7 @@ interface EstimatesListProps {
 }
 
 export default function EstimatesList({ onRefresh }: EstimatesListProps) {
+  const router = useRouter();
   const [estimates, setEstimates] = useState<Estimate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -193,85 +195,92 @@ export default function EstimatesList({ onRefresh }: EstimatesListProps) {
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {estimates.map((estimate) => {
-              const isExpired =
-                estimate.validUntil && new Date(estimate.validUntil) < new Date();
-              return (
-                <TableRow key={estimate.id} className={isExpired ? "opacity-50" : ""}>
-                  <TableCell className="font-medium">
-                    {estimate.estimateNumber}
-                    {isExpired && (
-                      <span className="ml-2 text-xs text-red-600">(Expiré)</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">
-                        {estimate.customer?.name || "—"}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {estimate.customer?.email || ""}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {formatDate(new Date(estimate.createdAt))}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {formatCurrency(estimate.totalPrice)}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {estimate.validUntil
-                      ? formatDate(new Date(estimate.validUntil))
-                      : "—"}
-                  </TableCell>
-                  <TableCell>{getStatusBadge(estimate.status)}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDownloadPdf(estimate.id)}
-                        disabled={downloading === estimate.id}
-                        title="Télécharger PDF"
-                      >
-                        {downloading === estimate.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Download className="h-4 w-4" />
-                        )}
-                      </Button>
-                      {estimate.status === "DRAFT" && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleMarkAsSent(estimate.id)}
-                          title="Marquer comme envoyé"
-                        >
-                          <Mail className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(estimate.id)}
-                        disabled={deleting === estimate.id}
-                        className="text-red-600 hover:text-red-700"
-                        title="Supprimer"
-                      >
-                        {deleting === estimate.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
+           <TableBody>
+             {estimates.map((estimate) => {
+               const isExpired =
+                 estimate.validUntil && new Date(estimate.validUntil) < new Date();
+               return (
+                 <TableRow 
+                   key={estimate.id} 
+                   className={cn(
+                     "cursor-pointer hover:bg-muted/50 transition-colors",
+                     isExpired ? "opacity-50" : ""
+                   )}
+                   onClick={() => router.push(`/estimates/${estimate.id}`)}
+                 >
+                   <TableCell className="font-medium">
+                     {estimate.estimateNumber}
+                     {isExpired && (
+                       <span className="ml-2 text-xs text-red-600">(Expiré)</span>
+                     )}
+                   </TableCell>
+                   <TableCell>
+                     <div>
+                       <p className="font-medium">
+                         {estimate.customer?.name || "—"}
+                       </p>
+                       <p className="text-sm text-muted-foreground">
+                         {estimate.customer?.email || ""}
+                       </p>
+                     </div>
+                   </TableCell>
+                   <TableCell className="text-sm">
+                     {formatDate(new Date(estimate.createdAt))}
+                   </TableCell>
+                   <TableCell className="font-medium">
+                     {formatCurrency(estimate.totalPrice)}
+                   </TableCell>
+                   <TableCell className="text-sm">
+                     {estimate.validUntil
+                       ? formatDate(new Date(estimate.validUntil))
+                       : "—"}
+                   </TableCell>
+                   <TableCell>{getStatusBadge(estimate.status)}</TableCell>
+                   <TableCell className="text-right">
+                     <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                       <Button
+                         variant="ghost"
+                         size="sm"
+                         onClick={() => handleDownloadPdf(estimate.id)}
+                         disabled={downloading === estimate.id}
+                         title="Télécharger PDF"
+                       >
+                         {downloading === estimate.id ? (
+                           <Loader2 className="h-4 w-4 animate-spin" />
+                         ) : (
+                           <Download className="h-4 w-4" />
+                         )}
+                       </Button>
+                       {estimate.status === "DRAFT" && (
+                         <Button
+                           variant="ghost"
+                           size="sm"
+                           onClick={() => handleMarkAsSent(estimate.id)}
+                           title="Marquer comme envoyé"
+                         >
+                           <Mail className="h-4 w-4" />
+                         </Button>
+                       )}
+                       <Button
+                         variant="ghost"
+                         size="sm"
+                         onClick={() => handleDelete(estimate.id)}
+                         disabled={deleting === estimate.id}
+                         className="text-red-600 hover:text-red-700"
+                         title="Supprimer"
+                       >
+                         {deleting === estimate.id ? (
+                           <Loader2 className="h-4 w-4 animate-spin" />
+                         ) : (
+                           <Trash2 className="h-4 w-4" />
+                         )}
+                       </Button>
+                     </div>
+                   </TableCell>
+                 </TableRow>
+               );
+             })}
+           </TableBody>
         </Table>
       </div>
     </div>

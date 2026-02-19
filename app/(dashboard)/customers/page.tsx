@@ -162,55 +162,52 @@ export default function CustomersPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {customers.map((c: any) => (
-                    <TableRow key={c.id}>
-                      <TableCell className="font-medium">
-                        <button
-                          className="hover:text-primary hover:underline focus-visible:outline-none focus-visible:underline transition-colors text-left"
-                          onClick={() => router.push(`/customers/${c.id}`)}
-                        >
-                          {c.name}
-                        </button>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">{c.email}</TableCell>
-                      <TableCell className="text-muted-foreground">{c.phone || "—"}</TableCell>
-                      <TableCell className="text-muted-foreground">{c.company || "—"}</TableCell>
-                      <TableCell>
-                        <span className="inline-flex items-center justify-center h-6 min-w-[1.5rem] rounded-full bg-primary/10 text-primary text-xs font-medium px-2">
-                          {c._count?.quotations ?? 0}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-muted-foreground text-sm">{c._count?.emailLogs ?? 0}</span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button variant="ghost" size="sm" onClick={() => openEdit(c)}>
-                                <Pencil className="h-3.5 w-3.5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Modifier</TooltipContent>
-                          </Tooltip>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setDeleteId(c.id)}
-                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Supprimer</TooltipContent>
-                          </Tooltip>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                   {customers.map((c: any) => (
+                     <TableRow 
+                       key={c.id}
+                       className="cursor-pointer hover:bg-muted/50 transition-colors"
+                       onClick={() => router.push(`/customers/${c.id}`)}
+                     >
+                       <TableCell className="font-medium">{c.name}</TableCell>
+                       <TableCell className="text-muted-foreground">{c.email}</TableCell>
+                       <TableCell className="text-muted-foreground">{c.phone || "—"}</TableCell>
+                       <TableCell className="text-muted-foreground">{c.company || "—"}</TableCell>
+                       <TableCell>
+                         <span className="inline-flex items-center justify-center h-6 min-w-[1.5rem] rounded-full bg-primary/10 text-primary text-xs font-medium px-2">
+                           {c._count?.quotations ?? 0}
+                         </span>
+                       </TableCell>
+                       <TableCell>
+                         <span className="text-muted-foreground text-sm">{c._count?.emailLogs ?? 0}</span>
+                       </TableCell>
+                       <TableCell className="text-right">
+                         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                           <Tooltip>
+                             <TooltipTrigger asChild>
+                               <Button variant="ghost" size="sm" onClick={() => openEdit(c)}>
+                                 <Pencil className="h-3.5 w-3.5" />
+                               </Button>
+                             </TooltipTrigger>
+                             <TooltipContent>Modifier</TooltipContent>
+                           </Tooltip>
+                           <Tooltip>
+                             <TooltipTrigger asChild>
+                               <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 onClick={() => setDeleteId(c.id)}
+                                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                               >
+                                 <Trash2 className="h-3.5 w-3.5" />
+                               </Button>
+                             </TooltipTrigger>
+                             <TooltipContent>Supprimer</TooltipContent>
+                           </Tooltip>
+                         </div>
+                       </TableCell>
+                     </TableRow>
+                   ))}
+                 </TableBody>
               </Table>
               </TooltipProvider>
             )}

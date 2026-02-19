@@ -58,24 +58,25 @@ enum EstimateSelectionMode {
 }
 
 model User {
-  id                 String   @id @default(uuid())
-  email              String   @unique
-  name               String
-  password           String
-  role               Role     @default(USER)
-  isActive           Boolean  @default(true) @map("is_active")
-  mustChangePassword Boolean  @default(false) @map("must_change_password")
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
+   id                 String   @id @default(uuid())
+   email              String   @unique
+   name               String
+   password           String
+   role               Role     @default(USER)
+   isActive           Boolean  @default(true) @map("is_active")
+   mustChangePassword Boolean  @default(false) @map("must_change_password")
+   createdAt          DateTime @default(now()) @map("created_at")
+   updatedAt          DateTime @updatedAt @map("updated_at")
 
-  quotations         Quotation[]
-  quotationEmails    QuotationEmail[]
-  auditLogs          AuditLog[]
-  uploadedPriceLists PriceList[]        @relation("UploadedPriceLists")
-  comparisonDrafts   ComparisonDraft[]
-  estimates          Estimate[]
+   quotations         Quotation[]
+   quotationEmails    QuotationEmail[]
+   estimateEmails     EstimateEmail[]
+   auditLogs          AuditLog[]
+   uploadedPriceLists PriceList[]        @relation("UploadedPriceLists")
+   comparisonDrafts   ComparisonDraft[]
+   estimates          Estimate[]
 
-  @@map("users")
+   @@map("users")
 }
 
 model Customer {
@@ -336,34 +337,53 @@ model EmailTemplate {
 }
 
 model Estimate {
-   id                String   @id @default(uuid())
-   estimateNumber    String   @unique @map("estimate_number")
-   customerId        String?  @map("customer_id")
-   createdById       String   @map("created_by_id")
+    id                String   @id @default(uuid())
+    estimateNumber    String   @unique @map("estimate_number")
+    customerId        String?  @map("customer_id")
+    createdById       String   @map("created_by_id")
 
-   // Estimate content
-   testMappingIds    String[] @map("test_mapping_ids")
-   selections        Json?    // Multi-lab selections per test: { testMappingId: labId }
-   customPrices      Json     @default("{}")   // Custom price overrides: { "${testId}-${labId}": price }
-   selectionMode     EstimateSelectionMode? @map("selection_mode")  // CHEAPEST, FASTEST, or CUSTOM (null = single lab)
+    // Estimate content
+    testMappingIds    String[] @map("test_mapping_ids")
+    selections        Json?    // Multi-lab selections per test: { testMappingId: labId }
+    customPrices      Json     @default("{}")   // Custom price overrides: { "${testId}-${labId}": price }
+    selectionMode     EstimateSelectionMode? @map("selection_mode")  // CHEAPEST, FASTEST, or CUSTOM (null = single lab)
 
-   // Calculation
-   totalPrice        Float    @map("total_price")
-   subtotal          Float?
+    // Calculation
+    totalPrice        Float    @map("total_price")
+    subtotal          Float?
 
-   // Status & dates
-   status            String   @default("DRAFT")  // DRAFT, SENT, ACCEPTED, REJECTED
-   notes             String?
-   validUntil        DateTime? @map("valid_until")
-   sentAt            DateTime? @map("sent_at")
+    // Status & dates
+    status            String   @default("DRAFT")  // DRAFT, SENT, ACCEPTED, REJECTED
+    notes             String?
+    validUntil        DateTime? @map("valid_until")
+    sentAt            DateTime? @map("sent_at")
 
-   createdAt         DateTime @default(now()) @map("created_at")
-   updatedAt         DateTime @updatedAt @map("updated_at")
+    createdAt         DateTime @default(now()) @map("created_at")
+    updatedAt         DateTime @updatedAt @map("updated_at")
 
-   // Relations
-   customer          Customer? @relation(fields: [customerId], references: [id])
-   createdBy         User      @relation(fields: [createdById], references: [id])
+    // Relations
+    customer          Customer? @relation(fields: [customerId], references: [id])
+    createdBy         User      @relation(fields: [createdById], references: [id])
+    emails            EstimateEmail[]
 
-   @@map("estimates")
+    @@map("estimates")
+}
+
+model EstimateEmail {
+   id          String      @id @default(uuid())
+   estimateId  String      @map("estimate_id")
+   sentById    String      @map("sent_by_id")
+   toEmail     String      @map("to_email")
+   subject     String
+   message     String?
+   status      EmailStatus @default(PENDING)
+   sentAt      DateTime?   @map("sent_at")
+   error       String?
+   createdAt   DateTime    @default(now()) @map("created_at")
+
+   estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+   sentBy   User     @relation(fields: [sentById], references: [id])
+
+   @@map("estimate_emails")
 }
 

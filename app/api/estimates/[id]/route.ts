@@ -27,13 +27,19 @@ export async function GET(
 
     const { id } = await params;
 
-    const estimate = await prisma.estimate.findUnique({
-      where: { id },
-      include: {
-        customer: true,
-        createdBy: { select: { name: true, email: true } },
-      },
-    });
+     const estimate = await prisma.estimate.findUnique({
+       where: { id },
+       include: {
+         customer: true,
+         createdBy: { select: { name: true, email: true } },
+         emails: {
+           include: {
+             sentBy: { select: { name: true, email: true } },
+           },
+           orderBy: { sentAt: "desc" as const },
+         },
+       },
+     });
 
     if (!estimate)
       return NextResponse.json(
