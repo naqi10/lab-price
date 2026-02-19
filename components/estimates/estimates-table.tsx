@@ -11,7 +11,7 @@ import { ExpandableEstimateRow } from "./expandable-estimate-row";
 interface TestMappingEntry {
   id: string;
   localTestName: string;
-  laboratory: { id: string; name: string };
+  laboratory: { id: string; name: string; code?: string };
   price?: number | null;
 }
 
@@ -36,6 +36,30 @@ interface Estimate {
   selections?: Record<string, string> | null;
   customPrices?: Record<string, number>;
   testMappingDetails?: TestMappingDetail[];
+}
+
+// Transform database structure to component expected structure
+function transformEstimateForDisplay(estimate: Estimate): any {
+  if (!estimate.testMappingDetails) {
+    return estimate;
+  }
+
+  const transformedDetails = estimate.testMappingDetails.map((detail) => ({
+    id: detail.id,
+    canonicalName: detail.canonicalName,
+    entries: detail.entries.map((entry) => ({
+      laboratoryId: entry.laboratory.id,
+      laboratoryName: entry.laboratory.name,
+      laboratoryCode: entry.laboratory.code || "",
+      price: entry.price || 0,
+      customPrice: estimate.customPrices?.[`${detail.id}-${entry.laboratory.id}`],
+    })),
+  }));
+
+  return {
+    ...estimate,
+    testMappingDetails: transformedDetails,
+  };
 }
 
 export default function EstimatesTable({
@@ -128,7 +152,7 @@ export default function EstimatesTable({
           {estimates.map((estimate) => (
             <ExpandableEstimateRow
               key={estimate.id}
-              estimate={estimate}
+              estimate={transformEstimateForDisplay(estimate) as any}
               getStatusBadge={getStatusBadge}
               onRowClick={() => router.push(`/estimates/${estimate.id}`)}
               onDownload={onDownload}

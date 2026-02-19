@@ -21,7 +21,13 @@ interface EmailLogWithDetails {
     testMappingDetails?: Array<{
       id: string;
       canonicalName: string;
-      prices?: Record<string, number>;
+      entries?: Array<{
+        laboratoryId: string;
+        laboratoryName: string;
+        laboratoryCode: string;
+        price: number;
+        customPrice?: number;
+      }>;
     }>;
   };
 }
@@ -148,36 +154,38 @@ export default function ExpandableEmailRow({
             <div className="space-y-2">
                {email.estimate.testMappingDetails?.map((test) => {
                  const selectedLabId = email.estimate?.selections?.[test.id];
-                 const labName = selectedLabId
-                   ? `Lab-${selectedLabId.substring(0, 4)}`
-                   : "—";
-                 const customPrice = email.estimate?.customPrices?.[`${test.id}-${selectedLabId}`];
-                 const basePrice = selectedLabId && test.prices ? (test.prices as Record<string, number>)[selectedLabId] || 0 : 0;
+                 const selectedEntry = selectedLabId
+                   ? test.entries?.find((e) => e.laboratoryId === selectedLabId)
+                   : test.entries?.[0];
+                 
+                 const labName = selectedEntry?.laboratoryName || "—";
+                 const basePrice = selectedEntry?.price || 0;
+                 const customPrice = selectedEntry?.customPrice;
                  const displayPrice = customPrice || basePrice;
 
-                return (
-                  <div
-                    key={test.id}
-                    className="flex items-center justify-between text-sm p-2 bg-background rounded"
-                  >
-                    <div className="flex-1">
-                      <p className="font-medium">{test.canonicalName}</p>
-                      <p className="text-xs text-muted-foreground">{labName}</p>
-                    </div>
-                    <div className="text-right">
-                      {customPrice && (
-                        <p className="text-xs line-through text-muted-foreground">
-                          {formatCurrency(basePrice)}
-                        </p>
-                      )}
-                      <p className="font-medium">
-                        {formatCurrency(displayPrice)}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                 return (
+                   <div
+                     key={test.id}
+                     className="flex items-center justify-between text-sm p-2 bg-background rounded"
+                   >
+                     <div className="flex-1">
+                       <p className="font-medium">{test.canonicalName}</p>
+                       <p className="text-xs text-muted-foreground">{labName}</p>
+                     </div>
+                     <div className="text-right">
+                       {customPrice && (
+                         <p className="text-xs line-through text-muted-foreground">
+                           {formatCurrency(basePrice)}
+                         </p>
+                       )}
+                       <p className="font-medium">
+                         {formatCurrency(displayPrice)}
+                       </p>
+                     </div>
+                   </div>
+                 );
+               })}
+             </div>
           </div>
         </div>
       )}

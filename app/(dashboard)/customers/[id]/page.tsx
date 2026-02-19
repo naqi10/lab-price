@@ -24,7 +24,13 @@ interface TestMappingEntry {
 interface TestMappingDetail {
   id: string;
   canonicalName: string;
-  entries: TestMappingEntry[];
+  entries?: Array<{
+    laboratoryId: string;
+    laboratoryName: string;
+    laboratoryCode: string;
+    price: number;
+    customPrice?: number;
+  }>;
 }
 
 interface Customer {

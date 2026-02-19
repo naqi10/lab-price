@@ -264,15 +264,16 @@ model Estimate {
     customerId        String?  @map("customer_id")
     createdById       String   @map("created_by_id")
 
-    // Estimate content
-    testMappingIds    String[] @map("test_mapping_ids")
-    selections        Json?    // Multi-lab selections per test: { testMappingId: labId }
-    customPrices      Json     @default("{}")   // Custom price overrides: { "${testId}-${labId}": price }
-    selectionMode     EstimateSelectionMode? @map("selection_mode")  // CHEAPEST, FASTEST, or CUSTOM (null = single lab)
+     // Estimate content
+     testMappingIds    String[] @map("test_mapping_ids")
+     selections        Json?    // Multi-lab selections per test: { testMappingId: labId }
+     customPrices      Json     @default("{}")   // Custom price overrides: { "${testId}-${labId}": price }
+     testDetails       Json?    // Snapshot of test details at creation time
+     selectionMode     EstimateSelectionMode? @map("selection_mode")  // CHEAPEST, FASTEST, or CUSTOM (null = single lab)
 
-    // Calculation
-    totalPrice        Float    @map("total_price")
-    subtotal          Float?
+     // Calculation
+     totalPrice        Float    @map("total_price")
+     subtotal          Float?
 
     // Status & dates
     status            String   @default("DRAFT")  // DRAFT, SENT, ACCEPTED, REJECTED

@@ -9,17 +9,16 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
-interface TestMappingEntry {
-  id: string;
-  localTestName: string;
-  laboratory: { id: string; name: string };
-  price?: number | null;
-}
-
 interface TestMappingDetail {
   id: string;
   canonicalName: string;
-  entries: TestMappingEntry[];
+  entries?: Array<{
+    laboratoryId: string;
+    laboratoryName: string;
+    laboratoryCode: string;
+    price: number;
+    customPrice?: number;
+  }>;
 }
 
 interface EstimateWithDetails {
@@ -85,22 +84,22 @@ export function ExpandableEstimateRow({
     if (!labId || !estimate.testMappingDetails) return "—";
 
     const testMapping = estimate.testMappingDetails.find((t) => t.id === testMappingId);
-    if (!testMapping) return "—";
+    if (!testMapping || !testMapping.entries) return "—";
 
-    const entry = testMapping.entries.find((e) => e.laboratory.id === labId);
-    return entry?.laboratory.name || "—";
+    const entry = testMapping.entries.find((e) => e.laboratoryId === labId);
+    return entry?.laboratoryName || "—";
   };
 
   const getTestPrice = (testMappingId: string): number | null => {
     if (!estimate.testMappingDetails) return null;
 
     const testMapping = estimate.testMappingDetails.find((t) => t.id === testMappingId);
-    if (!testMapping) return null;
+    if (!testMapping || !testMapping.entries) return null;
 
     const labId = estimate.selections?.[testMappingId];
     if (!labId) return null;
 
-    const entry = testMapping.entries.find((e) => e.laboratory.id === labId);
+    const entry = testMapping.entries.find((e) => e.laboratoryId === labId);
     return entry?.price || null;
   };
 

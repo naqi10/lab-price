@@ -538,12 +538,35 @@ export async function compareTestsWithEmail(data: {
   // Parse custom prices JSON: convert {testId-labId: price} to stored format
   const customPricesJson = customPrices ? JSON.stringify(customPrices) : "{}";
 
+  // Build test details snapshot for the estimate
+  const testDetailsSnapshot = testMappings.map((tm) => {
+    const testIndex = result.laboratories[0]?.tests.findIndex((t) => t.canonicalName === tm.canonicalName) ?? -1;
+    
+    return {
+      id: tm.id,
+      canonicalName: tm.canonicalName,
+      entries: result.laboratories
+        .filter((lab) => lab.tests.some((t) => t.canonicalName === tm.canonicalName))
+        .map((lab) => {
+          const test = lab.tests.find((t) => t.canonicalName === tm.canonicalName)!;
+          return {
+            laboratoryId: lab.id,
+            laboratoryName: lab.name,
+            laboratoryCode: lab.code,
+            price: test.price,
+            customPrice: customPrices ? customPrices[`${tm.id}-${lab.id}`] : undefined,
+          };
+        }),
+    };
+  });
+
   const estimate = await prisma.estimate.create({
     data: {
       estimateNumber,
       testMappingIds,
       selections: hasSelections ? selections : undefined,
       customPrices: customPricesJson,
+      testDetails: JSON.stringify(testDetailsSnapshot),
       selectionMode,
       totalPrice,
       status: "SENT",

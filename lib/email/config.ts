@@ -345,7 +345,7 @@ async function logEmail(
 ) {
   try {
     await prisma.emailLog.create({
-      data: { toEmail, subject, status, source, error: error || null, customerId: customerId || null },
+      data: { toEmail, subject, status, source, error: error || null, customerId: customerId || null, estimateId: estimateId || null },
     });
   } catch (e) {
     // Never let logging break email sending

@@ -96,92 +96,47 @@ export async function searchCustomers(query: string) {
 }
 
 export async function getCustomerHistory(customerId: string) {
-  // Get email logs with their linked estimates
-  const emailLogs = await prisma.emailLog.findMany({
-    where: { customerId },
-    include: {
+  // Get estimate emails (all estimate-related emails - both initial sends and resends)
+  const estimateEmails = await prisma.estimateEmail.findMany({
+    where: { estimate: { customerId } },
+    include: { 
       estimate: true,
+      sentBy: { select: { name: true } },
     },
     orderBy: { createdAt: "desc" },
     take: 50,
   });
 
-  // Fetch TestMappingDetails for emails that have estimates
-  const emailLogsWithDetails = await Promise.all(
-    emailLogs.map(async (log) => {
-      if (!log.estimate || !log.estimate.testMappingIds || log.estimate.testMappingIds.length === 0) {
-        return log;
+  // Map to timeline items with estimate details
+  const timeline = estimateEmails.map((email) => {
+    // Parse test details from estimate
+    let testMappingDetails: any[] = [];
+    if (email.estimate.testDetails) {
+      try {
+        testMappingDetails = JSON.parse(email.estimate.testDetails as string);
+      } catch (e) {
+        // If parsing fails, leave empty
       }
+    }
 
-      // Fetch test mapping details
-      const testMappings = await prisma.testMapping.findMany({
-        where: { id: { in: log.estimate.testMappingIds } },
-        include: {
-          entries: {
-            include: { laboratory: { select: { id: true, name: true } } },
-          },
-        },
-      });
-
-      return {
-        ...log,
-        estimate: log.estimate ? {
-          ...log.estimate,
-          testMappingDetails: testMappings.map((t) => ({
-            id: t.id,
-            canonicalName: t.canonicalName,
-            prices: Object.fromEntries(
-              t.entries.map((e) => [e.laboratory.id, e.price])
-            ),
-          })),
-        } : null,
-      };
-    })
-  );
-
-  // Map email logs to timeline items with estimate details
-   const emailItems = emailLogsWithDetails.map((log) => ({
-     id: log.id,
-     toEmail: log.toEmail,
-     subject: log.subject,
-     status: log.status,
-     source: log.source || "system",
-     error: log.error,
-     createdAt: log.createdAt,
-     estimateNumber: log.estimate?.estimateNumber || null,
-     estimateId: log.estimate?.id || null,
-     estimate: log.estimate ? {
-       testMappingIds: log.estimate.testMappingIds,
-       selections: log.estimate.selections,
-       customPrices: log.estimate.customPrices,
-       testMappingDetails: (log.estimate as any).testMappingDetails,
-     } : undefined,
-   }));
-
-  // Get estimate emails (separate tracking for estimate resends)
-  const estimateEmails = await prisma.estimateEmail.findMany({
-    where: { estimate: { customerId } },
-    include: { estimate: true },
-    orderBy: { createdAt: "desc" },
-    take: 50,
+    return {
+      id: email.id,
+      toEmail: email.toEmail,
+      subject: email.subject,
+      status: email.status,
+      source: "estimate",
+      error: email.error,
+      createdAt: email.createdAt || new Date(),
+      estimateNumber: email.estimate.estimateNumber,
+      estimateId: email.estimate.id,
+      estimate: {
+        testMappingIds: email.estimate.testMappingIds,
+        selections: email.estimate.selections,
+        customPrices: email.estimate.customPrices,
+        testMappingDetails,
+      },
+    };
   });
 
-  const estimateEmailItems = estimateEmails.map((email) => ({
-     id: email.id,
-     toEmail: email.toEmail,
-     subject: email.subject,
-     status: email.status,
-     source: "estimate",
-     error: email.error,
-     createdAt: email.createdAt || new Date(),
-     estimateNumber: email.estimate.estimateNumber,
-     estimateId: email.estimate.id,
-   }));
-
-  // Combine and sort by date
-  const combined = [...emailItems, ...estimateEmailItems].sort(
-    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-  );
-
-  return combined.slice(0, 50);
+  return timeline;
 }
