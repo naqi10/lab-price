@@ -46,6 +46,7 @@ interface EmailHistoryItem {
   error: string | null;
   createdAt: string;
   estimateNumber?: string | null;
+  estimateId?: string | null;
   estimate?: {
     testMappingIds: string[];
     selections?: Record<string, string> | null;
@@ -184,26 +185,19 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
    };
 
    const handleResendEmail = async (emailId: string) => {
-     const email = history.find((e) => e.id === emailId);
-     if (!email || !email.estimate?.testMappingIds) {
-       alert("Impossible de renvoyer cet email");
-       return;
-     }
+   const email = history.find((e) => e.id === emailId);
+      if (!email || !email.estimateId) {
+        alert("Impossible de renvoyer cet email");
+        return;
+      }
 
-     setResendingId(emailId);
-     try {
-       // Find the estimate ID from the email
-       const estimateId = estimates.find((e) => e.estimateNumber === email.estimateNumber)?.id;
-       if (!estimateId) {
-         alert("Estimation non trouvée");
-         return;
-       }
-
-       const res = await fetch(`/api/estimates/${estimateId}/resend`, {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({ customerIds: [id] }),
-       });
+      setResendingId(emailId);
+      try {
+        const res = await fetch(`/api/estimates/${email.estimateId}/resend`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customerIds: [id] }),
+        });
 
        if (res.ok) {
          alert("Email renvoyé avec succès");

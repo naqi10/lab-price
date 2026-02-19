@@ -294,6 +294,16 @@ export async function compareTestsWithEmail(data: {
     throw new Error("createdByUserId is required");
   }
 
+  // Verify user exists before proceeding
+  const userExists = await prisma.user.findUnique({
+    where: { id: createdByUserId },
+    select: { id: true },
+  });
+
+  if (!userExists) {
+    throw new Error(`User with ID "${createdByUserId}" not found in database`);
+  }
+
   const requiredCount = testMappingIds.length;
 
   // ── Fetch test mappings with entries (Prisma ORM) ────────────────────────

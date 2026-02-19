@@ -140,22 +140,23 @@ export async function getCustomerHistory(customerId: string) {
   );
 
   // Map email logs to timeline items with estimate details
-  const emailItems = emailLogsWithDetails.map((log) => ({
-    id: log.id,
-    toEmail: log.toEmail,
-    subject: log.subject,
-    status: log.status,
-    source: log.source || "system",
-    error: log.error,
-    createdAt: log.createdAt,
-    estimateNumber: log.estimate?.estimateNumber || null,
-    estimate: log.estimate ? {
-      testMappingIds: log.estimate.testMappingIds,
-      selections: log.estimate.selections,
-      customPrices: log.estimate.customPrices,
-      testMappingDetails: (log.estimate as any).testMappingDetails,
-    } : undefined,
-  }));
+   const emailItems = emailLogsWithDetails.map((log) => ({
+     id: log.id,
+     toEmail: log.toEmail,
+     subject: log.subject,
+     status: log.status,
+     source: log.source || "system",
+     error: log.error,
+     createdAt: log.createdAt,
+     estimateNumber: log.estimate?.estimateNumber || null,
+     estimateId: log.estimate?.id || null,
+     estimate: log.estimate ? {
+       testMappingIds: log.estimate.testMappingIds,
+       selections: log.estimate.selections,
+       customPrices: log.estimate.customPrices,
+       testMappingDetails: (log.estimate as any).testMappingDetails,
+     } : undefined,
+   }));
 
   // Get estimate emails (separate tracking for estimate resends)
   const estimateEmails = await prisma.estimateEmail.findMany({
@@ -166,15 +167,16 @@ export async function getCustomerHistory(customerId: string) {
   });
 
   const estimateEmailItems = estimateEmails.map((email) => ({
-    id: email.id,
-    toEmail: email.toEmail,
-    subject: email.subject,
-    status: email.status,
-    source: "estimate",
-    error: email.error,
-    createdAt: email.createdAt || new Date(),
-    estimateNumber: email.estimate.estimateNumber,
-  }));
+     id: email.id,
+     toEmail: email.toEmail,
+     subject: email.subject,
+     status: email.status,
+     source: "estimate",
+     error: email.error,
+     createdAt: email.createdAt || new Date(),
+     estimateNumber: email.estimate.estimateNumber,
+     estimateId: email.estimate.id,
+   }));
 
   // Combine and sort by date
   const combined = [...emailItems, ...estimateEmailItems].sort(
