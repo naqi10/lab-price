@@ -49,6 +49,8 @@ interface ExpandableEstimateRowProps {
   onDelete?: (id: string) => Promise<void>;
   downloadingId?: string | null;
   deletingId?: string | null;
+  isSelected?: boolean;
+  onSelect?: (id: string) => void;
 }
 
 export function ExpandableEstimateRow({
@@ -61,6 +63,8 @@ export function ExpandableEstimateRow({
   onDelete,
   downloadingId,
   deletingId,
+  isSelected = false,
+  onSelect,
 }: ExpandableEstimateRowProps) {
   const [expanded, setExpanded] = useState(isExpanded);
 
@@ -119,6 +123,19 @@ export function ExpandableEstimateRow({
         )}
         onClick={onRowClick}
       >
+        {onSelect && (
+          <TableCell
+            className="w-12"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onSelect(estimate.id)}
+              className="rounded"
+            />
+          </TableCell>
+        )}
         <TableCell>
           <Button
             variant="ghost"

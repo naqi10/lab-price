@@ -45,6 +45,9 @@ export default function EstimatesTable({
   onNew,
   downloadingId,
   deletingId,
+  selectedEstimates,
+  onSelectEstimate,
+  onSelectAll,
 }: {
   estimates: Estimate[];
   onDownload: (id: string) => Promise<void>;
@@ -52,6 +55,9 @@ export default function EstimatesTable({
   onNew?: () => void;
   downloadingId?: string | null;
   deletingId?: string | null;
+  selectedEstimates?: Set<string>;
+  onSelectEstimate?: (id: string) => void;
+  onSelectAll?: (all: boolean) => void;
 }) {
   const router = useRouter();
 
@@ -100,6 +106,16 @@ export default function EstimatesTable({
       <Table>
         <TableHeader>
           <TableRow>
+            {onSelectEstimate && (
+              <TableHead className="w-12">
+                <input
+                  type="checkbox"
+                  checked={estimates.length > 0 && selectedEstimates?.size === estimates.length}
+                  onChange={(e) => onSelectAll?.(e.target.checked)}
+                  className="rounded"
+                />
+              </TableHead>
+            )}
             <TableHead>Numéro</TableHead>
             <TableHead>Client</TableHead>
             <TableHead>Créé le</TableHead>
@@ -119,6 +135,8 @@ export default function EstimatesTable({
               onDelete={onDelete}
               downloadingId={downloadingId}
               deletingId={deletingId}
+              isSelected={selectedEstimates?.has(estimate.id) || false}
+              onSelect={onSelectEstimate}
             />
           ))}
         </TableBody>
