@@ -194,6 +194,8 @@ interface SendEmailParams {
   source?: string;
   /** Optional customer ID for tracking email history */
   customerId?: string;
+  /** Optional estimate ID for linking email to estimate */
+  estimateId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -325,13 +327,13 @@ export async function sendEmail(params: SendEmailParams): Promise<{ messageId: s
     );
 
     // Log successful send
-    await logEmail(toEmail, params.subject, "SENT", params.source || "system", undefined, params.customerId);
+    await logEmail(toEmail, params.subject, "SENT", params.source || "system", undefined, params.customerId, params.estimateId);
 
     return result;
   } catch (error) {
     // Log final failure after all retries exhausted
     const errMsg = error instanceof Error ? error.message : "Unknown error";
-    await logEmail(toEmail, params.subject, "FAILED", params.source || "system", errMsg, params.customerId);
+    await logEmail(toEmail, params.subject, "FAILED", params.source || "system", errMsg, params.customerId, params.estimateId);
     throw error;
   }
 }
@@ -339,7 +341,7 @@ export async function sendEmail(params: SendEmailParams): Promise<{ messageId: s
 /** Persist an email log entry (fire-and-forget, never throws). */
 async function logEmail(
   toEmail: string, subject: string,
-  status: "SENT" | "FAILED" | "PENDING", source: string, error?: string, customerId?: string
+  status: "SENT" | "FAILED" | "PENDING", source: string, error?: string, customerId?: string, estimateId?: string
 ) {
   try {
     await prisma.emailLog.create({

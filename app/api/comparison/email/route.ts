@@ -7,14 +7,16 @@ import logger from "@/lib/logger";
  * POST /api/comparison/email
  *
  * Compare selected tests, find the cheapest laboratory,
- * and automatically send the result to the client by email.
+ * automatically create an Estimate record, and send the result by email.
  *
  * Body: { 
  *   testMappingIds: string[], 
  *   clientEmail: string, 
  *   clientName?: string,
+ *   customerId?: string,
  *   selections?: Record<string, string>,
- *   customPrices?: Record<string, number>
+ *   customPrices?: Record<string, number>,
+ *   validUntil?: string (ISO date)
  * }
  */
 export async function POST(request: NextRequest) {
@@ -28,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { testMappingIds, clientEmail, clientName, customerId, selections, customPrices } = body;
+    const { testMappingIds, clientEmail, clientName, customerId, selections, customPrices, validUntil } = body;
 
     // ── Validation ─────────────────────────────────────────────────────────
     if (!testMappingIds || !Array.isArray(testMappingIds) || testMappingIds.length === 0) {
@@ -46,6 +48,13 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Service call ───────────────────────────────────────────────────────
+    if (!session.user?.id) {
+      return NextResponse.json(
+        { success: false, message: "Utilisateur non identifié" },
+        { status: 401 }
+      );
+    }
+
     const result = await compareTestsWithEmail({
       testMappingIds,
       clientEmail,
@@ -53,6 +62,8 @@ export async function POST(request: NextRequest) {
       customerId: customerId || undefined,
       selections: selections || undefined,
       customPrices: customPrices || undefined,
+      createdByUserId: session.user.id,
+      validUntil: validUntil ? new Date(validUntil) : undefined,
     });
 
     return NextResponse.json({

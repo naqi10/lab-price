@@ -280,12 +280,18 @@ export async function compareTestsWithEmail(data: {
   customerId?: string;
   selections?: Record<string, string>;
   customPrices?: Record<string, number>;
-}): Promise<ComparisonEmailResult> {
-  const { testMappingIds, clientEmail, clientName, customerId, selections, customPrices } = data;
+  createdByUserId?: string;
+  validUntil?: Date;
+}): Promise<ComparisonEmailResult & { estimateId: string; emailMessageId: string }> {
+  const { testMappingIds, clientEmail, clientName, customerId, selections, customPrices, createdByUserId, validUntil } = data;
 
   // ── Validation ───────────────────────────────────────────────────────────
   if (!testMappingIds || testMappingIds.length === 0) {
     throw new Error("Au moins un test doit être sélectionné");
+  }
+
+  if (!createdByUserId) {
+    throw new Error("createdByUserId is required");
   }
 
   const requiredCount = testMappingIds.length;
@@ -386,6 +392,8 @@ export async function compareTestsWithEmail(data: {
 
   // ── Build multi-lab selection if selections provided ───────────────────
   let multiLabSelection: MultiLabSelection | undefined;
+  let totalPrice = 0;
+  let selectionMode: "CHEAPEST" | "FASTEST" | "CUSTOM" | undefined = undefined;
 
   if (hasSelections) {
     const assignments: SelectionTestAssignment[] = [];
@@ -426,7 +434,12 @@ export async function compareTestsWithEmail(data: {
         formattedTotalPrice: formatCurrency(selTotal),
         laboratories: involvedLabs,
       };
+      
+      totalPrice = selTotal;
+      selectionMode = "CUSTOM";
     }
+  } else {
+    totalPrice = cheapest.totalPrice;
   }
 
   // ── Build structured result ──────────────────────────────────────────────
@@ -507,7 +520,32 @@ export async function compareTestsWithEmail(data: {
   const pdfBuffer = await generateComparisonPdf(result, clientName);
   const pdfBase64 = pdfBuffer.toString("base64");
 
-  await sendEmail({
+  // ── Create Estimate record before sending email ──────────────────────────
+  // Generate estimate number
+  const estimateCount = await prisma.estimate.count();
+  const estimateNumber = `EST-${new Date().getFullYear()}-${String(estimateCount + 1).padStart(5, "0")}`;
+
+  // Parse custom prices JSON: convert {testId-labId: price} to stored format
+  const customPricesJson = customPrices ? JSON.stringify(customPrices) : "{}";
+
+  const estimate = await prisma.estimate.create({
+    data: {
+      estimateNumber,
+      testMappingIds,
+      selections: hasSelections ? selections : undefined,
+      customPrices: customPricesJson,
+      selectionMode,
+      totalPrice,
+      status: "SENT",
+      validUntil: validUntil || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default: 30 days
+      customerId: customerId || null,
+      createdById: createdByUserId,
+      sentAt: new Date(),
+    },
+  });
+
+  // ── Send email ──────────────────────────────────────────────────────────
+  const emailResult = await sendEmail({
     to: [{ email: clientEmail, name: clientName }],
     subject: emailSubject,
     htmlContent,
@@ -518,10 +556,15 @@ export async function compareTestsWithEmail(data: {
       },
     ],
     source: "comparison",
-    customerId,
+    customerId: customerId || undefined,
+    estimateId: estimate.id,
   });
 
-  return result;
+  return {
+    ...result,
+    estimateId: estimate.id,
+    emailMessageId: emailResult.messageId,
+  };
 }
 
 /**

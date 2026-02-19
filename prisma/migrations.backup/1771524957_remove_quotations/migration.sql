@@ -1,0 +1,3 @@
+-- Skipped: Migration was attempting to drop quotation-related tables
+-- These tables never existed in the first place
+-- This migration is left empty to allow migration history to proceed
