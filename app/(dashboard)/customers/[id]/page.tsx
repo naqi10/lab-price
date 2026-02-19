@@ -10,7 +10,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { formatDate, formatCurrency } from "@/lib/utils";
+import { ExpandableEstimateRow } from "@/components/estimates/expandable-estimate-row";
 import { ArrowLeft, Pencil, Save, X, Mail, FileText, Loader2 } from "lucide-react";
+
+interface TestMappingEntry {
+  id: string;
+  localTestName: string;
+  laboratory: { id: string; name: string };
+  price?: number | null;
+}
+
+interface TestMappingDetail {
+  id: string;
+  canonicalName: string;
+  entries: TestMappingEntry[];
+}
 
 interface Customer {
   id: string;
@@ -39,7 +53,15 @@ interface EstimateHistoryItem {
   totalPrice: number;
   status: string;
   createdAt: string;
+  sentAt: string | null;
   validUntil: string | null;
+  customer: { name: string; email: string } | null;
+  createdBy: { name: string };
+  notes: string | null;
+  testMappingIds: string[];
+  selections?: Record<string, string> | null;
+  customPrices?: Record<string, number>;
+  testMappingDetails?: TestMappingDetail[];
 }
 
 const statusMap: Record<string, { label: string; variant: "default" | "destructive" | "secondary" }> = {
@@ -53,6 +75,15 @@ const estimateStatusMap: Record<string, { label: string; variant: "default" | "d
   SENT: { label: "Envoyé", variant: "default" },
   ACCEPTED: { label: "Accepté", variant: "default" },
   REJECTED: { label: "Rejeté", variant: "destructive" },
+};
+
+const getStatusBadge = (status: string) => {
+  const st = estimateStatusMap[status] || estimateStatusMap.DRAFT;
+  return (
+    <Badge variant={st.variant as "default" | "destructive" | "secondary" | "outline"}>
+      {st.label}
+    </Badge>
+  );
 };
 
 const sourceMap: Record<string, string> = {
@@ -274,50 +305,28 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
             <p className="text-sm text-muted-foreground text-center py-6">
               Aucune estimation pour ce client.
             </p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>N° Estimation</TableHead>
-                  <TableHead>Montant</TableHead>
-                  <TableHead>Validité</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {estimates.map((est) => {
-                  const st = estimateStatusMap[est.status] || estimateStatusMap.DRAFT;
-                  const isExpired = est.validUntil && new Date(est.validUntil) < new Date();
-                  return (
-                    <TableRow
-                      key={est.id}
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => router.push(`/estimates/${est.id}`)}
-                    >
-                      <TableCell className="font-mono text-xs">{est.estimateNumber}</TableCell>
-                      <TableCell className="font-medium">{formatCurrency(est.totalPrice)}</TableCell>
-                      <TableCell className="text-sm">
-                        {est.validUntil ? (
-                          <>
-                            {formatDate(est.validUntil)}
-                            {isExpired && <span className="ml-2 text-xs text-red-600">(Expiré)</span>}
-                          </>
-                        ) : (
-                          "—"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={st.variant as "default" | "destructive" | "secondary" | "outline"}>
-                          {st.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{formatDate(est.createdAt)}</TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+           ) : (
+             <Table>
+               <TableHeader>
+                 <TableRow>
+                   <TableHead>N° Estimation</TableHead>
+                   <TableHead>Client</TableHead>
+                   <TableHead>Date</TableHead>
+                   <TableHead>Prix</TableHead>
+                   <TableHead>Statut</TableHead>
+                 </TableRow>
+               </TableHeader>
+               <TableBody>
+                 {estimates.map((est) => (
+                   <ExpandableEstimateRow
+                     key={est.id}
+                     estimate={est}
+                     getStatusBadge={getStatusBadge}
+                     onRowClick={() => router.push(`/estimates/${est.id}`)}
+                   />
+                 ))}
+               </TableBody>
+             </Table>
           )}
         </CardContent>
       </Card>

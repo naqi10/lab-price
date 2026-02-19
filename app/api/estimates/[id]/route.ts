@@ -28,33 +28,47 @@ export async function GET(
     const { id } = await params;
 
      const estimate = await prisma.estimate.findUnique({
-       where: { id },
+        where: { id },
+        include: {
+          customer: true,
+          createdBy: { select: { name: true, email: true } },
+          emails: {
+            include: {
+              sentBy: { select: { name: true, email: true } },
+            },
+            orderBy: { sentAt: "desc" as const },
+          },
+        },
+      });
+
+     if (!estimate)
+       return NextResponse.json(
+         { success: false, message: "Estimation non trouvée" },
+         { status: 404 }
+       );
+
+     // Check authorization
+     if (estimate.createdById !== session.user.id)
+       return NextResponse.json(
+         { success: false, message: "Non autorisé" },
+         { status: 403 }
+       );
+
+     // Enhance with test mapping details
+     const testMappings = await prisma.testMapping.findMany({
+       where: { id: { in: estimate.testMappingIds } },
        include: {
-         customer: true,
-         createdBy: { select: { name: true, email: true } },
-         emails: {
+         entries: {
            include: {
-             sentBy: { select: { name: true, email: true } },
+             laboratory: { select: { id: true, name: true } },
            },
-           orderBy: { sentAt: "desc" as const },
          },
        },
      });
 
-    if (!estimate)
-      return NextResponse.json(
-        { success: false, message: "Estimation non trouvée" },
-        { status: 404 }
-      );
+     const enhancedEstimate = { ...estimate, testMappingDetails: testMappings };
 
-    // Check authorization
-    if (estimate.createdById !== session.user.id)
-      return NextResponse.json(
-        { success: false, message: "Non autorisé" },
-        { status: 403 }
-      );
-
-    return NextResponse.json({ success: true, data: estimate });
+     return NextResponse.json({ success: true, data: enhancedEstimate });
   } catch (error) {
     logger.error({ err: error }, "[GET /api/estimates/[id]]");
     return NextResponse.json(

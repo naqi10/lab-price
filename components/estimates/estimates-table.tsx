@@ -2,12 +2,24 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Download, Trash2, FileText, Plus, Loader2 } from "lucide-react";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { FileText, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { ExpandableEstimateRow } from "./expandable-estimate-row";
+
+interface TestMappingEntry {
+  id: string;
+  localTestName: string;
+  laboratory: { id: string; name: string };
+  price?: number | null;
+}
+
+interface TestMappingDetail {
+  id: string;
+  canonicalName: string;
+  entries: TestMappingEntry[];
+}
 
 interface Estimate {
   id: string;
@@ -20,6 +32,10 @@ interface Estimate {
   customer: { name: string; email: string } | null;
   createdBy: { name: string };
   notes: string | null;
+  testMappingIds: string[];
+  selections?: Record<string, string> | null;
+  customPrices?: Record<string, number>;
+  testMappingDetails?: TestMappingDetail[];
 }
 
 export default function EstimatesTable({
@@ -93,85 +109,18 @@ export default function EstimatesTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {estimates.map((estimate) => {
-            const isExpired =
-              estimate.validUntil && new Date(estimate.validUntil) < new Date();
-            return (
-              <TableRow
-                key={estimate.id}
-                className={cn(
-                  "cursor-pointer hover:bg-muted/50 transition-colors",
-                  isExpired ? "opacity-50" : ""
-                )}
-                onClick={() => router.push(`/estimates/${estimate.id}`)}
-              >
-                <TableCell className="font-medium">
-                  {estimate.estimateNumber}
-                  {isExpired && (
-                    <span className="ml-2 text-xs text-red-600">(Expiré)</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div>
-                    <p className="font-medium text-sm">
-                      {estimate.customer?.name || "—"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {estimate.customer?.email || ""}
-                    </p>
-                  </div>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(new Date(estimate.createdAt))}
-                </TableCell>
-                <TableCell className="font-medium">
-                  {formatCurrency(estimate.totalPrice)}
-                </TableCell>
-                <TableCell>{getStatusBadge(estimate.status)}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onDownload(estimate.id)}
-                          disabled={downloadingId === estimate.id}
-                          aria-label="Télécharger PDF"
-                        >
-                          {downloadingId === estimate.id ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <Download className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Télécharger PDF</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onDelete(estimate.id)}
-                          disabled={deletingId === estimate.id}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          aria-label="Supprimer"
-                        >
-                          {deletingId === estimate.id ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Supprimer</TooltipContent>
-                    </Tooltip>
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          {estimates.map((estimate) => (
+            <ExpandableEstimateRow
+              key={estimate.id}
+              estimate={estimate}
+              getStatusBadge={getStatusBadge}
+              onRowClick={() => router.push(`/estimates/${estimate.id}`)}
+              onDownload={onDownload}
+              onDelete={onDelete}
+              downloadingId={downloadingId}
+              deletingId={deletingId}
+            />
+          ))}
         </TableBody>
       </Table>
     </TooltipProvider>

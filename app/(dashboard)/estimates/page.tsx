@@ -8,6 +8,19 @@ import { Card } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Plus, Loader2 } from "lucide-react";
 
+interface TestMappingEntry {
+  id: string;
+  localTestName: string;
+  laboratory: { id: string; name: string };
+  price?: number | null;
+}
+
+interface TestMappingDetail {
+  id: string;
+  canonicalName: string;
+  entries: TestMappingEntry[];
+}
+
 interface Estimate {
   id: string;
   estimateNumber: string;
@@ -19,6 +32,10 @@ interface Estimate {
   customer: { name: string; email: string } | null;
   createdBy: { name: string };
   notes: string | null;
+  testMappingIds: string[];
+  selections?: Record<string, string> | null;
+  customPrices?: Record<string, number>;
+  testMappingDetails?: TestMappingDetail[];
 }
 
 export default function EstimatesPage() {

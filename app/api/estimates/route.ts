@@ -64,32 +64,49 @@ export async function GET(request: NextRequest) {
       where.customerId = customerId;
     }
 
-    const [estimates, total] = await Promise.all([
-      prisma.estimate.findMany({
-        where,
-        include: {
+     const [estimates, total] = await Promise.all([
+       prisma.estimate.findMany({
+         where,
+         include: {
           customer: true,
           createdBy: { select: { name: true } },
-        },
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-      prisma.estimate.count({ where }),
-    ]);
+         },
+         orderBy: { createdAt: "desc" },
+         skip: (page - 1) * limit,
+         take: limit,
+       }),
+       prisma.estimate.count({ where }),
+     ]);
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        estimates,
-        pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit),
-        },
-      },
-    });
+     // Enhance estimates with test mapping details
+     const enhancedEstimates = await Promise.all(
+       estimates.map(async (est) => {
+         const testMappings = await prisma.testMapping.findMany({
+           where: { id: { in: est.testMappingIds } },
+           include: {
+             entries: {
+               include: {
+                 laboratory: { select: { id: true, name: true } },
+               },
+             },
+           },
+         });
+         return { ...est, testMappingDetails: testMappings };
+       })
+     );
+
+     return NextResponse.json({
+       success: true,
+       data: {
+         estimates: enhancedEstimates,
+         pagination: {
+           page,
+           limit,
+           total,
+           pages: Math.ceil(total / limit),
+         },
+       },
+     });
   } catch (error) {
     logger.error({ err: error }, "[GET /api/estimates]");
     return NextResponse.json(
