@@ -187,18 +187,18 @@ model AuditLog {
 }
 
 model EmailLog {
-  id         String      @id @default(uuid())
-  toEmail    String      @map("to_email")
-  subject    String
-  status     EmailStatus @default(SENT)
-  source     String      @default("system")
-  error      String?
-  customerId String?     @map("customer_id")
-  createdAt  DateTime    @default(now()) @map("created_at")
+   id         String      @id @default(uuid())
+   toEmail    String      @map("to_email")
+   subject    String
+   status     EmailStatus @default(SENT)
+   source     String      @default("system")
+   error      String?
+   customerId String?     @map("customer_id")
+   createdAt  DateTime    @default(now()) @map("created_at")
 
-  customer Customer? @relation(fields: [customerId], references: [id])
+   customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
-  @@map("email_logs")
+   @@map("email_logs")
 }
 
 model ComparisonDraft {
@@ -282,7 +282,7 @@ model Estimate {
     updatedAt         DateTime @updatedAt @map("updated_at")
 
     // Relations
-    customer          Customer? @relation(fields: [customerId], references: [id])
+    customer          Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
     createdBy         User      @relation(fields: [createdById], references: [id])
     emails            EstimateEmail[]
 
