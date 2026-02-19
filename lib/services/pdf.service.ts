@@ -295,21 +295,21 @@ export async function generateComparisonPdf(
          currentY += 18;
          currentY += 8; // Extra space before table
 
-         // Table header - 4 columns: N° | Analyse | Laboratoire | Prix (MAD)
-         const cols = { 
-           num: MARGIN, 
-           test: MARGIN + 28, 
-           lab: MARGIN + 200, 
-           price: PAGE_WIDTH - MARGIN - 60 
-         };
+          // Table header - 4 columns: N° | Analyse | Laboratoire | Prix (MAD)
+          const cols = { 
+            num: MARGIN, 
+            test: MARGIN + 28, 
+            lab: MARGIN + 160, 
+            price: PAGE_WIDTH - MARGIN - 50 
+          };
          const headerH = 16;
 
-         doc.fontSize(9).font("Helvetica-Bold").fillColor("#000000");
-         doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
-         doc.text("N°", cols.num + 2, currentY + 2, { width: 26 });
-         doc.text("Analyse", cols.test + 2, currentY + 2, { width: 170 });
-         doc.text("Laboratoire", cols.lab + 2, currentY + 2, { width: 120 });
-         doc.text("Prix (MAD)", cols.price - 30, currentY + 2, { width: 30, align: "right" });
+          doc.fontSize(9).font("Helvetica-Bold").fillColor("#000000");
+          doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
+          doc.text("N°", cols.num + 2, currentY + 2, { width: 26 });
+          doc.text("Analyse", cols.test + 2, currentY + 2, { width: 130 });
+          doc.text("Laboratoire", cols.lab + 2, currentY + 2, { width: 100 });
+          doc.text("Prix (MAD)", cols.price - 40, currentY + 2, { width: 40, align: "right" });
          currentY += headerH;
          doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
          currentY += 2;
@@ -324,19 +324,19 @@ export async function generateComparisonPdf(
              currentY = MARGIN;
            }
 
-           doc.text(String(i + 1), cols.num + 2, currentY, { width: 26 });
-           doc.text(a.canonicalName, cols.test + 2, currentY, { width: 170 });
-           doc.text(a.laboratoryName, cols.lab + 2, currentY, { width: 120 });
-           doc.text(a.formattedPrice, cols.price - 30, currentY, { width: 30, align: "right" });
+            doc.text(String(i + 1), cols.num + 2, currentY, { width: 26 });
+            doc.text(a.canonicalName, cols.test + 2, currentY, { width: 130 });
+            doc.text(a.laboratoryName, cols.lab + 2, currentY, { width: 100 });
+            doc.text(a.formattedPrice, cols.price - 40, currentY, { width: 40, align: "right" });
            currentY += rowH;
          }
 
          // Total row
-         doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
-         currentY += 2;
-         doc.fontSize(10).font("Helvetica-Bold");
-         doc.text("Total", cols.test + 2, currentY, { width: 170 });
-         doc.text(sel.formattedTotalPrice, cols.price - 30, currentY, { width: 30, align: "right" });
+          doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
+          currentY += 2;
+          doc.fontSize(10).font("Helvetica-Bold");
+          doc.text("Total", cols.test + 2, currentY, { width: 130 });
+          doc.text(sel.formattedTotalPrice, cols.price - 40, currentY, { width: 40, align: "right" });
          currentY += 14;
          doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
          currentY += 12;
@@ -364,16 +364,16 @@ export async function generateComparisonPdf(
         currentY += 18;
         currentY += 8; // Extra space before table
 
-        // Table header
-        const cols = { num: MARGIN, test: MARGIN + 28, price: PAGE_WIDTH - MARGIN - 120, tat: PAGE_WIDTH - MARGIN - 50 };
+         // Table header
+         const cols = { num: MARGIN, test: MARGIN + 28, price: PAGE_WIDTH - MARGIN - 50, tat: PAGE_WIDTH - MARGIN - 50 };
         const headerH = 16;
 
-        doc.fontSize(9).font("Helvetica-Bold").fillColor("#000000");
-        doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
-        doc.text("N°", cols.num + 2, currentY + 2, { width: 26 });
-        doc.text("Analyse", cols.test + 2, currentY + 2, { width: 260 });
-        doc.text("Prix (MAD)", cols.price - 30, currentY + 2, { width: 30, align: "right" });
-        doc.text("Délai", cols.tat - 30, currentY + 2, { width: 30, align: "right" });
+         doc.fontSize(9).font("Helvetica-Bold").fillColor("#000000");
+         doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
+         doc.text("N°", cols.num + 2, currentY + 2, { width: 26 });
+         doc.text("Analyse", cols.test + 2, currentY + 2, { width: 260 });
+         doc.text("Prix (MAD)", cols.price - 40, currentY + 2, { width: 40, align: "right" });
+         doc.text("Délai", cols.tat - 30, currentY + 2, { width: 30, align: "right" });
         currentY += headerH;
         doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
         currentY += 2;
@@ -388,19 +388,19 @@ export async function generateComparisonPdf(
             currentY = MARGIN;
           }
 
-          doc.text(String(i + 1), cols.num + 2, currentY, { width: 26 });
-          doc.text(test.canonicalName, cols.test + 2, currentY, { width: 260 });
-          doc.text(test.formattedPrice, cols.price - 30, currentY, { width: 30, align: "right" });
-          doc.text(test.turnaroundTime ?? "—", cols.tat - 30, currentY, { width: 30, align: "right" });
+           doc.text(String(i + 1), cols.num + 2, currentY, { width: 26 });
+           doc.text(test.canonicalName, cols.test + 2, currentY, { width: 260 });
+           doc.text(test.formattedPrice, cols.price - 40, currentY, { width: 40, align: "right" });
+           doc.text(test.turnaroundTime ?? "—", cols.tat - 30, currentY, { width: 30, align: "right" });
           currentY += rowH;
         }
 
-        // Total row
-        doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
-        currentY += 2;
-        doc.fontSize(10).font("Helvetica-Bold");
-        doc.text("Total", cols.test + 2, currentY, { width: 260 });
-        doc.text(lab.formattedTotalPrice, cols.price - 30, currentY, { width: 30, align: "right" });
+         // Total row
+         doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
+         currentY += 2;
+         doc.fontSize(10).font("Helvetica-Bold");
+         doc.text("Total", cols.test + 2, currentY, { width: 260 });
+         doc.text(lab.formattedTotalPrice, cols.price - 40, currentY, { width: 40, align: "right" });
         currentY += 14;
         doc.moveTo(MARGIN, currentY).lineTo(PAGE_WIDTH - MARGIN, currentY).stroke("#000000");
         currentY += 12;

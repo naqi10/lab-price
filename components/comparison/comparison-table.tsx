@@ -121,6 +121,7 @@ export default function ComparisonTable({
   onUpdateCustomPrice,
   onClearCustomPrice,
   labColorMap = {},
+  selectionMode = "CUSTOM",
 }: {
   data: ComparisonTableData;
   selections?: Record<string, string>;
@@ -132,6 +133,7 @@ export default function ComparisonTable({
   onUpdateCustomPrice?: (testId: string, labId: string, price: number) => void;
   onClearCustomPrice?: (testId: string, labId: string) => void;
   labColorMap?: Record<string, LabColor>;
+  selectionMode?: "CHEAPEST" | "FASTEST" | "CUSTOM";
 }) {
   const bestTotal    = data.totals[data.bestLabId] ?? 0;
   const [openOverride, setOpenOverride] = useState<{ testId: string; labId: string } | null>(null);
@@ -208,11 +210,11 @@ export default function ComparisonTable({
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-1">
               Optimiser par&nbsp;:
             </span>
-            <Button size="sm" variant="outline" onClick={onPresetCheapest} className="h-7 text-xs gap-1.5">
+            <Button size="sm" variant={selectionMode === "CHEAPEST" ? "default" : "outline"} onClick={onPresetCheapest} className="h-7 text-xs gap-1.5">
               <DollarSign className="h-3.5 w-3.5" />
               Prix le plus bas
             </Button>
-            <Button size="sm" variant="outline" onClick={onPresetQuickest} className="h-7 text-xs gap-1.5">
+            <Button size="sm" variant={selectionMode === "FASTEST" ? "default" : "outline"} onClick={onPresetQuickest} className="h-7 text-xs gap-1.5">
               <Clock className="h-3.5 w-3.5" />
               Délai le plus court
             </Button>

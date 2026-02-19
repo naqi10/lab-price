@@ -1,8 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import Header from "@/components/dashboard/header";
+import { Suspense, useCallback, useEffect, useMemo, useState, useContext } from "react";
 import ComparisonTable from "@/components/comparison/comparison-table";
 import LabCostSummary from "@/components/comparison/lab-cost-summary";
 import MissingTestsAlert from "@/components/comparison/missing-tests-alert";
@@ -14,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Mail, Zap, Download, Loader2, Save } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { DashboardTitleContext } from "@/lib/contexts/dashboard-title";
 
 /**
  * Parse a human-readable turnaround time string into hours for comparison.
@@ -104,7 +104,7 @@ function isSelectionModeFastest(
 
 export default function ComparisonPage() {
   return (
-    <Suspense fallback={<><Header title="Comparaison des prix" /><div className="mt-6 space-y-4"><Skeleton className="h-12 w-full" /><Skeleton className="h-64 w-full" /></div></>}>
+    <Suspense fallback={<><div className="mt-6 space-y-4"><Skeleton className="h-12 w-full" /><Skeleton className="h-64 w-full" /></div></>}>
       <ComparisonContent />
     </Suspense>
   );
@@ -114,6 +114,7 @@ function ComparisonContent() {
   const searchParams = useSearchParams();
   const testIds = searchParams.getAll("tests");
   const { comparison, isLoading, error, compare } = useComparison();
+  const { setTitle } = useContext(DashboardTitleContext);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
@@ -135,6 +136,10 @@ function ComparisonContent() {
     testName: string;
     labName: string;
   }>({ open: false, testMappingId: "", laboratoryId: "", testName: "", labName: "" });
+
+  useEffect(() => {
+    setTitle("Comparaison des prix");
+  }, [setTitle]);
 
   useEffect(() => {
     if (testIds.length > 0) {
@@ -349,21 +354,15 @@ function ComparisonContent() {
 
    if (!testIds.length) {
      return (
-       <>
-         <Header title="Comparaison des prix" />
-         <main className="px-6 py-6">
-           <div className="text-center text-muted-foreground">
-             <p>Sélectionnez des tests depuis la page Tests pour lancer une comparaison.</p>
-           </div>
-         </main>
-       </>
+       <div className="text-center text-muted-foreground">
+         <p>Sélectionnez des tests depuis la page Tests pour lancer une comparaison.</p>
+       </div>
      );
    }
 
    return (
      <>
-       <Header title="Comparaison des prix" />
-       <main className="px-6 py-6">
+       <main>
          {isLoading ? (
            <div className="space-y-4">
              <Skeleton className="h-12 w-full" />
@@ -429,19 +428,20 @@ function ComparisonContent() {
                testMappingIds={testIds}
                laboratories={tableData?.laboratories}
              />
-             {tableData && (
-               <ComparisonTable
-                 data={tableData}
-                 selections={selections}
-                 customPrices={customPrices}
-                 onSelectLab={handleSelectLab}
-                 onPresetCheapest={handlePresetCheapest}
-                 onPresetQuickest={handlePresetQuickest}
-                 onClearSelections={handleClearSelections}
-                 onUpdateCustomPrice={handleUpdateCustomPrice}
-                 onClearCustomPrice={handleClearCustomPrice}
-               />
-             )}
+              {tableData && (
+                <ComparisonTable
+                  data={tableData}
+                  selections={selections}
+                  customPrices={customPrices}
+                  onSelectLab={handleSelectLab}
+                  onPresetCheapest={handlePresetCheapest}
+                  onPresetQuickest={handlePresetQuickest}
+                  onClearSelections={handleClearSelections}
+                  onUpdateCustomPrice={handleUpdateCustomPrice}
+                  onClearCustomPrice={handleClearCustomPrice}
+                  selectionMode={selectionMode}
+                />
+              )}
            </div>
          ) : null}
        </main>
