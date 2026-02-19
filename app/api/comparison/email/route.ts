@@ -9,7 +9,13 @@ import logger from "@/lib/logger";
  * Compare selected tests, find the cheapest laboratory,
  * and automatically send the result to the client by email.
  *
- * Body: { testMappingIds: string[], clientEmail: string, clientName?: string }
+ * Body: { 
+ *   testMappingIds: string[], 
+ *   clientEmail: string, 
+ *   clientName?: string,
+ *   selections?: Record<string, string>,
+ *   customPrices?: Record<string, number>
+ * }
  */
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { testMappingIds, clientEmail, clientName, customerId, selections } = body;
+    const { testMappingIds, clientEmail, clientName, customerId, selections, customPrices } = body;
 
     // ── Validation ─────────────────────────────────────────────────────────
     if (!testMappingIds || !Array.isArray(testMappingIds) || testMappingIds.length === 0) {
@@ -46,6 +52,7 @@ export async function POST(request: NextRequest) {
       clientName: clientName || undefined,
       customerId: customerId || undefined,
       selections: selections || undefined,
+      customPrices: customPrices || undefined,
     });
 
     return NextResponse.json({

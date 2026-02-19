@@ -15,11 +15,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     const pdfBuffer = await generateQuotationPdf(quotation);
     const dateStr = new Date().toISOString().split("T")[0];
+    const inline = request.nextUrl.searchParams.get("inline") === "true";
+    const filename = `Devis_${quotation.quotationNumber}_${dateStr}.pdf`;
 
     return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="Devis_${quotation.quotationNumber}_${dateStr}.pdf"`,
+        "Content-Disposition": inline
+          ? `inline; filename="${filename}"`
+          : `attachment; filename="${filename}"`,
       },
     });
   } catch (error) {

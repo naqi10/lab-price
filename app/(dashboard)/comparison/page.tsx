@@ -11,7 +11,7 @@ import QuickMappingDialog from "@/components/comparison/quick-mapping-dialog";
 import { useComparison } from "@/hooks/use-comparison";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Mail, Zap } from "lucide-react";
+import { Mail, Zap, Download, Loader2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
 /**
@@ -49,9 +49,13 @@ function ComparisonContent() {
   const testIds = searchParams.getAll("tests");
   const { comparison, isLoading, error, compare } = useComparison();
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   // Per-test lab selection state
-  const [selections, setSelections] = useState<Record<string, string>>({});
+  const [selections, setSelections] = useState<Record<string, string>>({});;
+
+  // Custom prices for this session only (not persisted to DB)
+  const [customPrices, setCustomPrices] = useState<Record<string, number>>({});
 
   // Quick mapping dialog state
   const [mappingDialog, setMappingDialog] = useState<{
@@ -197,104 +201,186 @@ function ComparisonContent() {
     setSelections({});
   }, []);
 
+  // Update a custom price (session-only, not persisted)
+  const handleUpdateCustomPrice = useCallback((testId: string, labId: string, price: number) => {
+    const key = `${testId}-${labId}`;
+    setCustomPrices(prev => ({ ...prev, [key]: price }));
+  }, []);
+
+  // Clear a custom price and revert to original
+  const handleClearCustomPrice = useCallback((testId: string, labId: string) => {
+    const key = `${testId}-${labId}`;
+    setCustomPrices(prev => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  }, []);
+
   const hasActiveSelections = Object.keys(selections).length > 0;
+
+  // Download PDF with current prices and selections
+  const handleDownloadPdf = useCallback(async () => {
+    setIsDownloadingPdf(true);
+    try {
+      const res = await fetch("/api/comparison/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          testMappingIds: testIds,
+          selections: hasActiveSelections ? selections : undefined,
+          customPrices: Object.keys(customPrices).length > 0 ? customPrices : undefined,
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Erreur lors de la génération du PDF");
+      }
+
+      // Get filename from Content-Disposition header or generate one
+      const contentDisposition = res.headers.get("Content-Disposition");
+      let filename = "Comparaison.pdf";
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="([^"]+)"/);
+        if (match) filename = match[1];
+      }
+
+      // Download the PDF
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur lors du téléchargement";
+      alert(message);
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  }, [testIds, selections, hasActiveSelections, customPrices]);
 
   const selectionTotal = useMemo(() => {
     if (!tableData || !hasActiveSelections) return 0;
     return Object.entries(selections).reduce((sum, [testId, labId]) => {
-      const test = tableData.tests.find((t) => t.id === testId);
+      const test = tableData.tests.find((t: any) => t.id === testId);
       return sum + (test?.prices[labId] ?? 0);
     }, 0);
   }, [selections, tableData, hasActiveSelections]);
 
-  if (!testIds.length) {
-    return (
-      <>
-        <Header title="Comparaison des prix" />
-        <div className="mt-6 text-center text-muted-foreground">
-          <p>Sélectionnez des tests depuis la page Tests pour lancer une comparaison.</p>
-        </div>
-      </>
-    );
-  }
+   if (!testIds.length) {
+     return (
+       <>
+         <Header title="Comparaison des prix" />
+         <main className="px-6 py-6">
+           <div className="text-center text-muted-foreground">
+             <p>Sélectionnez des tests depuis la page Tests pour lancer une comparaison.</p>
+           </div>
+         </main>
+       </>
+     );
+   }
 
-  return (
-    <>
-      <Header title="Comparaison des prix" />
-      {isLoading ? (
-        <div className="mt-6 space-y-4">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-64 w-full" />
-        </div>
-      ) : error ? (
-        <p className="text-red-500 mt-6">{error}</p>
-      ) : comparison ? (
-        <div className="mt-6 space-y-6">
-          {/* Email action bar — keyed to avoid React 19 DOM reconciliation issues */}
-          <div key={hasActiveSelections ? "bar-sel" : "bar-def"} className="flex items-center justify-between rounded-lg border bg-card p-4">
-            <div>
-              <p className="text-sm font-medium">
-                {hasActiveSelections ? "Envoyer la sélection optimisée au client" : "Envoyer la comparaison au client"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {hasActiveSelections
-                  ? `Sélection multi-laboratoires (${Object.keys(selections).length} tests) — ${formatCurrency(selectionTotal)}`
-                  : "Identifie le laboratoire le moins cher et envoie le résultat par email."}
-              </p>
-            </div>
-            <Button onClick={() => setEmailDialogOpen(true)}>
-              {hasActiveSelections
-                ? <><Zap className="mr-2 h-4 w-4" /><span>Envoyer la sélection</span></>
-                : <><Mail className="mr-2 h-4 w-4" /><span>Envoyer par email</span></>}
-            </Button>
-          </div>
+   return (
+     <>
+       <Header title="Comparaison des prix" />
+       <main className="px-6 py-6">
+         {isLoading ? (
+           <div className="space-y-4">
+             <Skeleton className="h-12 w-full" />
+             <Skeleton className="h-64 w-full" />
+           </div>
+         ) : error ? (
+           <p className="text-red-500">{error}</p>
+         ) : comparison ? (
+           <div className="space-y-6">
+             {/* Email action bar — keyed to avoid React 19 DOM reconciliation issues */}
+             <div key={hasActiveSelections ? "bar-sel" : "bar-def"} className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-lg border bg-card p-4">
+               <div>
+                 <p className="text-sm font-medium">
+                   {hasActiveSelections ? "Envoyer la sélection optimisée au client" : "Envoyer la comparaison au client"}
+                 </p>
+                 <p className="text-xs text-muted-foreground">
+                   {hasActiveSelections
+                     ? `Sélection multi-laboratoires (${Object.keys(selections).length} tests) — ${formatCurrency(selectionTotal)}`
+                     : "Identifie le laboratoire le moins cher et envoie le résultat par email."}
+                 </p>
+               </div>
+               <div className="flex gap-2">
+                 <Button 
+                   variant="outline"
+                   onClick={handleDownloadPdf}
+                   disabled={isDownloadingPdf}
+                 >
+                   {isDownloadingPdf ? (
+                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /><span>Génération...</span></>
+                   ) : (
+                     <><Download className="mr-2 h-4 w-4" /><span>Télécharger PDF</span></>
+                   )}
+                 </Button>
+                 <Button onClick={() => setEmailDialogOpen(true)}>
+                   {hasActiveSelections
+                     ? <><Zap className="mr-2 h-4 w-4" /><span>Envoyer la sélection</span></>
+                     : <><Mail className="mr-2 h-4 w-4" /><span>Envoyer par email</span></>}
+                 </Button>
+               </div>
+             </div>
 
-          {missingTests.length > 0 && (
-            <MissingTestsAlert missingTests={missingTests} />
-          )}
-          <LabCostSummary
-            labs={labs}
-            bestLabId={bestLabId}
-            selections={hasActiveSelections ? selections : undefined}
-            selectionTotal={selectionTotal}
-            testNames={testNames}
-            testMappingIds={testIds}
-            laboratories={tableData?.laboratories}
-          />
-          {tableData && (
-            <ComparisonTable
-              data={tableData}
-              selections={selections}
-              onSelectLab={handleSelectLab}
-              onPresetCheapest={handlePresetCheapest}
-              onPresetQuickest={handlePresetQuickest}
-              onClearSelections={handleClearSelections}
-            />
-          )}
-        </div>
-      ) : null}
+             {missingTests.length > 0 && (
+               <MissingTestsAlert missingTests={missingTests} />
+             )}
+             <LabCostSummary
+               labs={labs}
+               bestLabId={bestLabId}
+               selections={hasActiveSelections ? selections : undefined}
+               selectionTotal={selectionTotal}
+               testNames={testNames}
+               testMappingIds={testIds}
+               laboratories={tableData?.laboratories}
+             />
+             {tableData && (
+               <ComparisonTable
+                 data={tableData}
+                 selections={selections}
+                 customPrices={customPrices}
+                 onSelectLab={handleSelectLab}
+                 onPresetCheapest={handlePresetCheapest}
+                 onPresetQuickest={handlePresetQuickest}
+                 onClearSelections={handleClearSelections}
+                 onUpdateCustomPrice={handleUpdateCustomPrice}
+                 onClearCustomPrice={handleClearCustomPrice}
+               />
+             )}
+           </div>
+         ) : null}
+       </main>
 
-      <EmailComparisonDialog
-        open={emailDialogOpen}
-        onClose={() => setEmailDialogOpen(false)}
-        testMappingIds={testIds}
-        testNames={testNames}
-        selections={hasActiveSelections ? selections : undefined}
-        laboratories={tableData?.laboratories}
-      />
+       <EmailComparisonDialog
+         open={emailDialogOpen}
+         onClose={() => setEmailDialogOpen(false)}
+         testMappingIds={testIds}
+         testNames={testNames}
+         selections={hasActiveSelections ? selections : undefined}
+         laboratories={tableData?.laboratories}
+         customPrices={customPrices}
+       />
 
-      <QuickMappingDialog
-        open={mappingDialog.open}
-        onClose={() => setMappingDialog((prev) => ({ ...prev, open: false }))}
-        testMappingId={mappingDialog.testMappingId}
-        laboratoryId={mappingDialog.laboratoryId}
-        testName={mappingDialog.testName}
-        labName={mappingDialog.labName}
-        onCreated={() => {
-          // Re-run comparison to pick up the new mapping
-          compare(testIds);
-        }}
-      />
-    </>
-  );
-}
+       <QuickMappingDialog
+         open={mappingDialog.open}
+         onClose={() => setMappingDialog((prev) => ({ ...prev, open: false }))}
+         testMappingId={mappingDialog.testMappingId}
+         laboratoryId={mappingDialog.laboratoryId}
+         testName={mappingDialog.testName}
+         labName={mappingDialog.labName}
+         onCreated={() => {
+           // Re-run comparison to pick up the new mapping
+           compare(testIds);
+         }}
+       />
+     </>
+   );
+ }

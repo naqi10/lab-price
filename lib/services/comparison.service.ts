@@ -279,8 +279,9 @@ export async function compareTestsWithEmail(data: {
   clientName?: string;
   customerId?: string;
   selections?: Record<string, string>;
+  customPrices?: Record<string, number>;
 }): Promise<ComparisonEmailResult> {
-  const { testMappingIds, clientEmail, clientName, customerId, selections } = data;
+  const { testMappingIds, clientEmail, clientName, customerId, selections, customPrices } = data;
 
   // ── Validation ───────────────────────────────────────────────────────────
   if (!testMappingIds || testMappingIds.length === 0) {
@@ -336,32 +337,37 @@ export async function compareTestsWithEmail(data: {
     }
   >();
 
-  for (const mapping of testMappings) {
-    for (const entry of mapping.entries) {
-      if (!entry.laboratory.isActive) continue;
-      if (entry.price == null) continue;
+   for (const mapping of testMappings) {
+     for (const entry of mapping.entries) {
+       if (!entry.laboratory.isActive) continue;
+       if (entry.price == null) continue;
 
-      const labId = entry.laboratory.id;
-      if (!labMap.has(labId)) {
-        labMap.set(labId, {
-          id: labId,
-          name: entry.laboratory.name,
-          code: entry.laboratory.code,
-          tests: [],
-          totalPrice: 0,
-        });
-      }
+       const labId = entry.laboratory.id;
+       if (!labMap.has(labId)) {
+         labMap.set(labId, {
+           id: labId,
+           name: entry.laboratory.name,
+           code: entry.laboratory.code,
+           tests: [],
+           totalPrice: 0,
+         });
+       }
 
-      const lab = labMap.get(labId)!;
-      lab.tests.push({
-        canonicalName: mapping.canonicalName,
-        localTestName: entry.localTestName,
-        price: entry.price,
-        turnaroundTime: emailTatMap.get(`${labId}:${entry.localTestName}`) ?? null,
-      });
-      lab.totalPrice += entry.price;
-    }
-  }
+       const lab = labMap.get(labId)!;
+       
+       // Apply custom price if available, otherwise use database price
+       const customPriceKey = `${mapping.id}-${labId}`;
+       const effectivePrice = customPrices?.[customPriceKey] ?? entry.price;
+       
+       lab.tests.push({
+         canonicalName: mapping.canonicalName,
+         localTestName: entry.localTestName,
+         price: effectivePrice,
+         turnaroundTime: emailTatMap.get(`${labId}:${entry.localTestName}`) ?? null,
+       });
+       lab.totalPrice += effectivePrice;
+     }
+   }
 
   // ── Filter: only labs offering ALL selected tests ────────────────────────
   const completeLabs = Array.from(labMap.values())

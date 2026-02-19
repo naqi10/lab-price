@@ -111,67 +111,66 @@ export default function CustomerCombobox({ onSelect, selectedCustomer }: Custome
     });
   };
 
-  if (selectedCustomer) {
-    return (
-      <div className="flex items-center gap-2 rounded-md border px-3 py-2">
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate">{selectedCustomer.name}</p>
-          <p className="text-xs text-muted-foreground truncate">{selectedCustomer.email}</p>
-        </div>
-        <Button variant="ghost" size="sm" onClick={handleClear} className="shrink-0 h-6 w-6 p-0">
-          <X className="h-3 w-3" />
-        </Button>
-      </div>
-    );
-  }
+   if (selectedCustomer) {
+     return (
+       <div className="flex items-center gap-2 rounded-md border border-primary/30 bg-primary/5 px-3 py-2.5 transition-colors hover:bg-primary/10">
+         <div className="flex-1 min-w-0">
+           <p className="text-sm font-semibold text-foreground">{selectedCustomer.name}</p>
+         </div>
+         <Button variant="ghost" size="sm" onClick={handleClear} className="shrink-0 h-6 w-6 p-0 hover:bg-destructive/10">
+           <X className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+         </Button>
+       </div>
+     );
+   }
 
-  return (
-    <div className="space-y-2">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-full justify-between font-normal"
-          >
-            <span className="text-muted-foreground">Rechercher un client...</span>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="p-0">
-          <Command shouldFilter={false}>
-            <CommandInput
-              placeholder="Nom ou email du client..."
-              value={query}
-              onValueChange={setQuery}
-            />
-            <CommandList>
-              {loading && (
-                <div className="py-4 text-center text-sm text-muted-foreground">Recherche...</div>
-              )}
-              {!loading && results.length === 0 && query.length > 0 && (
-                <CommandEmpty>Aucun client trouvé</CommandEmpty>
-              )}
-              {!loading && results.length > 0 && (
-                <CommandGroup>
-                  {renderCustomerItems()}
-                </CommandGroup>
-              )}
-              <div className="border-t p-1">
-                <CommandItem
-                  onSelect={() => {
-                    setShowCreate(true);
-                    setOpen(false);
-                  }}
-                >
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Créer un nouveau client
-                </CommandItem>
-              </div>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+   return (
+     <div className="space-y-2">
+       <Popover open={open} onOpenChange={setOpen}>
+         <PopoverTrigger asChild>
+           <Button
+             variant="outline"
+             role="combobox"
+             className="w-full justify-between font-normal"
+           >
+             <span className="text-muted-foreground truncate">Sélectionnez un client...</span>
+             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+           </Button>
+         </PopoverTrigger>
+         <PopoverContent className="p-0 w-96">
+           <Command shouldFilter={false}>
+             <CommandInput
+               placeholder="Rechercher par nom ou email..."
+               value={query}
+               onValueChange={setQuery}
+             />
+             <CommandList>
+               {loading && (
+                 <div className="py-4 text-center text-sm text-muted-foreground">Recherche...</div>
+               )}
+               {!loading && results.length === 0 && query.length > 0 && (
+                 <CommandEmpty>Aucun client trouvé</CommandEmpty>
+               )}
+               {!loading && results.length > 0 && (
+                 <CommandGroup>
+                   {renderCustomerItems()}
+                 </CommandGroup>
+               )}
+               <div className="border-t p-1">
+                 <CommandItem
+                   onSelect={() => {
+                     setShowCreate(true);
+                     setOpen(false);
+                   }}
+                 >
+                   <UserPlus className="mr-2 h-4 w-4" />
+                   Créer un nouveau client
+                 </CommandItem>
+               </div>
+             </CommandList>
+           </Command>
+         </PopoverContent>
+       </Popover>
 
       {showCreate && (
         <div className="rounded-md border p-3 space-y-3 bg-muted/30">

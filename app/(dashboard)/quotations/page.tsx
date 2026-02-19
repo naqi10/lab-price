@@ -90,7 +90,9 @@ export default function QuotationsPage() {
             </Button>
           )}
         </div>
-        <Button onClick={() => router.push("/quotations/new")}>+ Nouveau devis</Button>
+        <Button onClick={() => router.push("/quotations/new")}>
+          Nouveau devis
+        </Button>
       </div>
 
       {error && <p className="text-red-500 text-sm mt-4">{error}</p>}

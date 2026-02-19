@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useCustomers } from "@/hooks/use-customers";
 import { useDebounce } from "@/hooks/use-debounce";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Contact, Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 
 export default function CustomersPage() {
@@ -24,6 +26,7 @@ export default function CustomersPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", company: "" });
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const openCreate = () => {
     setEditingId(null);
@@ -78,29 +81,31 @@ export default function CustomersPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer ce client ?")) return;
-    try {
-      const res = await fetch(`/api/customers/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) refetch();
-    } catch {
-      /* ignore */
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    const res = await fetch(`/api/customers/${deleteId}`, { method: "DELETE" });
+    const data = await res.json();
+    if (data.success) {
+      setDeleteId(null);
+      refetch();
     }
   };
 
   return (
     <>
       <Header title="Clients" />
-      <div className="flex items-center justify-between mt-6 gap-4">
-        <Input
-          placeholder="Rechercher un client..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
+      <div className="flex items-center justify-between mt-4 gap-3">
+        <div className="relative max-w-sm flex-1">
+          <Contact className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
+            placeholder="Rechercher un client..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
         <Button onClick={openCreate}>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Nouveau client
         </Button>
       </div>
@@ -120,10 +125,30 @@ export default function CustomersPage() {
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : customers.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-6">
-                Aucun client trouvé.
-              </p>
+              <div className="flex flex-col items-center justify-center py-14 gap-3">
+                <div className="h-12 w-12 rounded-full bg-muted/40 border border-border/50 flex items-center justify-center">
+                  <Contact className="h-5 w-5 text-muted-foreground/60" />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-medium text-foreground/70">
+                    {search ? "Aucun client trouvé" : "Aucun client pour le moment"}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {search ? "Essayez un autre terme de recherche" : "Ajoutez votre premier client pour commencer"}
+                  </p>
+                </div>
+                {!search && (
+                  <button
+                    onClick={openCreate}
+                    className="mt-1 inline-flex items-center gap-1.5 rounded-md border border-border/60 px-3 py-1.5 text-xs font-medium hover:bg-accent transition-colors"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Nouveau client
+                  </button>
+                )}
+              </div>
             ) : (
+              <TooltipProvider>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -139,43 +164,68 @@ export default function CustomersPage() {
                 <TableBody>
                   {customers.map((c: any) => (
                     <TableRow key={c.id}>
-                      <TableCell
-                        className="font-medium cursor-pointer hover:underline"
-                        onClick={() => router.push(`/customers/${c.id}`)}
-                      >
-                        {c.name}
+                      <TableCell className="font-medium">
+                        <button
+                          className="hover:text-primary hover:underline focus-visible:outline-none focus-visible:underline transition-colors text-left"
+                          onClick={() => router.push(`/customers/${c.id}`)}
+                        >
+                          {c.name}
+                        </button>
                       </TableCell>
-                      <TableCell>{c.email}</TableCell>
-                      <TableCell>{c.phone || "—"}</TableCell>
-                      <TableCell>{c.company || "—"}</TableCell>
-                      <TableCell>{c._count?.quotations ?? 0}</TableCell>
-                      <TableCell>{c._count?.emailLogs ?? 0}</TableCell>
+                      <TableCell className="text-muted-foreground">{c.email}</TableCell>
+                      <TableCell className="text-muted-foreground">{c.phone || "—"}</TableCell>
+                      <TableCell className="text-muted-foreground">{c.company || "—"}</TableCell>
+                      <TableCell>
+                        <span className="inline-flex items-center justify-center h-6 min-w-[1.5rem] rounded-full bg-primary/10 text-primary text-xs font-medium px-2">
+                          {c._count?.quotations ?? 0}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-muted-foreground text-sm">{c._count?.emailLogs ?? 0}</span>
+                      </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openEdit(c)}
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDelete(c.id)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                        <div className="flex justify-end gap-1">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="sm" onClick={() => openEdit(c)}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Modifier</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setDeleteId(c.id)}
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Supprimer</TooltipContent>
+                          </Tooltip>
                         </div>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              </TooltipProvider>
             )}
           </CardContent>
         </Card>
       </div>
+
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={(o) => !o && setDeleteId(null)}
+        title="Supprimer ce client ?"
+        description="Cette action est irréversible. Toutes les données associées à ce client seront définitivement supprimées."
+        confirmLabel="Supprimer"
+        onConfirm={handleDelete}
+      />
 
       <Dialog open={dialogOpen} onOpenChange={(o) => !o && setDialogOpen(false)}>
         <DialogContent>
@@ -184,52 +234,57 @@ export default function CustomersPage() {
               {editingId ? "Modifier le client" : "Nouveau client"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-2">
+          <div className="space-y-4 py-3">
             {formError && (
-              <p className="text-sm text-red-500">{formError}</p>
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5">
+                <p className="text-sm text-destructive leading-tight">{formError}</p>
+              </div>
             )}
-            <div className="space-y-2">
-              <Label>Nom *</Label>
-              <Input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Nom du client"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Email *</Label>
-              <Input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="client@example.com"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Téléphone</Label>
-              <Input
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                placeholder="+33 1 23 45 67 89"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Entreprise</Label>
-              <Input
-                value={form.company}
-                onChange={(e) => setForm({ ...form, company: e.target.value })}
-                placeholder="Nom de l'entreprise"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2 space-y-1.5">
+                <Label className="text-xs font-medium">Nom <span className="text-destructive">*</span></Label>
+                <Input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="Nom du client"
+                  autoFocus
+                />
+              </div>
+              <div className="col-span-2 space-y-1.5">
+                <Label className="text-xs font-medium">Email <span className="text-destructive">*</span></Label>
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="client@example.com"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Téléphone</Label>
+                <Input
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  placeholder="+33 1 23 45 67 89"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Entreprise</Label>
+                <Input
+                  value={form.company}
+                  onChange={(e) => setForm({ ...form, company: e.target.value })}
+                  placeholder="Nom de l'entreprise"
+                />
+              </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={saving}>
               Annuler
             </Button>
             <Button onClick={handleSave} disabled={saving}>
               {saving ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Enregistrement...
                 </>
               ) : editingId ? (

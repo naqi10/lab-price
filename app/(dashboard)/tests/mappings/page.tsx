@@ -6,6 +6,7 @@ import TestMappingTable from "@/components/tests/test-mapping-table";
 import TestMappingForm from "@/components/tests/test-mapping-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Search } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 
@@ -15,6 +16,7 @@ export default function TestMappingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingMapping, setEditingMapping] = useState<any>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [laboratories, setLaboratories] = useState<{ id: string; name: string }[]>([]);
 
   // Search & filter state
@@ -86,15 +88,26 @@ export default function TestMappingsPage() {
     return result;
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer cette correspondance ? Cette action est irréversible.")) return;
-    await fetch(`/api/tests/mappings/${id}`, { method: "DELETE" });
+  const handleDelete = (id: string) => setDeletingId(id);
+
+  const confirmDelete = async () => {
+    if (!deletingId) return;
+    await fetch(`/api/tests/mappings/${deletingId}`, { method: "DELETE" });
+    setDeletingId(null);
     fetchMappings();
   };
 
   return (
     <>
       <Header title="Correspondances de tests" />
+      <ConfirmDialog
+        open={!!deletingId}
+        onOpenChange={(o) => !o && setDeletingId(null)}
+        title="Supprimer cette correspondance ?"
+        description="Cette action est irréversible. La correspondance sera définitivement supprimée."
+        confirmLabel="Supprimer"
+        onConfirm={confirmDelete}
+      />
 
       {/* Search bar + filter + action */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4">
@@ -110,7 +123,7 @@ export default function TestMappingsPage() {
         <select
           value={filterLab}
           onChange={(e) => setFilterLab(e.target.value)}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-10 rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground transition-colors hover:border-border/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer"
         >
           <option value="">Tous les laboratoires</option>
           {laboratories.map((lab) => (
