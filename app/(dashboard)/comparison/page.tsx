@@ -362,7 +362,7 @@ function ComparisonContent() {
 
    return (
      <>
-       <main>
+       <main className="pt-4">
          {isLoading ? (
            <div className="space-y-4">
              <Skeleton className="h-12 w-full" />
