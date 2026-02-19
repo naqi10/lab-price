@@ -10,9 +10,9 @@ const actions = [
     primary: true,
   },
   {
-    label: "Créer un devis",
-    description: "Générer un devis pour un client",
-    href: "/quotations/new",
+    label: "Créer une estimation",
+    description: "Générer une estimation pour un client",
+    href: "/comparison",
     icon: FilePlus,
     primary: true,
   },

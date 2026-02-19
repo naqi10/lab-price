@@ -5,7 +5,6 @@ import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import QuickActions from "@/components/dashboard/quick-actions";
 import StatsCards from "@/components/dashboard/stats-cards";
 import EmailStats from "@/components/dashboard/overview-chart";
-import RecentQuotations from "@/components/dashboard/recent-quotations";
 import PriceListUpdates from "@/components/dashboard/price-list-updates";
 import RecentActivity from "@/components/dashboard/recent-activity";
 import RecentCustomers from "@/components/dashboard/recent-customers";
@@ -74,14 +73,11 @@ export default function DashboardPage() {
           {/* Last price list update per laboratory */}
           <PriceListUpdates updates={data.priceListUpdates} />
 
-          {/* Recently created test mappings */}
-          <RecentMappings mappings={data.recentMappings} />
+           {/* Recently created test mappings */}
+           <RecentMappings mappings={data.recentMappings} />
 
-          {/* Recent quotations (last 10) */}
-          <RecentQuotations quotations={data.recentQuotations} />
-
-          {/* Recent activity log */}
-          <RecentActivity activity={data.recentActivity} />
+           {/* Recent activity log */}
+           <RecentActivity activity={data.recentActivity} />
         </div>
       ) : null}
     </>

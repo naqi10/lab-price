@@ -9,7 +9,6 @@ import logger from "@/lib/logger";
  * Returns all dashboard statistics in a single request:
  *   - Total laboratories, tests, manual mappings, active users
  *   - Last price list update per laboratory
- *   - Recent quotations (last 10)
  *   - Email delivery statistics (sent, failed)
  *   - Recent activity log (last 10)
  */
@@ -26,25 +25,21 @@ export async function GET() {
     const ninetyDaysAgo = new Date();
     ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
-    const [
-      totalLaboratories,
-      totalTests,
-      totalMappings,
-      totalUsers,
-      totalCustomers,
-      labPriceListUpdates,
-      recentQuotations,
-      // Centralized email_logs (new — tracks all emails)
-      emailLogSent,
-      emailLogFailed,
-      emailLogPending,
-      // Legacy quotation_emails (for emails sent before email_logs existed)
-      legacySent,
-      legacyFailed,
-      recentActivity,
-      recentCustomers,
-      recentMappings,
-    ] = await Promise.all([
+     const [
+       totalLaboratories,
+       totalTests,
+       totalMappings,
+       totalUsers,
+       totalCustomers,
+       labPriceListUpdates,
+       // Centralized email_logs (new — tracks all emails)
+       emailLogSent,
+       emailLogFailed,
+       emailLogPending,
+       recentActivity,
+       recentCustomers,
+       recentMappings,
+     ] = await Promise.all([
       // Total active laboratories
       prisma.laboratory.count({ where: { isActive: true, deletedAt: null } }),
 
@@ -60,50 +55,30 @@ export async function GET() {
       // Total customers
       prisma.customer.count(),
 
-      // Last price list update per laboratory
-      prisma.laboratory.findMany({
-        where: { isActive: true, deletedAt: null },
-        select: {
-          id: true,
-          name: true,
-          code: true,
-          priceLists: {
-            orderBy: { uploadedAt: "desc" },
-            take: 1,
-            select: {
-              fileName: true,
-              uploadedAt: true,
-              fileType: true,
-            },
-          },
-        },
-        orderBy: { name: "asc" },
-      }),
+       // Last price list update per laboratory
+       prisma.laboratory.findMany({
+         where: { isActive: true, deletedAt: null },
+         select: {
+           id: true,
+           name: true,
+           code: true,
+           priceLists: {
+             orderBy: { uploadedAt: "desc" },
+             take: 1,
+             select: {
+               fileName: true,
+               uploadedAt: true,
+               fileType: true,
+             },
+           },
+         },
+         orderBy: { name: "asc" },
+       }),
 
-      // Recent quotations (last 10)
-      prisma.quotation.findMany({
-        take: 10,
-        orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          quotationNumber: true,
-          title: true,
-          totalPrice: true,
-          status: true,
-          createdAt: true,
-          laboratory: { select: { name: true } },
-          createdBy: { select: { name: true } },
-        },
-      }),
-
-      // Email delivery stats — centralized email_logs table
-      prisma.emailLog.count({ where: { status: "SENT" } }),
-      prisma.emailLog.count({ where: { status: "FAILED" } }),
-      prisma.emailLog.count({ where: { status: "PENDING" } }),
-
-      // Legacy quotation_emails (for older emails sent before email_logs)
-      prisma.quotationEmail.count({ where: { status: "SENT" } }),
-      prisma.quotationEmail.count({ where: { status: "FAILED" } }),
+       // Email delivery stats — centralized email_logs table
+       prisma.emailLog.count({ where: { status: "SENT" } }),
+       prisma.emailLog.count({ where: { status: "FAILED" } }),
+       prisma.emailLog.count({ where: { status: "PENDING" } }),
 
       // Recent activity log (last 10)
       prisma.auditLog.findMany({
@@ -147,10 +122,10 @@ export async function GET() {
       }),
     ]);
 
-    // Combine counts from both tables (no double-counting: legacy covers old, emailLog covers new)
-    const sent = emailLogSent + legacySent;
-    const failed = emailLogFailed + legacyFailed;
-    const pending = emailLogPending;
+     // Combine counts from both tables
+     const sent = emailLogSent;
+     const failed = emailLogFailed;
+     const pending = emailLogPending;
 
     // Format lab price list updates
     const priceListUpdates = labPriceListUpdates.map((lab) => ({
@@ -170,25 +145,24 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       data: {
-        stats: {
-          totalLaboratories,
-          totalTests,
-          totalMappings,
-          totalUsers,
-          totalCustomers,
-          stalePriceListCount,
-        },
-        priceListUpdates,
-        recentQuotations,
-        emailStats: {
-          sent,
-          failed,
-          pending,
-          total: sent + failed + pending,
-        },
-        recentActivity,
-        recentCustomers,
-        recentMappings,
+       stats: {
+         totalLaboratories,
+         totalTests,
+         totalMappings,
+         totalUsers,
+         totalCustomers,
+         stalePriceListCount,
+       },
+       priceListUpdates,
+       emailStats: {
+         sent,
+         failed,
+         pending,
+         total: sent + failed + pending,
+       },
+       recentActivity,
+       recentCustomers,
+       recentMappings,
       },
     });
   } catch (error) {

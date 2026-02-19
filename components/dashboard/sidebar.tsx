@@ -22,7 +22,7 @@ const navItems = [
   { href: "/laboratories", label: "Laboratoires", icon: FlaskConical },
   { href: "/tests", label: "Tests & Correspondances", icon: TestTubes },
   { href: "/customers", label: "Clients", icon: Contact },
-  { href: "/quotations", label: "Devis", icon: FileText },
+  { href: "/estimates", label: "Estimations", icon: FileText },
   { href: "/settings", label: "Paramètres", icon: Settings },
 ];
 

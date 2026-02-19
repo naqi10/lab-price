@@ -27,22 +27,13 @@ enum MatchType {
 }
 
 enum EmailConfigMode {
-  API
-  SMTP
+   API
+   SMTP
 }
 
 enum EmailTemplateType {
-  QUOTATION
-  COMPARISON
-  GENERAL
-}
-
-enum QuotationStatus {
-  DRAFT
-  SENT
-  ACCEPTED
-  REJECTED
-  CANCELLED
+   COMPARISON
+   GENERAL
 }
 
 enum EmailStatus {
@@ -58,25 +49,23 @@ enum EstimateSelectionMode {
 }
 
 model User {
-   id                 String   @id @default(uuid())
-   email              String   @unique
-   name               String
-   password           String
-   role               Role     @default(USER)
-   isActive           Boolean  @default(true) @map("is_active")
-   mustChangePassword Boolean  @default(false) @map("must_change_password")
-   createdAt          DateTime @default(now()) @map("created_at")
-   updatedAt          DateTime @updatedAt @map("updated_at")
+    id                 String   @id @default(uuid())
+    email              String   @unique
+    name               String
+    password           String
+    role               Role     @default(USER)
+    isActive           Boolean  @default(true) @map("is_active")
+    mustChangePassword Boolean  @default(false) @map("must_change_password")
+    createdAt          DateTime @default(now()) @map("created_at")
+    updatedAt          DateTime @updatedAt @map("updated_at")
 
-   quotations         Quotation[]
-   quotationEmails    QuotationEmail[]
-   estimateEmails     EstimateEmail[]
-   auditLogs          AuditLog[]
-   uploadedPriceLists PriceList[]        @relation("UploadedPriceLists")
-   comparisonDrafts   ComparisonDraft[]
-   estimates          Estimate[]
+    estimateEmails     EstimateEmail[]
+    auditLogs          AuditLog[]
+    uploadedPriceLists PriceList[]        @relation("UploadedPriceLists")
+    comparisonDrafts   ComparisonDraft[]
+    estimates          Estimate[]
 
-   @@map("users")
+    @@map("users")
 }
 
 model Customer {
@@ -89,7 +78,6 @@ model Customer {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   emailLogs  EmailLog[]
-  quotations Quotation[]
   estimates  Estimate[]
 
   @@map("customers")
@@ -111,7 +99,6 @@ model Laboratory {
 
   priceLists         PriceList[]
   testMappingEntries TestMappingEntry[]
-  quotations         Quotation[]
 
   @@map("laboratories")
 }
@@ -164,7 +151,6 @@ model TestMapping {
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   entries        TestMappingEntry[]
-  quotationItems QuotationItem[]
 
   @@map("test_mappings")
 }
@@ -184,72 +170,6 @@ model TestMappingEntry {
 
   @@unique([testMappingId, laboratoryId])
   @@map("test_mapping_entries")
-}
-
-model Quotation {
-  id               String          @id @default(uuid())
-  quotationNumber  String          @unique @map("quotation_number")
-  title            String
-  laboratoryId     String          @map("laboratory_id")
-  createdById      String          @map("created_by_id")
-  customerId       String?         @map("customer_id")
-  clientName       String?         @map("client_name")
-  clientEmail      String?         @map("client_email")
-  clientReference  String?         @map("client_reference")
-  notes            String?
-  subtotal         Float?
-  taxRate          Float?          @map("tax_rate")
-  taxAmount        Float?          @map("tax_amount")
-  totalPrice       Float           @map("total_price")
-  validUntil       DateTime        @map("valid_until")
-  sentAt           DateTime?       @map("sent_at")
-  status           QuotationStatus @default(DRAFT)
-  createdAt        DateTime        @default(now()) @map("created_at")
-  updatedAt        DateTime        @updatedAt @map("updated_at")
-
-  laboratory Laboratory      @relation(fields: [laboratoryId], references: [id])
-  createdBy  User             @relation(fields: [createdById], references: [id])
-  customer   Customer?        @relation(fields: [customerId], references: [id])
-  items      QuotationItem[]
-  emails     QuotationEmail[]
-
-  @@map("quotations")
-}
-
-model QuotationItem {
-  id            String  @id @default(uuid())
-  quotationId   String  @map("quotation_id")
-  testMappingId String  @map("test_mapping_id")
-  position      Int     @default(0)
-  testName      String  @map("test_name")
-  testCode      String? @map("test_code")
-  labTestName   String  @map("lab_test_name")
-  labTestCode   String? @map("lab_test_code")
-  price         Float
-  quantity      Int     @default(1)
-
-  quotation   Quotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
-  testMapping TestMapping @relation(fields: [testMappingId], references: [id])
-
-  @@map("quotation_items")
-}
-
-model QuotationEmail {
-  id          String      @id @default(uuid())
-  quotationId String      @map("quotation_id")
-  sentById    String      @map("sent_by_id")
-  toEmail     String      @map("to_email")
-  subject     String
-  message     String?
-  status      EmailStatus @default(PENDING)
-  sentAt      DateTime?   @map("sent_at")
-  error       String?
-  createdAt   DateTime    @default(now()) @map("created_at")
-
-  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
-  sentBy    User      @relation(fields: [sentById], references: [id])
-
-  @@map("quotation_emails")
 }
 
 model AuditLog {
