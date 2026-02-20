@@ -22,8 +22,12 @@ interface TestMappingFormProps {
   /** If set, the form is in edit mode and pre-fills values. */
   editData?: {
     canonicalName: string;
+    code?: string;
     category?: string;
     description?: string;
+    unit?: string;
+    turnaroundTime?: string;
+    tubeType?: string;
     entries?: { laboratoryId: string; localTestName: string; laboratory?: { id: string; name: string } }[];
   };
 }
@@ -36,8 +40,12 @@ export default function TestMappingForm({
   editData,
 }: TestMappingFormProps) {
   const [canonicalName, setCanonicalName] = useState("");
+  const [code, setCode] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
+  const [unit, setUnit] = useState("");
+  const [turnaroundTime, setTurnaroundTime] = useState("");
+  const [tubeType, setTubeType] = useState("");
   const [entries, setEntries] = useState<MappingEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,8 +53,12 @@ export default function TestMappingForm({
   useEffect(() => {
     if (editData) {
       setCanonicalName(editData.canonicalName || "");
+      setCode(editData.code || "");
       setCategory(editData.category || "");
       setDescription(editData.description || "");
+      setUnit(editData.unit || "");
+      setTurnaroundTime(editData.turnaroundTime || "");
+      setTubeType(editData.tubeType || "");
       setEntries(
         (editData.entries || []).map((e) => ({
           laboratoryId: e.laboratoryId || e.laboratory?.id || "",
@@ -56,8 +68,12 @@ export default function TestMappingForm({
       );
     } else {
       setCanonicalName("");
+      setCode("");
       setCategory("");
       setDescription("");
+      setUnit("");
+      setTurnaroundTime("");
+      setTubeType("");
       setEntries([]);
     }
   }, [editData, open]);
@@ -66,10 +82,14 @@ export default function TestMappingForm({
     if (!canonicalName || entries.length === 0) return;
     setIsLoading(true);
     try {
-      await onSubmit({ canonicalName, category, description, entries });
+      await onSubmit({ canonicalName, code, category, description, unit, turnaroundTime, tubeType, entries });
       setCanonicalName("");
+      setCode("");
       setCategory("");
       setDescription("");
+      setUnit("");
+      setTurnaroundTime("");
+      setTubeType("");
       setEntries([]);
     } finally {
       setIsLoading(false);
@@ -78,7 +98,7 @@ export default function TestMappingForm({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {editData ? "Modifier la correspondance" : "Nouvelle correspondance de test"}
@@ -95,12 +115,58 @@ export default function TestMappingForm({
               />
             </div>
             <div className="space-y-2">
+              <Label>Code</Label>
+              <Input
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="Code du test (ex: GLU, HBA1C...)"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
               <Label>Catégorie</Label>
               <Input
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="Biochimie, Hématologie..."
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Unité</Label>
+              <Input
+                value={unit}
+                onChange={(e) => setUnit(e.target.value)}
+                placeholder="MAD, EUR..."
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Délai de résultat</Label>
+              <Input
+                value={turnaroundTime}
+                onChange={(e) => setTurnaroundTime(e.target.value)}
+                placeholder="Même jour, 1-3 jours..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Type de tube</Label>
+              <select
+                value={tubeType}
+                onChange={(e) => setTubeType(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground transition-colors hover:border-border/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer"
+              >
+                <option value="">Sélectionner un type de tube</option>
+                <option value="red">Rouge (sec)</option>
+                <option value="purple">Violet (EDTA)</option>
+                <option value="blue">Bleu (citrate)</option>
+                <option value="green">Vert (héparine)</option>
+                <option value="gold">Or (gel séparateur)</option>
+                <option value="gray">Gris (fluorure)</option>
+              </select>
             </div>
           </div>
 

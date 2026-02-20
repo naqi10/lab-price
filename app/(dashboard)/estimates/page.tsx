@@ -140,7 +140,7 @@ export default function EstimatesPage() {
             </div>
           )}
         </div>
-        <Button onClick={() => router.push("/comparison")}>
+        <Button onClick={() => router.push("/tests")}>
           <Plus className="h-4 w-4" />
           Nouvelle estimation
         </Button>

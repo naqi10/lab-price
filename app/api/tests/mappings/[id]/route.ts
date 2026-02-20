@@ -14,8 +14,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     const mapping = await updateTestMapping(id, {
       canonicalName: body.canonicalName,
+      code: body.code || null,
       category: body.category || null,
       description: body.description ?? null,
+      unit: body.unit || null,
+      turnaroundTime: body.turnaroundTime || null,
+      tubeType: body.tubeType || null,
       entries: (body.entries || []).map((e: any) => ({
         laboratoryId: e.laboratoryId,
         localTestName: e.testName || e.localTestName,

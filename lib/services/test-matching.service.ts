@@ -118,8 +118,12 @@ export async function findMatchingTests(
  */
 export async function createTestMapping(data: {
   canonicalName: string;
+  code?: string | null;
   category?: string | null;
   description?: string | null;
+  unit?: string | null;
+  turnaroundTime?: string | null;
+  tubeType?: string | null;
   entries: Array<{
     laboratoryId: string;
     localTestName: string;
@@ -131,8 +135,12 @@ export async function createTestMapping(data: {
   return prisma.testMapping.create({
     data: {
       canonicalName: data.canonicalName,
+      code: data.code ?? null,
       category: data.category ?? null,
       description: data.description ?? null,
+      unit: data.unit ?? null,
+      turnaroundTime: data.turnaroundTime ?? null,
+      tubeType: data.tubeType ?? null,
       entries: {
         createMany: {
           data: data.entries.map((e) => ({
@@ -189,8 +197,12 @@ export async function updateTestMapping(
   id: string,
   data: {
     canonicalName?: string;
+    code?: string | null;
     category?: string | null;
     description?: string | null;
+    unit?: string | null;
+    turnaroundTime?: string | null;
+    tubeType?: string | null;
     entries?: Array<{
       laboratoryId: string;
       localTestName: string;
@@ -218,8 +230,12 @@ export async function updateTestMapping(
       where: { id },
       data: {
         ...(data.canonicalName && { canonicalName: data.canonicalName }),
+        ...(data.code !== undefined && { code: data.code }),
         ...(data.category !== undefined && { category: data.category }),
         ...(data.description !== undefined && { description: data.description }),
+        ...(data.unit !== undefined && { unit: data.unit }),
+        ...(data.turnaroundTime !== undefined && { turnaroundTime: data.turnaroundTime }),
+        ...(data.tubeType !== undefined && { tubeType: data.tubeType }),
       },
       include: {
         entries: {

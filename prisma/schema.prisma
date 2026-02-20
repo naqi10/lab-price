@@ -143,12 +143,16 @@ model Test {
 }
 
 model TestMapping {
-  id            String   @id @default(uuid())
-  canonicalName String   @unique @map("canonical_name")
-  description   String?
-  category      String?
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(uuid())
+  canonicalName  String   @unique @map("canonical_name")
+  code           String?
+  description    String?
+  category       String?
+  unit           String?
+  turnaroundTime String?  @map("turnaround_time")
+  tubeType       String?  @map("tube_type")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
   entries        TestMappingEntry[]
 
