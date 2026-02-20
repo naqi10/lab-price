@@ -23,6 +23,7 @@ interface LabComparisonResult {
     localTestName: string;
     price: number;
     turnaroundTime: string | null;
+    tubeType: string | null;
     similarity: number;
     matchType: string;
   }>;
@@ -68,6 +69,42 @@ async function fetchTurnaroundTimes(
 }
 
 /**
+ * Fetch tube types from Test records in active price lists.
+ * Returns a Map keyed by "laboratoryId:testName" → tubeType.
+ */
+async function fetchTubeTypes(
+  labTestPairs: { laboratoryId: string; localTestName: string }[]
+): Promise<Map<string, string | null>> {
+  if (labTestPairs.length === 0) return new Map();
+
+  const labIds = [...new Set(labTestPairs.map((p) => p.laboratoryId))];
+  const testNames = [...new Set(labTestPairs.map((p) => p.localTestName))];
+
+  const tests = await prisma.test.findMany({
+    where: {
+      priceList: {
+        laboratoryId: { in: labIds },
+        isActive: true,
+      },
+      name: { in: testNames },
+      isActive: true,
+    },
+    select: {
+      name: true,
+      tubeType: true,
+      priceList: { select: { laboratoryId: true } },
+    },
+  });
+
+  const map = new Map<string, string | null>();
+  for (const test of tests) {
+    const key = `${test.priceList.laboratoryId}:${test.name}`;
+    map.set(key, test.tubeType);
+  }
+  return map;
+}
+
+/**
  * Compare prices across laboratories for a given set of test mappings.
  *
  * Schema mapping:
@@ -107,7 +144,10 @@ export async function compareLabPrices(
       labTestPairs.push({ laboratoryId: entry.laboratory.id, localTestName: entry.localTestName });
     }
   }
-  const tatMap = await fetchTurnaroundTimes(labTestPairs);
+  const [tatMap, tubeMap] = await Promise.all([
+    fetchTurnaroundTimes(labTestPairs),
+    fetchTubeTypes(labTestPairs),
+  ]);
 
   const labResults = new Map<string, LabComparisonResult>();
 
@@ -129,12 +169,14 @@ export async function compareLabPrices(
       const result = labResults.get(labId)!;
       const price = entry.price ?? 0;
       const turnaroundTime = tatMap.get(`${labId}:${entry.localTestName}`) ?? null;
+      const tubeType = tubeMap.get(`${labId}:${entry.localTestName}`) ?? null;
       result.tests.push({
         testMappingId: mapping.id,
         canonicalName: mapping.canonicalName,
         localTestName: entry.localTestName,
         price,
         turnaroundTime,
+        tubeType,
         similarity: entry.similarity,
         matchType: entry.matchType,
       });
@@ -179,16 +221,19 @@ export async function getComparisonDetails(testMappingIds: string[]) {
 
   const priceMatrix: Record<string, Record<string, number | null>> = {};
   const tatMatrix: Record<string, Record<string, string | null>> = {};
+  const tubeTypeMatrix: Record<string, Record<string, string | null>> = {};
   const matchMatrix: Record<string, Record<string, { matchType: string; similarity: number; localTestName: string } | null>> = {};
   for (const mapping of testMappings) {
     priceMatrix[mapping.id] = {};
     tatMatrix[mapping.id] = {};
+    tubeTypeMatrix[mapping.id] = {};
     matchMatrix[mapping.id] = {};
     for (const lab of laboratories) {
       const labResult = results.find((r) => r.laboratoryId === lab.id);
       const test = labResult?.tests.find((t) => t.testMappingId === mapping.id);
       priceMatrix[mapping.id][lab.id] = test?.price ?? null;
       tatMatrix[mapping.id][lab.id] = test?.turnaroundTime ?? null;
+      tubeTypeMatrix[mapping.id][lab.id] = test?.tubeType ?? null;
       matchMatrix[mapping.id][lab.id] = test
         ? { matchType: test.matchType, similarity: test.similarity, localTestName: test.localTestName }
         : null;
@@ -200,6 +245,7 @@ export async function getComparisonDetails(testMappingIds: string[]) {
     testMappings,
     priceMatrix,
     tatMatrix,
+    tubeTypeMatrix,
     matchMatrix,
     bestLaboratory: laboratories.find((l) => l.isComplete) ?? laboratories[0] ?? null,
   };
@@ -217,7 +263,7 @@ export async function findBestLaboratory(
 }
 
 // ---------------------------------------------------------------------------
-// Comparison with Auto Email
+// Comparison data builder (no side-effects: no email, no DB writes)
 // ---------------------------------------------------------------------------
 
 /** One test's assignment in a multi-lab selection. */
@@ -264,44 +310,18 @@ export interface ComparisonEmailResult {
 }
 
 /**
- * Compare tests across all laboratories, identify the cheapest lab
- * (only considering labs that offer ALL selected tests), and send
- * the result by email to the client.
- *
- * @param data.testMappingIds - One or more TestMapping IDs
- * @param data.clientEmail    - Recipient email address
- * @param data.clientName     - Optional recipient display name
- * @returns Structured comparison result
+ * Build comparison result data without side-effects (no email, no DB writes).
+ * Used by both the PDF generator and the email sender.
  */
-export async function compareTestsWithEmail(data: {
+export async function buildComparisonResult(data: {
   testMappingIds: string[];
-  clientEmail: string;
-  clientName?: string;
-  customerId?: string;
   selections?: Record<string, string>;
   customPrices?: Record<string, number>;
-  createdByUserId?: string;
-  validUntil?: Date;
-}): Promise<ComparisonEmailResult & { estimateId: string; emailMessageId: string }> {
-  const { testMappingIds, clientEmail, clientName, customerId, selections, customPrices, createdByUserId, validUntil } = data;
+}): Promise<ComparisonEmailResult> {
+  const { testMappingIds, selections, customPrices } = data;
 
-  // ── Validation ───────────────────────────────────────────────────────────
   if (!testMappingIds || testMappingIds.length === 0) {
     throw new Error("Au moins un test doit être sélectionné");
-  }
-
-  if (!createdByUserId) {
-    throw new Error("createdByUserId is required");
-  }
-
-  // Verify user exists before proceeding
-  const userExists = await prisma.user.findUnique({
-    where: { id: createdByUserId },
-    select: { id: true },
-  });
-
-  if (!userExists) {
-    throw new Error(`User with ID "${createdByUserId}" not found in database`);
   }
 
   const requiredCount = testMappingIds.length;
@@ -332,14 +352,14 @@ export async function compareTestsWithEmail(data: {
   }
 
   // ── Collect (lab, testName) pairs for turnaround time lookup ─────────────
-  const emailLabTestPairs: { laboratoryId: string; localTestName: string }[] = [];
+  const labTestPairs: { laboratoryId: string; localTestName: string }[] = [];
   for (const mapping of testMappings) {
     for (const entry of mapping.entries) {
       if (!entry.laboratory.isActive || entry.price == null) continue;
-      emailLabTestPairs.push({ laboratoryId: entry.laboratory.id, localTestName: entry.localTestName });
+      labTestPairs.push({ laboratoryId: entry.laboratory.id, localTestName: entry.localTestName });
     }
   }
-  const emailTatMap = await fetchTurnaroundTimes(emailLabTestPairs);
+  const tatMap = await fetchTurnaroundTimes(labTestPairs);
 
   // ── Build per-lab price map ──────────────────────────────────────────────
   const labMap = new Map<
@@ -353,37 +373,37 @@ export async function compareTestsWithEmail(data: {
     }
   >();
 
-   for (const mapping of testMappings) {
-     for (const entry of mapping.entries) {
-       if (!entry.laboratory.isActive) continue;
-       if (entry.price == null) continue;
+  for (const mapping of testMappings) {
+    for (const entry of mapping.entries) {
+      if (!entry.laboratory.isActive) continue;
+      if (entry.price == null) continue;
 
-       const labId = entry.laboratory.id;
-       if (!labMap.has(labId)) {
-         labMap.set(labId, {
-           id: labId,
-           name: entry.laboratory.name,
-           code: entry.laboratory.code,
-           tests: [],
-           totalPrice: 0,
-         });
-       }
+      const labId = entry.laboratory.id;
+      if (!labMap.has(labId)) {
+        labMap.set(labId, {
+          id: labId,
+          name: entry.laboratory.name,
+          code: entry.laboratory.code,
+          tests: [],
+          totalPrice: 0,
+        });
+      }
 
-       const lab = labMap.get(labId)!;
-       
-       // Apply custom price if available, otherwise use database price
-       const customPriceKey = `${mapping.id}-${labId}`;
-       const effectivePrice = customPrices?.[customPriceKey] ?? entry.price;
-       
-       lab.tests.push({
-         canonicalName: mapping.canonicalName,
-         localTestName: entry.localTestName,
-         price: effectivePrice,
-         turnaroundTime: emailTatMap.get(`${labId}:${entry.localTestName}`) ?? null,
-       });
-       lab.totalPrice += effectivePrice;
-     }
-   }
+      const lab = labMap.get(labId)!;
+
+      // Apply custom price if available, otherwise use database price
+      const customPriceKey = `${mapping.id}-${labId}`;
+      const effectivePrice = customPrices?.[customPriceKey] ?? entry.price;
+
+      lab.tests.push({
+        canonicalName: mapping.canonicalName,
+        localTestName: entry.localTestName,
+        price: effectivePrice,
+        turnaroundTime: tatMap.get(`${labId}:${entry.localTestName}`) ?? null,
+      });
+      lab.totalPrice += effectivePrice;
+    }
+  }
 
   // ── Filter: only labs offering ALL selected tests ────────────────────────
   const completeLabs = Array.from(labMap.values())
@@ -402,8 +422,6 @@ export async function compareTestsWithEmail(data: {
 
   // ── Build multi-lab selection if selections provided ───────────────────
   let multiLabSelection: MultiLabSelection | undefined;
-  let totalPrice = 0;
-  let selectionMode: "CHEAPEST" | "FASTEST" | "CUSTOM" | undefined = undefined;
 
   if (hasSelections) {
     const assignments: SelectionTestAssignment[] = [];
@@ -444,16 +462,10 @@ export async function compareTestsWithEmail(data: {
         formattedTotalPrice: formatCurrency(selTotal),
         laboratories: involvedLabs,
       };
-      
-      totalPrice = selTotal;
-      selectionMode = "CUSTOM";
     }
-  } else {
-    totalPrice = cheapest.totalPrice;
   }
 
-  // ── Build structured result ──────────────────────────────────────────────
-  const result: ComparisonEmailResult = {
+  return {
     testNames: testMappings.map((tm) => tm.canonicalName),
     laboratories: completeLabs.map((lab) => ({
       id: lab.id,
@@ -479,8 +491,62 @@ export async function compareTestsWithEmail(data: {
     },
     multiLabSelection,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Comparison with Auto Email
+// ---------------------------------------------------------------------------
+
+/**
+ * Compare tests across all laboratories, identify the cheapest lab
+ * (only considering labs that offer ALL selected tests), and send
+ * the result by email to the client.
+ *
+ * @param data.testMappingIds - One or more TestMapping IDs
+ * @param data.clientEmail    - Recipient email address
+ * @param data.clientName     - Optional recipient display name
+ * @returns Structured comparison result
+ */
+export async function compareTestsWithEmail(data: {
+  testMappingIds: string[];
+  clientEmail: string;
+  clientName?: string;
+  customerId?: string;
+  selections?: Record<string, string>;
+  customPrices?: Record<string, number>;
+  createdByUserId?: string;
+  validUntil?: Date;
+}): Promise<ComparisonEmailResult & { estimateId: string; emailMessageId: string }> {
+  const { testMappingIds, clientEmail, clientName, customerId, selections, customPrices, createdByUserId, validUntil } = data;
+
+  if (!createdByUserId) {
+    throw new Error("createdByUserId is required");
+  }
+
+  // Verify user exists before proceeding
+  const userExists = await prisma.user.findUnique({
+    where: { id: createdByUserId },
+    select: { id: true },
+  });
+
+  if (!userExists) {
+    throw new Error(`User with ID "${createdByUserId}" not found in database`);
+  }
+
+  // ── Build comparison result using shared logic ─────────────────────────
+  const result = await buildComparisonResult({
+    testMappingIds,
+    selections,
+    customPrices,
+  });
 
   const isMultiLab = !!result.multiLabSelection;
+  const hasSelections = selections && Object.keys(selections).length === testMappingIds.length;
+  const totalPrice = isMultiLab
+    ? result.multiLabSelection!.totalPrice
+    : result.cheapestLaboratory.totalPrice;
+  const selectionMode: "CHEAPEST" | "FASTEST" | "CUSTOM" | undefined = hasSelections ? "CUSTOM" : undefined;
+  const cheapest = result.cheapestLaboratory;
 
   // ── Auto-send email ──────────────────────────────────────────────────────
   const [template, emailConfig] = await Promise.all([
@@ -538,23 +604,23 @@ export async function compareTestsWithEmail(data: {
   // Parse custom prices JSON: convert {testId-labId: price} to stored format
   const customPricesJson = customPrices ? JSON.stringify(customPrices) : "{}";
 
-  // Build test details snapshot for the estimate
-  const testDetailsSnapshot = testMappings.map((tm) => {
-    const testIndex = result.laboratories[0]?.tests.findIndex((t) => t.canonicalName === tm.canonicalName) ?? -1;
-    
+  // Build test details snapshot for the estimate using testMappingIds and result data
+  const testDetailsSnapshot = testMappingIds.map((tmId, idx) => {
+    const canonicalName = result.testNames[idx] ?? tmId;
+
     return {
-      id: tm.id,
-      canonicalName: tm.canonicalName,
+      id: tmId,
+      canonicalName,
       entries: result.laboratories
-        .filter((lab) => lab.tests.some((t) => t.canonicalName === tm.canonicalName))
+        .filter((lab) => lab.tests.some((t) => t.canonicalName === canonicalName))
         .map((lab) => {
-          const test = lab.tests.find((t) => t.canonicalName === tm.canonicalName)!;
+          const test = lab.tests.find((t) => t.canonicalName === canonicalName)!;
           return {
             laboratoryId: lab.id,
             laboratoryName: lab.name,
             laboratoryCode: lab.code,
             price: test.price,
-            customPrice: customPrices ? customPrices[`${tm.id}-${lab.id}`] : undefined,
+            customPrice: customPrices ? customPrices[`${tmId}-${lab.id}`] : undefined,
           };
         }),
     };

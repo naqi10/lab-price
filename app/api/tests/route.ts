@@ -69,6 +69,7 @@ export async function GET(request: NextRequest) {
           t.price,
           t.unit,
           t."turnaround_time" AS "turnaroundTime",
+          t."tube_type" AS "tubeType",
           l.id AS "laboratoryId",
           l.name AS "laboratoryName",
           l.code AS "laboratoryCode",

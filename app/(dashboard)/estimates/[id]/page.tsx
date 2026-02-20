@@ -113,6 +113,46 @@ export default function EstimateDetailPage({ params }: { params: Promise<{ id: s
 
   const isExpired = estimate.validUntil && new Date(estimate.validUntil) < new Date();
 
+  // Parse customPrices — may still be a string from the API
+  let customPricesMap: Record<string, number> = {};
+  if (estimate.customPrices) {
+    try {
+      customPricesMap = typeof estimate.customPrices === "string"
+        ? JSON.parse(estimate.customPrices)
+        : estimate.customPrices;
+    } catch {
+      customPricesMap = {};
+    }
+  }
+
+  // Helper to resolve the effective price for a test
+  const getTestPrice = (test: any) => {
+    const selectedLabId = estimate.selections?.[test.id];
+    // Normalize: entries may use nested `laboratory.id` (DB) or flat `laboratoryId` (snapshot)
+    const selectedEntry = selectedLabId
+      ? test.entries?.find((e: any) => (e.laboratoryId || e.laboratory?.id) === selectedLabId)
+      : test.entries?.[0];
+
+    const labId = selectedEntry?.laboratoryId || selectedEntry?.laboratory?.id;
+    const labName = selectedEntry?.laboratoryName || selectedEntry?.laboratory?.name || "—";
+    const labCode = selectedEntry?.laboratoryCode || selectedEntry?.laboratory?.code || "";
+    const originalPrice = selectedEntry?.price ?? 0;
+
+    // Custom price: check entry first, then top-level map
+    const customPrice = selectedEntry?.customPrice !== undefined && selectedEntry?.customPrice !== null
+      ? selectedEntry.customPrice
+      : (labId ? customPricesMap[`${test.id}-${labId}`] : undefined);
+
+    const effectivePrice = customPrice !== undefined && customPrice !== null ? customPrice : originalPrice;
+
+    return { labName, labCode, originalPrice, customPrice, effectivePrice };
+  };
+
+  // Compute the sum of individual test prices
+  const computedTotal = estimate.testMappingDetails?.reduce((sum: number, test: any) => {
+    return sum + getTestPrice(test).effectivePrice;
+  }, 0) ?? 0;
+
   return (
     <div className="space-y-6 pt-4">
       <div className="flex items-center justify-between">
@@ -167,9 +207,9 @@ export default function EstimateDetailPage({ params }: { params: Promise<{ id: s
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="text-xs text-muted-foreground">Statut</p>
-                  <p className="text-sm font-medium mt-1">{getStatusBadge(estimate.status)}</p>
-                </div>
+                   <p className="text-xs text-muted-foreground">Statut</p>
+                   <div className="mt-1">{getStatusBadge(estimate.status)}</div>
+                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Mode de sélection</p>
                   <p className="text-sm font-medium mt-1">
@@ -214,22 +254,58 @@ export default function EstimateDetailPage({ params }: { params: Promise<{ id: s
                 )}
               </CardContent>
             </Card>
-          </div>
+           </div>
 
-          {/* Pricing Summary */}
+           {/* Tests Included */}
+           {estimate.testMappingDetails && estimate.testMappingDetails.length > 0 && (
+             <Card>
+               <CardHeader>
+                 <CardTitle className="text-base">Tests inclus</CardTitle>
+               </CardHeader>
+               <CardContent>
+                 <div className="space-y-2">
+                   {estimate.testMappingDetails.map((test: any) => {
+                     const { labName, labCode, originalPrice, customPrice, effectivePrice } = getTestPrice(test);
+
+                     return (
+                       <div
+                         key={test.id}
+                         className="flex items-center justify-between text-sm p-3 bg-muted/30 rounded border border-border/40"
+                       >
+                         <div className="flex-1">
+                           <p className="font-medium text-foreground">{test.canonicalName}</p>
+                           <p className="text-xs text-muted-foreground">
+                             Labo: <span className="font-mono text-foreground/70">{labName}</span>
+                             {labCode && (
+                               <span className="ml-2">({labCode})</span>
+                             )}
+                           </p>
+                         </div>
+                         <div className="text-right">
+                           <p className="font-medium tabular-nums">{formatCurrency(effectivePrice)}</p>
+                         </div>
+                       </div>
+                     );
+                   })}
+                 </div>
+               </CardContent>
+             </Card>
+           )}
+
+           {/* Pricing Summary */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Résumé des prix</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <p className="text-sm">Sous-total</p>
+                <p className="text-sm">Sous-total (tests)</p>
                 <p className="text-sm font-medium tabular-nums">
-                  {formatCurrency(estimate.subtotal || 0)}
+                  {formatCurrency(computedTotal)}
                 </p>
               </div>
               <div className="border-t border-border/40 pt-3 flex justify-between">
-                <p className="text-sm font-semibold">Total TTC</p>
+                <p className="text-sm font-semibold">Total</p>
                 <p className="text-lg font-bold tabular-nums">
                   {formatCurrency(estimate.totalPrice)}
                 </p>

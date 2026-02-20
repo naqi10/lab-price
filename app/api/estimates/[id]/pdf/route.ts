@@ -46,7 +46,13 @@ export async function GET(
     // Reconstruct the comparison result from saved data
     const testMappingIds = estimate.testMappingIds as string[];
     const selections = estimate.selections as Record<string, string> | null;
-    const customPrices = estimate.customPrices as Record<string, number>;
+
+    // customPrices is stored as a JSON string in a Json field (double-serialized)
+    let customPrices: Record<string, number> = {};
+    if (estimate.customPrices) {
+      const raw = estimate.customPrices;
+      customPrices = typeof raw === "string" ? JSON.parse(raw) : (raw as Record<string, number>);
+    }
 
     // Fetch test mappings and lab entries to reconstruct PDF data
     const testMappings = await prisma.testMapping.findMany({
@@ -85,7 +91,7 @@ export async function GET(
           );
           if (!entry) return null;
           const customPrice =
-            customPrices[`${testId}-${lab.id}`] || entry.price || 0;
+            customPrices[`${testId}-${lab.id}`] ?? entry.price ?? 0;
           const testMapping = testMappings.find((t) => t.id === testId);
           return {
             canonicalName: testMapping?.canonicalName || "",
@@ -149,7 +155,7 @@ export async function GET(
           );
           if (!entry) return null;
           const customPrice =
-            customPrices[`${testId}-${selectedLabId}`] || entry.price || 0;
+            customPrices[`${testId}-${selectedLabId}`] ?? entry.price ?? 0;
           const testMapping = testMappings.find((t) => t.id === testId);
           return {
             canonicalName: testMapping?.canonicalName || "",

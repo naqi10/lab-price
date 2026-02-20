@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { formatDate, formatCurrency } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -13,19 +14,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { MailCheck, MailX, Clock, Eye, Download, Loader2 } from "lucide-react";
+import { MailCheck, MailX, Clock, Download, Loader2, Mail } from "lucide-react";
 
 const emailStatusConfig: Record<
   string,
@@ -43,15 +37,10 @@ export default function EstimateEmailHistory({
   estimate: any;
   estimateId: string;
 }) {
-  const [selectedEmail, setSelectedEmail] = useState<any>(null);
-  const [downloading, setDownloading] = useState(false);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
-  const handleViewDetails = (email: any) => {
-    setSelectedEmail(email);
-  };
-
-  const handleDownloadPdf = async () => {
-    setDownloading(true);
+  const handleDownloadPdf = async (emailId: string) => {
+    setDownloadingId(emailId);
     try {
       const res = await fetch(`/api/estimates/${estimateId}/pdf`);
       if (res.ok) {
@@ -64,223 +53,126 @@ export default function EstimateEmailHistory({
         URL.revokeObjectURL(url);
       }
     } finally {
-      setDownloading(false);
+      setDownloadingId(null);
     }
   };
 
-  if (!estimate?.emails || estimate.emails.length === 0) {
-    return (
-      <div className="rounded-lg border border-border/40 bg-card/50 p-6 text-center">
-        <p className="text-sm text-muted-foreground">Aucun email envoyé pour cette estimation</p>
-      </div>
-    );
-  }
+  // Merge EstimateEmail records and EmailLog records into a unified list
+  const allEmails = [
+    ...(estimate?.emails || []).map((e: any) => ({
+      id: e.id,
+      toEmail: e.toEmail,
+      subject: e.subject,
+      status: e.status,
+      sentAt: e.sentAt || e.createdAt,
+      error: e.error,
+      source: "estimate_email" as const,
+      sentByName: e.sentBy?.name,
+    })),
+    ...(estimate?.emailLogs || []).map((e: any) => ({
+      id: e.id,
+      toEmail: e.toEmail,
+      subject: e.subject,
+      status: e.status,
+      sentAt: e.createdAt,
+      error: e.error,
+      source: e.source || "system",
+      sentByName: null as string | null,
+    })),
+  ]
+    // Deduplicate by matching toEmail + subject + close timestamps (within 5s)
+    .filter((email, idx, arr) => {
+      const isDuplicate = arr.findIndex(
+        (other, otherIdx) =>
+          otherIdx < idx &&
+          other.toEmail === email.toEmail &&
+          other.subject === email.subject &&
+          Math.abs(new Date(other.sentAt).getTime() - new Date(email.sentAt).getTime()) < 5000
+      ) !== -1;
+      return !isDuplicate;
+    })
+    .sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime());
 
   return (
     <TooltipProvider>
-      <div className="space-y-4">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Destinataire</TableHead>
-              <TableHead>Sujet</TableHead>
-              <TableHead>Statut</TableHead>
-              <TableHead>Date d'envoi</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {estimate.emails.map((email: any) => {
-              const emailSt = emailStatusConfig[email.status] || emailStatusConfig.PENDING;
-              const EmailIcon = emailSt.icon;
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+            <Mail className="h-4 w-4 text-muted-foreground" />
+            Historique des emails
+            <span className="ml-1 text-xs font-normal text-muted-foreground">
+              ({allEmails.length} envoi{allEmails.length !== 1 ? "s" : ""})
+            </span>
+          </CardTitle>
+        </CardHeader>
 
-              return (
-                <TableRow key={email.id}>
-                  <TableCell className="text-sm font-medium">{email.toEmail}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{email.subject}</TableCell>
-                  <TableCell>
-                    <Badge variant={emailSt.variant} className="gap-1">
-                      <EmailIcon className="h-3 w-3" />
-                      {emailSt.label}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {email.sentAt ? formatDate(new Date(email.sentAt)) : "—"}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleViewDetails(email)}
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Voir les détails</TooltipContent>
-                      </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleDownloadPdf}
-                            disabled={downloading}
-                          >
-                            {downloading ? (
-                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            ) : (
-                              <Download className="h-3.5 w-3.5" />
-                            )}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          Télécharger PDF
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </TableCell>
+        <CardContent className="p-0">
+          {allEmails.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <div className="h-12 w-12 rounded-full bg-muted/40 border border-border/50 flex items-center justify-center">
+                <Mail className="h-5 w-5 text-muted-foreground/60" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-foreground/70">Aucun email envoyé</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Aucun email envoyé pour cette estimation</p>
+              </div>
+            </div>
+          ) : (
+            <Table className="w-full">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Destinataire</TableHead>
+                  <TableHead>Sujet</TableHead>
+                  <TableHead className="w-px whitespace-nowrap">Statut</TableHead>
+                  <TableHead className="w-px whitespace-nowrap">Date d'envoi</TableHead>
+                  <TableHead className="w-10 text-right">Actions</TableHead>
                 </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+              </TableHeader>
+              <TableBody>
+                {allEmails.map((email) => {
+                  const emailSt = emailStatusConfig[email.status] || emailStatusConfig.PENDING;
+                  const EmailIcon = emailSt.icon;
 
-        {/* Details Modal */}
-        <Dialog open={!!selectedEmail} onOpenChange={(open) => !open && setSelectedEmail(null)}>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Détails de l'email envoyé</DialogTitle>
-              <DialogDescription>
-                Email envoyé à {selectedEmail?.toEmail} le{" "}
-                {selectedEmail?.sentAt ? formatDate(new Date(selectedEmail.sentAt)) : "—"}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-6 py-4">
-              {/* Email Info */}
-              <div className="space-y-2 border-b border-border/40 pb-4">
-                <div>
-                  <p className="text-xs text-muted-foreground">Destinataire</p>
-                  <p className="text-sm font-medium">{selectedEmail?.toEmail}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Sujet</p>
-                  <p className="text-sm font-medium">{selectedEmail?.subject}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Statut</p>
-                  <p className="text-sm">
-                    {selectedEmail && (
-                      <Badge
-                        variant={
-                          emailStatusConfig[selectedEmail.status]?.variant || "secondary"
-                        }
-                        className="gap-1"
-                      >
-                        {emailStatusConfig[selectedEmail.status]?.label || selectedEmail.status}
-                      </Badge>
-                    )}
-                  </p>
-                </div>
-              </div>
-
-              {/* Estimate Details */}
-              <div className="space-y-3">
-                <h3 className="font-semibold text-sm">Détails de l'estimation</h3>
-                <div className="bg-muted/30 rounded-lg p-4 space-y-3">
-                  {/* Header Info */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Numéro d'estimation</p>
-                      <p className="text-sm font-medium">{estimate?.estimateNumber}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Mode de sélection</p>
-                      <p className="text-sm font-medium">
-                        {estimate?.selectionMode === "CHEAPEST" && "Prix le plus bas"}
-                        {estimate?.selectionMode === "FASTEST" && "Délai le plus court"}
-                        {estimate?.selectionMode === "CUSTOM" && "Sélection personnalisée"}
-                        {!estimate?.selectionMode && "—"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Customer Info */}
-                  {estimate?.customer && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Client</p>
-                        <p className="text-sm font-medium">{estimate?.customer?.name}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Email</p>
-                        <p className="text-sm font-medium">{estimate?.customer?.email}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Price Summary */}
-                  <div className="border-t border-border/40 pt-3 mt-3">
-                    <div className="flex justify-end gap-8">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Sous-total</p>
-                        <p className="text-sm font-medium tabular-nums">
-                          {formatCurrency(estimate?.subtotal || 0)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Total TTC</p>
-                        <p className="text-lg font-bold tabular-nums">
-                          {formatCurrency(estimate?.totalPrice || 0)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Notes */}
-              {estimate?.notes && (
-                <div className="space-y-2 border-t border-border/40 pt-4">
-                  <p className="text-xs text-muted-foreground">Notes</p>
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {estimate.notes}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Download Button */}
-            <div className="flex justify-end gap-2 border-t border-border/40 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setSelectedEmail(null)}
-              >
-                Fermer
-              </Button>
-              <Button
-                onClick={handleDownloadPdf}
-                disabled={downloading}
-              >
-                {downloading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Téléchargement...
-                  </>
-                ) : (
-                  <>
-                    <Download className="h-4 w-4 mr-2" />
-                    Télécharger PDF
-                  </>
-                )}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+                  return (
+                    <TableRow key={email.id}>
+                      <TableCell className="text-sm font-medium">{email.toEmail}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{email.subject}</TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <Badge variant={emailSt.variant} className="gap-1">
+                          <EmailIcon className="h-3 w-3" />
+                          {emailSt.label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {email.sentAt ? formatDate(new Date(email.sentAt)) : "—"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDownloadPdf(email.id)}
+                              disabled={downloadingId === email.id}
+                            >
+                              {downloadingId === email.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <Download className="h-3.5 w-3.5" />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Télécharger PDF</TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </TooltipProvider>
   );
 }

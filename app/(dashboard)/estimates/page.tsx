@@ -1,56 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import EstimatesTable from "@/components/estimates/estimates-table";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { Plus, Loader2, Send, X } from "lucide-react";
-
-interface TestMappingEntry {
-  id: string;
-  localTestName: string;
-  laboratory: { id: string; name: string };
-  price?: number | null;
-}
-
-interface TestMappingDetail {
-  id: string;
-  canonicalName: string;
-  entries: TestMappingEntry[];
-}
-
-interface Estimate {
-  id: string;
-  estimateNumber: string;
-  totalPrice: number;
-  status: string;
-  createdAt: string;
-  sentAt: string | null;
-  validUntil: string | null;
-  customer: { name: string; email: string } | null;
-  createdBy: { name: string };
-  notes: string | null;
-  testMappingIds: string[];
-  selections?: Record<string, string> | null;
-  customPrices?: Record<string, number>;
-  testMappingDetails?: TestMappingDetail[];
-}
+import { Plus, Send } from "lucide-react";
 
 export default function EstimatesPage() {
   const router = useRouter();
   useDashboardTitle("Estimations");
-  
-  const [estimates, setEstimates] = useState<Estimate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
-  const [deletingId, setDeleteId] = useState<string | null>(null);
-  
+
   // Multi-select state
   const [selectedEstimates, setSelectedEstimates] = useState<Set<string>>(new Set());
   const [showSendDialog, setShowSendDialog] = useState(false);
@@ -59,28 +24,6 @@ export default function EstimatesPage() {
   const [selectedCustomers, setSelectedCustomers] = useState<Set<string>>(new Set());
   const [sending, setSending] = useState(false);
 
-  useEffect(() => {
-    loadEstimates();
-  }, []);
-
-  const loadEstimates = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/estimates?limit=50");
-      const data = await res.json();
-      if (data.success) {
-        setEstimates(data.data.estimates);
-      } else {
-        setError(data.message || "Erreur lors du chargement");
-      }
-    } catch (err) {
-      setError("Erreur de connexion");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDownloadPdf = async (estimateId: string) => {
     setDownloadingId(estimateId);
     try {
@@ -88,13 +31,10 @@ export default function EstimatesPage() {
       if (!res.ok) throw new Error("Erreur lors du téléchargement");
 
       const blob = await res.blob();
-      const estimate = estimates.find((e) => e.id === estimateId);
-      const filename = `estimation-${estimate?.estimateNumber || "document"}.pdf`;
-
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = filename;
+      link.download = `estimation-${estimateId}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -103,26 +43,6 @@ export default function EstimatesPage() {
       alert("Erreur lors du téléchargement du PDF");
     } finally {
       setDownloadingId(null);
-    }
-  };
-
-  const handleDelete = async (estimateId: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette estimation ?")) return;
-
-    setDeleteId(estimateId);
-    try {
-      const res = await fetch(`/api/estimates/${estimateId}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setEstimates((prev) => prev.filter((e) => e.id !== estimateId));
-      } else {
-        alert("Erreur lors de la suppression");
-      }
-    } catch (err) {
-      alert("Erreur de connexion");
-    } finally {
-      setDeleteId(null);
     }
   };
 
@@ -139,21 +59,20 @@ export default function EstimatesPage() {
   };
 
   const handleSelectAllEstimates = (all: boolean) => {
-    if (all) {
-      setSelectedEstimates(new Set(estimates.map((e) => e.id)));
-    } else {
+    // Note: select-all only works for currently visible page — the table owns the data
+    // For now, toggle the set. A more robust approach would pass visible IDs from the table.
+    if (!all) {
       setSelectedEstimates(new Set());
     }
   };
 
   const handleOpenSendDialog = async () => {
     setShowSendDialog(true);
-    // Fetch all customers for selection
     try {
       const res = await fetch("/api/customers");
       const data = await res.json();
       if (data.success) {
-        setAvailableCustomers(data.data || []);
+        setAvailableCustomers(data.data.customers || []);
       }
     } catch (err) {
       console.error("Failed to fetch customers", err);
@@ -169,20 +88,19 @@ export default function EstimatesPage() {
     setSending(true);
     try {
       const customerIds = Array.from(selectedCustomers);
-      
-      // Send each selected estimate to selected customers
+
       for (const estimateId of selectedEstimates) {
         const res = await fetch(`/api/estimates/${estimateId}/resend`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ customerIds }),
         });
-        
+
         if (!res.ok) {
           throw new Error(`Failed to send estimate ${estimateId}`);
         }
       }
-      
+
       alert(`${selectedEstimates.size} estimation(s) envoyée(s) à ${selectedCustomers.size} client(s)`);
       setSelectedEstimates(new Set());
       setSelectedCustomers(new Set());
@@ -195,81 +113,49 @@ export default function EstimatesPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="px-6 py-6">
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="px-6 py-6">
-        <Card className="p-6">
-          <p className="text-red-500">{error}</p>
-          <Button onClick={loadEstimates} variant="outline" className="mt-4">
-            Réessayer
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="px-6 py-6">
-      {/* Selection toolbar */}
-      {selectedEstimates.size > 0 && (
-        <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
-          <span className="text-sm font-medium text-blue-900">
-            {selectedEstimates.size} estimation{selectedEstimates.size > 1 ? "s" : ""} sélectionnée{selectedEstimates.size > 1 ? "s" : ""}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedEstimates(new Set())}
-            >
-              Désélectionner
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleOpenSendDialog}
-              disabled={selectedEstimates.size === 0}
-            >
-              <Send className="mr-2 h-4 w-4" />
-              Envoyer à des clients
-            </Button>
-          </div>
-        </div>
-      )}
-
-      <div className="mb-6 flex items-center justify-between">
+    <>
+      {/* Top action bar — matches tests page pattern */}
+      <div className="flex items-center justify-between mt-4">
         <div>
-          <h2 className="text-2xl font-bold">Estimations sauvegardées</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Gérez toutes vos estimations de prix créées
-          </p>
+          {selectedEstimates.size > 0 && (
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-muted-foreground">
+                {selectedEstimates.size} sélectionnée{selectedEstimates.size > 1 ? "s" : ""}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedEstimates(new Set())}
+              >
+                Désélectionner
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleOpenSendDialog}
+              >
+                <Send className="h-4 w-4" />
+                Envoyer à des clients
+              </Button>
+            </div>
+          )}
         </div>
         <Button onClick={() => router.push("/comparison")}>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Nouvelle estimation
         </Button>
       </div>
 
-      <EstimatesTable
-        estimates={estimates}
-        onDownload={handleDownloadPdf}
-        onDelete={handleDelete}
-        onNew={() => router.push("/comparison")}
-        downloadingId={downloadingId}
-        deletingId={deletingId}
-        selectedEstimates={selectedEstimates}
-        onSelectEstimate={handleSelectEstimate}
-        onSelectAll={handleSelectAllEstimates}
-      />
+      {/* Table — full width, matches tests page grid */}
+      <div className="mt-4">
+        <EstimatesTable
+          onDownload={handleDownloadPdf}
+          downloadingId={downloadingId}
+          selectedEstimates={selectedEstimates}
+          onSelectEstimate={handleSelectEstimate}
+          onSelectAll={handleSelectAllEstimates}
+        />
+      </div>
 
       {/* Send dialog */}
       <Dialog open={showSendDialog} onOpenChange={setShowSendDialog}>
@@ -346,6 +232,6 @@ export default function EstimatesPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

@@ -38,6 +38,9 @@ export async function GET(
             },
             orderBy: { sentAt: "desc" as const },
           },
+          emailLogs: {
+            orderBy: { createdAt: "desc" as const },
+          },
         },
       });
 
@@ -54,19 +57,50 @@ export async function GET(
          { status: 403 }
        );
 
-     // Enhance with test mapping details
-     const testMappings = await prisma.testMapping.findMany({
-       where: { id: { in: estimate.testMappingIds } },
-       include: {
-         entries: {
-           include: {
-             laboratory: { select: { id: true, name: true } },
-           },
-         },
-       },
-     });
+      // Enhance with test mapping details
+      let testMappingDetails: any = [];
+      
+      // If testDetails exists, use the snapshot (has prices at time of estimate creation)
+      if (estimate.testDetails) {
+        try {
+          const testDetails = typeof estimate.testDetails === 'string' 
+            ? JSON.parse(estimate.testDetails) 
+            : estimate.testDetails;
+          testMappingDetails = testDetails;
+        } catch (e) {
+          // Fall back to fetching from database
+          testMappingDetails = await prisma.testMapping.findMany({
+            where: { id: { in: estimate.testMappingIds } },
+            include: {
+              entries: {
+                include: {
+                  laboratory: { select: { id: true, name: true } },
+                },
+              },
+            },
+          });
+        }
+      } else {
+        // Fallback for estimates without testDetails
+        testMappingDetails = await prisma.testMapping.findMany({
+          where: { id: { in: estimate.testMappingIds } },
+          include: {
+            entries: {
+              include: {
+                laboratory: { select: { id: true, name: true } },
+              },
+            },
+          },
+        });
+      }
 
-     const enhancedEstimate = { ...estimate, testMappingDetails: testMappings };
+      // Parse customPrices if double-serialized as a JSON string
+      let parsedCustomPrices = estimate.customPrices;
+      if (typeof parsedCustomPrices === "string") {
+        try { parsedCustomPrices = JSON.parse(parsedCustomPrices); } catch {}
+      }
+
+      const enhancedEstimate = { ...estimate, testMappingDetails, customPrices: parsedCustomPrices };
 
      return NextResponse.json({ success: true, data: enhancedEstimate });
   } catch (error) {

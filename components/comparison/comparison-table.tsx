@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Link2, Pencil, Check, Trash2, Zap, DollarSign, RotateCcw, Clock, Trophy, X } from "lucide-react";
-import type { LabColor } from "@/hooks/use-lab-colors";
+import { parseTubeColor } from "@/lib/tube-colors";
 
 export type PriceOverride = {
   price: number;
@@ -32,6 +32,7 @@ interface ComparisonTableData {
     canonicalName: string;
     prices: Record<string, number | null>;
     turnaroundTimes?: Record<string, string | null>;
+    tubeTypes?: Record<string, string | null>;
   }[];
   laboratories: { id: string; name: string }[];
   totals: Record<string, number>;
@@ -120,7 +121,6 @@ export default function ComparisonTable({
   onClearSelections,
   onUpdateCustomPrice,
   onClearCustomPrice,
-  labColorMap = {},
   selectionMode = "CUSTOM",
 }: {
   data: ComparisonTableData;
@@ -132,13 +132,40 @@ export default function ComparisonTable({
   onClearSelections?: () => void;
   onUpdateCustomPrice?: (testId: string, labId: string, price: number) => void;
   onClearCustomPrice?: (testId: string, labId: string) => void;
-  labColorMap?: Record<string, LabColor>;
   selectionMode?: "CHEAPEST" | "FASTEST" | "CUSTOM";
 }) {
-  const bestTotal    = data.totals[data.bestLabId] ?? 0;
   const [openOverride, setOpenOverride] = useState<{ testId: string; labId: string } | null>(null);
   const [editingPrice, setEditingPrice] = useState<{ testId: string; labId: string } | null>(null);
   const hasSelections = !!selections && Object.keys(selections).length > 0;
+
+  // Calculate effective totals per lab (accounting for custom prices)
+  const effectiveTotals = useMemo(() => {
+    const totals: Record<string, number> = {};
+    for (const lab of data.laboratories) {
+      let total = 0;
+      for (const test of data.tests) {
+        const price = getEffectivePrice(test.id, lab.id, test.prices[lab.id], customPrices);
+        if (price != null) total += price;
+      }
+      totals[lab.id] = total;
+    }
+    return totals;
+  }, [data.laboratories, data.tests, customPrices]);
+
+  // Calculate cheapest lab overall using effective totals
+  const cheapestLabId = useMemo(() => {
+    let minTotal = Infinity;
+    let labId = "";
+    for (const [id, total] of Object.entries(effectiveTotals)) {
+      if (total != null && total < minTotal) {
+        minTotal = total;
+        labId = id;
+      }
+    }
+    return labId;
+  }, [effectiveTotals]);
+
+  const bestTotal = effectiveTotals[data.bestLabId] ?? 0;
 
    const selectionTotal = selections
      ? Object.entries(selections).reduce((sum, [testId, labId]) => {
@@ -147,19 +174,6 @@ export default function ComparisonTable({
          return sum + (price ?? 0);
       }, 0)
     : 0;
-
-  // Calculate cheapest lab overall
-  const cheapestLabId = useMemo(() => {
-    let minTotal = Infinity;
-    let labId = "";
-    for (const [id, total] of Object.entries(data.totals)) {
-      if (total != null && total < minTotal) {
-        minTotal = total;
-        labId = id;
-      }
-    }
-    return labId;
-  }, [data.totals]);
 
   // Calculate quickest lab overall (by average turnaround time)
   const quickestLabId = useMemo(() => {
@@ -204,7 +218,6 @@ export default function ComparisonTable({
         {/* ── Optimisation toolbar ──────────────────────────────────────── */}
         {onSelectLab && (
           <div
-            key={hasSelections ? "toolbar-sel" : "toolbar-def"}
             className="flex flex-wrap items-center gap-2 rounded-xl border border-border/50 bg-card px-4 py-3"
           >
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-1">
@@ -249,7 +262,6 @@ export default function ComparisonTable({
                   Test
                 </TableHead>
                 {data.laboratories.map((lab) => {
-                   const color  = labColorMap[lab.id];
                    const isBest = lab.id === data.bestLabId;
                    const isCheapest = lab.id === cheapestLabId;
                    const isQuickest = lab.id === quickestLabId;
@@ -257,18 +269,10 @@ export default function ComparisonTable({
                      <TableHead
                        key={lab.id}
                        className="text-xs font-semibold"
-                       style={
-                         color
-                           ? { backgroundColor: color.bg, borderBottom: `2px solid ${isBest ? color.dot : color.border}` }
-                           : undefined
-                       }
                      >
                        <div className="flex flex-col gap-1.5">
                          <div className="flex items-center gap-1.5 whitespace-nowrap">
-                           {color && (
-                             <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: color.dot }} />
-                           )}
-                           <span style={color ? { color: color.text } : undefined}>{lab.name}</span>
+                           <span>{lab.name}</span>
                            {isBest && <Trophy className="h-3 w-3 text-amber-400 shrink-0" />}
                          </div>
                          <div className="flex gap-1 flex-wrap">
@@ -308,9 +312,10 @@ export default function ComparisonTable({
                        {test.canonicalName}
                      </TableCell>
                        {data.laboratories.map((lab) => {
-                        const color         = labColorMap[lab.id];
                         const match         = data.matchMatrix?.[test.id]?.[lab.id];
                         const tat           = test.turnaroundTimes?.[lab.id];
+                        const tubeType      = test.tubeTypes?.[lab.id];
+                        const tube          = parseTubeColor(tubeType);
                         const rawPrice      = test.prices[lab.id];
                         const customKey     = `${test.id}-${lab.id}`;
                         const isCustomPrice = customPrices[customKey] !== undefined;
@@ -325,9 +330,7 @@ export default function ComparisonTable({
                            style={
                              isSelected
                                ? { backgroundColor: "rgba(59,130,246,0.15)" }
-                               : color
-                                 ? { backgroundColor: `${color.bg}` }
-                                 : undefined
+                               : undefined
                            }
                          >
                            {effectivePrice != null ? (
@@ -414,6 +417,19 @@ export default function ComparisonTable({
                                 </div>
                               )}
 
+                              {/* Tube color */}
+                              {tube && (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span
+                                      className="inline-block h-2.5 w-2.5 rounded-full shrink-0 ring-1 ring-white/10"
+                                      style={{ backgroundColor: tube.color }}
+                                    />
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top">{tube.label}</TooltipContent>
+                                </Tooltip>
+                              )}
+
                               {/* Match quality */}
                               {match && (
                                 <div className="flex items-center gap-1">
@@ -472,8 +488,7 @@ export default function ComparisonTable({
                   Total
                 </TableCell>
                 {data.laboratories.map((lab) => {
-                  const color  = labColorMap[lab.id];
-                  const total  = data.totals[lab.id];
+                  const total  = effectiveTotals[lab.id] ?? data.totals[lab.id];
                   const isBest = lab.id === data.bestLabId;
                   const diff   = total != null && !isBest ? total - bestTotal : 0;
                   const pct    = bestTotal > 0 && total != null && !isBest
@@ -482,14 +497,13 @@ export default function ComparisonTable({
                     <TableCell
                       key={lab.id}
                       className="font-bold"
-                      style={color ? { backgroundColor: color.bg } : undefined}
                     >
                       <div>
                         {total != null ? (
                           <>
                             <span
                               className="text-sm tabular-nums"
-                              style={isBest ? { color: "#fbbf24" } : color ? { color: color.text } : undefined}
+                              style={isBest ? { color: "#fbbf24" } : undefined}
                             >
                               {formatCurrency(total)}
                             </span>

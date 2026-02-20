@@ -14,9 +14,19 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || undefined;
-    const customers = await getCustomers({ search });
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20", 10)));
 
-    return NextResponse.json({ success: true, data: customers });
+    const { customers, total } = await getCustomers({ search, page, limit });
+    const pages = Math.ceil(total / limit);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        customers,
+        pagination: { page, limit, total, pages },
+      },
+    });
   } catch (error) {
     logger.error({ err: error }, "[GET /api/customers]");
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });

@@ -24,6 +24,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (body.role !== undefined) updateData.role = body.role;
     if (body.isActive !== undefined) updateData.isActive = body.isActive;
 
+    // Prevent deactivating the last active user
+    if (body.isActive === false) {
+      const activeCount = await prisma.user.count({ where: { isActive: true } });
+      if (activeCount <= 1) {
+        return NextResponse.json(
+          { success: false, message: "Impossible de désactiver le dernier utilisateur actif" },
+          { status: 400 }
+        );
+      }
+    }
+
     const user = await prisma.user.update({
       where: { id },
       data: updateData,
@@ -51,6 +62,18 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     const { id } = await params;
     if (id === session.user.id) {
       return NextResponse.json({ success: false, message: "Vous ne pouvez pas supprimer votre propre compte" }, { status: 400 });
+    }
+
+    // Prevent deleting the last active user
+    const target = await prisma.user.findUnique({ where: { id }, select: { isActive: true } });
+    if (target?.isActive) {
+      const activeCount = await prisma.user.count({ where: { isActive: true } });
+      if (activeCount <= 1) {
+        return NextResponse.json(
+          { success: false, message: "Impossible de supprimer le dernier utilisateur actif" },
+          { status: 400 }
+        );
+      }
     }
 
     await prisma.user.delete({ where: { id } });

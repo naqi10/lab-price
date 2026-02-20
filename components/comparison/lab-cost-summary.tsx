@@ -47,7 +47,7 @@ export default function LabCostSummary({
   const isMultiLab     = involvedLabIds.length > 1;
 
   return (
-    <div key={hasSelections ? "summary-sel" : "summary-def"} className="space-y-4">
+    <div className="space-y-4">
 
       {/* ── Optimised selection card ──────────────────────────────────── */}
       {hasSelections && (

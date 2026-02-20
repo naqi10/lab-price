@@ -75,6 +75,8 @@ export default function UserManagement() {
   };
 
   // ── Toggle active status ─────────────────────────────────────
+  const activeUserCount = users.filter((u) => u.isActive).length;
+
   const handleToggleActive = async (user: UserData) => {
     const action = user.isActive ? "Désactiver" : "Réactiver";
     if (!confirm(`${action} l'utilisateur ${user.name} ?`)) return;
@@ -84,7 +86,11 @@ export default function UserManagement() {
       body: JSON.stringify({ isActive: !user.isActive }),
     });
     const data = await res.json();
-    if (data.success) fetchUsers();
+    if (!data.success) {
+      alert(data.message);
+      return;
+    }
+    fetchUsers();
   };
 
   // ── Admin reset password ─────────────────────────────────────
@@ -166,7 +172,12 @@ export default function UserManagement() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    title={u.isActive ? "Désactiver" : "Réactiver"}
+                    title={
+                      u.isActive && activeUserCount <= 1
+                        ? "Dernier utilisateur actif"
+                        : u.isActive ? "Désactiver" : "Réactiver"
+                    }
+                    disabled={u.isActive && activeUserCount <= 1}
                     onClick={() => handleToggleActive(u)}
                   >
                     {u.isActive ? (

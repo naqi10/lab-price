@@ -1,7 +1,11 @@
 import prisma from "@/lib/db";
 
-export async function getCustomers(options?: { search?: string }) {
-  const { search } = options ?? {};
+export async function getCustomers(options?: {
+  search?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const { search, page = 1, limit = 20 } = options ?? {};
   const where: Record<string, unknown> = {};
 
   if (search) {
@@ -12,13 +16,20 @@ export async function getCustomers(options?: { search?: string }) {
     ];
   }
 
-  return prisma.customer.findMany({
-    where,
-    orderBy: { name: "asc" },
-    include: {
-      _count: { select: { emailLogs: true, estimates: true } },
-    },
-  });
+  const [customers, total] = await Promise.all([
+    prisma.customer.findMany({
+      where,
+      orderBy: { name: "asc" },
+      include: {
+        _count: { select: { emailLogs: true, estimates: true } },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.customer.count({ where }),
+  ]);
+
+  return { customers, total };
 }
 
 export async function getCustomerById(id: string) {

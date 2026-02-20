@@ -14,7 +14,7 @@ export function useCustomers(search?: string) {
       if (search) params.set("search", search);
       const res = await fetch(`/api/customers?${params}`);
       const data = await res.json();
-      if (data.success) setCustomers(data.data);
+      if (data.success) setCustomers(data.data.customers || []);
       else setError(data.message);
     } catch {
       setError("Erreur lors du chargement");

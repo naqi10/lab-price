@@ -1,39 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef } from "react";
 import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useCustomers } from "@/hooks/use-customers";
-import { useDebounce } from "@/hooks/use-debounce";
-import { Search, Plus, Loader2 } from "lucide-react";
-import CustomersTable from "@/components/customers/customers-table";
+import { Loader2 } from "lucide-react";
+import CustomersTable, { type CustomersTableRef } from "@/components/customers/customers-table";
 
 export default function CustomersPage() {
-   const router = useRouter();
-   const [search, setSearch] = useState("");
-   const debouncedSearch = useDebounce(search, 300);
-   const { customers, isLoading, error, refetch } = useCustomers(debouncedSearch);
-   const [displayedCustomers, setDisplayedCustomers] = useState(customers);
-   useDashboardTitle("Clients");
+  useDashboardTitle("Clients");
+  const tableRef = useRef<CustomersTableRef>(null);
 
-   const [dialogOpen, setDialogOpen] = useState(false);
-   const [editingId, setEditingId] = useState<string | null>(null);
-   const [form, setForm] = useState({ name: "", email: "", phone: "", company: "" });
-   const [saving, setSaving] = useState(false);
-   const [formError, setFormError] = useState<string | null>(null);
-   const [deleteId, setDeleteId] = useState<string | null>(null);
-   const [deleting, setDeleting] = useState(false);
-
-   // Sync displayed customers with fetched customers when they change
-   useEffect(() => {
-     setDisplayedCustomers(customers);
-   }, [customers]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState({ name: "", email: "", phone: "", company: "" });
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const openCreate = () => {
     setEditingId(null);
@@ -54,142 +40,74 @@ export default function CustomersPage() {
     setDialogOpen(true);
   };
 
-   const handleSave = async () => {
-     if (!form.name || !form.email) {
-       setFormError("Le nom et l'email sont requis");
-       return;
-     }
-     setSaving(true);
-     setFormError(null);
-     try {
-       const url = editingId ? `/api/customers/${editingId}` : "/api/customers";
-       const method = editingId ? "PUT" : "POST";
-       
-       // Optimistic update
-       const newCustomer = {
-         id: editingId || `temp-${Date.now()}`,
-         name: form.name,
-         email: form.email,
-         phone: form.phone || null,
-         company: form.company || null,
-         _count: { estimates: 0, emailLogs: 0 },
-       };
+  const handleSave = async () => {
+    if (!form.name || !form.email) {
+      setFormError("Le nom et l'email sont requis");
+      return;
+    }
+    setSaving(true);
+    setFormError(null);
+    try {
+      const url = editingId ? `/api/customers/${editingId}` : "/api/customers";
+      const method = editingId ? "PUT" : "POST";
 
-       if (editingId) {
-         // Update existing customer optimistically
-         setDisplayedCustomers((prev) =>
-           prev.map((c) => (c.id === editingId ? newCustomer : c))
-         );
-       } else {
-         // Add new customer optimistically
-         setDisplayedCustomers((prev) => [newCustomer, ...prev]);
-       }
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone || null,
+          company: form.company || null,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDialogOpen(false);
+        tableRef.current?.refetch();
+      } else {
+        setFormError(data.message);
+      }
+    } catch {
+      setFormError("Erreur de connexion");
+    } finally {
+      setSaving(false);
+    }
+  };
 
-       const res = await fetch(url, {
-         method,
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({
-           name: form.name,
-           email: form.email,
-           phone: form.phone || null,
-           company: form.company || null,
-         }),
-       });
-       const data = await res.json();
-       if (data.success) {
-         setDialogOpen(false);
-         refetch();
-       } else {
-         setFormError(data.message);
-         // Revert optimistic update on error
-         refetch();
-       }
-     } catch (err) {
-       setFormError("Erreur de connexion");
-       // Revert optimistic update on error
-       refetch();
-     } finally {
-       setSaving(false);
-     }
-   };
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      const res = await fetch(`/api/customers/${deleteId}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        setDeleteId(null);
+        tableRef.current?.refetch();
+      }
+    } catch (error) {
+      console.error("Error deleting customer:", error);
+    }
+  };
 
-   const handleDelete = async () => {
-     if (!deleteId) return;
-     
-     // Optimistic update: remove from display immediately
-     const deletedCustomer = displayedCustomers.find((c) => c.id === deleteId);
-     setDisplayedCustomers((prev) => prev.filter((c) => c.id !== deleteId));
-     
-     setDeleting(true);
-     try {
-       const res = await fetch(`/api/customers/${deleteId}`, { method: "DELETE" });
-       const data = await res.json();
-       if (data.success) {
-         setDeleteId(null);
-         refetch();
-       } else {
-         // Revert optimistic update on error
-         if (deletedCustomer) {
-           setDisplayedCustomers((prev) => [...prev, deletedCustomer]);
-         }
-       }
-     } catch (error) {
-       console.error("Error deleting customer:", error);
-       // Revert optimistic update on error
-       if (deletedCustomer) {
-         setDisplayedCustomers((prev) => [...prev, deletedCustomer]);
-       }
-     } finally {
-       setDeleting(false);
-     }
-   };
+  return (
+    <>
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={(o) => !o && setDeleteId(null)}
+        title="Supprimer ce client ?"
+        description="Cette action est irréversible. Toutes les données associées à ce client seront définitivement supprimées."
+        confirmLabel="Supprimer"
+        onConfirm={handleDelete}
+      />
 
-   const onDeleteClick = (id: string) => {
-     setDeleteId(id);
-   };
-
-    return (
-      <>
-        <ConfirmDialog
-          open={!!deleteId}
-          onOpenChange={(o) => !o && setDeleteId(null)}
-          title="Supprimer ce client ?"
-          description="Cette action est irréversible. Toutes les données associées à ce client seront définitivement supprimées."
-          confirmLabel="Supprimer"
-          onConfirm={handleDelete}
+      <div className="mt-4">
+        <CustomersTable
+          ref={tableRef}
+          onEdit={openEdit}
+          onDelete={(id) => setDeleteId(id)}
+          onNew={openCreate}
         />
-
-        {/* Search bar + action */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher un client..."
-              className="pl-9"
-            />
-          </div>
-          <Button onClick={openCreate}>
-            <Plus className="h-4 w-4 mr-2" />
-            Nouveau client
-          </Button>
-        </div>
-
-        {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
-
-         <div className="mt-6">
-           {isLoading ? (
-             <p className="text-center text-muted-foreground py-8">Chargement...</p>
-           ) : (
-             <CustomersTable
-               customers={displayedCustomers}
-               onEdit={openEdit}
-               onDelete={onDeleteClick}
-               onNew={openCreate}
-             />
-           )}
-         </div>
+      </div>
 
       <Dialog open={dialogOpen} onOpenChange={(o) => !o && setDialogOpen(false)}>
         <DialogContent>

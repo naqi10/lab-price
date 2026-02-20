@@ -39,7 +39,6 @@ export default function TestsPage() {
         {/* ── Tests table ─────────────────────────────────────────────── */}
         <div className={items.length > 0 ? "lg:col-span-2" : "lg:col-span-3"}>
           <AllTestsTable
-            labColorMap={colorMap}
             cartItemIds={cartItemIds}
             onAddToCart={(test) => {
               if (!test.testMappingId) return;

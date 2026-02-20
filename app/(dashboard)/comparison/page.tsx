@@ -150,11 +150,37 @@ function ComparisonContent() {
   const { labs, bestLabId, tableData, missingTests, testNames } = useMemo(() => {
     if (!comparison) return { labs: [], bestLabId: "", tableData: null, missingTests: [], testNames: [] };
 
-    const bestLabId = comparison.bestLaboratory?.id || "";
-
     // Build per-lab turnaround times with test names
     const tatMatrix = comparison.tatMatrix || {};
+    const tubeTypeMatrix = comparison.tubeTypeMatrix || {};
     const testMappings = comparison.testMappings || [];
+    const priceMatrix = comparison.priceMatrix || {};
+
+    // Compute effective totals per lab, applying custom price overrides
+    const labTotals: Record<string, number> = {};
+    for (const l of (comparison.laboratories || [])) {
+      let total = 0;
+      for (const tm of testMappings) {
+        const originalPrice = priceMatrix[tm.id]?.[l.id];
+        if (originalPrice == null) continue;
+        const effectivePrice = customPrices[`${tm.id}-${l.id}`] ?? originalPrice;
+        total += effectivePrice;
+      }
+      labTotals[l.id] = total;
+    }
+
+    // Determine the best (cheapest) complete lab using effective totals
+    const completeLabs = (comparison.laboratories || []).filter((l: any) => l.isComplete);
+    let bestLabId = "";
+    let bestTotal = Infinity;
+    for (const l of completeLabs) {
+      const total = labTotals[l.id] ?? Infinity;
+      if (total < bestTotal) {
+        bestTotal = total;
+        bestLabId = l.id;
+      }
+    }
+    if (!bestLabId) bestLabId = comparison.bestLaboratory?.id || "";
 
     const labs = (comparison.laboratories || []).map((l: any) => {
       const turnaroundTimes: { testName: string; tat: string }[] = [];
@@ -167,7 +193,7 @@ function ComparisonContent() {
       return {
         id: l.id,
         name: l.name,
-        total: l.totalPrice,
+        total: labTotals[l.id] ?? l.totalPrice,
         missingTests: testIds.length - l.testCount,
         isComplete: l.isComplete,
         turnaroundTimes,
@@ -175,18 +201,19 @@ function ComparisonContent() {
     });
 
     const tableData = {
-      tests: (comparison.testMappings || []).map((tm: any) => ({
+      tests: testMappings.map((tm: any) => ({
         id: tm.id,
         canonicalName: tm.canonicalName,
-        prices: comparison.priceMatrix?.[tm.id] || {},
-        turnaroundTimes: comparison.tatMatrix?.[tm.id] || {},
+        prices: priceMatrix[tm.id] || {},
+        turnaroundTimes: tatMatrix[tm.id] || {},
+        tubeTypes: tubeTypeMatrix[tm.id] || {},
       })),
       laboratories: (comparison.laboratories || []).map((l: any) => ({ id: l.id, name: l.name })),
-      totals: Object.fromEntries((comparison.laboratories || []).map((l: any) => [l.id, l.totalPrice])),
+      totals: labTotals,
       bestLabId,
       matchMatrix: comparison.matchMatrix || {},
       onCreateMapping: (testMappingId: string, laboratoryId: string) => {
-        const test = (comparison.testMappings || []).find((tm: any) => tm.id === testMappingId);
+        const test = testMappings.find((tm: any) => tm.id === testMappingId);
         const lab = (comparison.laboratories || []).find((l: any) => l.id === laboratoryId);
         setMappingDialog({
           open: true,
@@ -202,16 +229,16 @@ function ComparisonContent() {
       .filter((l: any) => !l.isComplete)
       .map((l: any) => ({
         labName: l.name,
-        tests: (comparison.testMappings || [])
-          .filter((tm: any) => comparison.priceMatrix?.[tm.id]?.[l.id] == null)
+        tests: testMappings
+          .filter((tm: any) => priceMatrix[tm.id]?.[l.id] == null)
           .map((tm: any) => tm.canonicalName),
       }))
       .filter((m: any) => m.tests.length > 0);
 
-    const testNames = (comparison.testMappings || []).map((tm: any) => tm.canonicalName);
+    const testNames = testMappings.map((tm: any) => tm.canonicalName);
 
     return { labs, bestLabId, tableData, missingTests, testNames };
-  }, [comparison, testIds.length]);
+  }, [comparison, testIds.length, customPrices]);
 
    // Per-test lab selection handler
    const handleSelectLab = useCallback((testId: string, labId: string) => {
@@ -236,7 +263,7 @@ function ComparisonContent() {
        let cheapestLabId: string | null = null;
        let cheapestPrice = Infinity;
        for (const lab of tableData.laboratories) {
-         const price = test.prices[lab.id];
+         const price = customPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
          if (price != null && price < cheapestPrice) {
            cheapestPrice = price;
            cheapestLabId = lab.id;
@@ -248,7 +275,7 @@ function ComparisonContent() {
      }
      setSelections(next);
      setSelectionMode("CHEAPEST");
-   }, [tableData]);
+   }, [tableData, customPrices]);
 
    // Preset: select quickest lab per test (by turnaround time)
    const handlePresetQuickest = useCallback(() => {
@@ -348,9 +375,11 @@ function ComparisonContent() {
     if (!tableData || !hasActiveSelections) return 0;
     return Object.entries(selections).reduce((sum, [testId, labId]) => {
       const test = tableData.tests.find((t: any) => t.id === testId);
-      return sum + (test?.prices[labId] ?? 0);
+      // Use custom price if set, otherwise fall back to original price
+      const price = customPrices[`${testId}-${labId}`] ?? test?.prices[labId] ?? 0;
+      return sum + price;
     }, 0);
-  }, [selections, tableData, hasActiveSelections]);
+  }, [selections, tableData, hasActiveSelections, customPrices]);
 
    if (!testIds.length) {
      return (
@@ -373,7 +402,7 @@ function ComparisonContent() {
          ) : comparison ? (
            <div className="space-y-6">
               {/* Email action bar — keyed to avoid React 19 DOM reconciliation issues */}
-              <div key={hasActiveSelections ? "bar-sel" : "bar-def"} className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-lg border bg-card p-4">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-lg border bg-card p-4">
                 <div>
                   <p className="text-sm font-medium">
                     {hasActiveSelections ? "Envoyer la sélection optimisée au client" : "Envoyer la comparaison au client"}

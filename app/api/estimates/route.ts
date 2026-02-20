@@ -55,6 +55,9 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const customerId = searchParams.get("customerId") || undefined;
+    const search = searchParams.get("search")?.trim() || undefined;
+    const statusFilter = searchParams.get("status") || undefined;
+    const sortParam = searchParams.get("sort") || "createdAt:desc";
 
     const where: any = {
       createdById: session.user.id,
@@ -64,14 +67,37 @@ export async function GET(request: NextRequest) {
       where.customerId = customerId;
     }
 
+    if (search) {
+      where.OR = [
+        { estimateNumber: { contains: search, mode: "insensitive" } },
+        { customer: { name: { contains: search, mode: "insensitive" } } },
+        { customer: { email: { contains: search, mode: "insensitive" } } },
+      ];
+    }
+
+    if (statusFilter) {
+      const statuses = statusFilter.split(",").map((s) => s.trim()).filter(Boolean);
+      if (statuses.length > 0) {
+        where.status = { in: statuses };
+      }
+    }
+
+    // Parse sort param (field:direction)
+    const [sortField, sortDir] = sortParam.split(":");
+    const allowedSortFields = ["createdAt", "totalPrice", "estimateNumber", "status"];
+    const orderBy: any = allowedSortFields.includes(sortField)
+      ? { [sortField]: sortDir === "asc" ? "asc" : "desc" }
+      : { createdAt: "desc" };
+
      const [estimates, total] = await Promise.all([
        prisma.estimate.findMany({
          where,
          include: {
           customer: true,
           createdBy: { select: { name: true } },
+          _count: { select: { emailLogs: true } },
          },
-         orderBy: { createdAt: "desc" },
+         orderBy,
          skip: (page - 1) * limit,
          take: limit,
        }),
@@ -81,16 +107,23 @@ export async function GET(request: NextRequest) {
       // Enhance estimates with test mapping details
       const enhancedEstimates = await Promise.all(
         estimates.map(async (est) => {
+          // Parse customPrices if double-serialized
+          let parsedCustomPrices = est.customPrices;
+          if (typeof parsedCustomPrices === "string") {
+            try { parsedCustomPrices = JSON.parse(parsedCustomPrices); } catch { /* keep as-is */ }
+          }
+
           // If testDetails exists, parse it and use that (has all price info)
           if (est.testDetails) {
             try {
-              const testDetails = typeof est.testDetails === 'string' 
-                ? JSON.parse(est.testDetails) 
+              const testDetails = typeof est.testDetails === 'string'
+                ? JSON.parse(est.testDetails)
                 : est.testDetails;
-              
+
               // Return with parsed testDetails as testMappingDetails
               return {
                 ...est,
+                customPrices: parsedCustomPrices,
                 testMappingDetails: testDetails,
               };
             } catch (e) {
@@ -109,8 +142,8 @@ export async function GET(request: NextRequest) {
               },
             },
           });
-          
-          return { ...est, testMappingDetails: testMappings };
+
+          return { ...est, customPrices: parsedCustomPrices, testMappingDetails: testMappings };
         })
       );
 

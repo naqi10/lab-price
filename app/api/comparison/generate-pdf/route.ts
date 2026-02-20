@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { compareTestsWithEmail } from "@/lib/services/comparison.service";
+import { buildComparisonResult } from "@/lib/services/comparison.service";
 import { generateComparisonPdf } from "@/lib/services/pdf.service";
 import logger from "@/lib/logger";
 
@@ -41,12 +41,8 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Generate comparison data with custom prices ──────────────────────────
-    // We use the same logic as the email endpoint but without sending email
-    const result = await compareTestsWithEmail({
+    const result = await buildComparisonResult({
       testMappingIds,
-      clientEmail: "noreply@example.com", // dummy email, not used
-      clientName: clientName || undefined,
-      customerId: undefined,
       selections: selections || undefined,
       customPrices: customPrices || undefined,
     });
