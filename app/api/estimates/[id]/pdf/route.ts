@@ -132,8 +132,12 @@ export async function GET(
     cheapestLab.isCheapest = true;
 
     // Build comparison result
+    const testMappingIdToName: Record<string, string> = {};
+    for (const t of testMappings) { testMappingIdToName[t.id] = t.canonicalName; }
+
     const result: ComparisonEmailResult = {
       testNames: testMappings.map((t) => t.canonicalName),
+      testMappingIdToName,
       laboratories: laboratoriesData,
       cheapestLaboratory: {
         id: cheapestLab.id,

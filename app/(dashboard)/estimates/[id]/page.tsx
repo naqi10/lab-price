@@ -131,14 +131,15 @@ export default function EstimateDetailPage({ params }: { params: Promise<{ id: s
     // Normalize: entries may use nested `laboratory.id` (DB) or flat `laboratoryId` (snapshot)
     const selectedEntry = selectedLabId
       ? test.entries?.find((e: any) => (e.laboratoryId || e.laboratory?.id) === selectedLabId)
+        || test.entries?.[0] // Fallback if selected lab missing from old snapshot
       : test.entries?.[0];
 
-    const labId = selectedEntry?.laboratoryId || selectedEntry?.laboratory?.id;
+    const labId = selectedLabId || selectedEntry?.laboratoryId || selectedEntry?.laboratory?.id;
     const labName = selectedEntry?.laboratoryName || selectedEntry?.laboratory?.name || "—";
     const labCode = selectedEntry?.laboratoryCode || selectedEntry?.laboratory?.code || "";
     const originalPrice = selectedEntry?.price ?? 0;
 
-    // Custom price: check entry first, then top-level map
+    // Custom price: check entry first, then top-level map (using selectedLabId for accuracy)
     const customPrice = selectedEntry?.customPrice !== undefined && selectedEntry?.customPrice !== null
       ? selectedEntry.customPrice
       : (labId ? customPricesMap[`${test.id}-${labId}`] : undefined);

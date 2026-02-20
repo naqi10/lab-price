@@ -289,6 +289,8 @@ export interface MultiLabSelection {
 /** Structured result for comparison with email. */
 export interface ComparisonEmailResult {
   testNames: string[];
+  /** Stable mapping from TestMapping ID → canonical name (Prisma order may differ from input) */
+  testMappingIdToName: Record<string, string>;
   laboratories: {
     id: string;
     name: string;
@@ -436,16 +438,20 @@ export async function buildComparisonResult(data: {
       const test = lab.tests.find((t) => t.canonicalName === mapping.canonicalName);
       if (!test) continue;
 
+      // Explicitly apply custom price override for the selection total
+      const customPriceKey = `${mapping.id}-${labId}`;
+      const effectivePrice = customPrices?.[customPriceKey] ?? test.price;
+
       involvedLabIds.add(labId);
-      selTotal += test.price;
+      selTotal += effectivePrice;
       assignments.push({
         testMappingId: mapping.id,
         canonicalName: mapping.canonicalName,
         localTestName: test.localTestName,
         laboratoryId: labId,
         laboratoryName: lab.name,
-        price: test.price,
-        formattedPrice: formatCurrency(test.price),
+        price: effectivePrice,
+        formattedPrice: formatCurrency(effectivePrice),
         turnaroundTime: test.turnaroundTime,
       });
     }
@@ -465,8 +471,15 @@ export async function buildComparisonResult(data: {
     }
   }
 
+  // Build a stable ID → canonical name lookup (Prisma order may differ from input testMappingIds)
+  const testMappingIdToName: Record<string, string> = {};
+  for (const tm of testMappings) {
+    testMappingIdToName[tm.id] = tm.canonicalName;
+  }
+
   return {
     testNames: testMappings.map((tm) => tm.canonicalName),
+    testMappingIdToName,
     laboratories: completeLabs.map((lab) => ({
       id: lab.id,
       name: lab.name,
@@ -491,6 +504,54 @@ export async function buildComparisonResult(data: {
     },
     multiLabSelection,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Test details snapshot builder (reused by Save Dialog + Email paths)
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a frozen-in-time test details snapshot for an estimate.
+ * Fetches ALL lab entries (not just complete labs) and applies custom price
+ * overrides so that CUSTOM selections referencing incomplete labs are captured.
+ *
+ * @param testMappingIds - TestMapping IDs to snapshot
+ * @param customPrices   - Optional custom price overrides keyed by "testMappingId-labId"
+ * @returns Snapshot array suitable for storing in Estimate.testDetails
+ */
+export async function buildTestDetailsSnapshot(
+  testMappingIds: string[],
+  customPrices?: Record<string, number>
+) {
+  const testMappings = await prisma.testMapping.findMany({
+    where: { id: { in: testMappingIds } },
+    include: {
+      entries: {
+        include: {
+          laboratory: { select: { id: true, name: true, code: true } },
+        },
+      },
+    },
+  });
+
+  return testMappingIds.map((tmId) => {
+    const mapping = testMappings.find((tm) => tm.id === tmId);
+    return {
+      id: tmId,
+      canonicalName: mapping?.canonicalName ?? tmId,
+      entries: (mapping?.entries ?? []).map((entry) => {
+        const customPriceKey = `${tmId}-${entry.laboratoryId}`;
+        const effectiveCustomPrice = customPrices?.[customPriceKey];
+        return {
+          laboratoryId: entry.laboratoryId,
+          laboratoryName: entry.laboratory.name,
+          laboratoryCode: entry.laboratory.code,
+          price: effectiveCustomPrice ?? entry.price ?? 0,
+          ...(effectiveCustomPrice !== undefined && { customPrice: effectiveCustomPrice }),
+        };
+      }),
+    };
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -601,38 +662,19 @@ export async function compareTestsWithEmail(data: {
   const estimateCount = await prisma.estimate.count();
   const estimateNumber = `EST-${new Date().getFullYear()}-${String(estimateCount + 1).padStart(5, "0")}`;
 
-  // Parse custom prices JSON: convert {testId-labId: price} to stored format
-  const customPricesJson = customPrices ? JSON.stringify(customPrices) : "{}";
+  // Store custom prices as a plain object for the Prisma Json field (no double-stringify)
+  const customPricesObj = customPrices && Object.keys(customPrices).length > 0 ? customPrices : {};
 
-  // Build test details snapshot for the estimate using testMappingIds and result data
-  const testDetailsSnapshot = testMappingIds.map((tmId, idx) => {
-    const canonicalName = result.testNames[idx] ?? tmId;
-
-    return {
-      id: tmId,
-      canonicalName,
-      entries: result.laboratories
-        .filter((lab) => lab.tests.some((t) => t.canonicalName === canonicalName))
-        .map((lab) => {
-          const test = lab.tests.find((t) => t.canonicalName === canonicalName)!;
-          return {
-            laboratoryId: lab.id,
-            laboratoryName: lab.name,
-            laboratoryCode: lab.code,
-            price: test.price,
-            customPrice: customPrices ? customPrices[`${tmId}-${lab.id}`] : undefined,
-          };
-        }),
-    };
-  });
+  // Build test details snapshot using the shared helper
+  const testDetailsSnapshot = await buildTestDetailsSnapshot(testMappingIds, customPrices);
 
   const estimate = await prisma.estimate.create({
     data: {
       estimateNumber,
       testMappingIds,
       selections: hasSelections ? selections : undefined,
-      customPrices: customPricesJson,
-      testDetails: JSON.stringify(testDetailsSnapshot),
+      customPrices: customPricesObj,
+      testDetails: testDetailsSnapshot,
       selectionMode,
       totalPrice,
       status: "SENT",

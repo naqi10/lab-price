@@ -68,26 +68,29 @@ export async function GET(
             : estimate.testDetails;
           testMappingDetails = testDetails;
         } catch (e) {
-          // Fall back to fetching from database
+          // Fall back to fetching from database — sort entries by price
           testMappingDetails = await prisma.testMapping.findMany({
             where: { id: { in: estimate.testMappingIds } },
             include: {
               entries: {
+                orderBy: { price: "asc" },
                 include: {
-                  laboratory: { select: { id: true, name: true } },
+                  laboratory: { select: { id: true, name: true, code: true } },
                 },
               },
             },
           });
         }
       } else {
-        // Fallback for estimates without testDetails
+        // Fallback for estimates without testDetails — sort entries by price
+        // so entries[0] picks the cheapest lab (reasonable default for legacy data)
         testMappingDetails = await prisma.testMapping.findMany({
           where: { id: { in: estimate.testMappingIds } },
           include: {
             entries: {
+              orderBy: { price: "asc" },
               include: {
-                laboratory: { select: { id: true, name: true } },
+                laboratory: { select: { id: true, name: true, code: true } },
               },
             },
           },

@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import logger from "@/lib/logger";
 import { logAudit } from "@/lib/services/audit.service";
+import { buildTestDetailsSnapshot } from "@/lib/services/comparison.service";
 import { z } from "zod";
 
 const createEstimateSchema = z.object({
@@ -131,11 +132,13 @@ export async function GET(request: NextRequest) {
             }
           }
 
-          // Fallback: fetch from database with lab codes
+          // Fallback: fetch from database with lab codes — sort entries by price
+          // so entries[0] picks the cheapest lab for legacy estimates
           const testMappings = await prisma.testMapping.findMany({
             where: { id: { in: est.testMappingIds } },
             include: {
               entries: {
+                orderBy: { price: "asc" },
                 include: {
                   laboratory: { select: { id: true, name: true, code: true } },
                 },
@@ -182,6 +185,15 @@ export async function POST(request: NextRequest) {
 
     const estimateNumber = await generateEstimateNumber();
 
+    // Build a frozen-in-time price snapshot so the detail page always
+    // shows the correct prices regardless of future DB changes.
+    const testDetailsSnapshot = await buildTestDetailsSnapshot(
+      validated.testMappingIds,
+      validated.customPrices && Object.keys(validated.customPrices).length > 0
+        ? validated.customPrices
+        : undefined
+    );
+
      const estimate = await prisma.estimate.create({
        data: {
          estimateNumber,
@@ -190,6 +202,7 @@ export async function POST(request: NextRequest) {
          testMappingIds: validated.testMappingIds,
          selections: validated.selections ? validated.selections : undefined,
          customPrices: validated.customPrices,
+         testDetails: testDetailsSnapshot,
          totalPrice: validated.totalPrice,
          subtotal: validated.subtotal,
          notes: validated.notes || null,
