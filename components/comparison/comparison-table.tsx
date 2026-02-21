@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Link2, Pencil, Check, Trash2, Zap, DollarSign, RotateCcw, Clock, Trophy, X } from "lucide-react";
+import { Link2, Pencil, Check, Trash2, Zap, DollarSign, RotateCcw, Clock, X } from "lucide-react";
 import { parseTubeColor } from "@/lib/tube-colors";
 
 export type PriceOverride = {
@@ -262,7 +262,6 @@ export default function ComparisonTable({
                   Test
                 </TableHead>
                 {data.laboratories.map((lab) => {
-                   const isBest = lab.id === data.bestLabId;
                    const isCheapest = lab.id === cheapestLabId;
                    const isQuickest = lab.id === quickestLabId;
                    return (
@@ -273,7 +272,6 @@ export default function ComparisonTable({
                        <div className="flex flex-col gap-1.5">
                          <div className="flex items-center gap-1.5 whitespace-nowrap">
                            <span>{lab.name}</span>
-                           {isBest && <Trophy className="h-3 w-3 text-amber-400 shrink-0" />}
                          </div>
                          <div className="flex gap-1 flex-wrap">
                            {isCheapest && (

@@ -69,7 +69,7 @@ export default function LoginForm() {
           }
         }
       } else {
-        router.push("/");
+        router.push("/tests");
         router.refresh();
       }
     } catch {

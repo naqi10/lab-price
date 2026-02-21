@@ -18,9 +18,9 @@ import {
 } from "lucide-react";
 
 const navItems = [
+  { href: "/tests", label: "Tests & Correspondances", icon: TestTubes },
   { href: "/", label: "Tableau de bord", icon: LayoutDashboard },
   { href: "/laboratories", label: "Laboratoires", icon: FlaskConical },
-  { href: "/tests", label: "Tests & Correspondances", icon: TestTubes },
   { href: "/customers", label: "Clients", icon: Contact },
   { href: "/estimates", label: "Estimations", icon: FileText },
   { href: "/settings", label: "Paramètres", icon: Settings },

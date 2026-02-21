@@ -10,9 +10,9 @@ const actions = [
     primary: true,
   },
   {
-    label: "Créer une estimation",
-    description: "Générer une estimation pour un client",
-    href: "/comparison",
+    label: "View Tests",
+    description: "Rechercher et comparer les analyses",
+    href: "/tests",
     icon: FilePlus,
     primary: true,
   },
@@ -30,7 +30,7 @@ export default function QuickActions() {
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
       {actions.map((action) => (
         <Link
-          key={action.href}
+          key={action.label}
           href={action.href}
           className="group flex items-center gap-3 rounded-xl border border-border/50 bg-card px-4 py-3.5 hover:border-border hover:bg-accent/40 transition-all duration-150"
         >

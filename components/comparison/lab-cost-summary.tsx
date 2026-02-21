@@ -1,8 +1,7 @@
 "use client";
 
-import { formatCurrency, cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, Clock, Zap, AlertTriangle } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import { Clock, Zap, AlertTriangle } from "lucide-react";
 import type { LabColor } from "@/hooks/use-lab-colors";
 
 interface LabCostSummaryProps {
@@ -150,9 +149,6 @@ export default function LabCostSummary({
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
-                    {isBest && !hasSelections && (
-                      <Trophy className="h-4 w-4 text-amber-400" />
-                    )}
                     {!lab.isComplete && (
                       <AlertTriangle className="h-3.5 w-3.5 text-amber-500/70" />
                     )}

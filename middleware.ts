@@ -18,6 +18,11 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/change-password", req.nextUrl.origin));
   }
 
+  // Redirect root to /tests (Tests is the primary landing page)
+  if (isLoggedIn && pathname === "/") {
+    return NextResponse.redirect(new URL("/tests", req.nextUrl.origin));
+  }
+
   if (!isLoggedIn && !isPublicPath) {
     const loginUrl = new URL("/login", req.nextUrl.origin);
     loginUrl.searchParams.set("callbackUrl", pathname);
@@ -28,7 +33,7 @@ export default auth((req) => {
     if (pathname.startsWith("/change-password") && mustChangePassword) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/", req.nextUrl.origin));
+    return NextResponse.redirect(new URL("/tests", req.nextUrl.origin));
   }
 
   return NextResponse.next();

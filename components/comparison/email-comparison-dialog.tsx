@@ -401,12 +401,12 @@ export default function EmailComparisonDialog({
                       {creating ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Création en cours...
+                          <span>Création en cours...</span>
                         </>
                       ) : (
                         <>
                           <UserPlus className="mr-2 h-4 w-4" />
-                          Créer et continuer
+                          <span>Créer et continuer</span>
                         </>
                       )}
                     </Button>
@@ -422,17 +422,19 @@ export default function EmailComparisonDialog({
             {result ? "Fermer" : "Annuler"}
           </Button>
           {!result && (
-            isLoading ? (
-              <Button disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Envoi en cours...</span>
-              </Button>
-            ) : (
-              <Button onClick={handleSend} disabled={!isValid}>
-                <Mail className="mr-2 h-4 w-4" />
-                <span>{hasSelections ? "Envoyer la sélection" : "Comparer & Envoyer"}</span>
-              </Button>
-            )
+            <Button onClick={handleSend} disabled={isLoading || !isValid}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <span>Envoi en cours...</span>
+                </>
+              ) : (
+                <>
+                  <Mail className="mr-2 h-4 w-4" />
+                  <span>{hasSelections ? "Envoyer la sélection" : "Comparer & Envoyer"}</span>
+                </>
+              )}
+            </Button>
           )}
         </DialogFooter>
       </DialogContent>
