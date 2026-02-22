@@ -78,9 +78,7 @@ export default function EstimatesList({ onRefresh }: EstimatesListProps) {
       const link = document.createElement("a");
       link.href = url;
       link.download = filename;
-      document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err) {
       alert("Erreur lors du téléchargement du PDF");

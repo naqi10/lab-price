@@ -353,15 +353,14 @@ function ComparisonContent() {
         if (match) filename = match[1];
       }
 
-      // Download the PDF
+      // Download the PDF — avoid appendChild/removeChild to prevent
+      // React 19 DOM reconciliation conflicts with portal-based components
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.download = filename;
-      document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erreur lors du téléchargement";

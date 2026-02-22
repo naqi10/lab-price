@@ -10,21 +10,11 @@ import MatchIndicator from "@/components/tests/match-indicator";
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Popover, PopoverContent, PopoverTrigger,
-} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Link2, Pencil, Check, Trash2, Zap, DollarSign, RotateCcw, Clock, X } from "lucide-react";
+import { Link2, Check, Zap, DollarSign, RotateCcw, Clock, X } from "lucide-react";
 import { parseTubeColor } from "@/lib/tube-colors";
 
-export type PriceOverride = {
-  price: number;
-  reason: string;
-  originalPrice: number;
-};
 
 interface ComparisonTableData {
   tests: {
@@ -134,7 +124,6 @@ export default function ComparisonTable({
   onClearCustomPrice?: (testId: string, labId: string) => void;
   selectionMode?: "CHEAPEST" | "FASTEST" | "CUSTOM";
 }) {
-  const [openOverride, setOpenOverride] = useState<{ testId: string; labId: string } | null>(null);
   const [editingPrice, setEditingPrice] = useState<{ testId: string; labId: string } | null>(null);
   const hasSelections = !!selections && Object.keys(selections).length > 0;
 
@@ -351,7 +340,7 @@ export default function ComparisonTable({
                                    </button>
                                  )}
 
-                                  {/* Price */}
+                                  {/* Price — always render Tooltip to avoid portal mount/unmount conflicts with React 19 */}
                                   {editingPrice?.testId === test.id && editingPrice?.labId === lab.id ? (
                                     <InlinePriceEditor
                                       testId={test.id}
@@ -363,29 +352,30 @@ export default function ComparisonTable({
                                       }}
                                       onCancel={() => setEditingPrice(null)}
                                     />
-                                  ) : isCustomPrice ? (
+                                  ) : (
                                     <Tooltip>
                                       <TooltipTrigger asChild>
                                         <span
-                                          className="font-semibold text-sm tabular-nums text-blue-400 cursor-pointer hover:text-blue-300 transition-colors"
+                                          className={cn(
+                                            "font-semibold text-sm tabular-nums cursor-pointer transition-colors",
+                                            isCustomPrice ? "text-blue-400 hover:text-blue-300" : "hover:text-blue-400"
+                                          )}
                                           onDoubleClick={() => setEditingPrice({ testId: test.id, labId: lab.id })}
                                         >
                                           {formatCurrency(effectivePrice)}
                                         </span>
                                       </TooltipTrigger>
                                       <TooltipContent>
-                                        <p className="text-xs text-blue-300">Prix personnalisé pour cette estimation</p>
-                                        <p className="text-xs mt-1 text-muted-foreground">Double-cliquez pour modifier</p>
+                                        {isCustomPrice ? (
+                                          <>
+                                            <p className="text-xs text-blue-300">Prix personnalisé pour cette estimation</p>
+                                            <p className="text-xs mt-1 text-muted-foreground">Double-cliquez pour modifier</p>
+                                          </>
+                                        ) : (
+                                          <p className="text-xs text-muted-foreground">Double-cliquez pour modifier le prix</p>
+                                        )}
                                       </TooltipContent>
                                     </Tooltip>
-                                  ) : (
-                                    <span
-                                      className="font-semibold text-sm tabular-nums cursor-pointer hover:text-blue-400 transition-colors"
-                                      onDoubleClick={() => setEditingPrice({ testId: test.id, labId: lab.id })}
-                                      title="Double-cliquez pour modifier le prix"
-                                    >
-                                      {formatCurrency(effectivePrice)}
-                                    </span>
                                   )}
 
                                 </div>

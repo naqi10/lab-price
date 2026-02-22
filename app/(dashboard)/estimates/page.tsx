@@ -35,9 +35,7 @@ export default function EstimatesPage() {
       const link = document.createElement("a");
       link.href = url;
       link.download = `estimation-${estimateId}.pdf`;
-      document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err) {
       alert("Erreur lors du téléchargement du PDF");
