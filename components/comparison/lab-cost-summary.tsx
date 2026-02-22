@@ -44,62 +44,63 @@ export default function LabCostSummary({
   const labNameMap     = new Map(laboratories.map((l) => [l.id, l.name]));
   const involvedLabIds = hasSelections ? [...new Set(Object.values(selections!))] : [];
   const isMultiLab     = involvedLabIds.length > 1;
+  const selectionCount = hasSelections ? Object.keys(selections!).length : 0;
 
   return (
     <div className="space-y-4">
 
       {/* ── Optimised selection card ──────────────────────────────────── */}
-      {hasSelections && (
-        <div className="rounded-xl border border-primary/30 bg-primary/8 p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="h-9 w-9 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
-                <Zap className="h-4 w-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-foreground">
-                  {isMultiLab ? "Sélection optimisée multi-laboratoires" : "Sélection personnalisée"}
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {involvedLabIds.length} labo{involvedLabIds.length > 1 ? "s" : ""} · {Object.keys(selections!).length} test{Object.keys(selections!).length > 1 ? "s" : ""}
-                </p>
-              </div>
+      {/* Always rendered, hidden via CSS to prevent React 19 insertBefore DOM errors */}
+      <div
+        className="rounded-xl border border-primary/30 bg-primary/8 p-5"
+        hidden={!hasSelections || undefined}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="h-9 w-9 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
+              <Zap className="h-4 w-4 text-primary" />
             </div>
-            <div className="text-right shrink-0">
-              <p className="text-2xl font-bold text-primary tabular-nums">{formatCurrency(selectionTotal)}</p>
-              {bestLab && selectionTotal < bestLab.total && (
-                <p className="text-xs text-emerald-400 mt-0.5">
-                  -{formatCurrency(bestLab.total - selectionTotal)} vs {bestLab.name}
-                </p>
-              )}
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                {isMultiLab ? "Sélection optimisée multi-laboratoires" : "Sélection personnalisée"}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {involvedLabIds.length} labo{involvedLabIds.length > 1 ? "s" : ""} · {selectionCount} test{selectionCount > 1 ? "s" : ""}
+              </p>
             </div>
           </div>
-
-          {/* Per-test breakdown */}
-          <div className="mt-4 space-y-1.5">
-            {testMappingIds.map((tmId, i) => {
-              const labId   = selections![tmId];
-              const labName = labId ? labNameMap.get(labId) ?? "—" : "—";
-              const color   = labId ? labColorMap[labId] : undefined;
-              return (
-                <div key={tmId} className="flex items-center justify-between text-xs gap-3">
-                  <span className="text-muted-foreground truncate">{testNames[i] ?? tmId}</span>
-                  <span
-                    className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-medium border"
-                    style={
-                      color
-                        ? { color: color.text, backgroundColor: color.bg, borderColor: color.border }
-                        : { color: "hsl(var(--muted-foreground))", backgroundColor: "hsl(var(--muted)/0.3)", borderColor: "hsl(var(--border))" }
-                    }
-                  >
-                    {labName}
-                  </span>
-                </div>
-              );
-            })}
+          <div className="text-right shrink-0">
+            <p className="text-2xl font-bold text-primary tabular-nums">{formatCurrency(selectionTotal)}</p>
+            <p className={`text-xs text-emerald-400 mt-0.5${!(bestLab && selectionTotal < bestLab.total) ? " hidden" : ""}`}>
+              -{formatCurrency(bestLab ? bestLab.total - selectionTotal : 0)} vs {bestLab?.name}
+            </p>
           </div>
         </div>
-      )}
+
+        {/* Per-test breakdown */}
+        <div className="mt-4 space-y-1.5">
+          {testMappingIds.map((tmId, i) => {
+            const labId   = selections?.[tmId];
+            const labName = labId ? labNameMap.get(labId) ?? "—" : "—";
+            const color   = labId ? labColorMap[labId] : undefined;
+            return (
+              <div key={tmId} className="flex items-center justify-between text-xs gap-3">
+                <span className="text-muted-foreground truncate">{testNames[i] ?? tmId}</span>
+                <span
+                  className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-medium border"
+                  style={
+                    color
+                      ? { color: color.text, backgroundColor: color.bg, borderColor: color.border }
+                      : { color: "hsl(var(--muted-foreground))", backgroundColor: "hsl(var(--muted)/0.3)", borderColor: "hsl(var(--border))" }
+                  }
+                >
+                  {labName}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* ── Lab leaderboard ───────────────────────────────────────────── */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -166,15 +167,14 @@ export default function LabCostSummary({
                   {formatCurrency(lab.total)}
                 </p>
 
-                {/* Diff vs best */}
-                {!isBest && bestLab && diff > 0 && (
-                  <p className="text-xs text-muted-foreground/70 mt-0.5">
-                    +{formatCurrency(diff)} ({pct}% de plus)
-                  </p>
-                )}
-                {isBest && !hasSelections && (
-                  <p className="text-xs text-amber-400/80 mt-0.5">Meilleur prix global</p>
-                )}
+                {/* Diff vs best / best label — always rendered, hidden via CSS
+                     to prevent React 19 insertBefore DOM errors when hasSelections toggles */}
+                <p className={`text-xs text-muted-foreground/70 mt-0.5${!(!isBest && bestLab && diff > 0) ? " hidden" : ""}`}>
+                  +{formatCurrency(diff)} ({pct}% de plus)
+                </p>
+                <p className={`text-xs text-amber-400/80 mt-0.5${!(isBest && !hasSelections) ? " hidden" : ""}`}>
+                  Meilleur prix global
+                </p>
 
                 {/* Missing tests warning */}
                 {lab.missingTests > 0 && (

@@ -220,25 +220,20 @@ export default function ComparisonTable({
               <Clock className="h-3.5 w-3.5" />
               Délai le plus court
             </Button>
-            {hasSelections && (
-              <Button size="sm" variant="ghost" onClick={onClearSelections} className="h-7 text-xs gap-1.5 text-muted-foreground">
-                <RotateCcw className="h-3.5 w-3.5" />
-                Réinitialiser
-              </Button>
-            )}
-            {hasSelections && (
-              <div className="ml-auto flex items-center gap-2">
-                <Zap className="h-3.5 w-3.5 text-primary" />
-                <span className="text-sm font-semibold tabular-nums">
-                  {formatCurrency(selectionTotal)}
-                </span>
-                {selectionTotal < bestTotal && bestTotal > 0 && (
-                  <Badge variant="success" className="text-[10px]">
-                    -{formatCurrency(bestTotal - selectionTotal)}
-                  </Badge>
-                )}
-              </div>
-            )}
+            {/* Always rendered, hidden via CSS to prevent React 19 removeChild DOM errors */}
+            <Button size="sm" variant="ghost" onClick={onClearSelections} className={cn("h-7 text-xs gap-1.5 text-muted-foreground", !hasSelections && "hidden")}>
+              <RotateCcw className="h-3.5 w-3.5" />
+              Réinitialiser
+            </Button>
+            <div className={cn("ml-auto flex items-center gap-2", !hasSelections && "hidden")}>
+              <Zap className="h-3.5 w-3.5 text-primary" />
+              <span className="text-sm font-semibold tabular-nums">
+                {formatCurrency(selectionTotal)}
+              </span>
+              <Badge variant="success" className={cn("text-[10px]", !(selectionTotal < bestTotal && bestTotal > 0) && "hidden")}>
+                -{formatCurrency(bestTotal - selectionTotal)}
+              </Badge>
+            </div>
           </div>
         )}
 
@@ -336,7 +331,7 @@ export default function ComparisonTable({
                                      )}
                                      aria-label={`Sélectionner ${lab.name}`}
                                    >
-                                     {isSelected && <Check className="h-3 w-3 text-white font-bold" />}
+                                     <Check className={cn("h-3 w-3 text-white font-bold", !isSelected && "hidden")} />
                                    </button>
                                  )}
 
@@ -495,16 +490,12 @@ export default function ComparisonTable({
                             >
                               {formatCurrency(total)}
                             </span>
-                            {!isBest && total > bestTotal && (
-                              <div className="text-[10px] font-normal text-muted-foreground/60 mt-0.5">
-                                +{formatCurrency(diff)} (+{pct}%)
-                              </div>
-                            )}
-                            {isBest && (
-                              <div className="text-[10px] font-medium text-amber-400/80 mt-0.5">
-                                Meilleur total
-                              </div>
-                            )}
+                            <div className={cn("text-[10px] font-normal text-muted-foreground/60 mt-0.5", (isBest || !(total > bestTotal)) && "hidden")}>
+                              +{formatCurrency(diff)} (+{pct}%)
+                            </div>
+                            <div className={cn("text-[10px] font-medium text-amber-400/80 mt-0.5", !isBest && "hidden")}>
+                              Meilleur total
+                            </div>
                           </>
                         ) : "—"}
                       </div>

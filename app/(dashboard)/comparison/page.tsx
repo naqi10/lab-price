@@ -419,11 +419,9 @@ function ComparisonContent() {
                     disabled={isDownloadingPdf}
                     size="sm"
                   >
-                    {isDownloadingPdf ? (
-                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /><span>Génération...</span></>
-                    ) : (
-                      <><Download className="mr-2 h-4 w-4" /><span>PDF</span></>
-                    )}
+                    <Loader2 className={`mr-2 h-4 w-4 animate-spin${!isDownloadingPdf ? " hidden" : ""}`} />
+                    <Download className={`mr-2 h-4 w-4${isDownloadingPdf ? " hidden" : ""}`} />
+                    <span>{isDownloadingPdf ? "Génération..." : "PDF"}</span>
                   </Button>
                   <Button 
                     variant="outline"
@@ -437,9 +435,9 @@ function ComparisonContent() {
                     onClick={() => setEmailDialogOpen(true)}
                     size="sm"
                   >
-                    {hasActiveSelections
-                      ? <><Zap className="mr-2 h-4 w-4" /><span>Envoyer</span></>
-                      : <><Mail className="mr-2 h-4 w-4" /><span>Envoyer</span></>}
+                    <Zap className={`mr-2 h-4 w-4${!hasActiveSelections ? " hidden" : ""}`} />
+                    <Mail className={`mr-2 h-4 w-4${hasActiveSelections ? " hidden" : ""}`} />
+                    <span>Envoyer</span>
                   </Button>
                 </div>
               </div>

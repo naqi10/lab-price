@@ -173,6 +173,7 @@ model TestMappingEntry {
   laboratory  Laboratory  @relation(fields: [laboratoryId], references: [id])
 
   @@unique([testMappingId, laboratoryId])
+  @@index([laboratoryId])
   @@map("test_mapping_entries")
 }
 
@@ -295,6 +296,23 @@ model Estimate {
     emailLogs         EmailLog[]
 
     @@map("estimates")
+}
+
+model BundleDeal {
+  id             String   @id @default(uuid())
+  dealName       String   @map("deal_name")
+  description    String
+  category       String
+  icon           String
+  customRate     Float    @map("custom_rate")
+  popular        Boolean  @default(false)
+  testMappingIds String[] @map("test_mapping_ids")
+  isActive       Boolean  @default(true) @map("is_active")
+  sortOrder      Int      @default(0) @map("sort_order")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("bundle_deals")
 }
 
 model EstimateEmail {

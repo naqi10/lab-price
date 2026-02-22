@@ -6475,6 +6475,86 @@ async function main() {
   }
   console.log(`  ${dynOnlyCount} Dynacare-only test mappings`);
 
+  // ── Bundle Deals ───────────────────────────────────────────────────
+  await prisma.bundleDeal.deleteMany();
+
+  // Build name → id map from the mappings we just created
+  const allMappings = await prisma.testMapping.findMany({ select: { id: true, canonicalName: true } });
+  const nameToId = new Map(allMappings.map((m) => [m.canonicalName, m.id]));
+
+  const bundleDefs = [
+    {
+      dealName: "Bilan Lipidique",
+      description: "Exploration complète du profil lipidique",
+      category: "Biochimie",
+      icon: "🩸",
+      popular: true,
+      sortOrder: 0,
+      canonicalNames: ["Cholestérol total", "HDL-Cholestérol", "LDL-Cholestérol", "Triglycérides"],
+      customRate: 150,
+    },
+    {
+      dealName: "Bilan Hépatique",
+      description: "Évaluation de la fonction hépatique",
+      category: "Biochimie",
+      icon: "🫁",
+      popular: false,
+      sortOrder: 1,
+      canonicalNames: ["ASAT (TGO)", "ALAT (TGP)", "Gamma GT", "Bilirubine totale"],
+      customRate: 130,
+    },
+    {
+      dealName: "Bilan Rénal",
+      description: "Exploration de la fonction rénale",
+      category: "Biochimie",
+      icon: "🫀",
+      popular: false,
+      sortOrder: 2,
+      canonicalNames: ["Créatinine", "Urée", "Acide urique"],
+      customRate: 80,
+    },
+    {
+      dealName: "Bilan Thyroïdien",
+      description: "Exploration complète de la thyroïde",
+      category: "Hormonologie",
+      icon: "🧬",
+      popular: false,
+      sortOrder: 3,
+      canonicalNames: ["TSH", "T3 libre", "T4 libre"],
+      customRate: 230,
+    },
+    {
+      dealName: "Bilan Prénatal",
+      description: "Bilan de suivi de grossesse",
+      category: "Mixte",
+      icon: "🤰",
+      popular: false,
+      sortOrder: 4,
+      canonicalNames: ["Groupage sanguin", "NFS", "Sérologie Toxoplasmose", "Sérologie Rubéole", "Sérologie HIV"],
+      customRate: 380,
+    },
+  ];
+
+  for (const def of bundleDefs) {
+    const testMappingIds = def.canonicalNames
+      .map((name) => nameToId.get(name))
+      .filter((id): id is string => !!id);
+
+    await prisma.bundleDeal.create({
+      data: {
+        dealName: def.dealName,
+        description: def.description,
+        category: def.category,
+        icon: def.icon,
+        popular: def.popular,
+        sortOrder: def.sortOrder,
+        customRate: def.customRate,
+        testMappingIds,
+      },
+    });
+  }
+  console.log(`  ✓ ${bundleDefs.length} bundle deals seeded`);
+
   // ── 7. Default email template ─────────────────────────────────────────
   await prisma.emailTemplate.deleteMany();
 
