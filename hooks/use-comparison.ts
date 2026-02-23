@@ -35,10 +35,8 @@ export function useComparison() {
   }, []);
 
   const reset = useCallback(() => {
-    flushSync(() => {
-      setComparison(null);
-      setError(null);
-    });
+    setComparison(null);
+    setError(null);
   }, []);
 
   return { comparison, isLoading, error, compare, reset };

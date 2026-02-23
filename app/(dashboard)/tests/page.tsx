@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import TestSearch from "@/components/tests/test-search";
+import { DOMSafetyBoundary } from "@/components/dom-safety-boundary";
 import DraftManager from "@/components/comparison/draft-manager";
 import ComparisonTable from "@/components/comparison/comparison-table";
 import LabCostSummary from "@/components/comparison/lab-cost-summary";
@@ -530,8 +531,10 @@ function UnifiedTestsContent() {
       </div>
 
       {/* ── Main layout ─────────────────────────────────────────────────── */}
-      {/* Selection layout — always in DOM, visibility toggled via CSS */}
-      <div className={hasAnySelection ? "flex flex-col lg:flex-row gap-5 mt-1" : "hidden"}>
+      <DOMSafetyBoundary>
+      <div key={hasAnySelection ? "sel" : "empty"}>
+      {hasAnySelection ? (
+        <div className="flex flex-col lg:flex-row gap-5 mt-1">
           {/* ── Left sidebar ──────────────────────────────────────────────── */}
           <div className="lg:w-[280px] lg:shrink-0 space-y-3 lg:sticky lg:top-16 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto lg:pr-1">
             {/* Selected individual tests — always in DOM */}
@@ -796,10 +799,9 @@ function UnifiedTestsContent() {
               </div>
             </div>
           </div>
-      </div>
-
-      {/* Empty state — always in DOM, visibility toggled via CSS */}
-      <div className={hasAnySelection ? "hidden" : "space-y-6 mt-2"}>
+        </div>
+      ) : (
+        <div className="space-y-6 mt-2">
           <div className="rounded-xl border border-dashed border-border/40 flex flex-col items-center justify-center py-14 gap-4 text-center px-6">
             <div className="h-11 w-11 rounded-full bg-muted/30 flex items-center justify-center">
               <Search className="h-5 w-5 text-muted-foreground/40" />
@@ -903,7 +905,10 @@ function UnifiedTestsContent() {
               ))}
             </div>
           </div>
+        </div>
+      )}
       </div>
+      </DOMSafetyBoundary>
 
       {/* ── Dialogs ───────────────────────────────────────────────────── */}
       <EmailComparisonDialog
