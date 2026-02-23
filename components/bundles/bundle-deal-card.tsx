@@ -38,7 +38,7 @@ export default function BundleDealCard({
   return (
     <div
       className={cn(
-        "group relative rounded-xl border bg-card overflow-hidden transition-all duration-300",
+        "group relative rounded-xl border bg-card overflow-hidden transition-all duration-300 h-full flex flex-col",
         "hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5",
         bestValue
           ? "border-amber-500/40 ring-1 ring-amber-500/20"
@@ -61,7 +61,7 @@ export default function BundleDealCard({
       {/* Category gradient overlay */}
       <div className={cn("absolute inset-0 bg-gradient-to-b pointer-events-none", colors.gradient)} />
 
-      <div className="relative p-4 space-y-3">
+      <div className="relative p-4 flex flex-col flex-1">
         {/* Header */}
         <div className="flex items-start gap-3">
           <span className="text-2xl shrink-0 mt-0.5" role="img">
@@ -78,7 +78,7 @@ export default function BundleDealCard({
         </div>
 
         {/* Tests list as pills */}
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 mt-3">
           {bundle.canonicalNames.map((name) => (
             <span
               key={name}
@@ -90,7 +90,7 @@ export default function BundleDealCard({
         </div>
 
         {/* Test count + category */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mt-3">
           <Badge variant="outline" className="text-[10px] gap-1 font-normal">
             <FlaskConical className="h-2.5 w-2.5" />
             {bundle.canonicalNames.length} tests
@@ -100,8 +100,11 @@ export default function BundleDealCard({
           </Badge>
         </div>
 
+        {/* Spacer pushes price to bottom */}
+        <div className="flex-1" />
+
         {/* Price section */}
-        <div className="flex items-end justify-between gap-2 pt-2 border-t border-border/30">
+        <div className="flex items-end justify-between gap-2 pt-2 mt-3 border-t border-border/30">
           <div className="space-y-1">
             {loading ? (
               <div className="flex items-center gap-2 text-xs text-muted-foreground">

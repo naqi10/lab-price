@@ -389,123 +389,123 @@ function ComparisonContent() {
    }
 
    return (
-     <>
-       <main className="pt-4">
-         {isLoading ? (
-           <div className="space-y-4">
-             <Skeleton className="h-12 w-full" />
-             <Skeleton className="h-64 w-full" />
+     <div className="pt-4">
+       {/* Loading state */}
+       <div className={isLoading ? "space-y-4" : "hidden"}>
+         <Skeleton className="h-12 w-full" />
+         <Skeleton className="h-64 w-full" />
+       </div>
+
+       {/* Error state */}
+       <p className={error && !isLoading ? "text-red-500" : "hidden"}>{error}</p>
+
+       {/* Comparison content — always mounted once loaded, never unmounted */}
+       <div className={comparison && !isLoading && !error ? "space-y-6" : "hidden"}>
+         {/* Email action bar */}
+         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-lg border bg-card p-4">
+           <div>
+             <p className="text-sm font-medium">
+               {hasActiveSelections ? "Envoyer la sélection optimisée au client" : "Envoyer la comparaison au client"}
+             </p>
+             <p className="text-xs text-muted-foreground">
+               {hasActiveSelections
+                 ? `Sélection multi-laboratoires (${Object.keys(selections).length} tests) — ${formatCurrency(selectionTotal)}`
+                 : "Identifie le laboratoire le moins cher et envoie le résultat par email."}
+             </p>
            </div>
-         ) : error ? (
-           <p className="text-red-500">{error}</p>
-         ) : comparison ? (
-           <div className="space-y-6">
-              {/* Email action bar — keyed to avoid React 19 DOM reconciliation issues */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-lg border bg-card p-4">
-                <div>
-                  <p className="text-sm font-medium">
-                    {hasActiveSelections ? "Envoyer la sélection optimisée au client" : "Envoyer la comparaison au client"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {hasActiveSelections
-                      ? `Sélection multi-laboratoires (${Object.keys(selections).length} tests) — ${formatCurrency(selectionTotal)}`
-                      : "Identifie le laboratoire le moins cher et envoie le résultat par email."}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline"
-                    onClick={handleDownloadPdf}
-                    disabled={isDownloadingPdf}
-                    size="sm"
-                  >
-                    {isDownloadingPdf ? (
-                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /><span>Génération...</span></>
-                    ) : (
-                      <><Download className="mr-2 h-4 w-4" /><span>PDF</span></>
-                    )}
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => setSaveDialogOpen(true)}
-                    size="sm"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    <span>Enregistrer</span>
-                  </Button>
-                  <Button 
-                    onClick={() => setEmailDialogOpen(true)}
-                    size="sm"
-                  >
-                    {hasActiveSelections
-                      ? <><Zap className="mr-2 h-4 w-4" /><span>Envoyer</span></>
-                      : <><Mail className="mr-2 h-4 w-4" /><span>Envoyer</span></>}
-                  </Button>
-                </div>
-              </div>
-
-             {missingTests.length > 0 && (
-               <MissingTestsAlert missingTests={missingTests} />
-             )}
-             <LabCostSummary
-               labs={labs}
-               bestLabId={bestLabId}
-               selections={hasActiveSelections ? selections : undefined}
-               selectionTotal={selectionTotal}
-               testNames={testNames}
-               testMappingIds={testIds}
-               laboratories={tableData?.laboratories}
-             />
-              {tableData && (
-                <ComparisonTable
-                  data={tableData}
-                  selections={selections}
-                  customPrices={customPrices}
-                  onSelectLab={handleSelectLab}
-                  onPresetCheapest={handlePresetCheapest}
-                  onPresetQuickest={handlePresetQuickest}
-                  onClearSelections={handleClearSelections}
-                  onUpdateCustomPrice={handleUpdateCustomPrice}
-                  onClearCustomPrice={handleClearCustomPrice}
-                  selectionMode={selectionMode}
-                />
-              )}
+           <div className="flex gap-2">
+             <Button
+               variant="outline"
+               onClick={handleDownloadPdf}
+               disabled={isDownloadingPdf}
+               size="sm"
+             >
+               <Loader2 className={`mr-2 h-4 w-4 animate-spin${!isDownloadingPdf ? " hidden" : ""}`} />
+               <Download className={`mr-2 h-4 w-4${isDownloadingPdf ? " hidden" : ""}`} />
+               <span>{isDownloadingPdf ? "Génération..." : "PDF"}</span>
+             </Button>
+             <Button
+               variant="outline"
+               onClick={() => setSaveDialogOpen(true)}
+               size="sm"
+             >
+               <Save className="mr-2 h-4 w-4" />
+               <span>Enregistrer</span>
+             </Button>
+             <Button
+               onClick={() => setEmailDialogOpen(true)}
+               size="sm"
+             >
+               <Zap className={`mr-2 h-4 w-4${!hasActiveSelections ? " hidden" : ""}`} />
+               <Mail className={`mr-2 h-4 w-4${hasActiveSelections ? " hidden" : ""}`} />
+               <span>Envoyer</span>
+             </Button>
            </div>
-         ) : null}
-       </main>
+         </div>
 
-        <EmailComparisonDialog
-          open={emailDialogOpen}
-          onClose={() => setEmailDialogOpen(false)}
-          testMappingIds={testIds}
-          testNames={testNames}
-          selections={hasActiveSelections ? selections : undefined}
-          laboratories={tableData?.laboratories}
-          customPrices={customPrices}
-        />
+         {/* Missing tests — always mounted, hidden when empty */}
+         <div className={missingTests.length > 0 ? undefined : "hidden"}>
+           <MissingTestsAlert missingTests={missingTests} />
+         </div>
 
-         <SaveEstimateDialog
-           open={saveDialogOpen}
-           onClose={() => setSaveDialogOpen(false)}
-           testMappingIds={testIds}
+         <LabCostSummary
+           labs={labs}
+           bestLabId={bestLabId}
            selections={hasActiveSelections ? selections : undefined}
-           customPrices={customPrices}
-           totalPrice={selectionTotal || 0}
-           selectionMode={selectionMode}
+           selectionTotal={selectionTotal}
+           testNames={testNames}
+           testMappingIds={testIds}
+           laboratories={tableData?.laboratories}
          />
 
-        <QuickMappingDialog
-          open={mappingDialog.open}
-          onClose={() => setMappingDialog((prev) => ({ ...prev, open: false }))}
-          testMappingId={mappingDialog.testMappingId}
-          laboratoryId={mappingDialog.laboratoryId}
-          testName={mappingDialog.testName}
-          labName={mappingDialog.labName}
-          onCreated={() => {
-            // Re-run comparison to pick up the new mapping
-            compare(testIds);
-          }}
-        />
-     </>
+         {tableData && (
+           <ComparisonTable
+             data={tableData}
+             selections={selections}
+             customPrices={customPrices}
+             onSelectLab={handleSelectLab}
+             onPresetCheapest={handlePresetCheapest}
+             onPresetQuickest={handlePresetQuickest}
+             onClearSelections={handleClearSelections}
+             onUpdateCustomPrice={handleUpdateCustomPrice}
+             onClearCustomPrice={handleClearCustomPrice}
+             selectionMode={selectionMode}
+           />
+         )}
+       </div>
+
+       {/* Dialogs — inside same parent, always mounted */}
+       <EmailComparisonDialog
+         open={emailDialogOpen}
+         onClose={() => setEmailDialogOpen(false)}
+         testMappingIds={testIds}
+         testNames={testNames}
+         selections={hasActiveSelections ? selections : undefined}
+         laboratories={tableData?.laboratories}
+         customPrices={customPrices}
+       />
+
+       <SaveEstimateDialog
+         open={saveDialogOpen}
+         onClose={() => setSaveDialogOpen(false)}
+         testMappingIds={testIds}
+         selections={hasActiveSelections ? selections : undefined}
+         customPrices={customPrices}
+         totalPrice={selectionTotal || 0}
+         selectionMode={selectionMode}
+       />
+
+       <QuickMappingDialog
+         open={mappingDialog.open}
+         onClose={() => setMappingDialog((prev) => ({ ...prev, open: false }))}
+         testMappingId={mappingDialog.testMappingId}
+         laboratoryId={mappingDialog.laboratoryId}
+         testName={mappingDialog.testName}
+         labName={mappingDialog.labName}
+         onCreated={() => {
+           compare(testIds);
+         }}
+       />
+     </div>
    );
  }

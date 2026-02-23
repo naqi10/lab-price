@@ -357,7 +357,9 @@ export async function buildComparisonResult(data: {
   const labTestPairs: { laboratoryId: string; localTestName: string }[] = [];
   for (const mapping of testMappings) {
     for (const entry of mapping.entries) {
-      if (!entry.laboratory.isActive || entry.price == null) continue;
+      if (!entry.laboratory.isActive) continue;
+      const cpKey = `${mapping.id}-${entry.laboratory.id}`;
+      if (entry.price == null && !(customPrices?.[cpKey] != null)) continue;
       labTestPairs.push({ laboratoryId: entry.laboratory.id, localTestName: entry.localTestName });
     }
   }
@@ -378,9 +380,14 @@ export async function buildComparisonResult(data: {
   for (const mapping of testMappings) {
     for (const entry of mapping.entries) {
       if (!entry.laboratory.isActive) continue;
-      if (entry.price == null) continue;
 
       const labId = entry.laboratory.id;
+      const customPriceKey = `${mapping.id}-${labId}`;
+      const hasCustomPrice = customPrices?.[customPriceKey] != null;
+
+      // Skip entries without any price (DB or custom override)
+      if (entry.price == null && !hasCustomPrice) continue;
+
       if (!labMap.has(labId)) {
         labMap.set(labId, {
           id: labId,
@@ -394,8 +401,9 @@ export async function buildComparisonResult(data: {
       const lab = labMap.get(labId)!;
 
       // Apply custom price if available, otherwise use database price
-      const customPriceKey = `${mapping.id}-${labId}`;
-      const effectivePrice = customPrices?.[customPriceKey] ?? entry.price;
+      const effectivePrice = hasCustomPrice
+        ? customPrices![customPriceKey]
+        : entry.price!;
 
       lab.tests.push({
         canonicalName: mapping.canonicalName,
@@ -413,14 +421,20 @@ export async function buildComparisonResult(data: {
     .sort((a, b) => a.totalPrice - b.totalPrice);
 
   const hasSelections = selections && Object.keys(selections).length === requiredCount;
+  const hasCustomPrices = customPrices && Object.keys(customPrices).length > 0;
 
-  if (completeLabs.length === 0 && !hasSelections) {
+  if (completeLabs.length === 0 && !hasSelections && !hasCustomPrices) {
     throw new Error(
       "Aucun laboratoire ne propose tous les tests sélectionnés avec des prix disponibles"
     );
   }
 
-  const cheapest = completeLabs[0] ?? Array.from(labMap.values())[0];
+  const responseLabs = completeLabs.length > 0
+    ? completeLabs
+    : Array.from(labMap.values())
+        .sort((a, b) => b.tests.length - a.tests.length || a.totalPrice - b.totalPrice);
+
+  const cheapest = responseLabs[0] ?? Array.from(labMap.values())[0];
 
   // ── Build multi-lab selection if selections provided ───────────────────
   let multiLabSelection: MultiLabSelection | undefined;
@@ -480,7 +494,7 @@ export async function buildComparisonResult(data: {
   return {
     testNames: testMappings.map((tm) => tm.canonicalName),
     testMappingIdToName,
-    laboratories: completeLabs.map((lab) => ({
+    laboratories: responseLabs.map((lab) => ({
       id: lab.id,
       name: lab.name,
       code: lab.code,

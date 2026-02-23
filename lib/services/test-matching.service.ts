@@ -43,6 +43,7 @@ export async function searchTests(
     '  l.id AS "laboratoryId",',
     '  l.name AS "laboratoryName",',
     '  l.code AS "laboratoryCode",',
+<<<<<<< HEAD
     "  GREATEST(",
     "    similarity(t.name, $1),",
     "    CASE WHEN t.name ILIKE $1 THEN 1.0",             // exact (case-insensitive)
@@ -51,6 +52,9 @@ export async function searchTests(
     "         WHEN t.code ILIKE $1 THEN 0.9",             // exact code match
     "         ELSE 0 END",
     "  ) AS similarity,",
+=======
+    "  similarity(LOWER(t.name), LOWER($1)) AS similarity,",
+>>>>>>> 958bb4184aaf02337d3d0b4db283209d95dc7eaa
     '  tme."test_mapping_id" AS "testMappingId",',
     '  tm."canonical_name" AS "canonicalName"',
     'FROM "tests" t',
@@ -61,11 +65,15 @@ export async function searchTests(
     'WHERE pl."is_active" = true',
     '  AND l."deleted_at" IS NULL',
     "  " + labFilterClause,
+<<<<<<< HEAD
     "  AND (",
     "    t.name ILIKE '%' || $1 || '%'",
     "    OR t.code ILIKE $1",
     "    OR similarity(t.name, $1) >= $2",
     "  )",
+=======
+    "  AND similarity(LOWER(t.name), LOWER($1)) >= $2",
+>>>>>>> 958bb4184aaf02337d3d0b4db283209d95dc7eaa
     "ORDER BY similarity DESC, t.name ASC",
     "LIMIT $3",
   ].join("\n");
@@ -109,13 +117,13 @@ export async function findMatchingTests(
     "  t.price,",
     '  l.id AS "laboratoryId",',
     '  l.name AS "laboratoryName",',
-    "  similarity(t.name, $1) AS similarity",
+    "  similarity(LOWER(t.name), LOWER($1)) AS similarity",
     'FROM "tests" t',
     'INNER JOIN "price_lists" pl ON t."price_list_id" = pl.id',
     'INNER JOIN "laboratories" l ON pl."laboratory_id" = l.id',
     'WHERE pl."is_active" = true',
     '  AND l."deleted_at" IS NULL',
-    "  AND similarity(t.name, $1) >= $2",
+    "  AND similarity(LOWER(t.name), LOWER($1)) >= $2",
     "ORDER BY l.id, similarity DESC",
   ].join("\n");
 
@@ -185,33 +193,45 @@ export async function createTestMapping(data: {
   });
 }
 
-/** Retrieve all test mappings with their lab-specific entries. */
+/** Retrieve paginated test mappings with optional lab filter. */
 export async function getTestMappings(options?: {
   category?: string;
   search?: string;
+  page?: number;
+  limit?: number;
+  laboratoryId?: string;
 }) {
-  const { category, search } = options ?? {};
+  const { category, search, page = 1, limit = 20, laboratoryId } = options ?? {};
   const where: Record<string, unknown> = {};
   if (category) where.category = category;
+  if (laboratoryId) {
+    where.entries = { some: { laboratoryId } };
+  }
   if (search) {
-    // Search by canonical name OR by mapped local test names
     where.OR = [
       { canonicalName: { contains: search, mode: "insensitive" } },
       { entries: { some: { localTestName: { contains: search, mode: "insensitive" } } } },
     ];
   }
 
-  return prisma.testMapping.findMany({
-    where,
-    orderBy: { canonicalName: "asc" },
-    include: {
-      entries: {
-        include: {
-          laboratory: { select: { id: true, name: true, code: true } },
+  const [mappings, total] = await Promise.all([
+    prisma.testMapping.findMany({
+      where,
+      orderBy: { canonicalName: "asc" },
+      skip: (page - 1) * limit,
+      take: limit,
+      include: {
+        entries: {
+          include: {
+            laboratory: { select: { id: true, name: true, code: true } },
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.testMapping.count({ where }),
+  ]);
+
+  return { mappings, total };
 }
 
 /** Update an existing test mapping. */

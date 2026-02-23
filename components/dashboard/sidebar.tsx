@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
   FlaskConical,
   TestTubes,
   Contact,
@@ -19,7 +18,6 @@ import {
 
 const navItems = [
   { href: "/tests", label: "Tests & Correspondances", icon: TestTubes },
-  { href: "/", label: "Tableau de bord", icon: LayoutDashboard },
   { href: "/laboratories", label: "Laboratoires", icon: FlaskConical },
   { href: "/customers", label: "Clients", icon: Contact },
   { href: "/estimates", label: "Estimations", icon: FileText },

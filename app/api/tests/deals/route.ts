@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getTestMappings, createTestMapping } from "@/lib/services/test-matching.service";
+import { getBundleDeals, createBundleDeal } from "@/lib/services/bundle-deal.service";
 import logger from "@/lib/logger";
 import { logAudit } from "@/lib/services/audit.service";
 
@@ -11,23 +11,21 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || undefined;
-    const category = searchParams.get("category") || undefined;
-    const laboratoryId = searchParams.get("lab") || undefined;
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20", 10)));
 
-    const { mappings, total } = await getTestMappings({ search, category, page, limit, laboratoryId });
+    const { deals, total } = await getBundleDeals({ search, page, limit });
     const pages = Math.ceil(total / limit);
 
     return NextResponse.json({
       success: true,
       data: {
-        mappings,
+        deals,
         pagination: { page, limit, total, pages },
       },
     });
   } catch (error) {
-    logger.error({ err: error }, "[GET /api/tests/mappings]");
+    logger.error({ err: error }, "[GET /api/tests/deals]");
     return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
   }
 }
@@ -39,32 +37,27 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    if (!body.canonicalName) {
-      return NextResponse.json({ success: false, message: "Le nom canonique est requis" }, { status: 400 });
+    if (!body.dealName || !body.category || body.customRate == null) {
+      return NextResponse.json({ success: false, message: "Nom, catégorie et tarif sont requis" }, { status: 400 });
     }
 
-    const mapping = await createTestMapping({
-      canonicalName: body.canonicalName,
-      code: body.code || null,
-      category: body.category || null,
-      description: body.description || null,
-      unit: body.unit || null,
-      turnaroundTime: body.turnaroundTime || null,
-      tubeType: body.tubeType || null,
-      entries: (body.entries || []).map((e: any) => ({
-        laboratoryId: e.laboratoryId,
-        localTestName: e.testName || e.localTestName,
-        matchType: "MANUAL" as const,
-        similarity: 1.0,
-        price: e.price ?? null,
-      })),
+    const deal = await createBundleDeal({
+      dealName: body.dealName,
+      description: body.description || "",
+      category: body.category,
+      icon: body.icon || "",
+      customRate: Number(body.customRate),
+      popular: body.popular ?? false,
+      testMappingIds: body.testMappingIds || [],
+      isActive: body.isActive ?? true,
+      sortOrder: body.sortOrder ?? 0,
     });
 
-    logAudit({ userId: session.user.id, action: "CREATE", entity: "test_mapping", entityId: mapping.id, details: { canonicalName: body.canonicalName } });
+    logAudit({ userId: session.user.id, action: "CREATE", entity: "bundle_deal", entityId: deal.id, details: { dealName: body.dealName } });
 
-    return NextResponse.json({ success: true, data: mapping }, { status: 201 });
+    return NextResponse.json({ success: true, data: deal }, { status: 201 });
   } catch (error) {
-    logger.error({ err: error }, "[POST /api/tests/mappings]");
+    logger.error({ err: error }, "[POST /api/tests/deals]");
     const message = error instanceof Error ? error.message : "Erreur lors de la création";
     return NextResponse.json({ success: false, message }, { status: 500 });
   }

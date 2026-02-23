@@ -9,7 +9,7 @@ import { useLabColors } from "@/hooks/use-lab-colors";
 import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import BundleDealsSection from "@/components/bundles/bundle-deals-section";
 import { Button } from "@/components/ui/button";
-import { GitCompare } from "lucide-react";
+import { GitCompare, Package } from "lucide-react";
 
 export default function TestsPage() {
   const router = useRouter();
@@ -45,6 +45,15 @@ export default function TestsPage() {
               onRemoveFromCart={(testMappingId) => removeItem(testMappingId)}
             />
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0 self-start"
+            onClick={() => router.push("/tests/deals")}
+          >
+            <Package className="h-4 w-4" />
+            Offres groupées
+          </Button>
           <Button
             variant="outline"
             size="sm"
