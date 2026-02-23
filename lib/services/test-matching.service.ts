@@ -1,10 +1,14 @@
 import prisma from "@/lib/db";
 
 /**
- * Search for lab tests using PostgreSQL pg_trgm fuzzy matching.
+ * Search for lab tests using a hybrid approach:
+ *   1. ILIKE prefix/substring match (fast, exact)
+ *   2. pg_trgm similarity (fuzzy fallback)
  *
- * Uses raw SQL with the pg_trgm extension's similarity() function
- * to find tests whose names are similar to the search query.
+ * Results are ranked by: exact prefix > substring > trigram similarity.
+ * Threshold raised to 0.15 for trigram, but ILIKE matches are always
+ * included regardless of similarity score so short queries like "TSH"
+ * still return the right results.
  *
  * Table names use the @@map values from the Prisma schema:
  *   Test → "tests", PriceList → "price_lists", Laboratory → "laboratories"
@@ -17,12 +21,16 @@ export async function searchTests(
     limit?: number;
   }
 ) {
-  const { laboratoryId, threshold = 0.3, limit = 20 } = options ?? {};
+  const { laboratoryId, threshold = 0.15, limit = 20 } = options ?? {};
 
+  // Build parameterized query — lab filter uses $4 when present (no string interpolation)
   const labFilterClause = laboratoryId
-    ? `AND pl."laboratory_id" = '${laboratoryId}'`
+    ? 'AND pl."laboratory_id" = $4'
     : "";
 
+  // Hybrid ranking: ILIKE matches get a boost so they always rank above fuzzy-only hits.
+  // For short queries (≤4 chars), rely primarily on ILIKE since trigram similarity
+  // is unreliable for short strings.
   const sql = [
     "SELECT",
     "  t.id,",
@@ -35,7 +43,14 @@ export async function searchTests(
     '  l.id AS "laboratoryId",',
     '  l.name AS "laboratoryName",',
     '  l.code AS "laboratoryCode",',
-    "  similarity(t.name, $1) AS similarity,",
+    "  GREATEST(",
+    "    similarity(t.name, $1),",
+    "    CASE WHEN t.name ILIKE $1 THEN 1.0",             // exact (case-insensitive)
+    "         WHEN t.name ILIKE $1 || '%' THEN 0.95",     // prefix
+    "         WHEN t.name ILIKE '%' || $1 || '%' THEN 0.85", // substring
+    "         WHEN t.code ILIKE $1 THEN 0.9",             // exact code match
+    "         ELSE 0 END",
+    "  ) AS similarity,",
     '  tme."test_mapping_id" AS "testMappingId",',
     '  tm."canonical_name" AS "canonicalName"',
     'FROM "tests" t',
@@ -46,10 +61,17 @@ export async function searchTests(
     'WHERE pl."is_active" = true',
     '  AND l."deleted_at" IS NULL',
     "  " + labFilterClause,
-    "  AND similarity(t.name, $1) >= $2",
+    "  AND (",
+    "    t.name ILIKE '%' || $1 || '%'",
+    "    OR t.code ILIKE $1",
+    "    OR similarity(t.name, $1) >= $2",
+    "  )",
     "ORDER BY similarity DESC, t.name ASC",
     "LIMIT $3",
   ].join("\n");
+
+  const params: (string | number)[] = [query, threshold, limit];
+  if (laboratoryId) params.push(laboratoryId);
 
   return prisma.$queryRawUnsafe<
     Array<{
@@ -67,7 +89,7 @@ export async function searchTests(
       testMappingId: string | null;
       canonicalName: string | null;
     }>
-  >(sql, query, threshold, limit);
+  >(sql, ...params);
 }
 
 /**
@@ -78,7 +100,7 @@ export async function findMatchingTests(
   referenceTestName: string,
   options?: { threshold?: number }
 ) {
-  const { threshold = 0.3 } = options ?? {};
+  const { threshold = 0.15 } = options ?? {};
 
   const sql = [
     "SELECT DISTINCT ON (l.id)",
