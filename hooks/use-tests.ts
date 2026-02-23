@@ -33,7 +33,7 @@ export function useTestMappings() {
 
 const CART_KEY = "lab-price-test-cart";
 
-type CartItem = { id: string; testMappingId: string; canonicalName: string };
+type CartItem = { id: string; testMappingId: string; canonicalName: string; tubeType?: string | null };
 
 function persistCart(items: CartItem[]) {
   try { sessionStorage.setItem(CART_KEY, JSON.stringify(items)); } catch { /* ignore */ }

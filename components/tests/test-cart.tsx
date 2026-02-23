@@ -4,13 +4,18 @@ import { useEffect, useState } from "react";
 import { X, Trophy, FlaskConical, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { formatCurrency } from "@/lib/utils";
+import { parseTubeColor } from "@/lib/tube-colors";
 import type { LabColor } from "@/hooks/use-lab-colors";
 
 interface CartItem {
   id: string;
   testMappingId: string;
   canonicalName: string;
+  tubeType?: string | null;
 }
 
 interface LabTotal {
@@ -94,13 +99,29 @@ export default function TestCart({
       </div>
 
       {/* ── Selected tests list ──────────────────────────────────────── */}
+      <TooltipProvider>
       <ul className="divide-y divide-border/30 max-h-44 overflow-y-auto border-b border-border/30">
-        {items.map((item) => (
+        {items.map((item) => {
+          const tube = parseTubeColor(item.tubeType);
+          return (
           <li
             key={item.id}
             className="flex items-center justify-between gap-3 px-4 py-2 group hover:bg-muted/20 transition-colors"
           >
-            <span className="text-xs text-foreground/75 leading-snug">{item.canonicalName}</span>
+            <div className="flex items-center gap-2 min-w-0">
+              {tube && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span
+                      className="inline-block h-2 w-2 rounded-full shrink-0 ring-1 ring-white/10"
+                      style={{ backgroundColor: tube.color }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent side="top">{tube.label}</TooltipContent>
+                </Tooltip>
+              )}
+              <span className="text-xs text-foreground/75 leading-snug truncate">{item.canonicalName}</span>
+            </div>
             <button
               onClick={() => onRemove(item.id)}
               className="shrink-0 text-muted-foreground/30 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
@@ -109,8 +130,10 @@ export default function TestCart({
               <X className="h-3.5 w-3.5" />
             </button>
           </li>
-        ))}
+          );
+        })}
       </ul>
+      </TooltipProvider>
 
       {/* ── Lab leaderboard ──────────────────────────────────────────── */}
       <div className="px-4 py-3 space-y-2.5 flex-1">

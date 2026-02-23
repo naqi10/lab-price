@@ -136,7 +136,7 @@ export default function BundleDealsSection() {
   const bestValueId =
     resolved.length > 0
       ? resolved.reduce((best, rb) =>
-          rb.savingsPercent > best.savingsPercent ? rb : best
+          rb.bundle.customRate < best.bundle.customRate ? rb : best
         ).bundle.id
       : null;
 
@@ -197,7 +197,6 @@ export default function BundleDealsSection() {
               <BundleDealCard
                 key={rb.bundle.id}
                 bundle={rb.bundle}
-                originalTotal={rb.originalTotal}
                 loading={false}
                 onSend={() => handleSend(rb)}
                 bestValue={rb.bundle.id === bestValueId}

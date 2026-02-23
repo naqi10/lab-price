@@ -2,6 +2,272 @@ import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../app/generated/prisma/index.js";
 import * as bcryptjs from "bcryptjs";
+// ── Inline tube colors + clean names from CDL specimen manual ──────────
+const CDL_SEED1: Record<string, { tube: string; name: string }> = {
+  HIAA: { tube: "24h Urine Container", name: "5-HIAA (5-Hydroxyindoleacetic Acid)" },
+  ACBA: { tube: "Gold", name: "Acetylcholine, Anticorps Bloquants" },
+  ACRA: { tube: "Gold", name: "Acetylcholine, Anticorps Liant" },
+  FOLC: { tube: "Gold", name: "Acide Folique (Folate)" },
+  MMAS: { tube: "Gold", name: "Acide Méthylmalonique" },
+  URIC: { tube: "Gold", name: "Acide Urique" },
+  "UA/U": { tube: "24h Urine Container", name: "Acide Urique (Urine 24h)" },
+  VALP: { tube: "Red", name: "Acide Valproïque (Depakene/Epival)" },
+  ADUL: { tube: "Red", name: "Adalimumab" },
+  ALB: { tube: "Gold", name: "Albumine" },
+  ALDO: { tube: "Red or Lavender", name: "Aldostérone" },
+  A1AT: { tube: "Gold", name: "Alpha-1 Antitrypsine" },
+  AFP: { tube: "Gold", name: "Alpha-Foetoprotéine" },
+  ALT: { tube: "Gold", name: "ALT (SGPT)" },
+  AL: { tube: "Royal Blue", name: "Aluminium" },
+  AMPH: { tube: "Sterile Container", name: "Amphétamine (Dépistage)" },
+  AMYL: { tube: "Gold", name: "Amylase" },
+  ANDR: { tube: "Red", name: "Androsténédione" },
+  ANA: { tube: "Gold", name: "Anti-Nucléaire Anticorps (ANA)" },
+  ENA: { tube: "Gold", name: "Anti-Nucléaires Extractables (ENA)" },
+  ASOT: { tube: "Gold", name: "Antistreptolysine O (ASO)" },
+  APOA: { tube: "Gold", name: "Apolipoprotéine A-1" },
+  APOB: { tube: "Gold", name: "Apolipoprotéine B" },
+  APOE: { tube: "Lavender", name: "Apolipoprotéine E (Genotyping)" },
+  BARS: { tube: "Royal Blue", name: "Arsenic" },
+  AST: { tube: "Gold", name: "AST (SGOT)" },
+  CTTBP: { tube: "Sterile Container", name: "Bacille de Koch (Tuberculose) Culture" },
+  UBAR: { tube: "Sterile Container", name: "Barbituriques (Dépistage)" },
+  BENZ: { tube: "Sterile Container", name: "Benzodiazépines (Dépistage)" },
+  B2MG: { tube: "Gold", name: "Bêta-2 Microglobuline" },
+  BHCG: { tube: "Gold", name: "Bêta-HCG Quantitative (Grossesse)" },
+  PREG: { tube: "Gold", name: "Bêta-HCG Qualitative" },
+  CO2P: { tube: "Green", name: "Bicarbonate (CO2 Total)" },
+  DBIL: { tube: "Gold", name: "Bilirubine Directe" },
+  TBIL: { tube: "Gold", name: "Bilirubine Totale" },
+  BIOP: { tube: "Formalin Container", name: "Biopsie" },
+  BORP: { tube: "UTM Swab", name: "Bordetella Pertussis (Coqueluche)" },
+  C125: { tube: "Gold", name: "CA 125" },
+  C153: { tube: "Gold", name: "CA 15-3" },
+  C199: { tube: "Gold", name: "CA 19-9" },
+  CD: { tube: "Royal Blue", name: "Cadmium" },
+  CA: { tube: "Gold", name: "Calcium" },
+  CAIP: { tube: "Green", name: "Calcium Ionisé" },
+  CN50: { tube: "Sterile Container", name: "Cannabis (THC) Dépistage" },
+  CARM: { tube: "Red", name: "Carbamazépine (Tegretol)" },
+  CEA: { tube: "Gold", name: "Carcino-Embryonic Antigen (CEA)" },
+  CLPTN: { tube: "Sterile Container", name: "Calprotectine" },
+  UCAT: { tube: "24h Urine Container", name: "Catécholamines (Urine)" },
+  CATS: { tube: "Lavender", name: "Catécholamines (Plasma)" },
+  CUBP: { tube: "Gold", name: "Céruloplasmine" },
+  CMPC: { tube: "PCR Kit", name: "Chlamydia (PCR Cervical/Endocervical)" },
+  CMPCU: { tube: "Sterile Container", name: "Chlamydia (Urine)" },
+  CL: { tube: "Gold", name: "Chlorure" },
+  CHOL: { tube: "Gold", name: "Cholestérol Total" },
+  HDL: { tube: "Gold", name: "Cholestérol HDL" },
+  LDLD: { tube: "Gold", name: "Cholestérol LDL" },
+  CK: { tube: "Gold", name: "Créatine Kinase (CK)" },
+  CKMB: { tube: "Gold", name: "CK-MB" },
+  CREA: { tube: "Gold", name: "Créatinine" },
+  COKE: { tube: "Sterile Container", name: "Cocaïne (Dépistage)" },
+  SCORT: { tube: "Gold", name: "Cortisol (AM/PM)" },
+  CRP: { tube: "Gold", name: "Protéine C-Réactive (CRP)" },
+  CRPHS: { tube: "Gold", name: "CRP Haute Sensibilité (Cardio)" },
+  CULU: { tube: "Sterile Container / Pea Green Tube", name: "Urine (Culture)" },
+  DDIM: { tube: "Light Blue", name: "D-Dimère" },
+  "DH-S": { tube: "Gold", name: "DHEA-S" },
+  DIGX: { tube: "Red", name: "Digoxin (Lanoxin)" },
+  DHT: { tube: "Gold", name: "Dihydrotestostérone" },
+  ELEC: { tube: "Gold", name: "Électrolytes (Na, K, Cl)" },
+  SPEP: { tube: "Gold", name: "Électrophorèse des protéines (Sérum)" },
+  ESTR: { tube: "Gold", name: "Estradiol" },
+  SETH: { tube: "Gold", name: "Éthanol (Sérum)" },
+  FE: { tube: "Gold", name: "Fer Total" },
+  FERR: { tube: "Gold", name: "Ferritine" },
+  FIB: { tube: "Light Blue", name: "Fibrinogène" },
+  CBC: { tube: "Lavender", name: "Formule Sanguine Complète (FSC)" },
+  FSH: { tube: "Gold", name: "FSH (Hormone Folliculo-stimulante)" },
+  GGT: { tube: "Gold", name: "GGT" },
+  ACGL: { tube: "Gold", name: "Glucose (À Jeun/AC)" },
+  GLU: { tube: "Gold", name: "Glucose (Aléatoire)" },
+  "2HGTT": { tube: "Gold", name: "Glucose Tolerance Test (2h)" },
+  GLHBP: { tube: "Lavender", name: "HbA1c (Hémoglobine Glyquée)" },
+  GONO: { tube: "PCR Kit", name: "Gonorrhée (PCR Cervical/Endocervical)" },
+  GONOU: { tube: "Sterile Container", name: "Gonorrhée (Urine)" },
+  BLDT: { tube: "Pink", name: "Groupe Sanguin & Rh" },
+  HEPC: { tube: "Gold", name: "Hépatite C (Anticorps)" },
+  HCVL: { tube: "Lavender", name: "Hépatite C Charge Virale" },
+  HSAG: { tube: "Gold", name: "Hépatite B (Ag de surface - HBsAg)" },
+  HIV: { tube: "Gold", name: "HIV (VIH) Dépistage" },
+  HIVL: { tube: "Lavender", name: "HIV Charge Virale" },
+  HCYS: { tube: "Lavender", name: "Homocystéine" },
+  HPBT: { tube: "Breath Test Kit", name: "H. Pylori Breath Test" },
+  IGA: { tube: "Gold", name: "Immunoglobuline A (IgA)" },
+  IGG: { tube: "Gold", name: "Immunoglobuline G (IgG)" },
+  IGM: { tube: "Gold", name: "Immunoglobuline M (IgM)" },
+  IGE: { tube: "Gold", name: "Immunoglobuline E (IgE)" },
+  ISLN: { tube: "Gold", name: "Insuline" },
+  PT: { tube: "Light Blue", name: "INR / PT" },
+  LD: { tube: "Gold", name: "Lactate Déshydrogénase (LDH)" },
+  LITH: { tube: "Gold", name: "Lithium" },
+  LASE: { tube: "Gold", name: "Lipase" },
+  LH: { tube: "Gold", name: "LH (Hormone Lutéinisante)" },
+  MG: { tube: "Gold", name: "Magnésium" },
+  MONO: { tube: "Gold", name: "Monotest (Mononucléose)" },
+  PARA: { tube: "Stool Container (x3)", name: "Ova and Parasites (Oeufs et Parasites) - Selles" },
+  PTH: { tube: "Lavender", name: "Parathormone (PTH)" },
+  PO4: { tube: "Gold", name: "Phosphore (Phosphate)" },
+  PLT: { tube: "Lavender", name: "Plaquettes" },
+  PB: { tube: "Royal Blue", name: "Plomb (Sang)" },
+  K: { tube: "Gold", name: "Potassium" },
+  PROG: { tube: "Gold", name: "Progestérone" },
+  PRLA: { tube: "Gold", name: "Prolactine" },
+  TP: { tube: "Gold", name: "Protéines Totales" },
+  PSA: { tube: "Gold", name: "PSA (APS) Total" },
+  FPSA: { tube: "Gold", name: "PSA (APS) Libre" },
+  PTT: { tube: "Light Blue", name: "PTT (TCA)" },
+  RTIC: { tube: "Lavender", name: "Réticulocytes" },
+  RUBE: { tube: "Gold", name: "Rubéole IgG" },
+  SEDI: { tube: "Lavender", name: "Sédimentation (Vitesse de)" },
+  NA: { tube: "Gold", name: "Sodium" },
+  SYPEIA: { tube: "Gold", name: "Syphilis (VDRL/RPR)" },
+  FT3: { tube: "Gold", name: "T3 Libre" },
+  FT4: { tube: "Gold", name: "T4 Libre" },
+  TEST: { tube: "Gold", name: "Testostérone Totale" },
+  TESBC: { tube: "Gold", name: "Testostérone Biodisponible" },
+  TESFC: { tube: "Gold", name: "Testostérone Libre" },
+  THYG: { tube: "Gold", name: "Thyroglobuline" },
+  TRFN: { tube: "Gold", name: "Transferrine" },
+  TRIG: { tube: "Gold", name: "Triglycérides" },
+  TSH: { tube: "Gold", name: "TSH" },
+  UREA: { tube: "Gold", name: "Urée" },
+  URC: { tube: "Sterile Container", name: "Urine (Analyse)" },
+  VARG: { tube: "Gold", name: "Varicelle IgG" },
+  VB12: { tube: "Gold", name: "Vitamine B12" },
+  "25D": { tube: "Gold", name: "Vitamine D (25-OH)" },
+  ZN: { tube: "Royal Blue", name: "Zinc (Plasma)" },
+};
+
+// ── Inline tube colors + clean names from Dynacare QC specimen manual ──
+const QC_SEED1: Record<string, { tube: string; name: string }> = {
+  "APH ACETONE": { tube: "Gold", name: "Acetaminophène & Acétone" },
+  VAL: { tube: "Red", name: "Acide Valproïque (Depakene)" },
+  ALB: { tube: "Gold", name: "Albumine" },
+  ALCO: { tube: "Gold", name: "Alcool (Ethanol) - Sang" },
+  DOST: { tube: "Gold", name: "Aldostérone" },
+  TRYP: { tube: "Gold", name: "Alpha-1 Antitrypsine" },
+  AFP: { tube: "Gold", name: "Alpha-Foetoprotéine (AFP)" },
+  ALT: { tube: "Gold", name: "ALT (SGPT)" },
+  AMIK: { tube: "Gold", name: "Amikacine (Au hasard/Pré/Post)" },
+  AMITRIP: { tube: "Red", name: "Amitriptyline" },
+  AMMO: { tube: "Lavender", name: "Ammoniaque" },
+  AMYL: { tube: "Gold", name: "Amylase" },
+  ANDRO: { tube: "Gold", name: "Androstènedione" },
+  ANA: { tube: "Gold", name: "Anticorps Antinucléaires (ANA)" },
+  DNA: { tube: "Gold", name: "Anticorps Anti-ADN (Double Brin)" },
+  ASOT: { tube: "Gold", name: "Antistreptolysine O (ASO)" },
+  APOA: { tube: "Gold", name: "Apolipoprotéine A-1" },
+  APOB: { tube: "Gold", name: "Apolipoprotéine B" },
+  ARSENIWB: { tube: "Royal Blue", name: "Arsenic (Sang Total)" },
+  AST: { tube: "Gold", name: "AST (SGOT)" },
+  B2MICRO: { tube: "Gold", name: "Beta-2 Microglobuline" },
+  BSQUANT: { tube: "Gold", name: "Beta-HCG Quantitative" },
+  BILIT: { tube: "Gold", name: "Bilirubine Totale" },
+  BILITD: { tube: "Gold", name: "Bilirubine Directe" },
+  BNP: { tube: "Gold", name: "BNP (NT-pro-BNP)" },
+  C3: { tube: "Gold", name: "Complément C3" },
+  C4: { tube: "Gold", name: "Complément C4" },
+  CA125: { tube: "Gold", name: "CA 125" },
+  CA153: { tube: "Gold", name: "CA 15-3" },
+  CA19: { tube: "Gold", name: "CA 19-9" },
+  CA: { tube: "Gold", name: "Calcium" },
+  CAI: { tube: "Gold", name: "Calcium Ionisé" },
+  TEG: { tube: "Red", name: "Carbamazépine (Tegretol)" },
+  CEA: { tube: "Gold", name: "Carcino-Embryonic Antigen (CEA)" },
+  CERU: { tube: "Gold", name: "Céruloplasmine" },
+  CHOL: { tube: "Gold", name: "Cholestérol Total" },
+  CK: { tube: "Gold", name: "Créatine Kinase (CK)" },
+  CKMB: { tube: "Gold", name: "CK-MB" },
+  CL: { tube: "Gold", name: "Chlorure" },
+  CO2: { tube: "Gold", name: "CO2 Total (Bicarbonate)" },
+  COD: { tube: "Pink", name: "Coombs Direct" },
+  AMAT: { tube: "Pink", name: "Coombs Indirect" },
+  CORTIAM: { tube: "Gold", name: "Cortisol (AM)" },
+  CORTIPM: { tube: "Gold", name: "Cortisol (PM)" },
+  CREA: { tube: "Gold", name: "Créatinine" },
+  CRP: { tube: "Gold", name: "Protéine C-Réactive (CRP)" },
+  CRPHS: { tube: "Gold", name: "CRP Haute Sensibilité" },
+  COPPERWB: { tube: "Royal Blue", name: "Cuivre (Sang Total)" },
+  DHEA: { tube: "Gold", name: "DHEA" },
+  DHEAS: { tube: "Gold", name: "DHEA-Sulfate" },
+  DIG: { tube: "Red", name: "Digoxine" },
+  DHT: { tube: "Gold", name: "Dihydrotestostérone" },
+  DIL: { tube: "Red", name: "Dilantin (Phénytoïne)" },
+  LYTES: { tube: "Gold", name: "Électrolytes (Na, K, Cl)" },
+  ELEPRO: { tube: "Gold", name: "Électrophorèse des protéines (Sérum)" },
+  ESTRA: { tube: "Gold", name: "Estradiol" },
+  ESTRON: { tube: "Gold", name: "Estrone" },
+  FE: { tube: "Gold", name: "Fer" },
+  FERI: { tube: "Gold", name: "Ferritine" },
+  FIBR: { tube: "Light Blue", name: "Fibrinogène" },
+  FOL: { tube: "Gold", name: "Folate (Sérique)" },
+  FOLRBC: { tube: "Lavender", name: "Folates Érythrocytaires" },
+  CBC: { tube: "Lavender", name: "Formule Sanguine Complète (FSC)" },
+  FSH: { tube: "Gold", name: "FSH" },
+  GGT: { tube: "Gold", name: "GGT" },
+  AC: { tube: "Gold", name: "Glucose (À Jeun/AC)" },
+  ACP: { tube: "Gold", name: "Glucose (Aléatoire)" },
+  GLU75: { tube: "Gold", name: "Glucose 75g (2h) - Non Gestationnel" },
+  PREG50: { tube: "Gold", name: "Glucose 50g (1h) - Gestationnel" },
+  PREG75: { tube: "Gold", name: "Glucose 75g (2h) - Gestationnel" },
+  BLOOD: { tube: "Pink", name: "Groupe Sanguin & Rh" },
+  HBA1C: { tube: "Lavender", name: "HbA1c" },
+  HBS: { tube: "Gold", name: "Hépatite B (HBsAg)" },
+  ANHBS: { tube: "Gold", name: "Hépatite B (Anti-HBs)" },
+  HEPBC: { tube: "Gold", name: "Hépatite B (Anti-HBc Total)" },
+  HEPC: { tube: "Gold", name: "Hépatite C (Anticorps)" },
+  HEPCQUANT: { tube: "Gold", name: "Hépatite C (Charge Virale Quant.)" },
+  HIV: { tube: "Gold", name: "HIV (Dépistage)" },
+  HIVCV: { tube: "Lavender", name: "HIV Charge Virale" },
+  LHOMO: { tube: "Lavender", name: "Homocystéine" },
+  HGH: { tube: "Gold", name: "Hormone de Croissance (GH)" },
+  IGE: { tube: "Gold", name: "IgE Totale" },
+  IMQUANT: { tube: "Gold", name: "Immunoglobulines (IgG, IgA, IgM)" },
+  PT: { tube: "Light Blue", name: "INR (Rapport International Normalisé)" },
+  INSUL: { tube: "Gold", name: "Insuline" },
+  LD: { tube: "Gold", name: "Lactate Déshydrogénase (LDH)" },
+  LH: { tube: "Gold", name: "LH" },
+  LIP: { tube: "Gold", name: "Lipase" },
+  LI: { tube: "Gold", name: "Lithium" },
+  MG: { tube: "Gold", name: "Magnésium" },
+  MONO: { tube: "Gold", name: "Mononucléose (Monotest)" },
+  OSM: { tube: "Gold", name: "Osmolalité (Sérum)" },
+  PTH: { tube: "Lavender", name: "Parathormone (PTH)" },
+  PHOS: { tube: "Gold", name: "Phosphore" },
+  PbO: { tube: "Royal Blue", name: "Plomb (Sang)" },
+  K: { tube: "Gold", name: "Potassium" },
+  PROG: { tube: "Gold", name: "Progestérone" },
+  PROL: { tube: "Gold", name: "Prolactine" },
+  PSA: { tube: "Gold", name: "PSA Total" },
+  FPSA: { tube: "Gold", name: "PSA Libre (avec Total)" },
+  PROT: { tube: "Gold", name: "Protéines Totales" },
+  PTT: { tube: "Light Blue", name: "PTT (TCA)" },
+  QTB: { tube: "TB Kit", name: "QuantiFERON-TB Gold" },
+  RETICP: { tube: "Lavender", name: "Réticulocytes" },
+  RF: { tube: "Gold", name: "Rhumatoïde (Facteur)" },
+  RUB: { tube: "Gold", name: "Rubéole IgG" },
+  SED: { tube: "Lavender", name: "Sédimentation (Vitesse)" },
+  NA: { tube: "Gold", name: "Sodium" },
+  SYPH: { tube: "Gold", name: "Syphilis (Dépistage)" },
+  T3F: { tube: "Gold", name: "T3 Libre" },
+  T4F: { tube: "Gold", name: "T4 Libre" },
+  TEST: { tube: "Gold", name: "Testostérone Totale" },
+  TESBIO: { tube: "Gold", name: "Testostérone Biodisponible" },
+  TESLI: { tube: "Gold", name: "Testostérone Libre" },
+  THYRO: { tube: "Gold", name: "Thyroglobuline" },
+  TRANS: { tube: "Gold", name: "Transferrine" },
+  TRIG: { tube: "Gold", name: "Triglycérides" },
+  TSH: { tube: "Gold", name: "TSH" },
+  UREA: { tube: "Gold", name: "Urée" },
+  URIC: { tube: "Gold", name: "Acide Urique" },
+  B12: { tube: "Gold", name: "Vitamine B12" },
+  VITD: { tube: "Gold", name: "Vitamine D (25-OH)" },
+  ZINCWB: { tube: "Royal Blue", name: "Zinc (Sang Total)" },
+};
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
@@ -6266,12 +6532,16 @@ async function main() {
   console.log("  Cleaned existing test data");
 
   // ── 4. Helper: map raw PDF fields → schema fields ────────────────────
-  const mapTests = (tests: RawTest[]) =>
+  // Build tube color lookups (clean tube cap colors)
+  const cdlTubeByCode = new Map(Object.entries(CDL_SEED1).map(([code, d]) => [code, d.tube]));
+  const qcTubeByCode = new Map(Object.entries(QC_SEED1).map(([code, d]) => [code, d.tube]));
+
+  const mapTests = (tests: RawTest[], tubeLookup: Map<string, string>) =>
     tests.map((t) => ({
       code: t.code,
       name: t.name,
       description: t.description,
-      tubeType: t.specimen,
+      tubeType: tubeLookup.get(t.code) ?? t.specimen,
       price: t.price,
       turnaroundTime: t.turnaroundTime,
       category: t.type === "profile" ? "Profil" : "Individuel",
@@ -6285,7 +6555,7 @@ async function main() {
       fileType: "PDF",
       fileSize: 2500000,
       isActive: true,
-      tests: { create: mapTests(cdlTests) },
+      tests: { create: mapTests(cdlTests, cdlTubeByCode) },
     },
     include: { tests: true },
   });
@@ -6300,7 +6570,7 @@ async function main() {
       fileType: "PDF",
       fileSize: 1800000,
       isActive: true,
-      tests: { create: mapTests(dynacareTests) },
+      tests: { create: mapTests(dynacareTests, qcTubeByCode) },
     },
     include: { tests: true },
   });
@@ -6313,9 +6583,14 @@ async function main() {
   const cdlByCode = new Map(cdlTests.map((t) => [t.code, t]));
   const dynByCode = new Map(dynacareTests.map((t) => [t.code, t]));
 
+  // Clean normalized names (used for Step A.5 matching)
+  const cdlCleanNameByCode = new Map(Object.entries(CDL_SEED1).map(([code, d]) => [code, d.name]));
+  const qcCleanNameByCode = new Map(Object.entries(QC_SEED1).map(([code, d]) => [code, d.name]));
+
   // Track used canonical names to prevent unique constraint violations
   const usedCanonicalNames = new Set<string>();
   let sharedByCodeCount = 0;
+  let sharedByCleanNameCount = 0;
   let sharedByNameCount = 0;
   let cdlOnlyCount = 0;
   let dynOnlyCount = 0;
@@ -6364,6 +6639,72 @@ async function main() {
   }
   console.log(
     `  ${sharedByCodeCount} cross-lab test mappings (shared code)`
+  );
+
+  // Step A.5: Tests with DIFFERENT codes but SAME clean normalized name
+  // This catches variants like "VITAMINE D 25 OH" (CDL) vs "25-HYDROXY VITAMINE D" (Dynacare)
+  // which both map to "Vitamine D (25-OH)" via their clean names
+  const cdlOnlyCodes = Array.from(cdlByCode.keys()).filter((code) => !dynByCode.has(code));
+  const dynOnlyCodes = Array.from(dynByCode.keys()).filter((code) => !cdlByCode.has(code));
+
+  // Build map: cleanName → { code, test } for Dynacare-only tests
+  const dynByCleanName = new Map<string, { code: string; test: RawTest }>();
+  for (const code of dynOnlyCodes) {
+    const cleanName = qcCleanNameByCode.get(code);
+    if (cleanName) {
+      dynByCleanName.set(cleanName, { code, test: dynByCode.get(code)! });
+    }
+  }
+
+  // For each CDL-only test, check if a Dynacare test shares the same clean name
+  for (const code of cdlOnlyCodes) {
+    const cdlCleanName = cdlCleanNameByCode.get(code);
+    if (!cdlCleanName) continue;
+
+    const dynMatch = dynByCleanName.get(cdlCleanName);
+    if (!dynMatch) continue;
+
+    const cdlTest = cdlByCode.get(code)!;
+    const dynTest = dynMatch.test;
+
+    if (usedCanonicalNames.has(cdlCleanName)) continue;
+    usedCanonicalNames.add(cdlCleanName);
+
+    dynByCleanName.delete(cdlCleanName);
+
+    await prisma.testMapping.create({
+      data: {
+        canonicalName: cdlCleanName,
+        code: cdlTest.code,
+        category: cdlTest.type === "profile" ? "Profil" : "Individuel",
+        entries: {
+          create: [
+            {
+              laboratoryId: cdlLab.id,
+              localTestName: cdlTest.name,
+              matchType: "FUZZY",
+              similarity: 0.9,
+              price: cdlTest.price,
+            },
+            {
+              laboratoryId: dynacareLab.id,
+              localTestName: dynTest.name,
+              matchType: "FUZZY",
+              similarity: 0.9,
+              price: dynTest.price,
+            },
+          ],
+        },
+      },
+    });
+    sharedByCleanNameCount++;
+
+    // Remove matched codes so Steps B/C skip them
+    cdlByCode.delete(code);
+    dynByCode.delete(dynMatch.code);
+  }
+  console.log(
+    `  ${sharedByCleanNameCount} cross-lab test mappings (clean name match)`
   );
 
   // Step B: Tests with DIFFERENT codes but SAME NAME → cross-lab mapping

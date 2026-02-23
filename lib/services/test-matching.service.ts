@@ -49,8 +49,10 @@ export async function searchTests(
     "         WHEN t.name ILIKE $1 || '%' THEN 0.95",     // prefix
     "         WHEN t.name ILIKE '%' || $1 || '%' THEN 0.85", // substring
     "         WHEN t.code ILIKE $1 THEN 0.9",             // exact code match
+    `         WHEN tm."canonical_name" ILIKE '%' || $1 || '%' THEN 0.88`, // canonical name match
     "         ELSE 0 END",
     "  ) AS similarity,",
+    '  t."tube_type" AS "tubeType",',
     '  tme."test_mapping_id" AS "testMappingId",',
     '  tm."canonical_name" AS "canonicalName"',
     'FROM "tests" t',
@@ -64,6 +66,7 @@ export async function searchTests(
     "  AND (",
     "    t.name ILIKE '%' || $1 || '%'",
     "    OR t.code ILIKE $1",
+    `    OR tm."canonical_name" ILIKE '%' || $1 || '%'`,
     "    OR similarity(LOWER(t.name), LOWER($1)) >= $2",
     "  )",
     "ORDER BY similarity DESC, t.name ASC",
@@ -86,6 +89,7 @@ export async function searchTests(
       laboratoryName: string;
       laboratoryCode: string;
       similarity: number;
+      tubeType: string | null;
       testMappingId: string | null;
       canonicalName: string | null;
     }>

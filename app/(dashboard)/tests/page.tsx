@@ -24,6 +24,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/utils";
+import { parseTubeColor } from "@/lib/tube-colors";
+import {
+  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   GitCompare,
   Package,
@@ -243,11 +247,11 @@ function UnifiedTestsContent() {
     useMemo(() => {
       if (!comparison || allTestMappingIds.length === 0)
         return {
-          labs: [],
+          labs: [] as { id: string; name: string; total: number; missingTests: number; isComplete: boolean; turnaroundTimes: { testName: string; tat: string }[] }[],
           bestLabId: "",
           tableData: null,
-          missingTests: [],
-          testNames: [],
+          missingTests: [] as { labName: string; tests: string[] }[],
+          testNames: [] as string[],
         };
 
       const tatMatrix = comparison.tatMatrix || {};
@@ -492,7 +496,8 @@ function UnifiedTestsContent() {
 
   const hasAnySelection = items.length > 0 || selectedBundles.length > 0;
 
-  const bestLab = labs.find((l) => l.id === bestLabId);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bestLab = labs.find((l: any) => l.id === bestLabId);
   const bestTotal = bestLab?.total ?? 0;
   const unselectedBundles = availableBundles.filter(
     (b) => !selectedBundleIds.has(b.id),
@@ -528,6 +533,7 @@ function UnifiedTestsContent() {
                   id: test.testMappingId,
                   testMappingId: test.testMappingId,
                   canonicalName: test.canonicalName || test.name,
+                  tubeType: test.tubeType,
                 });
               }}
               onRemoveFromCart={(testMappingId) => removeItem(testMappingId)}
@@ -622,14 +628,29 @@ function UnifiedTestsContent() {
           <div className="flex-1 overflow-y-auto">
             {/* Selected items list */}
             {(items.length > 0 || selectedBundles.length > 0) && (
+              <TooltipProvider>
               <div className="px-5 pt-4 pb-3 border-b border-border/30">
-                {items.map((item) => (
+                {items.map((item) => {
+                  const tube = parseTubeColor(item.tubeType);
+                  return (
                   <div
                     key={item.id}
                     className="flex items-center justify-between py-1.5 group"
                   >
                     <div className="flex items-center gap-2 min-w-0">
-                      <FlaskConical className="h-3 w-3 text-muted-foreground/40 shrink-0" />
+                      {tube ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              className="inline-block h-2.5 w-2.5 rounded-full shrink-0 ring-1 ring-white/10"
+                              style={{ backgroundColor: tube.color }}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent side="top">{tube.label}</TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <FlaskConical className="h-3 w-3 text-muted-foreground/40 shrink-0" />
+                      )}
                       <span className="text-xs text-foreground/70 truncate">{item.canonicalName}</span>
                     </div>
                     <button
@@ -639,7 +660,8 @@ function UnifiedTestsContent() {
                       <X className="h-3 w-3" />
                     </button>
                   </div>
-                ))}
+                  );
+                })}
                 {selectedBundles.map((bundle) => (
                   <div
                     key={bundle.id}
@@ -661,6 +683,7 @@ function UnifiedTestsContent() {
                   </div>
                 ))}
               </div>
+              </TooltipProvider>
             )}
 
             {/* Empty state */}
@@ -725,6 +748,7 @@ function UnifiedTestsContent() {
                     onClearSelections={handleClearSelections}
                     onUpdateCustomPrice={handleUpdateCustomPrice}
                     onClearCustomPrice={handleClearCustomPrice}
+                    onRemoveTest={(testMappingId) => removeItem(testMappingId)}
                     selectionMode={selectionMode}
                   />
                 )}

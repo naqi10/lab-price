@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Search, PlusCircle, CheckCircle2, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useDebounce } from "@/hooks/use-debounce";
+import { parseTubeColor } from "@/lib/tube-colors";
 import MatchIndicator from "./match-indicator";
 
 interface SearchResult {
@@ -15,6 +19,7 @@ interface SearchResult {
   category: string | null;
   price: number;
   unit: string | null;
+  tubeType: string | null;
   laboratoryId: string;
   laboratoryName: string;
   laboratoryCode: string;
@@ -48,9 +53,36 @@ export default function TestSearch({
       .finally(() => setIsLoading(false));
   }, [debouncedQuery]);
 
-  const limited = results.slice(0, 8);
+  const limited = results.slice(0, 12);
+
+  // Group results by testMappingId for cleaner display
+  const grouped = useMemo(() => {
+    const groups: { key: string; testMappingId: string | null; canonicalName: string | null; tests: SearchResult[] }[] = [];
+    const mappingGroups = new Map<string, SearchResult[]>();
+    const ungrouped: SearchResult[] = [];
+
+    for (const test of limited) {
+      if (test.testMappingId) {
+        const existing = mappingGroups.get(test.testMappingId);
+        if (existing) existing.push(test);
+        else mappingGroups.set(test.testMappingId, [test]);
+      } else {
+        ungrouped.push(test);
+      }
+    }
+
+    for (const [tmId, tests] of mappingGroups) {
+      groups.push({ key: tmId, testMappingId: tmId, canonicalName: tests[0].canonicalName, tests });
+    }
+    for (const test of ungrouped) {
+      groups.push({ key: test.id, testMappingId: null, canonicalName: null, tests: [test] });
+    }
+
+    return groups;
+  }, [limited]);
 
   return (
+    <TooltipProvider>
     <div className="w-full space-y-3">
       {/* Search input */}
       <div className="relative">
@@ -78,52 +110,85 @@ export default function TestSearch({
         </div>
       )}
 
-      {!isLoading && limited.length > 0 && (
+      {!isLoading && grouped.length > 0 && (
         <div className="w-full rounded-lg border border-border/60 bg-card overflow-hidden">
           <div className="px-4 py-2.5 border-b border-border/40 bg-muted/30">
             <p className="text-xs font-medium text-muted-foreground">
-              {results.length > 8
-                ? `Top 8 suggestions sur ${results.length} résultats`
-                : `${limited.length} suggestion${limited.length > 1 ? "s" : ""}`}
+              {results.length > 12
+                ? `Top suggestions sur ${results.length} résultats`
+                : `${grouped.length} suggestion${grouped.length > 1 ? "s" : ""}`}
             </p>
           </div>
           <ul className="divide-y divide-border/30">
-            {limited.map((test) => {
-              const inCart = !!test.testMappingId && !!cartItemIds?.has(test.testMappingId);
+            {grouped.map((group) => {
+              const isMultiLab = group.testMappingId != null && group.tests.length > 1;
+              const primary = group.tests[0];
+              const inCart = !!group.testMappingId && !!cartItemIds?.has(group.testMappingId);
+              const tube = parseTubeColor(primary.tubeType);
+
               return (
                 <li
-                  key={test.id}
+                  key={group.key}
                   className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-accent/50 transition-colors"
                   style={inCart ? { backgroundColor: "rgba(var(--primary-rgb,59,130,246),0.06)" } : undefined}
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium truncate">{test.name}</p>
-                      {test.category && (
-                        <Badge variant="secondary" className="text-[10px] shrink-0">{test.category}</Badge>
+                      {tube && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              className="inline-block h-2.5 w-2.5 rounded-full shrink-0 ring-1 ring-white/10"
+                              style={{ backgroundColor: tube.color }}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent side="top">{tube.label}</TooltipContent>
+                        </Tooltip>
+                      )}
+                      <p className="text-sm font-medium truncate">
+                        {isMultiLab ? group.canonicalName : primary.name}
+                      </p>
+                      {primary.category && (
+                        <Badge variant="secondary" className="text-[10px] shrink-0">{primary.category}</Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs text-muted-foreground">{test.laboratoryName}</span>
-                      {test.canonicalName && (
-                        <span className="text-[10px] text-emerald-400 truncate max-w-[160px]">
-                          → {test.canonicalName}
+                      {isMultiLab ? (
+                        <span className="text-xs text-muted-foreground">
+                          {group.tests.map(t => t.laboratoryName).join(", ")}
                         </span>
+                      ) : (
+                        <>
+                          <span className="text-xs text-muted-foreground">{primary.laboratoryName}</span>
+                          {primary.canonicalName && (
+                            <span className="text-[10px] text-emerald-400 truncate max-w-[160px]">
+                              → {primary.canonicalName}
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0">
-                    {test.matchType && <MatchIndicator type={test.matchType} confidence={test.confidence} compact />}
-                    <span className="text-sm font-semibold tabular-nums whitespace-nowrap">
-                      {test.price} <span className="text-xs text-muted-foreground font-normal">{test.unit || "MAD"}</span>
-                    </span>
+                    {!isMultiLab && primary.matchType && (
+                      <MatchIndicator type={primary.matchType} confidence={primary.confidence} compact />
+                    )}
+                    {isMultiLab ? (
+                      <Badge variant="outline" className="text-[10px]">
+                        {group.tests.length} labs
+                      </Badge>
+                    ) : (
+                      <span className="text-sm font-semibold tabular-nums whitespace-nowrap">
+                        {primary.price} <span className="text-xs text-muted-foreground font-normal">{primary.unit || "MAD"}</span>
+                      </span>
+                    )}
                     {onAddToCart && (
                       inCart ? (
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => test.testMappingId && onRemoveFromCart?.(test.testMappingId)}
+                          onClick={() => group.testMappingId && onRemoveFromCart?.(group.testMappingId)}
                           className="h-7 w-7 p-0 text-emerald-400 hover:text-destructive hover:bg-destructive/10"
                           aria-label="Retirer de la sélection"
                         >
@@ -133,8 +198,8 @@ export default function TestSearch({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => onAddToCart(test)}
-                          disabled={!test.testMappingId}
+                          onClick={() => onAddToCart(primary)}
+                          disabled={!group.testMappingId}
                           className="h-7 w-7 p-0 disabled:opacity-30"
                           aria-label="Ajouter à la comparaison"
                         >
@@ -156,5 +221,6 @@ export default function TestSearch({
         </div>
       )}
     </div>
+    </TooltipProvider>
   );
 }

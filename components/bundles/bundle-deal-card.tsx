@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 
 interface BundleDealCardProps {
   bundle: Bundle;
-  originalTotal: number | null;
   loading: boolean;
   onSend: () => void;
   bestValue?: boolean;
@@ -21,17 +20,10 @@ interface BundleDealCardProps {
 
 export default function BundleDealCard({
   bundle,
-  originalTotal,
   loading,
   onSend,
   bestValue,
 }: BundleDealCardProps) {
-  const savings =
-    originalTotal !== null ? originalTotal - bundle.customRate : null;
-  const savingsPercent =
-    savings !== null && originalTotal
-      ? Math.round((savings / originalTotal) * 100)
-      : null;
 
   const colors = CATEGORY_COLORS[bundle.category] ?? DEFAULT_CATEGORY_COLOR;
 
@@ -111,22 +103,6 @@ export default function BundleDealCard({
                 <Loader2 className="h-3 w-3 animate-spin" />
                 <span>Calcul des prix...</span>
               </div>
-            ) : originalTotal !== null ? (
-              <>
-                <p className="text-xs text-muted-foreground line-through">
-                  {formatCurrency(originalTotal)}
-                </p>
-                <div className="flex items-center gap-2">
-                  <p className="text-xl font-bold text-primary">
-                    {formatCurrency(bundle.customRate)}
-                  </p>
-                  {savingsPercent !== null && savingsPercent > 0 && (
-                    <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-xs font-semibold">
-                      -{savingsPercent}%
-                    </Badge>
-                  )}
-                </div>
-              </>
             ) : (
               <p className="text-xl font-bold text-primary">
                 {formatCurrency(bundle.customRate)}
