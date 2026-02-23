@@ -37,6 +37,11 @@ import {
   FlaskConical,
   CheckCircle2,
   Plus,
+  RotateCcw,
+  Send,
+  DollarSign,
+  ClipboardList,
+  FileText,
 } from "lucide-react";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -487,13 +492,34 @@ function UnifiedTestsContent() {
 
   const hasAnySelection = items.length > 0 || selectedBundles.length > 0;
 
+  const bestLab = labs.find((l) => l.id === bestLabId);
+  const bestTotal = bestLab?.total ?? 0;
+  const unselectedBundles = availableBundles.filter(
+    (b) => !selectedBundleIds.has(b.id),
+  );
+
   // ── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className="w-full mt-4">
-      {/* ── Sticky search bar ───────────────────────────────────────────── */}
-      <div className="sticky top-0 z-20 bg-background pb-3">
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
+    <DOMSafetyBoundary>
+    <div className="w-full mt-2">
+      {/* ── 3-column grid — always visible ─────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr_280px] gap-4">
+
+        {/* ════════════════ LEFT: Test Search ════════════════ */}
+        <div className="rounded-2xl border border-border/60 bg-card flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
+            <div>
+              <h2 className="text-sm font-semibold">Recherche de tests</h2>
+              <p className="text-[11px] text-muted-foreground/60">{"Recherchez et ajoutez des analyses"}</p>
+            </div>
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Search className="h-4 w-4 text-primary" />
+            </div>
+          </div>
+
+          {/* Search input */}
+          <div className="px-4 pt-4 pb-2">
             <TestSearch
               cartItemIds={cartItemIds}
               onAddToCart={(test) => {
@@ -504,284 +530,190 @@ function UnifiedTestsContent() {
                   canonicalName: test.canonicalName || test.name,
                 });
               }}
-              onRemoveFromCart={(testMappingId) =>
-                removeItem(testMappingId)
-              }
+              onRemoveFromCart={(testMappingId) => removeItem(testMappingId)}
             />
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="shrink-0 self-start"
-            onClick={() => router.push("/tests/deals")}
-          >
-            <Package className="h-4 w-4" />
-            Gérer offres
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="shrink-0 self-start"
-            onClick={() => router.push("/tests/mappings")}
-          >
-            <GitCompare className="h-4 w-4" />
-            Correspondances
-          </Button>
-        </div>
-      </div>
 
-      {/* ── Main layout ─────────────────────────────────────────────────── */}
-      <DOMSafetyBoundary>
-      <div key={hasAnySelection ? "sel" : "empty"}>
-      {hasAnySelection ? (
-        <div className="flex flex-col lg:flex-row gap-5 mt-1">
-          {/* ── Left sidebar ──────────────────────────────────────────────── */}
-          <div className="lg:w-[280px] lg:shrink-0 space-y-3 lg:sticky lg:top-16 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto lg:pr-1">
-            {/* Selected individual tests — always in DOM */}
-            <div className={items.length === 0 ? "hidden" : undefined}>
-              <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
-                <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-border/40 bg-muted/30">
-                  <div className="flex items-center gap-2">
-                    <FlaskConical className="h-3.5 w-3.5 text-muted-foreground/60" />
-                    <span className="text-xs font-semibold tracking-tight">
-                      Tests individuels
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className="h-4.5 px-1.5 text-[10px] font-bold"
-                    >
-                      {isReady ? items.length : "…"}
-                    </Badge>
+          {/* Bundle deals */}
+          <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2">
+            <p className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-widest mt-2">
+              Offres groupées
+            </p>
+            {bundlesLoading && (
+              <div className="space-y-2">
+                <Skeleton className="h-12 rounded-lg" />
+                <Skeleton className="h-12 rounded-lg" />
+              </div>
+            )}
+            {availableBundles.map((bundle) => {
+              const isSelected = selectedBundleIds.has(bundle.id);
+              return (
+                <button
+                  key={bundle.id}
+                  onClick={() => toggleBundle(bundle)}
+                  className={`w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all group ${
+                    isSelected
+                      ? "border-primary/40 bg-primary/8"
+                      : "border-border/30 hover:border-primary/30 hover:bg-muted/30"
+                  }`}
+                >
+                  <span className="text-lg shrink-0">{bundle.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-medium truncate">{bundle.dealName}</p>
+                    <p className="text-[10px] text-muted-foreground/60">
+                      {`${bundle.testMappingIds.length} tests · ${formatCurrency(bundle.customRate)}`}
+                    </p>
                   </div>
-                  <button
-                    onClick={clearCart}
-                    className="text-[10px] text-muted-foreground/50 hover:text-destructive transition-colors"
-                  >
-                    Effacer
-                  </button>
-                </div>
-                <ul className="divide-y divide-border/20 max-h-48 overflow-y-auto">
-                  {items.map((item) => (
-                    <li
-                      key={item.id}
-                      className="flex items-center justify-between gap-2 px-3.5 py-2 group hover:bg-muted/20 transition-colors"
-                    >
-                      <span className="text-[11px] text-foreground/70 leading-snug truncate">
-                        {item.canonicalName}
-                      </span>
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="shrink-0 text-muted-foreground/25 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                        aria-label="Retirer"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+                  {isSelected ? (
+                    <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                  ) : (
+                    <Plus className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-primary shrink-0" />
+                  )}
+                </button>
+              );
+            })}
 
-            {/* Selected bundles — always in DOM */}
-            <div className={selectedBundles.length === 0 ? "hidden" : undefined}>
-              <div className="rounded-xl border border-primary/20 bg-primary/5 overflow-hidden">
-                <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-primary/15">
-                  <div className="flex items-center gap-2">
-                    <Package className="h-3.5 w-3.5 text-primary/60" />
-                    <span className="text-xs font-semibold tracking-tight">
-                      Offres groupées
-                    </span>
-                    <Badge className="h-4.5 px-1.5 text-[10px] font-bold">
-                      {selectedBundles.length}
-                    </Badge>
-                  </div>
-                  <button
-                    onClick={clearBundles}
-                    className="text-[10px] text-muted-foreground/50 hover:text-destructive transition-colors"
-                  >
-                    Retirer
-                  </button>
-                </div>
-                <ul className="divide-y divide-primary/10">
-                  {selectedBundles.map((bundle) => (
-                    <li
-                      key={bundle.id}
-                      className="flex items-center justify-between gap-2 px-3.5 py-2 group"
-                    >
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm">{bundle.icon}</span>
-                          <span className="text-[11px] font-medium text-foreground/80 truncate">
-                            {bundle.dealName}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-muted-foreground/60">
-                          {bundle.testMappingIds.length} tests
-                          &middot;{" "}
-                          {formatCurrency(bundle.customRate)}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => toggleBundle(bundle)}
-                        className="shrink-0 text-muted-foreground/30 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                        aria-label="Retirer"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Available bundles (unselected) */}
-            {/* Available bundles (unselected) — always in DOM */}
-            <div className={availableBundles.filter((b) => !selectedBundleIds.has(b.id)).length === 0 ? "hidden" : "space-y-1.5"}>
-              <p className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-widest px-1">
-                Ajouter une offre groupée
-              </p>
-              <div className="space-y-1.5">
-                {availableBundles
-                  .filter((b) => !selectedBundleIds.has(b.id))
-                  .map((bundle) => (
-                    <button
-                      key={bundle.id}
-                      onClick={() => toggleBundle(bundle)}
-                      className="w-full flex items-center gap-2.5 rounded-lg border border-border/40 bg-card px-3 py-2 hover:border-primary/40 hover:bg-primary/5 transition-all text-left group"
-                    >
-                      <span className="text-base shrink-0">
-                        {bundle.icon}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[11px] font-medium text-foreground/70 truncate group-hover:text-foreground/90">
-                          {bundle.dealName}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground/50">
-                          {bundle.testMappingIds.length} tests
-                          &middot;{" "}
-                          {formatCurrency(bundle.customRate)}
-                        </p>
-                      </div>
-                      <Plus className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0" />
-                    </button>
-                  ))}
-              </div>
+            {/* Nav links */}
+            <div className="pt-3 mt-2 border-t border-border/30 space-y-1.5">
+              <button
+                onClick={() => router.push("/tests/deals")}
+                className="w-full flex items-center gap-2 text-[11px] text-muted-foreground/60 hover:text-foreground/80 transition-colors px-1 py-1"
+              >
+                <Package className="h-3 w-3" />
+                <span>Gérer les offres groupées</span>
+              </button>
+              <button
+                onClick={() => router.push("/tests/mappings")}
+                className="w-full flex items-center gap-2 text-[11px] text-muted-foreground/60 hover:text-foreground/80 transition-colors px-1 py-1"
+              >
+                <GitCompare className="h-3 w-3" />
+                <span>Gérer les correspondances</span>
+              </button>
             </div>
 
             {/* Draft manager */}
-            <DraftManager
-              currentTestMappingIds={allTestMappingIds}
-              onLoad={(ids) => loadFromMappingIds(ids)}
-            />
+            <div className="pt-2">
+              <DraftManager
+                currentTestMappingIds={allTestMappingIds}
+                onLoad={(ids) => loadFromMappingIds(ids)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* ════════════════ CENTER: Order Items + Comparison ════════════════ */}
+        <div className="rounded-2xl border border-border/60 bg-card flex flex-col overflow-hidden min-h-[500px]">
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
+            <div>
+              <h2 className="text-sm font-semibold">Comparaison</h2>
+              <p className="text-[11px] text-muted-foreground/60">
+                {allTestMappingIds.length > 0
+                  ? `${allTestMappingIds.length} test${allTestMappingIds.length > 1 ? "s" : ""} sélectionné${allTestMappingIds.length > 1 ? "s" : ""}`
+                  : "Sélectionnez des tests pour comparer"}
+              </p>
+            </div>
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <ClipboardList className="h-4 w-4 text-primary" />
+            </div>
           </div>
 
-          {/* ── Main area: comparison results ─────────────────────────────── */}
-          <div className="flex-1 min-w-0 space-y-5">
-            {/* Loading */}
-            <div className={comparisonLoading ? "space-y-4" : "hidden"}>
-              <Skeleton className="h-14 w-full rounded-xl" />
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                <Skeleton className="h-36 w-full rounded-xl" />
-                <Skeleton className="h-36 w-full rounded-xl" />
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto">
+            {/* Selected items list */}
+            {(items.length > 0 || selectedBundles.length > 0) && (
+              <div className="px-5 pt-4 pb-3 border-b border-border/30">
+                {items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between py-1.5 group"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <FlaskConical className="h-3 w-3 text-muted-foreground/40 shrink-0" />
+                      <span className="text-xs text-foreground/70 truncate">{item.canonicalName}</span>
+                    </div>
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="text-muted-foreground/20 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100 shrink-0 ml-2"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                {selectedBundles.map((bundle) => (
+                  <div
+                    key={bundle.id}
+                    className="flex items-center justify-between py-1.5 group"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Package className="h-3 w-3 text-primary/50 shrink-0" />
+                      <span className="text-xs text-foreground/70 truncate">{bundle.icon} {bundle.dealName}</span>
+                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0 shrink-0">
+                        {`${bundle.testMappingIds.length} tests`}
+                      </Badge>
+                    </div>
+                    <button
+                      onClick={() => toggleBundle(bundle)}
+                      className="text-muted-foreground/20 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100 shrink-0 ml-2"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
               </div>
-              <Skeleton className="h-56 w-full rounded-xl" />
-            </div>
+            )}
+
+            {/* Empty state */}
+            {allTestMappingIds.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+                <div className="h-12 w-12 rounded-full bg-muted/30 flex items-center justify-center mb-4">
+                  <ClipboardList className="h-5 w-5 text-muted-foreground/30" />
+                </div>
+                <p className="text-sm font-medium text-muted-foreground/70">Aucun test ajouté</p>
+                <p className="text-xs text-muted-foreground/50 mt-1 max-w-xs">
+                  {"Recherchez et sélectionnez des tests depuis le panneau de gauche"}
+                </p>
+              </div>
+            )}
+
+            {/* Loading */}
+            {comparisonLoading && allTestMappingIds.length > 0 && (
+              <div className="p-5 space-y-4">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Skeleton className="h-28 rounded-xl" />
+                  <Skeleton className="h-28 rounded-xl" />
+                </div>
+                <Skeleton className="h-48 rounded-xl" />
+              </div>
+            )}
 
             {/* Error */}
-            <p
-              className={
-                comparisonError && !comparisonLoading
-                  ? "text-red-500 text-sm"
-                  : "hidden"
-              }
-            >
-              {comparisonError}
-            </p>
+            {comparisonError && !comparisonLoading && (
+              <div className="p-5">
+                <p className="text-red-500 text-sm">{comparisonError}</p>
+              </div>
+            )}
 
             {/* Comparison results */}
-            <div
-              className={
-                comparison && !comparisonLoading && !comparisonError
-                  ? "space-y-5"
-                  : "hidden"
-              }
-            >
-              {/* Action bar */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-xl border bg-card p-4">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium">
-                    {hasActiveSelections
-                      ? "Envoyer la sélection optimisée au client"
-                      : "Envoyer la comparaison au client"}
-                  </p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {hasActiveSelections
-                      ? `Sélection multi-laboratoires (${Object.keys(selections).length} tests) — ${formatCurrency(selectionTotal)}`
-                      : "Identifie le laboratoire le moins cher et envoie le résultat par email."}
-                  </p>
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <Button
-                    variant="outline"
-                    onClick={handleDownloadPdf}
-                    disabled={isDownloadingPdf}
-                    size="sm"
-                  >
-                    <Loader2
-                      className={`mr-2 h-4 w-4 animate-spin${!isDownloadingPdf ? " hidden" : ""}`}
-                    />
-                    <Download
-                      className={`mr-2 h-4 w-4${isDownloadingPdf ? " hidden" : ""}`}
-                    />
-                    <span>
-                      {isDownloadingPdf ? "Génération..." : "PDF"}
-                    </span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setSaveDialogOpen(true)}
-                    size="sm"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    <span>Enregistrer</span>
-                  </Button>
-                  <Button
-                    onClick={() => setEmailDialogOpen(true)}
-                    size="sm"
-                  >
-                    <Zap
-                      className={`mr-2 h-4 w-4${!hasActiveSelections ? " hidden" : ""}`}
-                    />
-                    <Mail
-                      className={`mr-2 h-4 w-4${hasActiveSelections ? " hidden" : ""}`}
-                    />
-                    <span>Envoyer</span>
-                  </Button>
-                </div>
-              </div>
+            {comparison && !comparisonLoading && !comparisonError && allTestMappingIds.length > 0 && (
+              <div className="p-5 space-y-5">
+                {/* Missing tests alert */}
+                {missingTests.length > 0 && (
+                  <MissingTestsAlert missingTests={missingTests} />
+                )}
 
-              {/* Missing tests */}
-              <div
-                className={missingTests.length > 0 ? undefined : "hidden"}
-              >
-                <MissingTestsAlert missingTests={missingTests} />
-              </div>
+                {/* Lab cost summary */}
+                <LabCostSummary
+                  labs={labs}
+                  bestLabId={bestLabId}
+                  selections={hasActiveSelections ? selections : undefined}
+                  selectionTotal={selectionTotal}
+                  testNames={testNames}
+                  testMappingIds={allTestMappingIds}
+                  laboratories={tableData?.laboratories}
+                />
 
-              {/* Lab cost summary */}
-              <LabCostSummary
-                labs={labs}
-                bestLabId={bestLabId}
-                selections={
-                  hasActiveSelections ? selections : undefined
-                }
-                selectionTotal={selectionTotal}
-                testNames={testNames}
-                testMappingIds={allTestMappingIds}
-                laboratories={tableData?.laboratories}
-              />
-
-              {/* Comparison table — wrapper always in DOM to prevent React 19 insertBefore errors */}
-              <div className={!tableData ? "hidden" : undefined}>
+                {/* Comparison table */}
                 {tableData && (
                   <ComparisonTable
                     data={tableData}
@@ -797,118 +729,112 @@ function UnifiedTestsContent() {
                   />
                 )}
               </div>
-            </div>
+            )}
           </div>
         </div>
-      ) : (
-        <div className="space-y-6 mt-2">
-          <div className="rounded-xl border border-dashed border-border/40 flex flex-col items-center justify-center py-14 gap-4 text-center px-6">
-            <div className="h-11 w-11 rounded-full bg-muted/30 flex items-center justify-center">
-              <Search className="h-5 w-5 text-muted-foreground/40" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                Commencez par rechercher des tests
-              </p>
-              <p className="text-xs text-muted-foreground/60 mt-1 max-w-md">
-                Utilisez la barre de recherche ci-dessus pour trouver et
-                sélectionner des analyses, ou choisissez une offre groupée
-                ci-dessous. La comparaison des prix apparaîtra
-                automatiquement.
-              </p>
-            </div>
-          </div>
 
-          {/* Bundle deals grid — always in DOM */}
-          <div className={!bundlesLoading && availableBundles.length > 0 ? "space-y-3" : "hidden"}>
-            <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10">
-                <Package className="h-4 w-4 text-primary" />
-              </div>
+        {/* ════════════════ RIGHT: Summary ════════════════ */}
+        <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+          {/* Summary card */}
+          <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
               <div>
-                <h2 className="text-sm font-semibold">
-                  Offres groupées
-                </h2>
-                <p className="text-xs text-muted-foreground">
-                  Sélectionnez une offre pour lancer la comparaison
+                <h2 className="text-sm font-semibold">Résumé</h2>
+                <p className="text-[11px] text-muted-foreground/60">Total de la commande</p>
+              </div>
+              <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                <DollarSign className="h-4 w-4 text-emerald-500" />
+              </div>
+            </div>
+
+            {/* Price display */}
+            <div className="px-5 py-6">
+              <div className="rounded-xl bg-muted/30 border border-border/30 p-4 text-center">
+                <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider">
+                  {hasActiveSelections ? "Sélection optimisée" : "Meilleur prix"}
+                </p>
+                <p className="text-3xl font-bold tabular-nums mt-1 text-foreground">
+                  {formatCurrency(hasActiveSelections ? selectionTotal : bestTotal)}
+                </p>
+                <p className="text-[10px] text-muted-foreground/50 mt-0.5">
+                  {bestLab ? bestLab.name : "—"}
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {availableBundles.map((bundle) => {
-                const isSelected = selectedBundleIds.has(bundle.id);
-                return (
-                  <button
-                    key={bundle.id}
-                    onClick={() => toggleBundle(bundle)}
-                    className={`relative rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-                      isSelected
-                        ? "border-primary/50 bg-primary/5 shadow-sm"
-                        : "border-border/50 bg-card hover:border-primary/30"
-                    }`}
-                  >
-                    <div className={`absolute top-3 right-3${!isSelected ? " hidden" : ""}`}>
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="text-2xl">{bundle.icon}</span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold">
-                          {bundle.dealName}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                          {bundle.description}
-                        </p>
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {bundle.canonicalNames
-                            .slice(0, 3)
-                            .map((name) => (
-                              <Badge
-                                key={name}
-                                variant="secondary"
-                                className="text-[9px] px-1.5 py-0"
-                              >
-                                {name.length > 20
-                                  ? name.substring(0, 18) + "…"
-                                  : name}
-                              </Badge>
-                            ))}
-                          <Badge
-                            variant="secondary"
-                            className={`text-[9px] px-1.5 py-0${bundle.canonicalNames.length <= 3 ? " hidden" : ""}`}
-                          >
-                            +{bundle.canonicalNames.length - 3}
-                          </Badge>
-                        </div>
-                        <div className="mt-2.5 flex items-baseline gap-1.5">
-                          <span className="text-lg font-bold text-primary tabular-nums">
-                            {formatCurrency(bundle.customRate)}
-                          </span>
-                          <Badge className={`text-[9px] px-1.5 py-0${!bundle.popular ? " hidden" : ""}`}>
-                            Populaire
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+            {/* Stats */}
+            <div className="px-5 pb-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ClipboardList className="h-3.5 w-3.5 text-muted-foreground/50" />
+                  <span className="text-xs text-muted-foreground/70">Tests sélectionnés</span>
+                </div>
+                <span className="text-sm font-bold tabular-nums">{allTestMappingIds.length}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Package className="h-3.5 w-3.5 text-muted-foreground/50" />
+                  <span className="text-xs text-muted-foreground/70">Offres incluses</span>
+                </div>
+                <span className="text-sm font-bold tabular-nums">{selectedBundles.length}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FlaskConical className="h-3.5 w-3.5 text-muted-foreground/50" />
+                  <span className="text-xs text-muted-foreground/70">Laboratoires</span>
+                </div>
+                <span className="text-sm font-bold tabular-nums">{labs.length}</span>
+              </div>
             </div>
           </div>
 
-          {/* Loading skeletons — always in DOM */}
-          <div className={bundlesLoading ? undefined : "hidden"}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-40 rounded-xl" />
-              ))}
+          {/* Action buttons */}
+          <div className="space-y-2">
+            <Button
+              className="w-full"
+              disabled={allTestMappingIds.length === 0}
+              onClick={() => setEmailDialogOpen(true)}
+            >
+              <Send className="mr-2 h-4 w-4" />
+              <span>{"Envoyer au client"}</span>
+            </Button>
+
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                disabled={allTestMappingIds.length === 0}
+                onClick={handleDownloadPdf}
+              >
+                <Loader2 className={`mr-1.5 h-3.5 w-3.5 animate-spin${!isDownloadingPdf ? " hidden" : ""}`} />
+                <FileText className={`mr-1.5 h-3.5 w-3.5${isDownloadingPdf ? " hidden" : ""}`} />
+                <span>PDF</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                disabled={allTestMappingIds.length === 0}
+                onClick={() => setSaveDialogOpen(true)}
+              >
+                <Save className="mr-1.5 h-3.5 w-3.5" />
+                <span>Sauvegarder</span>
+              </Button>
             </div>
+
+            <button
+              onClick={handleClearAll}
+              disabled={allTestMappingIds.length === 0}
+              className="w-full flex items-center justify-center gap-2 py-2 text-xs text-muted-foreground/50 hover:text-destructive disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            >
+              <RotateCcw className="h-3 w-3" />
+              <span>Tout effacer</span>
+            </button>
           </div>
         </div>
-      )}
       </div>
-      </DOMSafetyBoundary>
 
       {/* ── Dialogs ───────────────────────────────────────────────────── */}
       <EmailComparisonDialog
@@ -945,5 +871,6 @@ function UnifiedTestsContent() {
         }}
       />
     </div>
+    </DOMSafetyBoundary>
   );
 }
