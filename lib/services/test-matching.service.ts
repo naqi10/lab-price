@@ -43,18 +43,14 @@ export async function searchTests(
     '  l.id AS "laboratoryId",',
     '  l.name AS "laboratoryName",',
     '  l.code AS "laboratoryCode",',
-<<<<<<< HEAD
     "  GREATEST(",
-    "    similarity(t.name, $1),",
+    "    similarity(LOWER(t.name), LOWER($1)),",
     "    CASE WHEN t.name ILIKE $1 THEN 1.0",             // exact (case-insensitive)
     "         WHEN t.name ILIKE $1 || '%' THEN 0.95",     // prefix
     "         WHEN t.name ILIKE '%' || $1 || '%' THEN 0.85", // substring
     "         WHEN t.code ILIKE $1 THEN 0.9",             // exact code match
     "         ELSE 0 END",
     "  ) AS similarity,",
-=======
-    "  similarity(LOWER(t.name), LOWER($1)) AS similarity,",
->>>>>>> 958bb4184aaf02337d3d0b4db283209d95dc7eaa
     '  tme."test_mapping_id" AS "testMappingId",',
     '  tm."canonical_name" AS "canonicalName"',
     'FROM "tests" t',
@@ -65,15 +61,11 @@ export async function searchTests(
     'WHERE pl."is_active" = true',
     '  AND l."deleted_at" IS NULL',
     "  " + labFilterClause,
-<<<<<<< HEAD
     "  AND (",
     "    t.name ILIKE '%' || $1 || '%'",
     "    OR t.code ILIKE $1",
-    "    OR similarity(t.name, $1) >= $2",
+    "    OR similarity(LOWER(t.name), LOWER($1)) >= $2",
     "  )",
-=======
-    "  AND similarity(LOWER(t.name), LOWER($1)) >= $2",
->>>>>>> 958bb4184aaf02337d3d0b4db283209d95dc7eaa
     "ORDER BY similarity DESC, t.name ASC",
     "LIMIT $3",
   ].join("\n");

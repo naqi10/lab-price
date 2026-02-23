@@ -202,7 +202,14 @@ export async function compareLabPrices(
  * @returns Structured comparison data with price matrix
  */
 export async function getComparisonDetails(testMappingIds: string[]) {
-  const results = await compareLabPrices(testMappingIds);
+  const [results, allActiveLabs] = await Promise.all([
+    compareLabPrices(testMappingIds),
+    prisma.laboratory.findMany({
+      where: { isActive: true, deletedAt: null },
+      select: { id: true, name: true, code: true },
+    }),
+  ]);
+
   const laboratories = results.map((r) => ({
     id: r.laboratoryId,
     name: r.laboratoryName,
@@ -212,6 +219,21 @@ export async function getComparisonDetails(testMappingIds: string[]) {
     isComplete: r.isComplete,
     testCount: r.testCount,
   }));
+
+  const resultLabIds = new Set(results.map((r) => r.laboratoryId));
+  for (const lab of allActiveLabs) {
+    if (!resultLabIds.has(lab.id)) {
+      laboratories.push({
+        id: lab.id,
+        name: lab.name,
+        code: lab.code,
+        totalPrice: 0,
+        formattedTotalPrice: formatCurrency(0),
+        isComplete: false,
+        testCount: 0,
+      });
+    }
+  }
 
   const testMappings = await prisma.testMapping.findMany({
     where: { id: { in: testMappingIds } },

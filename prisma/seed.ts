@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../app/generated/prisma/index.js";
-import bcryptjs from "bcryptjs";
+import * as bcryptjs from "bcryptjs";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
@@ -6321,7 +6321,7 @@ async function main() {
   let dynOnlyCount = 0;
 
   // Step A: Tests with the SAME CODE in both labs → cross-lab mapping
-  const sharedCodes = [...cdlByCode.keys()].filter((code) =>
+  const sharedCodes = Array.from(cdlByCode.keys()).filter((code) =>
     dynByCode.has(code)
   );
 
@@ -6369,14 +6369,14 @@ async function main() {
   // Step B: Tests with DIFFERENT codes but SAME NAME → cross-lab mapping
   // Build name lookup for Dyn-only tests (not matched by code above)
   const dynOnlyByName = new Map<string, RawTest>();
-  for (const [code, test] of dynByCode) {
+  for (const [code, test] of Array.from(dynByCode)) {
     if (!cdlByCode.has(code)) {
       dynOnlyByName.set(test.name, test);
     }
   }
 
   // CDL-only tests: check if name matches a Dyn-only test
-  const cdlOnlyEntries = [...cdlByCode.entries()].filter(
+  const cdlOnlyEntries = Array.from(cdlByCode.entries()).filter(
     ([code]) => !dynByCode.has(code)
   );
 
@@ -6448,7 +6448,7 @@ async function main() {
   console.log(`  ${cdlOnlyCount} CDL-only test mappings`);
 
   // Step C: Remaining Dynacare-only tests (not matched by code or name)
-  for (const [, test] of dynOnlyByName) {
+  for (const [, test] of Array.from(dynOnlyByName)) {
     if (usedCanonicalNames.has(test.name)) continue;
     usedCanonicalNames.add(test.name);
 
@@ -6490,7 +6490,7 @@ async function main() {
       icon: "🩸",
       popular: true,
       sortOrder: 0,
-      canonicalNames: ["Cholestérol total", "HDL-Cholestérol", "LDL-Cholestérol", "Triglycérides"],
+      canonicalNames: ["CHOLESTÉROL, TOTAL", "CHOLESTÉROL HDL", "CHOLESTÉROL LDL", "TRIGLYCÉRIDES"],
       customRate: 150,
     },
     {
@@ -6500,7 +6500,7 @@ async function main() {
       icon: "🫁",
       popular: false,
       sortOrder: 1,
-      canonicalNames: ["ASAT (TGO)", "ALAT (TGP)", "Gamma GT", "Bilirubine totale"],
+      canonicalNames: ["AST (GOT, SGOT)", "ALT", "GGT", "BILIRUBINE, TOTALE"],
       customRate: 130,
     },
     {
@@ -6510,7 +6510,7 @@ async function main() {
       icon: "🫀",
       popular: false,
       sortOrder: 2,
-      canonicalNames: ["Créatinine", "Urée", "Acide urique"],
+      canonicalNames: ["CRÉATININE, SÉRUM", "URÉE", "ACIDE URIQUE"],
       customRate: 80,
     },
     {
@@ -6520,7 +6520,7 @@ async function main() {
       icon: "🧬",
       popular: false,
       sortOrder: 3,
-      canonicalNames: ["TSH", "T3 libre", "T4 libre"],
+      canonicalNames: ["HORMONE DE STIMULATION THYROIDIENNE", "T3 LIBRE", "T4 LIBRE"],
       customRate: 230,
     },
     {
@@ -6530,7 +6530,7 @@ async function main() {
       icon: "🤰",
       popular: false,
       sortOrder: 4,
-      canonicalNames: ["Groupage sanguin", "NFS", "Sérologie Toxoplasmose", "Sérologie Rubéole", "Sérologie HIV"],
+      canonicalNames: ["GROUPE SANGUIN & RH", "FORMULE SANGUINE COMPLÈTE (FSC)", "TOXOPLASMOSE IgG, IgM", "RUBÉOLE IGG", "VIH (VIRUS DE L\u2019IMMUNODÉFICIENCE HUMAINE)"],
       customRate: 380,
     },
   ];

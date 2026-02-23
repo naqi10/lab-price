@@ -52,8 +52,7 @@ export default function LabCostSummary({
       {/* ── Optimised selection card ──────────────────────────────────── */}
       {/* Always rendered, hidden via CSS to prevent React 19 insertBefore DOM errors */}
       <div
-        className="rounded-xl border border-primary/30 bg-primary/8 p-5"
-        hidden={!hasSelections || undefined}
+        className={`rounded-xl border border-primary/30 bg-primary/8 p-5${!hasSelections ? " hidden" : ""}`}
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
@@ -65,14 +64,14 @@ export default function LabCostSummary({
                 {isMultiLab ? "Sélection optimisée multi-laboratoires" : "Sélection personnalisée"}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {involvedLabIds.length} labo{involvedLabIds.length > 1 ? "s" : ""} · {selectionCount} test{selectionCount > 1 ? "s" : ""}
+                {`${involvedLabIds.length} labo${involvedLabIds.length > 1 ? "s" : ""} · ${selectionCount} test${selectionCount > 1 ? "s" : ""}`}
               </p>
             </div>
           </div>
           <div className="text-right shrink-0">
             <p className="text-2xl font-bold text-primary tabular-nums">{formatCurrency(selectionTotal)}</p>
             <p className={`text-xs text-emerald-400 mt-0.5${!(bestLab && selectionTotal < bestLab.total) ? " hidden" : ""}`}>
-              -{formatCurrency(bestLab ? bestLab.total - selectionTotal : 0)} vs {bestLab?.name}
+              {`-${formatCurrency(bestLab ? bestLab.total - selectionTotal : 0)} vs ${bestLab?.name ?? ""}`}
             </p>
           </div>
         </div>
@@ -136,12 +135,10 @@ export default function LabCostSummary({
                 {/* Header row */}
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="flex items-center gap-2 min-w-0">
-                    {color && (
-                      <span
-                        className="h-2.5 w-2.5 rounded-full shrink-0 mt-0.5"
-                        style={{ backgroundColor: color.dot }}
-                      />
-                    )}
+                    <span
+                      className={`h-2.5 w-2.5 rounded-full shrink-0 mt-0.5${!color ? " hidden" : ""}`}
+                      style={{ backgroundColor: color?.dot }}
+                    />
                     <span
                       className="text-sm font-semibold leading-tight"
                       style={color ? { color: color.text } : undefined}
@@ -150,9 +147,7 @@ export default function LabCostSummary({
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
-                    {!lab.isComplete && (
-                      <AlertTriangle className="h-3.5 w-3.5 text-amber-500/70" />
-                    )}
+                    <AlertTriangle className={`h-3.5 w-3.5 text-amber-500/70${lab.isComplete ? " hidden" : ""}`} />
                     <span className="text-[11px] font-bold text-muted-foreground/50 tabular-nums">
                       #{idx + 1}
                     </span>
@@ -167,39 +162,34 @@ export default function LabCostSummary({
                   {formatCurrency(lab.total)}
                 </p>
 
-                {/* Diff vs best / best label — always rendered, hidden via CSS
-                     to prevent React 19 insertBefore DOM errors when hasSelections toggles */}
+                {/* Diff vs best / best label — always rendered, hidden via CSS */}
                 <p className={`text-xs text-muted-foreground/70 mt-0.5${!(!isBest && bestLab && diff > 0) ? " hidden" : ""}`}>
-                  +{formatCurrency(diff)} ({pct}% de plus)
+                  {`+${formatCurrency(diff)} (${pct}% de plus)`}
                 </p>
                 <p className={`text-xs text-amber-400/80 mt-0.5${!(isBest && !hasSelections) ? " hidden" : ""}`}>
                   Meilleur prix global
                 </p>
 
-                {/* Missing tests warning */}
-                {lab.missingTests > 0 && (
-                  <p className="text-xs text-amber-500/80 mt-1">
-                    {lab.missingTests} test{lab.missingTests > 1 ? "s" : ""} manquant{lab.missingTests > 1 ? "s" : ""}
-                  </p>
-                )}
+                {/* Missing tests warning — always rendered, hidden via CSS */}
+                <p className={`text-xs text-amber-500/80 mt-1${lab.missingTests <= 0 ? " hidden" : ""}`}>
+                  {`${lab.missingTests} test${lab.missingTests > 1 ? "s" : ""} manquant${lab.missingTests > 1 ? "s" : ""}`}
+                </p>
 
-                {/* Turnaround times */}
-                {lab.turnaroundTimes.length > 0 && (
-                  <div className="mt-3 pt-3 border-t space-y-1.5"
-                    style={{ borderColor: color?.border ?? "rgba(148,163,184,0.15)" }}
-                  >
-                    {lab.turnaroundTimes.map(({ testName, tat }) => (
-                      <div key={testName} className="flex items-start gap-1.5">
-                        <Clock className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground/50" />
-                        <span className="text-xs text-muted-foreground/70 leading-tight">
-                          <span className="text-foreground/60 font-medium">{testName}</span>
-                          {" — "}
-                          {tat}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {/* Turnaround times — always rendered, hidden via CSS */}
+                <div
+                  className={`mt-3 pt-3 border-t space-y-1.5${lab.turnaroundTimes.length === 0 ? " hidden" : ""}`}
+                  style={{ borderColor: color?.border ?? "rgba(148,163,184,0.15)" }}
+                >
+                  {lab.turnaroundTimes.map(({ testName, tat }) => (
+                    <div key={testName} className="flex items-start gap-1.5">
+                      <Clock className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground/50" />
+                      <span className="text-xs text-muted-foreground/70 leading-tight">
+                        <span className="text-foreground/60 font-medium">{testName}</span>
+                        {` — ${tat}`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           );

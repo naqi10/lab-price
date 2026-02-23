@@ -29,21 +29,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, data: [] });
     }
 
-    const entries = await prisma.testMappingEntry.findMany({
-      where: { testMappingId: { in: testMappingIds } },
-      select: {
-        testMappingId: true,
-        price: true,
-        laboratoryId: true,
-        laboratory: { select: { id: true, name: true, isActive: true } },
-      },
-    });
+    const [entries, allActiveLabs] = await Promise.all([
+      prisma.testMappingEntry.findMany({
+        where: { testMappingId: { in: testMappingIds } },
+        select: {
+          testMappingId: true,
+          price: true,
+          laboratoryId: true,
+          laboratory: { select: { id: true, name: true, isActive: true } },
+        },
+      }),
+      prisma.laboratory.findMany({
+        where: { isActive: true, deletedAt: null },
+        select: { id: true, name: true },
+      }),
+    ]);
 
-    // Aggregate totals per lab
     const labMap = new Map<
       string,
       { id: string; name: string; total: number; testCount: number }
     >();
+
+    for (const lab of allActiveLabs) {
+      labMap.set(lab.id, { id: lab.id, name: lab.name, total: 0, testCount: 0 });
+    }
 
     for (const entry of entries) {
       if (!entry.laboratory.isActive) continue;

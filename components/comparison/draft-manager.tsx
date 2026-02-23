@@ -141,8 +141,7 @@ export default function DraftManager({ currentTestMappingIds, onLoad }: DraftMan
               <div className="min-w-0 flex-1">
                 <span className="font-medium truncate block">{draft.name}</span>
                 <span className="text-xs text-muted-foreground">
-                  {draft.testMappingIds.length} test{draft.testMappingIds.length !== 1 ? "s" : ""} ·{" "}
-                  {formatDate(new Date(draft.updatedAt))}
+                  {`${draft.testMappingIds.length} test${draft.testMappingIds.length !== 1 ? "s" : ""} · ${formatDate(new Date(draft.updatedAt))}`}
                 </span>
               </div>
               <div className="flex items-center gap-1 shrink-0 ml-2">

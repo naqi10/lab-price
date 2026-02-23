@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { flushSync } from "react-dom";
 
 export function useComparison() {
   const [comparison, setComparison] = useState<any>(null);
@@ -17,21 +18,27 @@ export function useComparison() {
         body: JSON.stringify({ testMappingIds }),
       });
       const data = await res.json();
-      if (data.success) {
-        setComparison(data.data);
-      } else {
-        setError(data.message);
-      }
+      flushSync(() => {
+        if (data.success) {
+          setComparison(data.data);
+        } else {
+          setError(data.message);
+        }
+        setIsLoading(false);
+      });
     } catch {
-      setError("Erreur lors de la comparaison");
-    } finally {
-      setIsLoading(false);
+      flushSync(() => {
+        setError("Erreur lors de la comparaison");
+        setIsLoading(false);
+      });
     }
   }, []);
 
   const reset = useCallback(() => {
-    setComparison(null);
-    setError(null);
+    flushSync(() => {
+      setComparison(null);
+      setError(null);
+    });
   }, []);
 
   return { comparison, isLoading, error, compare, reset };
