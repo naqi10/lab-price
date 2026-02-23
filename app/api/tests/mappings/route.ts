@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
         localTestName: e.testName || e.localTestName,
         matchType: "MANUAL" as const,
         similarity: 1.0,
+        price: e.price ?? null,
       })),
     });
 

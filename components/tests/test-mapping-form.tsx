@@ -12,6 +12,7 @@ interface MappingEntry {
   laboratoryId: string;
   laboratoryName: string;
   testName: string;
+  price: string;
 }
 
 interface TestMappingFormProps {
@@ -28,7 +29,7 @@ interface TestMappingFormProps {
     unit?: string;
     turnaroundTime?: string;
     tubeType?: string;
-    entries?: { laboratoryId: string; localTestName: string; laboratory?: { id: string; name: string } }[];
+    entries?: { laboratoryId: string; localTestName: string; price?: number | null; laboratory?: { id: string; name: string } }[];
   };
 }
 
@@ -64,6 +65,7 @@ export default function TestMappingForm({
           laboratoryId: e.laboratoryId || e.laboratory?.id || "",
           laboratoryName: e.laboratory?.name || "",
           testName: e.localTestName || "",
+          price: e.price != null ? String(e.price) : "",
         }))
       );
     } else {
@@ -82,7 +84,13 @@ export default function TestMappingForm({
     if (!canonicalName || entries.length === 0) return;
     setIsLoading(true);
     try {
-      await onSubmit({ canonicalName, code, category, description, unit, turnaroundTime, tubeType, entries });
+      await onSubmit({
+        canonicalName, code, category, description, unit, turnaroundTime, tubeType,
+        entries: entries.map((e) => ({
+          ...e,
+          price: e.price !== "" ? parseFloat(e.price) : null,
+        })),
+      });
       setCanonicalName("");
       setCode("");
       setCategory("");
@@ -184,7 +192,7 @@ export default function TestMappingForm({
             <Label>Correspondances par laboratoire *</Label>
             {entries.map((entry, i) => (
               <div key={i} className="flex items-center gap-2">
-                <span className="text-sm font-medium min-w-[150px] truncate">
+                <span className="text-sm font-medium min-w-[120px] truncate">
                   {entry.laboratoryName}
                 </span>
                 <Input
@@ -195,6 +203,20 @@ export default function TestMappingForm({
                     setEntries(updated);
                   }}
                   placeholder="Nom du test dans ce labo"
+                  className="flex-1"
+                />
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={entry.price}
+                  onChange={(e) => {
+                    const updated = [...entries];
+                    updated[i].price = e.target.value;
+                    setEntries(updated);
+                  }}
+                  placeholder="Prix"
+                  className="w-24"
                 />
                 <Button
                   variant="ghost"
@@ -216,7 +238,7 @@ export default function TestMappingForm({
                     onClick={() =>
                       setEntries([
                         ...entries,
-                        { laboratoryId: lab.id, laboratoryName: lab.name, testName: "" },
+                        { laboratoryId: lab.id, laboratoryName: lab.name, testName: "", price: "" },
                       ])
                     }
                   >

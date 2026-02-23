@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { UserPlus, KeyRound, UserCheck, UserX, Activity } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -76,21 +77,33 @@ export default function UserManagement() {
 
   // ── Toggle active status ─────────────────────────────────────
   const activeUserCount = users.filter((u) => u.isActive).length;
+  const [toggleUser, setToggleUser] = useState<UserData | null>(null);
+  const [toggleError, setToggleError] = useState<string | null>(null);
 
-  const handleToggleActive = async (user: UserData) => {
-    const action = user.isActive ? "Désactiver" : "Réactiver";
-    if (!confirm(`${action} l'utilisateur ${user.name} ?`)) return;
-    const res = await fetch(`/api/users/${user.id}`, {
+  const handleToggleActive = async () => {
+    if (!toggleUser) return;
+    const newIsActive = !toggleUser.isActive;
+
+    // Optimistic update
+    setUsers((prev) =>
+      prev.map((u) => (u.id === toggleUser.id ? { ...u, isActive: newIsActive } : u))
+    );
+    setToggleUser(null);
+
+    const res = await fetch(`/api/users/${toggleUser.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isActive: !user.isActive }),
+      body: JSON.stringify({ isActive: newIsActive }),
     });
     const data = await res.json();
     if (!data.success) {
-      alert(data.message);
-      return;
+      // Rollback on failure
+      setUsers((prev) =>
+        prev.map((u) => (u.id === toggleUser.id ? { ...u, isActive: !newIsActive } : u))
+      );
+      setToggleError(data.message);
+      setTimeout(() => setToggleError(null), 5000);
     }
-    fetchUsers();
   };
 
   // ── Admin reset password ─────────────────────────────────────
@@ -131,6 +144,22 @@ export default function UserManagement() {
 
   return (
     <Card>
+      <ConfirmDialog
+        open={!!toggleUser}
+        onOpenChange={(o) => !o && setToggleUser(null)}
+        title={toggleUser?.isActive ? "Désactiver l'utilisateur" : "Réactiver l'utilisateur"}
+        description={`${toggleUser?.isActive ? "Désactiver" : "Réactiver"} l'utilisateur ${toggleUser?.name} ?`}
+        confirmLabel={toggleUser?.isActive ? "Désactiver" : "Réactiver"}
+        variant={toggleUser?.isActive ? "destructive" : "default"}
+        onConfirm={handleToggleActive}
+      />
+
+      {toggleError && (
+        <div className="mx-6 mt-4 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">
+          {toggleError}
+        </div>
+      )}
+
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-base">Gestion des utilisateurs</CardTitle>
@@ -178,7 +207,7 @@ export default function UserManagement() {
                         : u.isActive ? "Désactiver" : "Réactiver"
                     }
                     disabled={u.isActive && activeUserCount <= 1}
-                    onClick={() => handleToggleActive(u)}
+                    onClick={() => setToggleUser(u)}
                   >
                     {u.isActive ? (
                       <UserX className="h-4 w-4 text-orange-500" />
