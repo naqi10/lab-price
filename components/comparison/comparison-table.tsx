@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link2, Check, Zap, DollarSign, RotateCcw, Clock, X, ChevronDown } from "lucide-react";
+import { Link2, Check, Zap, DollarSign, RotateCcw, Clock, X } from "lucide-react";
 import { parseTubeColor } from "@/lib/tube-colors";
 
 
@@ -129,22 +129,21 @@ export default function ComparisonTable({
   selectionMode?: "CHEAPEST" | "FASTEST" | "CUSTOM";
 }) {
   const [editingPrice, setEditingPrice] = useState<{ testId: string; labId: string } | null>(null);
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const hasSelections = !!selections && Object.keys(selections).length > 0;
 
-  const toggleRow = (testId: string) => {
-    setExpandedRows(prev => {
-      const next = new Set(prev);
-      if (next.has(testId)) next.delete(testId);
-      else next.add(testId);
-      return next;
-    });
-  };
+  // Keep only labs that have at least one priced test in the current table.
+  const visibleLabs = useMemo(
+    () =>
+      data.laboratories.filter((lab) =>
+        data.tests.some((test) => getEffectivePrice(test.id, lab.id, test.prices[lab.id], customPrices) != null)
+      ),
+    [data.laboratories, data.tests, customPrices]
+  );
 
   // Calculate effective totals per lab (accounting for custom prices)
   const effectiveTotals = useMemo(() => {
     const totals: Record<string, number> = {};
-    for (const lab of data.laboratories) {
+    for (const lab of visibleLabs) {
       let total = 0;
       for (const test of data.tests) {
         const price = getEffectivePrice(test.id, lab.id, test.prices[lab.id], customPrices);
@@ -153,7 +152,7 @@ export default function ComparisonTable({
       totals[lab.id] = total;
     }
     return totals;
-  }, [data.laboratories, data.tests, customPrices]);
+  }, [visibleLabs, data.tests, customPrices]);
 
   // Calculate cheapest lab overall using effective totals
   const cheapestLabId = useMemo(() => {
@@ -182,7 +181,7 @@ export default function ComparisonTable({
   const quickestLabId = useMemo(() => {
     let quickestId = "";
     let quickestAvg = Infinity;
-    for (const lab of data.laboratories) {
+    for (const lab of visibleLabs) {
       const times: number[] = [];
       for (const test of data.tests) {
         const tat = test.turnaroundTimes?.[lab.id];
@@ -200,7 +199,7 @@ export default function ComparisonTable({
       }
     }
     return quickestId;
-  }, [data.laboratories, data.tests]);
+  }, [visibleLabs, data.tests]);
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -208,7 +207,7 @@ export default function ComparisonTable({
 
         {/* ── Optimisation toolbar ──────────────────────────────────────── */}
         {onSelectLab && (
-          <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border/40 bg-muted/20 px-4 py-2.5">
+          <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border/40 bg-muted/20 px-3 sm:px-4 py-2.5">
             <span className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest mr-1">
               Optimiser
             </span>
@@ -240,7 +239,7 @@ export default function ComparisonTable({
               <RotateCcw className="h-3 w-3" />
               Effacer
             </Button>
-            <div className={cn("ml-auto flex items-center gap-2", !hasSelections && "hidden")}>
+            <div className={cn("w-full sm:w-auto sm:ml-auto flex items-center gap-2", !hasSelections && "hidden")}>
               <Zap className="h-3.5 w-3.5 text-primary" />
               <span className="text-sm font-bold tabular-nums">
                 {formatCurrency(selectionTotal)}
@@ -253,7 +252,7 @@ export default function ComparisonTable({
         )}
 
         {/* ── Matrix table ─────────────────────────────────────────────── */}
-        <div className="rounded-xl border border-border/40 overflow-hidden">
+        <div className="rounded-lg sm:rounded-xl border border-border/40 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
 
@@ -261,17 +260,17 @@ export default function ComparisonTable({
               <thead>
                 <tr className="border-b border-border/50">
                   {/* Sticky test name column */}
-                  <th className="sticky left-0 z-20 bg-card px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70 w-48 min-w-[180px]">
+                  <th className="sticky left-0 z-20 bg-card px-3 sm:px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70 w-40 min-w-[150px] sm:w-48 sm:min-w-[180px]">
                     Analyse
                   </th>
-                  {data.laboratories.map((lab) => {
+                  {visibleLabs.map((lab) => {
                     const isCheapest = lab.id === cheapestLabId;
                     const isQuickest = lab.id === quickestLabId;
                     return (
                       <th
                         key={lab.id}
                         className={cn(
-                          "px-5 py-3 text-left min-w-[150px]",
+                          "px-3 sm:px-5 py-3 text-left min-w-[130px] sm:min-w-[150px]",
                           isCheapest && "bg-emerald-500/[0.04]"
                         )}
                       >
@@ -306,7 +305,7 @@ export default function ComparisonTable({
               <tbody>
                 {data.tests.map((test, rowIdx) => {
                   const effectivePrices: Record<string, number> = {};
-                  data.laboratories.forEach((lab) => {
+                  visibleLabs.forEach((lab) => {
                     const eff = getEffectivePrice(test.id, lab.id, test.prices[lab.id], customPrices);
                     if (eff != null) effectivePrices[lab.id] = eff;
                   });
@@ -317,7 +316,7 @@ export default function ComparisonTable({
                   // Compute fastest TAT for this row
                   let minTatHours = Infinity;
                   let minTatLabId = "";
-                  data.laboratories.forEach((lab) => {
+                  visibleLabs.forEach((lab) => {
                     const tat = test.turnaroundTimes?.[lab.id];
                     if (tat && effectivePrices[lab.id] != null) {
                       const hours = parseTatToHours(tat);
@@ -329,15 +328,9 @@ export default function ComparisonTable({
                   });
 
                   const selectedLabId = selections?.[test.id];
-                  const isExpanded = expandedRows.has(test.id);
-
-                  // Check if this row has detail info worth expanding
-                  const hasDetails = data.laboratories.some(lab => {
-                    const tat = test.turnaroundTimes?.[lab.id];
-                    const tubeType = test.tubeTypes?.[lab.id];
-                    const match = data.matchMatrix?.[test.id]?.[lab.id];
-                    return tat || tubeType || match;
-                  });
+                  const primaryTube = parseTubeColor(
+                    visibleLabs.map((lab) => test.tubeTypes?.[lab.id]).find(Boolean) ?? null
+                  );
 
                   return (
                     <tr
@@ -348,37 +341,36 @@ export default function ComparisonTable({
                       )}
                     >
                       {/* ── Test name (sticky) ── */}
-                      <td className="sticky left-0 z-10 bg-card px-4 py-3.5 align-top">
-                        <div className="flex items-start gap-1.5 group/name">
+                      <td className="sticky left-0 z-10 bg-card px-3 sm:px-4 py-3.5 align-top">
+                        <div className="flex items-start gap-2 group/name">
                           {onRemoveTest && (
                             <button
                               onClick={() => onRemoveTest(test.id)}
-                              className="shrink-0 mt-0.5 text-muted-foreground/0 group-hover/name:text-muted-foreground/40 hover:!text-destructive transition-colors"
+                              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-destructive/30 bg-destructive/10 text-destructive/80 transition-colors hover:bg-destructive/20"
                               aria-label="Retirer"
                             >
                               <X className="h-3 w-3" />
                             </button>
                           )}
-                          <span className="text-[13px] font-medium text-foreground/85 leading-snug">
-                            {test.canonicalName}
-                          </span>
-                          {hasDetails && (
-                            <button
-                              onClick={() => toggleRow(test.id)}
-                              className={cn(
-                                "shrink-0 mt-0.5 text-muted-foreground/30 hover:text-muted-foreground/60 transition-transform",
-                                isExpanded && "rotate-180"
-                              )}
-                              aria-label="Détails"
-                            >
-                              <ChevronDown className="h-3.5 w-3.5" />
-                            </button>
-                          )}
+                          <div className="min-w-0 space-y-1">
+                            <span className="block text-[13px] font-medium text-foreground/85 leading-snug">
+                              {test.canonicalName}
+                            </span>
+                            {primaryTube && (
+                              <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                                <span
+                                  className="inline-block h-2 w-2 rounded-full ring-1 ring-white/10"
+                                  style={{ backgroundColor: primaryTube.color }}
+                                />
+                                {primaryTube.label}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </td>
 
                       {/* ── Lab price cells ── */}
-                      {data.laboratories.map((lab) => {
+                      {visibleLabs.map((lab) => {
                         const match         = data.matchMatrix?.[test.id]?.[lab.id];
                         const tat           = test.turnaroundTimes?.[lab.id];
                         const tubeType      = test.tubeTypes?.[lab.id];
@@ -388,14 +380,14 @@ export default function ComparisonTable({
                         const isCustomPrice = customPrices[customKey] !== undefined;
                         const effectivePrice = getEffectivePrice(test.id, lab.id, rawPrice, customPrices);
                         const isCheapest    = minPrice != null && effectivePrice != null && effectivePrice <= minPrice;
-                        const isFastestInRow = minTatLabId === lab.id && minTatHours !== Infinity && data.laboratories.length > 1;
+                        const isFastestInRow = minTatLabId === lab.id && minTatHours !== Infinity && visibleLabs.length > 1;
                         const isSelected    = selectedLabId === lab.id;
 
                         return (
                           <td
                             key={lab.id}
                             className={cn(
-                              "px-5 py-3.5 align-top transition-all duration-150",
+                              "px-3 sm:px-5 py-3.5 align-top transition-all duration-150",
                               isCheapest && effectivePrice != null && "bg-emerald-500/[0.06]",
                               isSelected && "bg-blue-500/[0.08]",
                             )}
@@ -478,9 +470,9 @@ export default function ComparisonTable({
                                 </div>
 
                                 {/* Per-row badges */}
-                                {((isCheapest && effectivePrice != null && data.laboratories.length > 1) || isFastestInRow) && (
+                                {((isCheapest && effectivePrice != null && visibleLabs.length > 1) || isFastestInRow) && (
                                   <div className="flex flex-wrap gap-1">
-                                    {isCheapest && effectivePrice != null && data.laboratories.length > 1 && (
+                                    {isCheapest && effectivePrice != null && visibleLabs.length > 1 && (
                                       <span className="inline-flex items-center gap-0.5 text-[9px] font-medium text-emerald-400/80 bg-emerald-500/[0.08] rounded px-1 py-0.5">
                                         <DollarSign className="h-2 w-2" />
                                         Moins cher
@@ -495,57 +487,54 @@ export default function ComparisonTable({
                                   </div>
                                 )}
 
-                                {/* ── Secondary: Details row (expanded via chevron) ── */}
-                                {isExpanded && (
-                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
-                                    {tat && (
-                                      <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/50">
-                                        <Clock className="h-2.5 w-2.5 shrink-0" />
-                                        {tat}
-                                      </span>
-                                    )}
-                                    {tube && (
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
+                                  {tat && (
+                                    <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                                      <Clock className="h-2.5 w-2.5 shrink-0" />
+                                      {tat}
+                                    </span>
+                                  )}
+                                  {tube && (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <span className="inline-flex items-center gap-1">
+                                          <span
+                                            className="inline-block h-2 w-2 rounded-full ring-1 ring-white/10"
+                                            style={{ backgroundColor: tube.color }}
+                                          />
+                                          <span className="text-[10px] text-muted-foreground/50">{tube.label}</span>
+                                        </span>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top">{tube.label}</TooltipContent>
+                                    </Tooltip>
+                                  )}
+                                  {match && (
+                                    <div className="flex items-center gap-1">
                                       <Tooltip>
                                         <TooltipTrigger asChild>
-                                          <span className="inline-flex items-center gap-1">
-                                            <span
-                                              className="inline-block h-2 w-2 rounded-full ring-1 ring-white/10"
-                                              style={{ backgroundColor: tube.color }}
-                                            />
-                                            <span className="text-[10px] text-muted-foreground/40">{tube.label}</span>
+                                          <span>
+                                            <MatchIndicator type={match.matchType} confidence={match.similarity} compact />
                                           </span>
                                         </TooltipTrigger>
-                                        <TooltipContent side="top">{tube.label}</TooltipContent>
+                                        <TooltipContent>
+                                          <p className="text-xs">Nom local : <strong>{match.localTestName}</strong></p>
+                                          <p className="text-xs">Confiance : {Math.round(match.similarity * 100)}%</p>
+                                        </TooltipContent>
                                       </Tooltip>
-                                    )}
-                                    {match && (
-                                      <div className="flex items-center gap-1">
+                                      {match.matchType === "FUZZY" && data.onCreateMapping && (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
-                                            <span>
-                                              <MatchIndicator type={match.matchType} confidence={match.similarity} compact />
-                                            </span>
+                                            <button onClick={() => data.onCreateMapping!(test.id, lab.id)}
+                                              className="text-muted-foreground/30 hover:text-primary transition-colors">
+                                              <Link2 className="h-2.5 w-2.5" />
+                                            </button>
                                           </TooltipTrigger>
-                                          <TooltipContent>
-                                            <p className="text-xs">Nom local : <strong>{match.localTestName}</strong></p>
-                                            <p className="text-xs">Confiance : {Math.round(match.similarity * 100)}%</p>
-                                          </TooltipContent>
+                                          <TooltipContent>Corriger la correspondance</TooltipContent>
                                         </Tooltip>
-                                        {match.matchType === "FUZZY" && data.onCreateMapping && (
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <button onClick={() => data.onCreateMapping!(test.id, lab.id)}
-                                                className="text-muted-foreground/30 hover:text-primary transition-colors">
-                                                <Link2 className="h-2.5 w-2.5" />
-                                              </button>
-                                            </TooltipTrigger>
-                                            <TooltipContent>Corriger la correspondance</TooltipContent>
-                                          </Tooltip>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             ) : (
                               /* ── No price available ── */
@@ -575,10 +564,10 @@ export default function ComparisonTable({
               {/* ── Footer totals ── */}
               <tfoot>
                 <tr className="border-t-2 border-border/40 bg-muted/[0.06]">
-                  <td className="sticky left-0 z-10 bg-card px-4 py-3.5 text-xs font-bold uppercase tracking-wider text-muted-foreground/60">
+                  <td className="sticky left-0 z-10 bg-card px-3 sm:px-4 py-3.5 text-xs font-bold uppercase tracking-wider text-muted-foreground/60">
                     Total
                   </td>
-                  {data.laboratories.map((lab) => {
+                  {visibleLabs.map((lab) => {
                     const total  = effectiveTotals[lab.id] ?? data.totals[lab.id];
                     const isBest = lab.id === data.bestLabId;
                     const diff   = total != null && !isBest ? total - bestTotal : 0;
@@ -588,7 +577,7 @@ export default function ComparisonTable({
                       <td
                         key={lab.id}
                         className={cn(
-                          "px-5 py-3.5",
+                          "px-3 sm:px-5 py-3.5",
                           isBest && "bg-emerald-500/[0.06]"
                         )}
                       >

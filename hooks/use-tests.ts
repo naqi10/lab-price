@@ -35,6 +35,15 @@ const CART_KEY = "lab-price-test-cart";
 
 type CartItem = { id: string; testMappingId: string; canonicalName: string; tubeType?: string | null };
 
+function normalizeTestName(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 function persistCart(items: CartItem[]) {
   try { sessionStorage.setItem(CART_KEY, JSON.stringify(items)); } catch { /* ignore */ }
 }
@@ -58,7 +67,12 @@ export function useTestCart() {
   // Persist inline with every mutation — no separate persist effect
   const addItem = useCallback((item: CartItem) => {
     setItems(prev => {
-      if (prev.find(i => i.testMappingId === item.testMappingId)) return prev;
+      const nextNameKey = normalizeTestName(item.canonicalName);
+      const duplicate = prev.some((i) =>
+        i.testMappingId === item.testMappingId ||
+        normalizeTestName(i.canonicalName) === nextNameKey
+      );
+      if (duplicate) return prev;
       const next = [...prev, item];
       persistCart(next);
       return next;
@@ -92,11 +106,19 @@ export function useTestCart() {
       const byId = mappings.filter((m: { id: string }) => idSet.has(m.id));
       const order = new Map(testMappingIds.map((id, i) => [id, i]));
       byId.sort((a: { id: string }, b: { id: string }) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
-      const newItems = byId.map((m: { id: string; canonicalName?: string }) => ({
-        id: m.id,
-        testMappingId: m.id,
-        canonicalName: m.canonicalName ?? m.id,
-      }));
+      const seenNames = new Set<string>();
+      const newItems = byId.reduce((acc: CartItem[], m: { id: string; canonicalName?: string }) => {
+        const canonicalName = m.canonicalName ?? m.id;
+        const nameKey = normalizeTestName(canonicalName);
+        if (seenNames.has(nameKey)) return acc;
+        seenNames.add(nameKey);
+        acc.push({
+          id: m.id,
+          testMappingId: m.id,
+          canonicalName,
+        });
+        return acc;
+      }, []);
       setItems(newItems);
       persistCart(newItems);
     } catch {

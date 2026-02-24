@@ -30,14 +30,25 @@ interface SearchResult {
   confidence?: number;
 }
 
+function normalizeTestName(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 export default function TestSearch({
   onAddToCart,
   onRemoveFromCart,
   cartItemIds,
+  cartItemNameKeys,
 }: {
   onAddToCart?: (test: SearchResult) => void;
   onRemoveFromCart?: (testMappingId: string) => void;
   cartItemIds?: Set<string>;
+  cartItemNameKeys?: Set<string>;
 }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -123,17 +134,21 @@ export default function TestSearch({
             {grouped.map((group) => {
               const isMultiLab = group.testMappingId != null && group.tests.length > 1;
               const primary = group.tests[0];
-              const inCart = !!group.testMappingId && !!cartItemIds?.has(group.testMappingId);
+              const displayName = isMultiLab ? (group.canonicalName || primary.name) : primary.name;
+              const nameKey = normalizeTestName(group.canonicalName || primary.canonicalName || primary.name);
+              const inCart =
+                (!!group.testMappingId && !!cartItemIds?.has(group.testMappingId)) ||
+                !!cartItemNameKeys?.has(nameKey);
               const tube = parseTubeColor(primary.tubeType);
 
               return (
                 <li
                   key={group.key}
-                  className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-accent/50 transition-colors"
+                  className="flex items-start justify-between gap-3 sm:gap-4 px-3 sm:px-4 py-3.5 hover:bg-accent/50 transition-colors"
                   style={inCart ? { backgroundColor: "rgba(var(--primary-rgb,59,130,246),0.06)" } : undefined}
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-start gap-2">
                       {tube && (
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -145,23 +160,25 @@ export default function TestSearch({
                           <TooltipContent side="top">{tube.label}</TooltipContent>
                         </Tooltip>
                       )}
-                      <p className="text-sm font-medium truncate">
-                        {isMultiLab ? group.canonicalName : primary.name}
-                      </p>
-                      {primary.category && (
-                        <Badge variant="secondary" className="text-[10px] shrink-0">{primary.category}</Badge>
-                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[13px] sm:text-sm font-semibold leading-snug text-foreground/90 whitespace-normal break-words">
+                          {displayName}
+                        </p>
+                        {primary.category && (
+                          <Badge variant="secondary" className="mt-1 text-[10px]">{primary.category}</Badge>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-0.5">
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
                       {isMultiLab ? (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-muted-foreground/80 whitespace-normal break-words">
                           {group.tests.map(t => t.laboratoryName).join(", ")}
                         </span>
                       ) : (
                         <>
                           <span className="text-xs text-muted-foreground">{primary.laboratoryName}</span>
                           {primary.canonicalName && (
-                            <span className="text-[10px] text-emerald-400 truncate max-w-[160px]">
+                            <span className="text-[10px] text-emerald-400 whitespace-normal break-words">
                               → {primary.canonicalName}
                             </span>
                           )}
@@ -170,7 +187,7 @@ export default function TestSearch({
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0 pt-0.5">
                     {!isMultiLab && primary.matchType && (
                       <MatchIndicator type={primary.matchType} confidence={primary.confidence} compact />
                     )}
@@ -179,7 +196,7 @@ export default function TestSearch({
                         {group.tests.length} labs
                       </Badge>
                     ) : (
-                      <span className="text-sm font-semibold tabular-nums whitespace-nowrap">
+                      <span className="text-xs sm:text-sm font-semibold tabular-nums whitespace-nowrap min-w-[64px] sm:min-w-[72px] text-right">
                         {primary.price} <span className="text-xs text-muted-foreground font-normal">{primary.unit || "MAD"}</span>
                       </span>
                     )}

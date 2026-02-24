@@ -62,6 +62,15 @@ interface ActiveDeal {
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+function normalizeTestName(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 function parseTatToHours(tat: string | null | undefined): number {
   if (!tat) return Infinity;
   const s = tat.toLowerCase().trim();
@@ -101,6 +110,7 @@ function UnifiedTestsContent() {
   useDashboardTitle("Tests & Analyses");
 
   const cartItemIds = new Set(items.map((i) => i.testMappingId));
+  const cartItemNameKeys = new Set(items.map((i) => normalizeTestName(i.canonicalName)));
 
   // ── Bundle deals ─────────────────────────────────────────────────────────
   const [availableBundles, setAvailableBundles] = useState<ActiveDeal[]>([]);
@@ -508,10 +518,10 @@ function UnifiedTestsContent() {
     <DOMSafetyBoundary>
     <div className="w-full mt-2">
       {/* ── 3-column grid — always visible ─────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr_280px] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[340px_minmax(0,1fr)_280px] gap-4">
 
         {/* ════════════════ LEFT: Test Search ════════════════ */}
-        <div className="rounded-2xl border border-border/60 bg-card flex flex-col overflow-hidden">
+        <div className="order-2 lg:order-1 rounded-2xl border border-border/60 bg-card flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
             <div>
@@ -527,6 +537,7 @@ function UnifiedTestsContent() {
           <div className="px-4 pt-4 pb-2">
             <TestSearch
               cartItemIds={cartItemIds}
+              cartItemNameKeys={cartItemNameKeys}
               onAddToCart={(test) => {
                 if (!test.testMappingId) return;
                 addItem({
@@ -608,7 +619,7 @@ function UnifiedTestsContent() {
         </div>
 
         {/* ════════════════ CENTER: Order Items + Comparison ════════════════ */}
-        <div className="rounded-2xl border border-border/60 bg-card flex flex-col overflow-hidden min-h-[500px]">
+        <div className="order-1 lg:order-2 rounded-2xl border border-border/60 bg-card flex flex-col overflow-hidden min-h-[500px]">
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
             <div>
@@ -655,7 +666,7 @@ function UnifiedTestsContent() {
                     </div>
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="text-muted-foreground/20 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100 shrink-0 ml-2"
+                      className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-destructive/30 bg-destructive/10 text-destructive/80 hover:bg-destructive/20 transition-colors shrink-0 ml-2"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -676,7 +687,7 @@ function UnifiedTestsContent() {
                     </div>
                     <button
                       onClick={() => toggleBundle(bundle)}
-                      className="text-muted-foreground/20 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100 shrink-0 ml-2"
+                      className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-destructive/30 bg-destructive/10 text-destructive/80 hover:bg-destructive/20 transition-colors shrink-0 ml-2"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -700,7 +711,7 @@ function UnifiedTestsContent() {
             )}
 
             {/* Loading */}
-            {comparisonLoading && allTestMappingIds.length > 0 && (
+            {comparisonLoading && allTestMappingIds.length > 0 && !comparison && (
               <div className="p-5 space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Skeleton className="h-28 rounded-xl" />
@@ -718,8 +729,15 @@ function UnifiedTestsContent() {
             )}
 
             {/* Comparison results */}
-            {comparison && !comparisonLoading && !comparisonError && allTestMappingIds.length > 0 && (
-              <div className="p-5 space-y-5">
+            {comparison && !comparisonError && allTestMappingIds.length > 0 && (
+              <div className="p-3 sm:p-5 space-y-4 sm:space-y-5">
+                {comparisonLoading && (
+                  <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Mise a jour de la comparaison...
+                  </div>
+                )}
+
                 {/* Missing tests alert */}
                 {missingTests.length > 0 && (
                   <MissingTestsAlert missingTests={missingTests} />
@@ -738,19 +756,21 @@ function UnifiedTestsContent() {
 
                 {/* Comparison table */}
                 {tableData && (
-                  <ComparisonTable
-                    data={tableData}
-                    selections={selections}
-                    customPrices={mergedCustomPrices}
-                    onSelectLab={handleSelectLab}
-                    onPresetCheapest={handlePresetCheapest}
-                    onPresetQuickest={handlePresetQuickest}
-                    onClearSelections={handleClearSelections}
-                    onUpdateCustomPrice={handleUpdateCustomPrice}
-                    onClearCustomPrice={handleClearCustomPrice}
-                    onRemoveTest={(testMappingId) => removeItem(testMappingId)}
-                    selectionMode={selectionMode}
-                  />
+                  <div className="-mx-3 sm:mx-0">
+                    <ComparisonTable
+                      data={tableData}
+                      selections={selections}
+                      customPrices={mergedCustomPrices}
+                      onSelectLab={handleSelectLab}
+                      onPresetCheapest={handlePresetCheapest}
+                      onPresetQuickest={handlePresetQuickest}
+                      onClearSelections={handleClearSelections}
+                      onUpdateCustomPrice={handleUpdateCustomPrice}
+                      onClearCustomPrice={handleClearCustomPrice}
+                      onRemoveTest={(testMappingId) => removeItem(testMappingId)}
+                      selectionMode={selectionMode}
+                    />
+                  </div>
                 )}
               </div>
             )}
@@ -758,7 +778,7 @@ function UnifiedTestsContent() {
         </div>
 
         {/* ════════════════ RIGHT: Summary ════════════════ */}
-        <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+        <div className="order-3 lg:order-3 lg:col-span-2 xl:col-span-1 space-y-4 xl:sticky xl:top-4 xl:self-start">
           {/* Summary card */}
           <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
             {/* Header */}
@@ -824,7 +844,7 @@ function UnifiedTestsContent() {
               <span>{"Envoyer au client"}</span>
             </Button>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <Button
                 variant="outline"
                 size="sm"
