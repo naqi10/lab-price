@@ -36,7 +36,7 @@ interface EstimateWithDetails {
   selections?: Record<string, string> | null;
   customPrices?: Record<string, number>;
   testMappingDetails?: TestMappingDetail[];
-  _count?: { emailLogs: number };
+  _count?: { emailLogs: number; emails?: number };
 }
 
 interface ExpandableEstimateRowProps {
@@ -76,7 +76,7 @@ export function ExpandableEstimateRow({
 
   const isExpired = estimate.validUntil && new Date(estimate.validUntil) < new Date();
   const testCount = estimate.testMappingIds?.length || 0;
-  const emailCount = estimate._count?.emailLogs ?? 0;
+  const emailCount = (estimate._count?.emailLogs ?? 0) + (estimate._count?.emails ?? 0);
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
          include: {
           customer: true,
           createdBy: { select: { name: true } },
-          _count: { select: { emailLogs: true } },
+          _count: { select: { emailLogs: true, emails: true } },
          },
          orderBy,
          skip: (page - 1) * limit,

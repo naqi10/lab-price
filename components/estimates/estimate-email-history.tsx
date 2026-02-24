@@ -122,6 +122,7 @@ export default function EstimateEmailHistory({
               <TableHeader>
                 <TableRow>
                   <TableHead>Destinataire</TableHead>
+                  <TableHead>Envoyé par</TableHead>
                   <TableHead>Sujet</TableHead>
                   <TableHead className="w-px whitespace-nowrap">Statut</TableHead>
                   <TableHead className="w-px whitespace-nowrap">Date d'envoi</TableHead>
@@ -136,6 +137,9 @@ export default function EstimateEmailHistory({
                   return (
                     <TableRow key={email.id}>
                       <TableCell className="text-sm font-medium">{email.toEmail}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {email.sentByName || "Système"}
+                      </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{email.subject}</TableCell>
                       <TableCell className="whitespace-nowrap">
                         <Badge variant={emailSt.variant} className="gap-1">

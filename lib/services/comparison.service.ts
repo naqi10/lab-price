@@ -721,21 +721,52 @@ export async function compareTestsWithEmail(data: {
     },
   });
 
-  // ── Send email ──────────────────────────────────────────────────────────
-  const emailResult = await sendEmail({
-    to: [{ email: clientEmail, name: clientName }],
-    subject: emailSubject,
-    htmlContent,
-    attachments: [
-      {
-        name: `Comparaison_${result.testNames.join("_").replace(/\s+/g, "-").substring(0, 60)}.pdf`,
-        content: pdfBase64,
+  // ── Send email + persist EstimateEmail sender trace ─────────────────────
+  let emailResult: { messageId: string };
+  try {
+    emailResult = await sendEmail({
+      to: [{ email: clientEmail, name: clientName }],
+      subject: emailSubject,
+      htmlContent,
+      attachments: [
+        {
+          name: `Comparaison_${result.testNames.join("_").replace(/\s+/g, "-").substring(0, 60)}.pdf`,
+          content: pdfBase64,
+        },
+      ],
+      source: "comparison",
+      customerId: customerId || undefined,
+      estimateId: estimate.id,
+    });
+
+    await prisma.estimateEmail.create({
+      data: {
+        estimateId: estimate.id,
+        sentById: createdByUserId,
+        toEmail: clientEmail,
+        subject: emailSubject,
+        status: "SENT",
+        message: emailResult.messageId,
+        error: null,
+        sentAt: new Date(),
       },
-    ],
-    source: "comparison",
-    customerId: customerId || undefined,
-    estimateId: estimate.id,
-  });
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    await prisma.estimateEmail.create({
+      data: {
+        estimateId: estimate.id,
+        sentById: createdByUserId,
+        toEmail: clientEmail,
+        subject: emailSubject,
+        status: "FAILED",
+        message: null,
+        error: message,
+        sentAt: null,
+      },
+    });
+    throw error;
+  }
 
   return {
     ...result,

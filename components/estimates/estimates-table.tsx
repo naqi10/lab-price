@@ -53,7 +53,7 @@ interface Estimate {
   selections?: Record<string, string> | null;
   customPrices?: Record<string, number>;
   testMappingDetails?: TestMappingDetail[];
-  _count?: { emailLogs: number };
+  _count?: { emailLogs: number; emails?: number };
 }
 
 interface Meta {
