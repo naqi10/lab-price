@@ -154,6 +154,7 @@ export async function compareLabPrices(
   for (const mapping of testMappings) {
     for (const entry of mapping.entries) {
       if (!entry.laboratory.isActive) continue;
+      if (entry.price == null) continue;
       const labId = entry.laboratory.id;
       if (!labResults.has(labId)) {
         labResults.set(labId, {
@@ -167,7 +168,7 @@ export async function compareLabPrices(
         });
       }
       const result = labResults.get(labId)!;
-      const price = entry.price ?? 0;
+      const price = entry.price;
       const turnaroundTime = tatMap.get(`${labId}:${entry.localTestName}`) ?? null;
       const tubeType = tubeMap.get(`${labId}:${entry.localTestName}`) ?? null;
       result.tests.push({
@@ -202,13 +203,7 @@ export async function compareLabPrices(
  * @returns Structured comparison data with price matrix
  */
 export async function getComparisonDetails(testMappingIds: string[]) {
-  const [results, allActiveLabs] = await Promise.all([
-    compareLabPrices(testMappingIds),
-    prisma.laboratory.findMany({
-      where: { isActive: true, deletedAt: null },
-      select: { id: true, name: true, code: true },
-    }),
-  ]);
+  const results = await compareLabPrices(testMappingIds);
 
   const laboratories = results.map((r) => ({
     id: r.laboratoryId,
@@ -219,21 +214,6 @@ export async function getComparisonDetails(testMappingIds: string[]) {
     isComplete: r.isComplete,
     testCount: r.testCount,
   }));
-
-  const resultLabIds = new Set(results.map((r) => r.laboratoryId));
-  for (const lab of allActiveLabs) {
-    if (!resultLabIds.has(lab.id)) {
-      laboratories.push({
-        id: lab.id,
-        name: lab.name,
-        code: lab.code,
-        totalPrice: 0,
-        formattedTotalPrice: formatCurrency(0),
-        isComplete: false,
-        testCount: 0,
-      });
-    }
-  }
 
   const testMappings = await prisma.testMapping.findMany({
     where: { id: { in: testMappingIds } },

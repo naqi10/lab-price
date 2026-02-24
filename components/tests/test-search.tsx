@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useDebounce } from "@/hooks/use-debounce";
 import { parseTubeColor } from "@/lib/tube-colors";
+import { normalizeMedicalTestName } from "@/lib/utils";
 import MatchIndicator from "./match-indicator";
 
 interface SearchResult {
@@ -28,15 +29,6 @@ interface SearchResult {
   similarity?: number;
   matchType?: string;
   confidence?: number;
-}
-
-function normalizeTestName(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
 }
 
 export default function TestSearch({
@@ -68,25 +60,44 @@ export default function TestSearch({
 
   // Group results by testMappingId for cleaner display
   const grouped = useMemo(() => {
-    const groups: { key: string; testMappingId: string | null; canonicalName: string | null; tests: SearchResult[] }[] = [];
+    const groups: {
+      key: string;
+      testMappingId: string | null;
+      canonicalName: string | null;
+      canonicalKey: string;
+      tests: SearchResult[];
+    }[] = [];
     const mappingGroups = new Map<string, SearchResult[]>();
     const ungrouped: SearchResult[] = [];
 
     for (const test of limited) {
       if (test.testMappingId) {
-        const existing = mappingGroups.get(test.testMappingId);
+        const canonicalKey = normalizeMedicalTestName(test.canonicalName || test.name);
+        const existing = mappingGroups.get(canonicalKey);
         if (existing) existing.push(test);
-        else mappingGroups.set(test.testMappingId, [test]);
+        else mappingGroups.set(canonicalKey, [test]);
       } else {
         ungrouped.push(test);
       }
     }
 
-    for (const [tmId, tests] of mappingGroups) {
-      groups.push({ key: tmId, testMappingId: tmId, canonicalName: tests[0].canonicalName, tests });
+    for (const [canonicalKey, tests] of mappingGroups) {
+      groups.push({
+        key: canonicalKey,
+        canonicalKey,
+        testMappingId: tests[0].testMappingId,
+        canonicalName: tests[0].canonicalName,
+        tests,
+      });
     }
     for (const test of ungrouped) {
-      groups.push({ key: test.id, testMappingId: null, canonicalName: null, tests: [test] });
+      groups.push({
+        key: test.id,
+        canonicalKey: normalizeMedicalTestName(test.name),
+        testMappingId: null,
+        canonicalName: null,
+        tests: [test],
+      });
     }
 
     return groups;
@@ -135,7 +146,9 @@ export default function TestSearch({
               const isMultiLab = group.testMappingId != null && group.tests.length > 1;
               const primary = group.tests[0];
               const displayName = isMultiLab ? (group.canonicalName || primary.name) : primary.name;
-              const nameKey = normalizeTestName(group.canonicalName || primary.canonicalName || primary.name);
+              const nameKey = group.canonicalKey;
+              const selectedMappingId = group.tests.find((t) => t.testMappingId && cartItemIds?.has(t.testMappingId))?.testMappingId
+                ?? group.testMappingId;
               const inCart =
                 (!!group.testMappingId && !!cartItemIds?.has(group.testMappingId)) ||
                 !!cartItemNameKeys?.has(nameKey);
@@ -205,7 +218,7 @@ export default function TestSearch({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => group.testMappingId && onRemoveFromCart?.(group.testMappingId)}
+                          onClick={() => selectedMappingId && onRemoveFromCart?.(selectedMappingId)}
                           className="h-7 w-7 p-0 text-emerald-400 hover:text-destructive hover:bg-destructive/10"
                           aria-label="Retirer de la sélection"
                         >

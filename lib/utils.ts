@@ -109,3 +109,42 @@ export function truncate(text: string, length: number = 100): string {
   if (text.length <= length) return text;
   return text.slice(0, length).trimEnd() + "...";
 }
+
+/**
+ * Normalize a medical test name for equivalence checks.
+ *
+ * This keeps business logic intact while making matching resilient to:
+ * - accents/punctuation/case differences
+ * - token order changes ("A and B" vs "B and A")
+ * - common synonyms (vitamin b12/cobalamin, folic acid/folate)
+ */
+export function normalizeMedicalTestName(text: string): string {
+  const base = text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\bvit(?:amine)?\s*b[\s-]*12\b/g, " vitaminb12 ")
+    .replace(/\bcobalamin(?:e)?\b/g, " vitaminb12 ")
+    .replace(/\b(acide\s+folique|folic\s+acid|folate)\b/g, " folicacid ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+  const stopWords = new Set([
+    "and",
+    "et",
+    "de",
+    "du",
+    "des",
+    "the",
+    "test",
+    "analyse",
+    "analysis",
+  ]);
+
+  return base
+    .split(" ")
+    .filter(Boolean)
+    .filter((token) => !stopWords.has(token))
+    .sort()
+    .join(" ");
+}

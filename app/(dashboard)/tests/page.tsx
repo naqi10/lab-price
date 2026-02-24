@@ -23,7 +23,7 @@ import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, normalizeMedicalTestName } from "@/lib/utils";
 import { parseTubeColor } from "@/lib/tube-colors";
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
@@ -62,15 +62,6 @@ interface ActiveDeal {
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-function normalizeTestName(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
 function parseTatToHours(tat: string | null | undefined): number {
   if (!tat) return Infinity;
   const s = tat.toLowerCase().trim();
@@ -110,7 +101,7 @@ function UnifiedTestsContent() {
   useDashboardTitle("Tests & Analyses");
 
   const cartItemIds = new Set(items.map((i) => i.testMappingId));
-  const cartItemNameKeys = new Set(items.map((i) => normalizeTestName(i.canonicalName)));
+  const cartItemNameKeys = new Set(items.map((i) => normalizeMedicalTestName(i.canonicalName)));
 
   // ── Bundle deals ─────────────────────────────────────────────────────────
   const [availableBundles, setAvailableBundles] = useState<ActiveDeal[]>([]);

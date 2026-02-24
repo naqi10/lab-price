@@ -22,6 +22,9 @@ export async function searchTests(
   }
 ) {
   const { laboratoryId, threshold = 0.15, limit = 20 } = options ?? {};
+  const normalizedNameExpr = "regexp_replace(LOWER(t.name), '[^a-z0-9]+', '', 'g')";
+  const normalizedQueryExpr = "regexp_replace(LOWER($1), '[^a-z0-9]+', '', 'g')";
+  const normalizedCanonicalExpr = `regexp_replace(LOWER(tm."canonical_name"), '[^a-z0-9]+', '', 'g')`;
 
   // Build parameterized query — lab filter uses $4 when present (no string interpolation)
   const labFilterClause = laboratoryId
@@ -44,7 +47,7 @@ export async function searchTests(
     '  l.name AS "laboratoryName",',
     '  l.code AS "laboratoryCode",',
     "  GREATEST(",
-    "    similarity(LOWER(t.name), LOWER($1)),",
+    `    similarity(${normalizedNameExpr}, ${normalizedQueryExpr}),`,
     "    CASE WHEN t.name ILIKE $1 THEN 1.0",             // exact (case-insensitive)
     "         WHEN t.name ILIKE $1 || '%' THEN 0.95",     // prefix
     "         WHEN t.name ILIKE '%' || $1 || '%' THEN 0.85", // substring
@@ -58,7 +61,7 @@ export async function searchTests(
     'FROM "tests" t',
     'INNER JOIN "price_lists" pl ON t."price_list_id" = pl.id',
     'INNER JOIN "laboratories" l ON pl."laboratory_id" = l.id',
-    'LEFT JOIN "test_mapping_entries" tme ON tme."local_test_name" = t.name AND tme."laboratory_id" = l.id',
+    `LEFT JOIN "test_mapping_entries" tme ON regexp_replace(LOWER(tme."local_test_name"), '[^a-z0-9]+', '', 'g') = ${normalizedNameExpr} AND tme."laboratory_id" = l.id`,
     'LEFT JOIN "test_mappings" tm ON tm.id = tme."test_mapping_id"',
     'WHERE pl."is_active" = true',
     '  AND l."deleted_at" IS NULL',
@@ -67,7 +70,8 @@ export async function searchTests(
     "    t.name ILIKE '%' || $1 || '%'",
     "    OR t.code ILIKE $1",
     `    OR tm."canonical_name" ILIKE '%' || $1 || '%'`,
-    "    OR similarity(LOWER(t.name), LOWER($1)) >= $2",
+    `    OR similarity(${normalizedNameExpr}, ${normalizedQueryExpr}) >= $2`,
+    `    OR ${normalizedCanonicalExpr} = ${normalizedQueryExpr}`,
     "  )",
     "ORDER BY similarity DESC, t.name ASC",
     "LIMIT $3",

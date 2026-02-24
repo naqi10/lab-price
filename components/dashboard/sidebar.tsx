@@ -5,6 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   FlaskConical,
   TestTubes,
   Contact,
@@ -25,7 +31,7 @@ const navItems = [
 ];
 
 export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
@@ -35,11 +41,12 @@ export default function Sidebar() {
         const isActive =
           pathname === item.href ||
           (item.href !== "/" && pathname.startsWith(item.href));
-        return (
+        const link = (
           <Link
             key={item.href}
             href={item.href}
             onClick={onNavigate}
+            title={item.label}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
               isActive
@@ -58,12 +65,19 @@ export default function Sidebar() {
             )}
           </Link>
         );
+
+        return (
+          <Tooltip key={item.href}>
+            <TooltipTrigger asChild>{link}</TooltipTrigger>
+            <TooltipContent side={collapsed ? "right" : "top"}>{item.label}</TooltipContent>
+          </Tooltip>
+        );
       })}
     </nav>
   );
 
   return (
-    <>
+    <TooltipProvider delayDuration={120}>
       {/* Mobile hamburger trigger */}
       <button
         className="fixed top-4 left-4 z-50 flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-card shadow-sm md:hidden"
@@ -145,6 +159,6 @@ export default function Sidebar() {
           </p>
         </div>
       </aside>
-    </>
+    </TooltipProvider>
   );
 }
