@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useDebounce } from "./use-debounce";
-import { normalizeMedicalTestName } from "@/lib/utils";
 
 export function useTestSearch(query: string) {
   const [results, setResults] = useState<any[]>([]);
@@ -53,7 +52,7 @@ export function useTestCart() {
         if (Array.isArray(parsed)) {
           const seen = new Set<string>();
           const deduped = parsed.filter((item: CartItem) => {
-            const key = normalizeMedicalTestName(item.canonicalName);
+            const key = item.testMappingId;
             if (seen.has(key)) return false;
             seen.add(key);
             return true;
@@ -69,11 +68,7 @@ export function useTestCart() {
   // Persist inline with every mutation — no separate persist effect
   const addItem = useCallback((item: CartItem) => {
     setItems(prev => {
-      const nextNameKey = normalizeMedicalTestName(item.canonicalName);
-      const duplicate = prev.some((i) =>
-        i.testMappingId === item.testMappingId ||
-        normalizeMedicalTestName(i.canonicalName) === nextNameKey
-      );
+      const duplicate = prev.some((i) => i.testMappingId === item.testMappingId);
       if (duplicate) return prev;
       const next = [...prev, item];
       persistCart(next);
@@ -108,12 +103,11 @@ export function useTestCart() {
       const byId = mappings.filter((m: { id: string }) => idSet.has(m.id));
       const order = new Map(testMappingIds.map((id, i) => [id, i]));
       byId.sort((a: { id: string }, b: { id: string }) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
-      const seenNames = new Set<string>();
+      const seenIds = new Set<string>();
       const newItems = byId.reduce((acc: CartItem[], m: { id: string; canonicalName?: string }) => {
         const canonicalName = m.canonicalName ?? m.id;
-        const nameKey = normalizeMedicalTestName(canonicalName);
-        if (seenNames.has(nameKey)) return acc;
-        seenNames.add(nameKey);
+        if (seenIds.has(m.id)) return acc;
+        seenIds.add(m.id);
         acc.push({
           id: m.id,
           testMappingId: m.id,

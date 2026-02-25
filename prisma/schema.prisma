@@ -123,22 +123,25 @@ model PriceList {
 }
 
 model Test {
-  id             String  @id @default(uuid())
-  priceListId    String  @map("price_list_id")
-  name           String
-  code           String?
-  price          Float
-  unit           String?
-  category       String?
-  description    String?
-  turnaroundTime String? @map("turnaround_time")
-  tubeType       String? @map("tube_type")
-  isActive       Boolean @default(true) @map("is_active")
+  id                 String  @id @default(uuid())
+  priceListId        String  @map("price_list_id")
+  testMappingEntryId String? @map("test_mapping_entry_id")
+  name               String
+  code               String?
+  price              Float
+  unit               String?
+  category           String?
+  description        String?
+  turnaroundTime     String? @map("turnaround_time")
+  tubeType           String? @map("tube_type")
+  isActive           Boolean @default(true) @map("is_active")
 
-  priceList PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  priceList        PriceList         @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  testMappingEntry TestMappingEntry? @relation(fields: [testMappingEntryId], references: [id], onDelete: SetNull)
 
   @@index([name])
   @@index([code])
+  @@index([testMappingEntryId])
   @@map("tests")
 }
 
@@ -146,6 +149,7 @@ model TestMapping {
   id             String   @id @default(uuid())
   canonicalName  String   @unique @map("canonical_name")
   code           String?
+  aliases        String[] @default([])
   description    String?
   category       String?
   unit           String?
@@ -171,6 +175,7 @@ model TestMappingEntry {
 
   testMapping TestMapping @relation(fields: [testMappingId], references: [id], onDelete: Cascade)
   laboratory  Laboratory  @relation(fields: [laboratoryId], references: [id])
+  tests       Test[]
 
   @@unique([testMappingId, laboratoryId])
   @@index([laboratoryId])

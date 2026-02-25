@@ -2,33 +2,11 @@ import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../app/generated/prisma/index.js";
 import * as bcryptjs from "bcryptjs";
-
-// ── Inline normalization (same as lib/utils.ts — kept in sync) ─────────
-function normalizeMedicalTestName(text: string): string {
-  const base = text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\bvit(?:amine)?\s*b[\s-]*12\b/g, " vitaminb12 ")
-    .replace(/\bcobalamin(?:e)?\b/g, " vitaminb12 ")
-    .replace(/\b(acide\s+folique|folic\s+acid|folate[s]?)\b/g, " folicacid ")
-    .replace(/\b25[\s-]*(oh|hydroxy(?:vitamine?\s*d)?)\b/g, " vitamind ")
-    .replace(/\bvit(?:amine)?\s*d\b/g, " vitamind ")
-    .replace(/\b(hba1c|hemoglobine?\s*glyqu(?:e|ee)|glycated\s*h(?:a?e)moglobin)\b/g, " hba1c ")
-    .replace(/\bsgpt\b/g, " alt ")
-    .replace(/\bsgot\b/g, " ast ")
-    .replace(/#\s*(\d+)/g, " $1 ")
-    .replace(/\bno\.?\s*(\d+)/g, " $1 ")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-  const stopWords = new Set([
-    "and", "et", "de", "du", "des", "the", "la", "le", "les",
-    "test", "analyse", "analysis",
-    "serique", "serum", "plasma", "sang",
-    "profil", "profile",
-  ]);
-  return base.split(" ").filter(Boolean).filter((t) => !stopWords.has(t)).sort().join(" ");
-}
+import {
+  CANONICAL_TEST_REGISTRY,
+  buildCanonicalIndexes,
+  normalizeForLookup,
+} from "../lib/data/canonical-test-registry.js";
 
 // ── Inline tube colors + clean names from CDL specimen manual ──────────
 const CDL_SEED1: Record<string, { tube: string; name: string }> = {
@@ -6606,255 +6584,102 @@ async function main() {
     `  Price list "${dynacarePriceList.fileName}" with ${dynacarePriceList.tests.length} tests`
   );
 
-  // ── 6. Test Mappings (cross-lab comparison) ───────────────────────────
-  // Build lookup maps: code → test data (Map deduplicates codes, keeping last)
-  const cdlByCode = new Map(cdlTests.map((t) => [t.code, t]));
-  const dynByCode = new Map(dynacareTests.map((t) => [t.code, t]));
+  // ── 6. Test Mappings via Canonical Registry ─────────────────────────
+  // Deterministic: every raw test resolves to a canonical entry by code or alias.
+  const { byCode, byAlias } = buildCanonicalIndexes(CANONICAL_TEST_REGISTRY);
 
-  // Clean normalized names (used for Step A.5 matching)
-  const cdlCleanNameByCode = new Map(Object.entries(CDL_SEED1).map(([code, d]) => [code, d.name]));
-  const qcCleanNameByCode = new Map(Object.entries(QC_SEED1).map(([code, d]) => [code, d.name]));
+  // Group all raw tests (from both labs) by their resolved canonical entry
+  type LabTestInfo = { labId: string; rawTest: RawTest; dbTestId: string };
+  const canonicalGroups = new Map<string, { def: (typeof CANONICAL_TEST_REGISTRY)[number]; labs: LabTestInfo[] }>();
 
-  // Track used canonical names to prevent unique constraint violations
-  const usedCanonicalNames = new Set<string>();
-  let sharedByCodeCount = 0;
-  let sharedByCleanNameCount = 0;
-  let sharedByNameCount = 0;
-  let cdlOnlyCount = 0;
-  let dynOnlyCount = 0;
+  const allLabTests: { labId: string; rawTests: RawTest[]; dbTests: { id: string; name: string; code: string | null }[] }[] = [
+    { labId: cdlLab.id, rawTests: cdlTests, dbTests: cdlPriceList.tests },
+    { labId: dynacareLab.id, rawTests: dynacareTests, dbTests: dynacarePriceList.tests },
+  ];
 
-  // Step A: Tests with the SAME CODE in both labs → cross-lab mapping
-  const sharedCodes = Array.from(cdlByCode.keys()).filter((code) =>
-    dynByCode.has(code)
-  );
+  let resolvedCount = 0;
+  let unmatchedCount = 0;
 
-  for (const code of sharedCodes) {
-    const cdlTest = cdlByCode.get(code)!;
-    const dynTest = dynByCode.get(code)!;
-    const canonicalName = cdlTest.name;
+  for (const { labId, rawTests, dbTests } of allLabTests) {
+    // Build name→dbTest lookup for this lab
+    const dbTestByName = new Map(dbTests.map((t) => [t.name, t]));
 
-    if (usedCanonicalNames.has(canonicalName)) continue;
-    usedCanonicalNames.add(canonicalName);
+    for (const raw of rawTests) {
+      // Resolution order: code first, then normalized name
+      const def = byCode.get(raw.code) ?? byAlias.get(normalizeForLookup(raw.name));
+      if (!def) {
+        console.warn(`  ⚠ UNMATCHED: [${raw.code}] "${raw.name}" — add to canonical registry`);
+        unmatchedCount++;
+        continue;
+      }
 
-    await prisma.testMapping.create({
+      const dbTest = dbTestByName.get(raw.name);
+      if (!dbTest) continue; // shouldn't happen
+
+      if (!canonicalGroups.has(def.canonicalName)) {
+        canonicalGroups.set(def.canonicalName, { def, labs: [] });
+      }
+      canonicalGroups.get(def.canonicalName)!.labs.push({ labId, rawTest: raw, dbTestId: dbTest.id });
+      resolvedCount++;
+    }
+  }
+
+  console.log(`  ${resolvedCount} tests resolved via canonical registry`);
+  if (unmatchedCount > 0) console.warn(`  ⚠ ${unmatchedCount} tests UNMATCHED (update registry!)`);
+
+  // Create TestMapping + TestMappingEntry records, then link Tests via FK
+  let crossLabCount = 0;
+  let singleLabCount = 0;
+
+  for (const [canonicalName, { def, labs }] of Array.from(canonicalGroups)) {
+    // Deduplicate entries per lab (keep first occurrence)
+    const seenLabs = new Set<string>();
+    const uniqueLabs: LabTestInfo[] = [];
+    for (const entry of labs) {
+      if (!seenLabs.has(entry.labId)) {
+        seenLabs.add(entry.labId);
+        uniqueLabs.push(entry);
+      }
+    }
+
+    const mapping = await prisma.testMapping.create({
       data: {
         canonicalName,
-        code: cdlTest.code,
-        category:
-          cdlTest.type === "profile" ? "Profil" : "Individuel",
+        code: def.code,
+        category: def.category,
+        aliases: def.aliases,
         entries: {
-          create: [
-            {
-              laboratoryId: cdlLab.id,
-              localTestName: cdlTest.name,
-              matchType: "EXACT",
-              similarity: 1.0,
-              price: cdlTest.price,
-            },
-            {
-              laboratoryId: dynacareLab.id,
-              localTestName: dynTest.name,
-              matchType:
-                cdlTest.name === dynTest.name ? "EXACT" : "FUZZY",
-              similarity: cdlTest.name === dynTest.name ? 1.0 : 0.85,
-              price: dynTest.price,
-            },
-          ],
+          create: uniqueLabs.map((e) => ({
+            laboratoryId: e.labId,
+            localTestName: e.rawTest.name,
+            matchType: "EXACT" as const,
+            similarity: 1.0,
+            price: e.rawTest.price,
+          })),
         },
       },
+      include: { entries: true },
     });
-    sharedByCodeCount++;
-  }
-  console.log(
-    `  ${sharedByCodeCount} cross-lab test mappings (shared code)`
-  );
 
-  // Step A.5: Tests with DIFFERENT codes but SAME clean normalized name
-  // This catches variants like "VITAMINE D 25 OH" (CDL) vs "25-HYDROXY VITAMINE D" (Dynacare)
-  // which both map to "Vitamine D (25-OH)" via their clean names
-  const cdlOnlyCodes = Array.from(cdlByCode.keys()).filter((code) => !dynByCode.has(code));
-  const dynOnlyCodes = Array.from(dynByCode.keys()).filter((code) => !cdlByCode.has(code));
-
-  // Build map: normalizedCleanName → { code, test, rawCleanName } for Dynacare-only tests
-  const dynByNormClean = new Map<string, { code: string; test: RawTest; rawCleanName: string }>();
-  for (const code of dynOnlyCodes) {
-    const cleanName = qcCleanNameByCode.get(code);
-    if (cleanName) {
-      const norm = normalizeMedicalTestName(cleanName);
-      if (!dynByNormClean.has(norm)) {
-        dynByNormClean.set(norm, { code, test: dynByCode.get(code)!, rawCleanName: cleanName });
+    // Link each Test record to its TestMappingEntry via FK
+    for (const entry of mapping.entries) {
+      // Find all db test IDs for this lab in this canonical group
+      const labTests = labs.filter((l) => l.labId === entry.laboratoryId);
+      for (const lt of labTests) {
+        await prisma.test.update({
+          where: { id: lt.dbTestId },
+          data: { testMappingEntryId: entry.id },
+        });
       }
     }
+
+    if (uniqueLabs.length > 1) crossLabCount++;
+    else singleLabCount++;
   }
 
-  // For each CDL-only test, check if a Dynacare test shares the same normalized clean name
-  for (const code of cdlOnlyCodes) {
-    const cdlCleanName = cdlCleanNameByCode.get(code);
-    if (!cdlCleanName) continue;
-
-    const normCdl = normalizeMedicalTestName(cdlCleanName);
-    const dynMatch = dynByNormClean.get(normCdl);
-    if (!dynMatch) continue;
-
-    const cdlTest = cdlByCode.get(code)!;
-    const dynTest = dynMatch.test;
-
-    if (usedCanonicalNames.has(cdlCleanName)) continue;
-    usedCanonicalNames.add(cdlCleanName);
-
-    dynByNormClean.delete(normCdl);
-
-    await prisma.testMapping.create({
-      data: {
-        canonicalName: cdlCleanName,
-        code: cdlTest.code,
-        category: cdlTest.type === "profile" ? "Profil" : "Individuel",
-        entries: {
-          create: [
-            {
-              laboratoryId: cdlLab.id,
-              localTestName: cdlTest.name,
-              matchType: "FUZZY",
-              similarity: 0.9,
-              price: cdlTest.price,
-            },
-            {
-              laboratoryId: dynacareLab.id,
-              localTestName: dynTest.name,
-              matchType: "FUZZY",
-              similarity: 0.9,
-              price: dynTest.price,
-            },
-          ],
-        },
-      },
-    });
-    sharedByCleanNameCount++;
-
-    // Remove matched codes so Steps B/C skip them
-    cdlByCode.delete(code);
-    dynByCode.delete(dynMatch.code);
-  }
-  console.log(
-    `  ${sharedByCleanNameCount} cross-lab test mappings (clean name match)`
-  );
-
-  // Step B: Tests with DIFFERENT codes — match by NORMALIZED name → cross-lab mapping
-  // Build normalized-name lookup for Dyn-only tests (not matched by code or clean name)
-  const dynOnlyByNormName = new Map<string, { test: RawTest; normKey: string }>();
-  for (const [code, test] of Array.from(dynByCode)) {
-    if (!cdlByCode.has(code)) {
-      const normKey = normalizeMedicalTestName(test.name);
-      if (!dynOnlyByNormName.has(normKey)) {
-        dynOnlyByNormName.set(normKey, { test, normKey });
-      }
-    }
-  }
-
-  // CDL-only tests: check if normalized name matches a Dyn-only test
-  const cdlOnlyEntries = Array.from(cdlByCode.entries()).filter(
-    ([code]) => !dynByCode.has(code)
-  );
-
-  for (const [, test] of cdlOnlyEntries) {
-    if (usedCanonicalNames.has(test.name)) continue;
-
-    const normKey = normalizeMedicalTestName(test.name);
-    const dynMatch = dynOnlyByNormName.get(normKey);
-    if (dynMatch) {
-      // Normalized names match → cross-lab mapping
-      const isExact = test.name === dynMatch.test.name;
-      usedCanonicalNames.add(test.name);
-      dynOnlyByNormName.delete(normKey); // consumed
-
-      await prisma.testMapping.create({
-        data: {
-          canonicalName: test.name,
-          code: test.code,
-          category:
-            test.type === "profile" ? "Profil" : "Individuel",
-          entries: {
-            create: [
-              {
-                laboratoryId: cdlLab.id,
-                localTestName: test.name,
-                matchType: isExact ? "EXACT" : "FUZZY",
-                similarity: isExact ? 1.0 : 0.85,
-                price: test.price,
-              },
-              {
-                laboratoryId: dynacareLab.id,
-                localTestName: dynMatch.test.name,
-                matchType: isExact ? "EXACT" : "FUZZY",
-                similarity: isExact ? 1.0 : 0.85,
-                price: dynMatch.test.price,
-              },
-            ],
-          },
-        },
-      });
-      sharedByNameCount++;
-    } else {
-      // Truly CDL-only
-      usedCanonicalNames.add(test.name);
-
-      await prisma.testMapping.create({
-        data: {
-          canonicalName: test.name,
-          code: test.code,
-          category:
-            test.type === "profile" ? "Profil" : "Individuel",
-          entries: {
-            create: [
-              {
-                laboratoryId: cdlLab.id,
-                localTestName: test.name,
-                matchType: "EXACT",
-                similarity: 1.0,
-                price: test.price,
-              },
-            ],
-          },
-        },
-      });
-      cdlOnlyCount++;
-    }
-  }
-  console.log(
-    `  ${sharedByNameCount} cross-lab test mappings (normalized name match)`
-  );
-  console.log(`  ${cdlOnlyCount} CDL-only test mappings`);
-
-  // Step C: Remaining Dynacare-only tests (not matched by code, clean name, or normalized name)
-  const consumedDynNames = new Set<string>();
-  for (const [, { test }] of Array.from(dynOnlyByNormName)) {
-    if (usedCanonicalNames.has(test.name)) continue;
-    if (consumedDynNames.has(test.name)) continue;
-    consumedDynNames.add(test.name);
-    usedCanonicalNames.add(test.name);
-
-    await prisma.testMapping.create({
-      data: {
-        canonicalName: test.name,
-        code: test.code,
-        category:
-          test.type === "profile" ? "Profil" : "Individuel",
-        entries: {
-          create: [
-            {
-              laboratoryId: dynacareLab.id,
-              localTestName: test.name,
-              matchType: "EXACT",
-              similarity: 1.0,
-              price: test.price,
-            },
-          ],
-        },
-      },
-    });
-    dynOnlyCount++;
-  }
-  console.log(`  ${dynOnlyCount} Dynacare-only test mappings`);
+  console.log(`  ${crossLabCount} cross-lab test mappings`);
+  console.log(`  ${singleLabCount} single-lab test mappings`);
+  console.log(`  ${canonicalGroups.size} total canonical mappings`);
 
   // ── Bundle Deals ───────────────────────────────────────────────────
   await prisma.bundleDeal.deleteMany();
@@ -6871,7 +6696,7 @@ async function main() {
       icon: "🩸",
       popular: true,
       sortOrder: 0,
-      canonicalNames: ["CHOLESTÉROL, TOTAL", "CHOLESTÉROL HDL", "CHOLESTÉROL LDL", "TRIGLYCÉRIDES"],
+      canonicalNames: ["Cholestérol Total", "Cholestérol HDL", "Cholestérol LDL", "Triglycérides"],
       customRate: 150,
     },
     {
@@ -6881,7 +6706,7 @@ async function main() {
       icon: "🫁",
       popular: false,
       sortOrder: 1,
-      canonicalNames: ["AST (GOT, SGOT)", "ALT", "GGT", "BILIRUBINE, TOTALE"],
+      canonicalNames: ["AST (SGOT)", "ALT (SGPT)", "GGT", "Bilirubine Totale"],
       customRate: 130,
     },
     {
@@ -6891,7 +6716,7 @@ async function main() {
       icon: "🫀",
       popular: false,
       sortOrder: 2,
-      canonicalNames: ["CRÉATININE, SÉRUM", "URÉE", "ACIDE URIQUE"],
+      canonicalNames: ["Créatinine", "Urée", "Acide Urique"],
       customRate: 80,
     },
     {
@@ -6901,7 +6726,7 @@ async function main() {
       icon: "🧬",
       popular: false,
       sortOrder: 3,
-      canonicalNames: ["HORMONE DE STIMULATION THYROIDIENNE", "T3 LIBRE", "T4 LIBRE"],
+      canonicalNames: ["TSH", "T3 Libre", "T4 Libre"],
       customRate: 230,
     },
     {
@@ -6911,7 +6736,7 @@ async function main() {
       icon: "🤰",
       popular: false,
       sortOrder: 4,
-      canonicalNames: ["GROUPE SANGUIN & RH", "FORMULE SANGUINE COMPLÈTE (FSC)", "TOXOPLASMOSE IgG, IgM", "RUBÉOLE IGG", "VIH (VIRUS DE L\u2019IMMUNODÉFICIENCE HUMAINE)"],
+      canonicalNames: ["Groupe Sanguin & Rh", "Formule Sanguine Complète (FSC)", "TOXOPLASMOSE IgG, IgM", "Rubéole IgG", "HIV (VIH) Dépistage"],
       customRate: 380,
     },
   ];
@@ -7030,12 +6855,11 @@ async function main() {
 
   // ── Summary ───────────────────────────────────────────────────────────
   const totalTests = cdlPriceList.tests.length + dynacarePriceList.tests.length;
-  const totalMappings = sharedByCodeCount + sharedByNameCount + cdlOnlyCount + dynOnlyCount;
   console.log("\nSeeding completed!");
   console.log(`   - 1 admin user`);
   console.log(`   - 2 laboratories (CDL, Dynacare)`);
   console.log(`   - 2 price lists (${totalTests} tests total)`);
-  console.log(`   - ${totalMappings} test mappings`);
+  console.log(`   - ${canonicalGroups.size} canonical test mappings (${crossLabCount} cross-lab, ${singleLabCount} single-lab)`);
   console.log(`   - 1 default email template`);
 }
 

@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
         FROM "tests" t
         INNER JOIN "price_lists" pl ON t."price_list_id" = pl.id
         INNER JOIN "laboratories" l ON pl."laboratory_id" = l.id
-        LEFT JOIN "test_mapping_entries" tme ON tme."local_test_name" = t.name AND tme."laboratory_id" = l.id
+        LEFT JOIN "test_mapping_entries" tme ON tme.id = t."test_mapping_entry_id"
         LEFT JOIN "test_mappings" tm ON tm.id = tme."test_mapping_id"
         ${whereClause}
       `;

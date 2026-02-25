@@ -10,10 +10,14 @@ const SYNONYM_MAP: [RegExp, string[]][] = [
   [/\bacide\s+folique/i, ["folate"]],
   [/\bvitamine?\s*d\b/i, ["25-oh", "25-hydroxy"]],
   [/\b25[\s-]?oh\b/i, ["vitamine d"]],
-  [/\bhba1c\b/i, ["hemoglobine glyquee"]],
+  [/\bhba1c\b/i, ["hemoglobine glyquee", "hemoglobine a1c"]],
   [/\bglyqu/i, ["hba1c"]],
+  [/\bhemoglobine\b/i, ["hba1c"]],
   [/\bsgpt\b/i, ["alt"]],
   [/\bsgot\b/i, ["ast"]],
+  [/\bphosphate\b/i, ["phosphore"]],
+  [/\bphosphore\b/i, ["phosphate"]],
+  [/\bfer\b/i, ["ferritine", "iron"]],
 ];
 
 function expandSearchSynonyms(query: string): string[] {
@@ -83,7 +87,7 @@ export async function searchTests(
     'FROM "tests" t',
     'INNER JOIN "price_lists" pl ON t."price_list_id" = pl.id',
     'INNER JOIN "laboratories" l ON pl."laboratory_id" = l.id',
-    `LEFT JOIN "test_mapping_entries" tme ON regexp_replace(LOWER(tme."local_test_name"), '[^a-z0-9]+', '', 'g') = ${normalizedNameExpr} AND tme."laboratory_id" = l.id`,
+    'LEFT JOIN "test_mapping_entries" tme ON tme.id = t."test_mapping_entry_id"',
     'LEFT JOIN "test_mappings" tm ON tm.id = tme."test_mapping_id"',
     'WHERE pl."is_active" = true',
     '  AND l."deleted_at" IS NULL',
@@ -138,45 +142,6 @@ export async function searchTests(
       canonicalName: string | null;
     }>
   >(sql, ...params);
-}
-
-/**
- * Find tests across all laboratories that best match a given reference test name.
- * Returns the single best-matching test per laboratory.
- */
-export async function findMatchingTests(
-  referenceTestName: string,
-  options?: { threshold?: number }
-) {
-  const { threshold = 0.15 } = options ?? {};
-
-  const sql = [
-    "SELECT DISTINCT ON (l.id)",
-    '  t.id AS "testId",',
-    '  t.name AS "testName",',
-    "  t.price,",
-    '  l.id AS "laboratoryId",',
-    '  l.name AS "laboratoryName",',
-    "  similarity(LOWER(t.name), LOWER($1)) AS similarity",
-    'FROM "tests" t',
-    'INNER JOIN "price_lists" pl ON t."price_list_id" = pl.id',
-    'INNER JOIN "laboratories" l ON pl."laboratory_id" = l.id',
-    'WHERE pl."is_active" = true',
-    '  AND l."deleted_at" IS NULL',
-    "  AND similarity(LOWER(t.name), LOWER($1)) >= $2",
-    "ORDER BY l.id, similarity DESC",
-  ].join("\n");
-
-  return prisma.$queryRawUnsafe<
-    Array<{
-      testId: string;
-      testName: string;
-      price: number;
-      laboratoryId: string;
-      laboratoryName: string;
-      similarity: number;
-    }>
-  >(sql, referenceTestName, threshold);
 }
 
 /**
@@ -333,17 +298,4 @@ export async function updateTestMapping(
 /** Delete a test mapping and its entries (cascade). */
 export async function deleteTestMapping(id: string) {
   return prisma.testMapping.delete({ where: { id } });
-}
-
-/** Calculate trigram similarity between two strings. */
-export async function calculateSimilarity(
-  textA: string,
-  textB: string
-): Promise<number> {
-  const result = await prisma.$queryRawUnsafe<Array<{ similarity: number }>>(
-    "SELECT similarity($1, $2) AS similarity",
-    textA,
-    textB
-  );
-  return result[0]?.similarity ?? 0;
 }

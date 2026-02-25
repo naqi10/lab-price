@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/tooltip";
 import { useDebounce } from "@/hooks/use-debounce";
 import { parseTubeColor } from "@/lib/tube-colors";
-import { normalizeMedicalTestName } from "@/lib/utils";
 import MatchIndicator from "./match-indicator";
 
 interface SearchResult {
@@ -35,12 +34,10 @@ export default function TestSearch({
   onAddToCart,
   onRemoveFromCart,
   cartItemIds,
-  cartItemNameKeys,
 }: {
   onAddToCart?: (test: SearchResult) => void;
   onRemoveFromCart?: (testMappingId: string) => void;
   cartItemIds?: Set<string>;
-  cartItemNameKeys?: Set<string>;
 }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -58,31 +55,28 @@ export default function TestSearch({
 
   const limited = results.slice(0, 12);
 
-  // Group ALL results by normalized name so equivalent tests across labs merge
+  // Group ALL results by testMappingId so equivalent tests across labs merge
   const grouped = useMemo(() => {
-    const normMap = new Map<string, SearchResult[]>();
+    const groupMap = new Map<string, SearchResult[]>();
 
     for (const test of limited) {
-      const normKey = normalizeMedicalTestName(test.canonicalName || test.name);
-      const existing = normMap.get(normKey);
+      const groupKey = test.testMappingId || `unmapped-${test.id}`;
+      const existing = groupMap.get(groupKey);
       if (existing) existing.push(test);
-      else normMap.set(normKey, [test]);
+      else groupMap.set(groupKey, [test]);
     }
 
     const groups: {
       key: string;
       testMappingId: string | null;
       canonicalName: string | null;
-      canonicalKey: string;
       tests: SearchResult[];
     }[] = [];
 
-    for (const [normKey, tests] of normMap) {
-      // Propagate testMappingId from any test in the group that has one
+    for (const [groupKey, tests] of groupMap) {
       const mapped = tests.find((t) => t.testMappingId);
       groups.push({
-        key: normKey,
-        canonicalKey: normKey,
+        key: groupKey,
         testMappingId: mapped?.testMappingId ?? null,
         canonicalName: mapped?.canonicalName ?? null,
         tests,
@@ -135,12 +129,9 @@ export default function TestSearch({
               const isMultiLab = group.testMappingId != null && group.tests.length > 1;
               const primary = group.tests[0];
               const displayName = isMultiLab ? (group.canonicalName || primary.name) : primary.name;
-              const nameKey = group.canonicalKey;
               const selectedMappingId = group.tests.find((t) => t.testMappingId && cartItemIds?.has(t.testMappingId))?.testMappingId
                 ?? group.testMappingId;
-              const inCart =
-                (!!group.testMappingId && !!cartItemIds?.has(group.testMappingId)) ||
-                !!cartItemNameKeys?.has(nameKey);
+              const inCart = !!group.testMappingId && !!cartItemIds?.has(group.testMappingId);
               const tube = parseTubeColor(primary.tubeType);
 
               return (
