@@ -116,29 +116,40 @@ export function truncate(text: string, length: number = 100): string {
  * This keeps business logic intact while making matching resilient to:
  * - accents/punctuation/case differences
  * - token order changes ("A and B" vs "B and A")
- * - common synonyms (vitamin b12/cobalamin, folic acid/folate)
+ * - common synonyms (vitamin b12/cobalamin, folic acid/folate, vitamine d/25-OH)
+ * - number format differences (#1 vs No 1 vs No. 1)
  */
 export function normalizeMedicalTestName(text: string): string {
   const base = text
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
+    // ── Synonym mappings (order matters: specific → general) ──────────
+    // Vitamin B12 variants
     .replace(/\bvit(?:amine)?\s*b[\s-]*12\b/g, " vitaminb12 ")
     .replace(/\bcobalamin(?:e)?\b/g, " vitaminb12 ")
-    .replace(/\b(acide\s+folique|folic\s+acid|folate)\b/g, " folicacid ")
+    // Folate variants
+    .replace(/\b(acide\s+folique|folic\s+acid|folate[s]?)\b/g, " folicacid ")
+    // Vitamin D variants
+    .replace(/\b25[\s-]*(oh|hydroxy(?:vitamine?\s*d)?)\b/g, " vitamind ")
+    .replace(/\bvit(?:amine)?\s*d\b/g, " vitamind ")
+    // HbA1c variants
+    .replace(/\b(hba1c|hemoglobine?\s*glyqu(?:e|ee)|glycated\s*h(?:a?e)moglobin)\b/g, " hba1c ")
+    // ALT/AST enzyme aliases
+    .replace(/\bsgpt\b/g, " alt ")
+    .replace(/\bsgot\b/g, " ast ")
+    // Number format normalization: #1, No 1, No. 1 → just the digit
+    .replace(/#\s*(\d+)/g, " $1 ")
+    .replace(/\bno\.?\s*(\d+)/g, " $1 ")
+    // Strip special chars, keep only alphanumeric
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
   const stopWords = new Set([
-    "and",
-    "et",
-    "de",
-    "du",
-    "des",
-    "the",
-    "test",
-    "analyse",
-    "analysis",
+    "and", "et", "de", "du", "des", "the", "la", "le", "les",
+    "test", "analyse", "analysis",
+    "serique", "serum", "plasma", "sang",
+    "profil", "profile",
   ]);
 
   return base

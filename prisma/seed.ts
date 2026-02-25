@@ -2,6 +2,34 @@ import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../app/generated/prisma/index.js";
 import * as bcryptjs from "bcryptjs";
+
+// ── Inline normalization (same as lib/utils.ts — kept in sync) ─────────
+function normalizeMedicalTestName(text: string): string {
+  const base = text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\bvit(?:amine)?\s*b[\s-]*12\b/g, " vitaminb12 ")
+    .replace(/\bcobalamin(?:e)?\b/g, " vitaminb12 ")
+    .replace(/\b(acide\s+folique|folic\s+acid|folate[s]?)\b/g, " folicacid ")
+    .replace(/\b25[\s-]*(oh|hydroxy(?:vitamine?\s*d)?)\b/g, " vitamind ")
+    .replace(/\bvit(?:amine)?\s*d\b/g, " vitamind ")
+    .replace(/\b(hba1c|hemoglobine?\s*glyqu(?:e|ee)|glycated\s*h(?:a?e)moglobin)\b/g, " hba1c ")
+    .replace(/\bsgpt\b/g, " alt ")
+    .replace(/\bsgot\b/g, " ast ")
+    .replace(/#\s*(\d+)/g, " $1 ")
+    .replace(/\bno\.?\s*(\d+)/g, " $1 ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+  const stopWords = new Set([
+    "and", "et", "de", "du", "des", "the", "la", "le", "les",
+    "test", "analyse", "analysis",
+    "serique", "serum", "plasma", "sang",
+    "profil", "profile",
+  ]);
+  return base.split(" ").filter(Boolean).filter((t) => !stopWords.has(t)).sort().join(" ");
+}
+
 // ── Inline tube colors + clean names from CDL specimen manual ──────────
 const CDL_SEED1: Record<string, { tube: string; name: string }> = {
   HIAA: { tube: "24h Urine Container", name: "5-HIAA (5-Hydroxyindoleacetic Acid)" },
@@ -6647,21 +6675,25 @@ async function main() {
   const cdlOnlyCodes = Array.from(cdlByCode.keys()).filter((code) => !dynByCode.has(code));
   const dynOnlyCodes = Array.from(dynByCode.keys()).filter((code) => !cdlByCode.has(code));
 
-  // Build map: cleanName → { code, test } for Dynacare-only tests
-  const dynByCleanName = new Map<string, { code: string; test: RawTest }>();
+  // Build map: normalizedCleanName → { code, test, rawCleanName } for Dynacare-only tests
+  const dynByNormClean = new Map<string, { code: string; test: RawTest; rawCleanName: string }>();
   for (const code of dynOnlyCodes) {
     const cleanName = qcCleanNameByCode.get(code);
     if (cleanName) {
-      dynByCleanName.set(cleanName, { code, test: dynByCode.get(code)! });
+      const norm = normalizeMedicalTestName(cleanName);
+      if (!dynByNormClean.has(norm)) {
+        dynByNormClean.set(norm, { code, test: dynByCode.get(code)!, rawCleanName: cleanName });
+      }
     }
   }
 
-  // For each CDL-only test, check if a Dynacare test shares the same clean name
+  // For each CDL-only test, check if a Dynacare test shares the same normalized clean name
   for (const code of cdlOnlyCodes) {
     const cdlCleanName = cdlCleanNameByCode.get(code);
     if (!cdlCleanName) continue;
 
-    const dynMatch = dynByCleanName.get(cdlCleanName);
+    const normCdl = normalizeMedicalTestName(cdlCleanName);
+    const dynMatch = dynByNormClean.get(normCdl);
     if (!dynMatch) continue;
 
     const cdlTest = cdlByCode.get(code)!;
@@ -6670,7 +6702,7 @@ async function main() {
     if (usedCanonicalNames.has(cdlCleanName)) continue;
     usedCanonicalNames.add(cdlCleanName);
 
-    dynByCleanName.delete(cdlCleanName);
+    dynByNormClean.delete(normCdl);
 
     await prisma.testMapping.create({
       data: {
@@ -6707,16 +6739,19 @@ async function main() {
     `  ${sharedByCleanNameCount} cross-lab test mappings (clean name match)`
   );
 
-  // Step B: Tests with DIFFERENT codes but SAME NAME → cross-lab mapping
-  // Build name lookup for Dyn-only tests (not matched by code above)
-  const dynOnlyByName = new Map<string, RawTest>();
+  // Step B: Tests with DIFFERENT codes — match by NORMALIZED name → cross-lab mapping
+  // Build normalized-name lookup for Dyn-only tests (not matched by code or clean name)
+  const dynOnlyByNormName = new Map<string, { test: RawTest; normKey: string }>();
   for (const [code, test] of Array.from(dynByCode)) {
     if (!cdlByCode.has(code)) {
-      dynOnlyByName.set(test.name, test);
+      const normKey = normalizeMedicalTestName(test.name);
+      if (!dynOnlyByNormName.has(normKey)) {
+        dynOnlyByNormName.set(normKey, { test, normKey });
+      }
     }
   }
 
-  // CDL-only tests: check if name matches a Dyn-only test
+  // CDL-only tests: check if normalized name matches a Dyn-only test
   const cdlOnlyEntries = Array.from(cdlByCode.entries()).filter(
     ([code]) => !dynByCode.has(code)
   );
@@ -6724,11 +6759,13 @@ async function main() {
   for (const [, test] of cdlOnlyEntries) {
     if (usedCanonicalNames.has(test.name)) continue;
 
-    const dynMatch = dynOnlyByName.get(test.name);
+    const normKey = normalizeMedicalTestName(test.name);
+    const dynMatch = dynOnlyByNormName.get(normKey);
     if (dynMatch) {
-      // Same name, different code → cross-lab mapping
+      // Normalized names match → cross-lab mapping
+      const isExact = test.name === dynMatch.test.name;
       usedCanonicalNames.add(test.name);
-      dynOnlyByName.delete(test.name); // consumed
+      dynOnlyByNormName.delete(normKey); // consumed
 
       await prisma.testMapping.create({
         data: {
@@ -6741,16 +6778,16 @@ async function main() {
               {
                 laboratoryId: cdlLab.id,
                 localTestName: test.name,
-                matchType: "EXACT",
-                similarity: 1.0,
+                matchType: isExact ? "EXACT" : "FUZZY",
+                similarity: isExact ? 1.0 : 0.85,
                 price: test.price,
               },
               {
                 laboratoryId: dynacareLab.id,
-                localTestName: dynMatch.name,
-                matchType: "EXACT",
-                similarity: 1.0,
-                price: dynMatch.price,
+                localTestName: dynMatch.test.name,
+                matchType: isExact ? "EXACT" : "FUZZY",
+                similarity: isExact ? 1.0 : 0.85,
+                price: dynMatch.test.price,
               },
             ],
           },
@@ -6784,13 +6821,16 @@ async function main() {
     }
   }
   console.log(
-    `  ${sharedByNameCount} cross-lab test mappings (same name, different code)`
+    `  ${sharedByNameCount} cross-lab test mappings (normalized name match)`
   );
   console.log(`  ${cdlOnlyCount} CDL-only test mappings`);
 
-  // Step C: Remaining Dynacare-only tests (not matched by code or name)
-  for (const [, test] of Array.from(dynOnlyByName)) {
+  // Step C: Remaining Dynacare-only tests (not matched by code, clean name, or normalized name)
+  const consumedDynNames = new Set<string>();
+  for (const [, { test }] of Array.from(dynOnlyByNormName)) {
     if (usedCanonicalNames.has(test.name)) continue;
+    if (consumedDynNames.has(test.name)) continue;
+    consumedDynNames.add(test.name);
     usedCanonicalNames.add(test.name);
 
     await prisma.testMapping.create({

@@ -1,9 +1,34 @@
 import prisma from "@/lib/db";
 
+// ── Search synonym expansion ─────────────────────────────────────────
+// Maps known query fragments to alternative search terms so that
+// searching "b12" also finds "cobalamine", "vitamine d" finds "25-oh", etc.
+const SYNONYM_MAP: [RegExp, string[]][] = [
+  [/\bb[\s-]*12\b/i, ["vitamine b12", "cobalamine"]],
+  [/\bcobalamin/i, ["vitamine b12", "b12"]],
+  [/\bfolate/i, ["acide folique"]],
+  [/\bacide\s+folique/i, ["folate"]],
+  [/\bvitamine?\s*d\b/i, ["25-oh", "25-hydroxy"]],
+  [/\b25[\s-]?oh\b/i, ["vitamine d"]],
+  [/\bhba1c\b/i, ["hemoglobine glyquee"]],
+  [/\bglyqu/i, ["hba1c"]],
+  [/\bsgpt\b/i, ["alt"]],
+  [/\bsgot\b/i, ["ast"]],
+];
+
+function expandSearchSynonyms(query: string): string[] {
+  const extras: string[] = [];
+  for (const [pattern, synonyms] of SYNONYM_MAP) {
+    if (pattern.test(query)) extras.push(...synonyms);
+  }
+  return extras;
+}
+
 /**
  * Search for lab tests using a hybrid approach:
  *   1. ILIKE prefix/substring match (fast, exact)
  *   2. pg_trgm similarity (fuzzy fallback)
+ *   3. Synonym expansion (b12 → cobalamine, vitamine d → 25-oh, etc.)
  *
  * Results are ranked by: exact prefix > substring > trigram similarity.
  * Threshold raised to 0.15 for trigram, but ILIKE matches are always
@@ -26,15 +51,12 @@ export async function searchTests(
   const normalizedQueryExpr = "regexp_replace(LOWER($1), '[^a-z0-9]+', '', 'g')";
   const normalizedCanonicalExpr = `regexp_replace(LOWER(tm."canonical_name"), '[^a-z0-9]+', '', 'g')`;
 
-  // Build parameterized query — lab filter uses $4 when present (no string interpolation)
-  const labFilterClause = laboratoryId
-    ? 'AND pl."laboratory_id" = $4'
-    : "";
+  // Synonym expansion: generate extra search terms for known aliases
+  const synonyms = expandSearchSynonyms(query);
 
-  // Hybrid ranking: ILIKE matches get a boost so they always rank above fuzzy-only hits.
-  // For short queries (≤4 chars), rely primarily on ILIKE since trigram similarity
-  // is unreliable for short strings.
-  const sql = [
+  // Build parameterized query — base params: $1=query, $2=threshold, $3=limit
+  // Synonym params start at $4 (or $5 if labId is present)
+  const baseSqlParts = [
     "SELECT",
     "  t.id,",
     "  t.name,",
@@ -65,20 +87,38 @@ export async function searchTests(
     'LEFT JOIN "test_mappings" tm ON tm.id = tme."test_mapping_id"',
     'WHERE pl."is_active" = true',
     '  AND l."deleted_at" IS NULL',
-    "  " + labFilterClause,
-    "  AND (",
+  ];
+
+  const params: (string | number)[] = [query, threshold, limit];
+
+  // Lab filter
+  if (laboratoryId) {
+    baseSqlParts.push(`  AND pl."laboratory_id" = $${params.length + 1}`);
+    params.push(laboratoryId);
+  }
+
+  // WHERE match conditions — primary query
+  const matchConditions = [
     "    t.name ILIKE '%' || $1 || '%'",
     "    OR t.code ILIKE $1",
     `    OR tm."canonical_name" ILIKE '%' || $1 || '%'`,
     `    OR similarity(${normalizedNameExpr}, ${normalizedQueryExpr}) >= $2`,
     `    OR ${normalizedCanonicalExpr} = ${normalizedQueryExpr}`,
-    "  )",
-    "ORDER BY similarity DESC, t.name ASC",
-    "LIMIT $3",
-  ].join("\n");
+  ];
 
-  const params: (string | number)[] = [query, threshold, limit];
-  if (laboratoryId) params.push(laboratoryId);
+  // Add synonym expansion — each synonym gets an ILIKE condition
+  for (const syn of synonyms) {
+    const idx = params.length + 1;
+    matchConditions.push(`    OR t.name ILIKE '%' || $${idx} || '%'`);
+    matchConditions.push(`    OR tm."canonical_name" ILIKE '%' || $${idx} || '%'`);
+    params.push(syn);
+  }
+
+  baseSqlParts.push("  AND (", ...matchConditions, "  )");
+  baseSqlParts.push("ORDER BY similarity DESC, t.name ASC");
+  baseSqlParts.push(`LIMIT $3`);
+
+  const sql = baseSqlParts.join("\n");
 
   return prisma.$queryRawUnsafe<
     Array<{

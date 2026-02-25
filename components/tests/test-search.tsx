@@ -58,8 +58,17 @@ export default function TestSearch({
 
   const limited = results.slice(0, 12);
 
-  // Group results by testMappingId for cleaner display
+  // Group ALL results by normalized name so equivalent tests across labs merge
   const grouped = useMemo(() => {
+    const normMap = new Map<string, SearchResult[]>();
+
+    for (const test of limited) {
+      const normKey = normalizeMedicalTestName(test.canonicalName || test.name);
+      const existing = normMap.get(normKey);
+      if (existing) existing.push(test);
+      else normMap.set(normKey, [test]);
+    }
+
     const groups: {
       key: string;
       testMappingId: string | null;
@@ -67,36 +76,16 @@ export default function TestSearch({
       canonicalKey: string;
       tests: SearchResult[];
     }[] = [];
-    const mappingGroups = new Map<string, SearchResult[]>();
-    const ungrouped: SearchResult[] = [];
 
-    for (const test of limited) {
-      if (test.testMappingId) {
-        const canonicalKey = normalizeMedicalTestName(test.canonicalName || test.name);
-        const existing = mappingGroups.get(canonicalKey);
-        if (existing) existing.push(test);
-        else mappingGroups.set(canonicalKey, [test]);
-      } else {
-        ungrouped.push(test);
-      }
-    }
-
-    for (const [canonicalKey, tests] of mappingGroups) {
+    for (const [normKey, tests] of normMap) {
+      // Propagate testMappingId from any test in the group that has one
+      const mapped = tests.find((t) => t.testMappingId);
       groups.push({
-        key: canonicalKey,
-        canonicalKey,
-        testMappingId: tests[0].testMappingId,
-        canonicalName: tests[0].canonicalName,
+        key: normKey,
+        canonicalKey: normKey,
+        testMappingId: mapped?.testMappingId ?? null,
+        canonicalName: mapped?.canonicalName ?? null,
         tests,
-      });
-    }
-    for (const test of ungrouped) {
-      groups.push({
-        key: test.id,
-        canonicalKey: normalizeMedicalTestName(test.name),
-        testMappingId: null,
-        canonicalName: null,
-        tests: [test],
       });
     }
 
