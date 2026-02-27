@@ -59,6 +59,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "1.25-DIHYDROXY- VITAMINE D",
       "1.25-DIHYDROXY-VITAMINE D",
+      "VITAMINE D 1,25 OH",
     ],
   },
   {
@@ -68,6 +69,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "17- HYDROXY- PROGESTERONE (17-OH-PROGESTERONE)",
       "17-HYDROXY-PROGESTERONE",
+      "PROGESTÉRONE 17-OH",
     ],
   },
   {
@@ -77,6 +79,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "25-HYDROXY VITAMINE D (CHOLECALCIFEROL)",
       "25-HYDROXY VITAMINE D",
+      "VITAMINE D 25 OH",
     ],
   },
   {
@@ -170,6 +173,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "ACIDE FOLIQUE (FOLATE)",
+      "ACIDE FOLIQUE",
     ],
   },
   {
@@ -178,6 +182,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "ACIDE FOLIQUE ET VITAMINE B12",
+      "VITAMINE B12 ET ACIDE FOLIQUE",
     ],
   },
   {
@@ -236,6 +241,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "ACIDE URIQUE - URINES DE 24 HEURES",
+      "ACIDE URIQUE, URINE 24 HEURES",
     ],
   },
   {
@@ -244,6 +250,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "ACIDE VALPROÏQUE (DEPAKENE)",
+      "ACIDE VALPROÏQUE",
     ],
   },
   {
@@ -318,6 +325,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "ALCOOL (ETHANOL) URINE",
       "ALCOOL (ETHANOL) - URINE",
+      "ÉTHANOL, URINE",
     ],
   },
   {
@@ -359,6 +367,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "ALPHA 1 ANTITRYPSINE",
       "ALPHA 1-ANTITRYPSINE",
+      "ALPHA 1- ANTITRYPSINE",
     ],
   },
   {
@@ -451,6 +460,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "ANALYSE D'URINE",
+      "URINE, ANALYSE",
     ],
   },
   {
@@ -660,6 +670,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "ANTICORPS ANTI-CYTOMEGALOVIRUS DE TYPE IGG",
       "ANTICORPS ANTI-CYTOMEGALOVIRUS IGG",
+      "CYTOMÉGALOVIRUS IGG",
     ],
   },
   {
@@ -669,6 +680,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "ANTICORPS ANTI-CYTOPLASME DES NEUTROPHILES (ANCA)",
       "ANTICORPS ANTI-CYTOPLASME DES NEUTROPHILES",
+      "ANTI-CYTOPLASME DES NEUTROPHILES, ANTICORPS",
     ],
   },
   {
@@ -710,6 +722,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "ANTICORPS ANTI-FACTEUR INTRINSÈQUE",
+      "FACTEUR INTRINSÈQUE ANTICORPS",
     ],
   },
   {
@@ -718,6 +731,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "ANTICORPS ANTI-GLIADINE DE TYPE IGG",
+      "ANTI-GLIADINE IGG",
     ],
   },
   {
@@ -867,6 +881,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "ANTICORPS DE TYPE IGG DIRIGÉS CONTRE LE VIRUS DE LA RUBÉOLE",
       "ANTICORPS ANTI-RUBÉOLE IGG",
+      "RUBÉOLE IGG",
     ],
   },
   {
@@ -892,6 +907,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "ANTICORPS ANTI-TRANSGLUTAMINASE DE TYPE IGA",
       "ANTICORPS ANTI-TRANSGLUTAMINASE IGA",
+      "ANTI-TRANSGLUTAMINASE IGA",
     ],
   },
   {
@@ -950,6 +966,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "ANTIGÈNE DE SURFACE DE L'HÉPATITE B (HBSAG)",
       "ANTIGÈNE DE SURFACE HÉPATITE B (HBSAG)",
+      "HÉPATITE B ANTIGÈNE DE SURFACE",
     ],
   },
   {
@@ -1178,6 +1195,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "BILIRUBINE DIRECTE/CONJUGUÉE",
+      "BILIRUBINE, DIRECTE",
     ],
   },
   {
@@ -1449,6 +1467,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "CARBAMAZEPINE (TEGRETOL)",
+      "CARBAMAZÉPINE",
     ],
   },
   {
@@ -3829,8 +3848,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     code: "PHOS",
     category: "Individuel",
     aliases: [
-      "ANTIPHOSPHOLIPINE IGM, IGG",
       "PHOSPHORE",
+    ],
+  },
+  {
+    canonicalName: "Antiphospholipine IGM IGG",
+    code: "PHOS_MG",
+    category: "Individuel",
+    aliases: [
+      "ANTIPHOSPHOLIPINE IGM, IGG",
     ],
   },
   {
@@ -4704,6 +4730,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "VITAMINE B12",
+      "VITAMINE B12 (CYANOCOBALAMINE)",
     ],
   },
   {
@@ -4720,6 +4747,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "VITESSE DE SÉDIMENTATION",
+      "SÉDIMENTATION, VITESSE DE",
     ],
   },
   {

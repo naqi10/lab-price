@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import LabForm from "@/components/laboratories/lab-form";
-import PriceListUpload from "@/components/laboratories/price-list-upload";
+
 import PriceListTable from "@/components/laboratories/price-list-table";
 import { useLaboratory } from "@/hooks/use-laboratories";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -95,7 +95,6 @@ export default function LaboratoryDetailPage() {
         <TabsList>
           <TabsTrigger value="info">Informations</TabsTrigger>
           <TabsTrigger value="pricelists">Listes de prix</TabsTrigger>
-          <TabsTrigger value="upload">Importer</TabsTrigger>
         </TabsList>
         <TabsContent value="info" className="max-w-2xl">
           <LabForm defaultValues={laboratory} onSubmit={handleUpdate} />
@@ -111,9 +110,6 @@ export default function LaboratoryDetailPage() {
               onActivate={fetchPriceLists}
             />
           )}
-        </TabsContent>
-        <TabsContent value="upload">
-          <PriceListUpload laboratoryId={id} onUploadComplete={fetchPriceLists} />
         </TabsContent>
       </Tabs>
     </>

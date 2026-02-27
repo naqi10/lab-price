@@ -66,29 +66,73 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
     specimenByCode.set(s.code, s);
   }
 
-  // Deduplicate CDL: prefer non-null category entries
-  const cdlByCode = new Map<string, (typeof cdlRaw)[number]>();
+  // Comprehensive tube type map from CDL 2026 catalog image
+  const tubeMap: Record<string, string | null> = JSON.parse(
+    fs.readFileSync(path.join(rootDir, "prisma/cdl-tube-map.json"), "utf8")
+  );
+
+  // Deduplicate CDL: prefer non-null category entries,
+  // BUT keep both when they are genuinely different tests sharing a code
+  const cdlByCode = new Map<string, (typeof cdlRaw)[number][]>();
   for (const t of cdlRaw) {
     if (!cdlByCode.has(t.code)) {
-      cdlByCode.set(t.code, t);
-    } else if (t.category !== null && cdlByCode.get(t.code)!.category === null) {
-      cdlByCode.set(t.code, t);
+      cdlByCode.set(t.code, [t]);
+    } else {
+      cdlByCode.get(t.code)!.push(t);
     }
   }
 
-  // Convert CDL to RawTest format, enriched with specimen data
   const cdlTests: RawTest[] = [];
-  for (const t of cdlByCode.values()) {
-    const spec = specimenByCode.get(t.code);
-    cdlTests.push({
-      code: t.code,
-      name: t.raw_name,
-      description: t.raw_name,
-      specimen: spec?.tube ?? "",
-      price: t.price,
-      turnaroundTime: spec?.turnaroundTime ? `${spec.turnaroundTime} jour(s)` : "",
-      type: t.type === "profile" ? "profile" : "individual",
-    });
+  for (const [, entries] of cdlByCode) {
+    if (entries.length === 1) {
+      // Single entry — straightforward
+      const t = entries[0];
+      const spec = specimenByCode.get(t.code);
+      const tubeType = spec?.tube || tubeMap[t.code] || "";
+      cdlTests.push({
+        code: t.code,
+        name: t.raw_name,
+        description: t.raw_name,
+        specimen: typeof tubeType === "string" ? tubeType : "",
+        price: t.price,
+        turnaroundTime: spec?.turnaroundTime ? `${spec.turnaroundTime} jour(s)` : "",
+        type: t.type === "profile" ? "profile" : "individual",
+      });
+    } else {
+      // Multiple entries sharing same code — check if genuinely different tests
+      const withCat = entries.filter((e) => e.category !== null);
+      const withoutCat = entries.filter((e) => e.category === null);
+
+      // Check if there's a genuine name conflict (e.g. PHOS: Antiphospholipine vs Phosphore)
+      const namesSimilar = (a: string, b: string) => {
+        const na = a.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const nb = b.toLowerCase().replace(/[^a-z0-9]/g, "");
+        return na.includes(nb) || nb.includes(na) || na === nb;
+      };
+
+      // Prefer category entry, but also keep any genuinely different null-category entries
+      const kept = withCat.length > 0 ? [withCat[0]] : [entries[0]];
+      for (const alt of withoutCat) {
+        const isDuplicate = kept.some((k) => namesSimilar(k.raw_name, alt.raw_name));
+        if (!isDuplicate) {
+          kept.push(alt); // Genuinely different test (e.g. PHOS/Phosphore, TRYP/Alpha-1-Antitrypsine)
+        }
+      }
+
+      for (const t of kept) {
+        const spec = specimenByCode.get(t.code);
+        const tubeType = spec?.tube || tubeMap[t.code] || "";
+        cdlTests.push({
+          code: t.code,
+          name: t.raw_name,
+          description: t.raw_name,
+          specimen: typeof tubeType === "string" ? tubeType : "",
+          price: t.price,
+          turnaroundTime: spec?.turnaroundTime ? `${spec.turnaroundTime} jour(s)` : "",
+          type: t.type === "profile" ? "profile" : "individual",
+        });
+      }
+    }
   }
 
   // Convert Dynacare to RawTest format
@@ -237,9 +281,12 @@ async function main() {
     const dbTestByName = new Map(dbTests.map((t) => [t.name, t]));
 
     for (const raw of rawTests) {
-      // Resolution order: code first, then normalized name
-      const def =
-        byCode.get(raw.code) ?? byAlias.get(normalizeForLookup(raw.name));
+      // Resolution: try both code and name lookup; prefer name match when it
+      // finds a different canonical entry (handles code collisions like PHOS/TRYP)
+      const normalizedName = normalizeForLookup(raw.name);
+      const codeDef = byCode.get(raw.code);
+      const nameDef = byAlias.get(normalizedName);
+      const def = (nameDef && nameDef !== codeDef) ? nameDef : (codeDef ?? nameDef);
       if (!def) {
         console.warn(
           `  ⚠ UNMATCHED: [${raw.code}] "${raw.name}" — add to canonical registry`

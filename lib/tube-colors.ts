@@ -18,6 +18,7 @@ const TUBE_COLORS: Record<string, string> = {
   jaune: "#facc15",     // yellow — gel separator / SST
   yellow: "#facc15",
   gold: "#facc15",      // gold — SST / gel separator (same as yellow)
+  "tube or": "#facc15",  // "Tube or (SST)" — gold in French
   sst: "#facc15",       // SST tube = gold/yellow
   gel: "#facc15",       // gel separator tube = gold/yellow (SST)
   gris: "#9ca3af",      // gray — fluoride / oxalate
@@ -26,9 +27,15 @@ const TUBE_COLORS: Record<string, string> = {
   noir: "#475569",      // black — VS / ESR citrate
   black: "#475569",
   urine: "#fbbf24",     // amber — urine container
+  contenant: "#fbbf24", // generic container (urine / stool) — amber
   pink: "#f472b6",      // pink — blood bank (EDTA)
   rose: "#f472b6",
   "royal blue": "#3b82f6", // royal blue — trace elements
+  "bleu foncé": "#3b82f6", // royal blue in French
+  "écouvillon": "#10b981", // swab — emerald
+  thinprep: "#8b5cf6",  // ThinPrep vial — violet
+  trousse: "#f59e0b",   // special kit — amber/orange
+  "de formaline": "#ef4444",  // formalin container — red
 };
 
 const FALLBACK_COLOR = "#6b7280";
@@ -49,8 +56,9 @@ export function parseTubeColor(
     return { color: TUBE_COLORS[lower], label: tubeType.trim() };
   }
 
-  // Keyword search for longer strings like "Tube EDTA (violet)"
-  for (const [keyword, color] of Object.entries(TUBE_COLORS)) {
+  // Keyword search (longest first so specific matches beat generic ones)
+  const sorted = Object.entries(TUBE_COLORS).sort((a, b) => b[0].length - a[0].length);
+  for (const [keyword, color] of sorted) {
     if (lower.includes(keyword)) {
       return { color, label: tubeType.trim() };
     }

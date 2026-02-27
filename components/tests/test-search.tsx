@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useDebounce } from "@/hooks/use-debounce";
 import { parseTubeColor } from "@/lib/tube-colors";
+
 import MatchIndicator from "./match-indicator";
 
 interface SearchResult {
@@ -127,8 +128,10 @@ export default function TestSearch({
           </div>
           <ul className="divide-y divide-border/30">
             {grouped.map((group) => {
-              const uniqueLabNames = [...new Set(group.tests.map(t => t.laboratoryName))];
-              const isMultiLab = group.testMappingId != null && uniqueLabNames.length > 1;
+              const uniqueLabs = [...new Map(group.tests.map(t => [t.laboratoryId, t.laboratoryName])).entries()]
+                .map(([id, name]) => ({ id, name }));
+              const uniqueLabNames = uniqueLabs.map(l => l.name);
+              const isMultiLab = group.testMappingId != null && uniqueLabs.length > 1;
               const primary = group.tests[0];
               const displayName = isMultiLab ? (group.canonicalName || primary.name) : primary.name;
               const selectedMappingId = group.tests.find((t) => t.testMappingId && cartItemIds?.has(t.testMappingId))?.testMappingId
@@ -166,12 +169,18 @@ export default function TestSearch({
                     </div>
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
                       {isMultiLab ? (
-                        <span className="text-xs text-muted-foreground/80 whitespace-normal break-words">
-                          {uniqueLabNames.join(", ")}
+                        <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground/80">
+                          {uniqueLabs.map((lab) => (
+                            <span key={lab.id}>
+                              {lab.name}
+                            </span>
+                          ))}
                         </span>
                       ) : (
                         <>
-                          <span className="text-xs text-muted-foreground">{primary.laboratoryName}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {primary.laboratoryName}
+                          </span>
                           {primary.canonicalName && (
                             <span className="text-[10px] text-emerald-400 whitespace-normal break-words">
                               → {primary.canonicalName}
