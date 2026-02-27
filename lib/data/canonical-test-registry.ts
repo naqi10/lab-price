@@ -1,9 +1,9 @@
 /**
- * Canonical Test Registry — Single source of truth for test name resolution.
+ * Canonical Test Registry — Auto-generated from database.
+ * 576 canonical test definitions.
+ * Generated: 2026-02-27T10:56:47.527Z
  *
- * Each entry defines a canonical test with all known name aliases from all labs.
- * During seeding/importing, every lab test is resolved to its canonical entry
- * by checking if its raw name appears in any alias list.
+ * DO NOT EDIT MANUALLY — regenerate with: node regenerate_registry.js
  */
 
 export interface CanonicalTestDefinition {
@@ -14,110 +14,1170 @@ export interface CanonicalTestDefinition {
 }
 
 /**
- * Build lookup indexes for resolving test names to canonical definitions.
- *
- * Returns:
- * - byCode: code → CanonicalTestDefinition (exact code match, highest priority)
- * - byAlias: normalizedAlias → CanonicalTestDefinition (name-based fallback)
- *
- * Resolution order: try byCode first, then byAlias.
+ * Build fast-lookup indexes from the registry.
  */
-export function buildCanonicalIndexes(registry: CanonicalTestDefinition[]): {
-  byCode: Map<string, CanonicalTestDefinition>;
-  byAlias: Map<string, CanonicalTestDefinition>;
-} {
+export function buildCanonicalIndexes(registry: CanonicalTestDefinition[]) {
   const byCode = new Map<string, CanonicalTestDefinition>();
   const byAlias = new Map<string, CanonicalTestDefinition>();
-
   for (const def of registry) {
-    byCode.set(def.code, def);
-
+    if (def.code) byCode.set(def.code, def);
+    byAlias.set(normalizeForLookup(def.canonicalName), def);
     for (const alias of def.aliases) {
-      const key = alias
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim();
-      byAlias.set(key, def);
+      byAlias.set(normalizeForLookup(alias), def);
     }
   }
-
   return { byCode, byAlias };
 }
 
-/** Normalize a string for alias matching: lowercase + strip accents + trim. */
+/**
+ * Normalize a string for lookup: uppercase, strip accents, collapse whitespace.
+ */
 export function normalizeForLookup(s: string): string {
-  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  return s
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Z0-9]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
   {
-    canonicalName: "Vitamine B12",
-    code: "VB12",
+    canonicalName: "% CDT",
+    code: "CDT",
     category: "Individuel",
     aliases: [
-      "VITAMINE B12",
-      "Vitamine B12",
+      "TRANSFERRINE CARBOXY DÉFICIENTE",
+      "% CDT",
     ],
   },
   {
-    canonicalName: "Acide Folique",
-    code: "FOLC",
+    canonicalName: "1 25 Dihydroxy Vitamine D",
+    code: "VITD125",
     category: "Individuel",
     aliases: [
-      "ACIDE FOLIQUE",
-      "ACIDE FOLIQUE (FOLATE)",
-      "Acide Folique (Folate)",
-      "Folate (Sérique)",
-      "Acide Folique",
+      "1.25-DIHYDROXY- VITAMINE D",
+      "1.25-DIHYDROXY-VITAMINE D",
     ],
   },
   {
-    canonicalName: "Vitamine D (25-OH)",
-    code: "25D",
+    canonicalName: "17 Hydroxy Progesterone",
+    code: "17HYPROG",
     category: "Individuel",
     aliases: [
-      "VITAMINE D 25 OH",
+      "17- HYDROXY- PROGESTERONE (17-OH-PROGESTERONE)",
+      "17-HYDROXY-PROGESTERONE",
+    ],
+  },
+  {
+    canonicalName: "25 Hydroxy Vitamine D",
+    code: "VITD",
+    category: "Individuel",
+    aliases: [
+      "25-HYDROXY VITAMINE D (CHOLECALCIFEROL)",
       "25-HYDROXY VITAMINE D",
-      "Vitamine D (25-OH)",
     ],
   },
   {
-    canonicalName: "Ferritine",
-    code: "FERR",
+    canonicalName: "5 Hiaa (Urine 24h)",
+    code: "24U5HIAA",
     category: "Individuel",
     aliases: [
-      "FERRITINE",
-      "Ferritine",
+      "5-HIAA (MÉTABOLITE DE LA SEROTONINE) URINES DE 24 HEURES",
+      "5-HIAA",
     ],
   },
   {
-    canonicalName: "Fibrinogène",
-    code: "FIB",
+    canonicalName: "ALT",
+    code: "ALT",
     category: "Individuel",
     aliases: [
-      "FIBRINOGÈNE",
-      "Fibrinogène",
+      "ALT",
     ],
   },
   {
-    canonicalName: "Bilirubine Directe",
-    code: "DBIL",
+    canonicalName: "APS Libre",
+    code: "FPSA",
     category: "Individuel",
     aliases: [
-      "BILIRUBINE, DIRECTE",
+      "PROSTATE, ANTIGÈNE PROSTATIQUE SPÉCIFIQUE LIBRE",
+      "APS LIBRE",
+    ],
+  },
+  {
+    canonicalName: "AST",
+    code: "AST",
+    category: "Individuel",
+    aliases: [
+      "AST (GOT, SGOT)",
+      "AST",
+    ],
+  },
+  {
+    canonicalName: "Acetaminophene",
+    code: "APH",
+    category: "Individuel",
+    aliases: [
+      "ACETAMINOPHÈNE",
+      "ACÉTAMINOPHÈNE",
+    ],
+  },
+  {
+    canonicalName: "Acetone",
+    code: "ACETONE",
+    category: "Individuel",
+    aliases: [
+      "ACÉTONE (ANALYSE QUANTITATIVE)",
+      "ACÉTONE",
+    ],
+  },
+  {
+    canonicalName: "Acetylcholine Anticorps Bloquants",
+    code: "ACBA",
+    category: "Individuel",
+    aliases: [
+      "ACETYLCHOLINE, ANTICORPS BLOQUANTS",
+    ],
+  },
+  {
+    canonicalName: "Acetylcholine Anticorps Liant",
+    code: "ACRA",
+    category: "Individuel",
+    aliases: [
+      "ACETYLCHOLINE, ANTICORPS LIANT",
+    ],
+  },
+  {
+    canonicalName: "Acetylcholine Modulateurs Anticorps",
+    code: "ACMA",
+    category: "Individuel",
+    aliases: [
+      "ACETYLCHOLINE, MODULATEURS D'ANTICORPS",
+    ],
+  },
+  {
+    canonicalName: "Acide Ascorbique Vitamine C",
+    code: "VITC",
+    category: "Individuel",
+    aliases: [
+      "ACIDE ASCORBIQUE (VITAMINE C)",
+    ],
+  },
+  {
+    canonicalName: "Acide Folique Folate",
+    code: "FOL",
+    category: "Individuel",
+    aliases: [
+      "ACIDE FOLIQUE (FOLATE)",
+    ],
+  },
+  {
+    canonicalName: "Acide Folique Vitamine B12",
+    code: "B12FOL",
+    category: "Individuel",
+    aliases: [
+      "ACIDE FOLIQUE ET VITAMINE B12",
+    ],
+  },
+  {
+    canonicalName: "Acide Lactique",
+    code: "LAC",
+    category: "Individuel",
+    aliases: [
+      "ACIDE LACTIQUE",
+    ],
+  },
+  {
+    canonicalName: "Acide Methylmalonique Sang",
+    code: "METMALA",
+    category: "Individuel",
+    aliases: [
+      "ACIDE MÉTHYLMALONIQUE - SANG",
+    ],
+  },
+  {
+    canonicalName: "Acide Methylmalonique Serum (Sérum)",
+    code: "MMAS",
+    category: "Individuel",
+    aliases: [
+      "ACIDE MÉTHYLMALONIQUE, SÉRUM",
+    ],
+  },
+  {
+    canonicalName: "Acide Methylmalonique Urine (Urine)",
+    code: "METMALAU",
+    category: "Individuel",
+    aliases: [
+      "ACIDE MÉTHYLMALONIQUE (ANALYSE QUANTITATIVE) - URINE",
+      "ACIDE MÉTHYLMALONIQUE - URINE",
+    ],
+  },
+  {
+    canonicalName: "Acide Urique",
+    code: "URIC",
+    category: "Individuel",
+    aliases: [
+      "ACIDE URIQUE",
+    ],
+  },
+  {
+    canonicalName: "Acide Urique Urine Hasard (Urine Hasard)",
+    code: "URICURAN",
+    category: "Individuel",
+    aliases: [
+      "ACIDE URIQUE URINE AU HASARD",
+      "ACIDE URIQUE - URINE AU HASARD",
+    ],
+  },
+  {
+    canonicalName: "Acide Urique Urines 24 Heures (Urine 24h)",
+    code: "24UURIC",
+    category: "Individuel",
+    aliases: [
+      "ACIDE URIQUE - URINES DE 24 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Acide Valproique Depakene",
+    code: "VAL",
+    category: "Individuel",
+    aliases: [
+      "ACIDE VALPROÏQUE (DEPAKENE)",
+    ],
+  },
+  {
+    canonicalName: "Acide Vanylmandelique VMA (Urine 24h)",
+    code: "VMA",
+    category: "Individuel",
+    aliases: [
+      "ACIDE VANYLMANDÉLIQUE (VMA) URINES DE 24 HEURES",
+      "ACIDE VANYLMANDÉLIQUE (VMA)",
+    ],
+  },
+  {
+    canonicalName: "Acides Gras Libres",
+    code: "FFA",
+    category: "Individuel",
+    aliases: [
+      "ACIDES GRAS LIBRES",
+    ],
+  },
+  {
+    canonicalName: "Activite Proteine C",
+    code: "PROCACT",
+    category: "Individuel",
+    aliases: [
+      "ACTIVITÉ DE LA PROTÉINE C",
+    ],
+  },
+  {
+    canonicalName: "Adalimumab",
+    code: "ADUL",
+    category: "Individuel",
+    aliases: [
+      "ADALIMUMAB",
+    ],
+  },
+  {
+    canonicalName: "Agglutinines Froides",
+    code: "AGG",
+    category: "Individuel",
+    aliases: [
+      "AGGLUTININES FROIDES",
+    ],
+  },
+  {
+    canonicalName: "Albumine",
+    code: "ALB",
+    category: "Individuel",
+    aliases: [
+      "ALBUMINE",
+    ],
+  },
+  {
+    canonicalName: "Albumine Globulines Ratio",
+    code: "AGR",
+    category: "Individuel",
+    aliases: [
+      "ALBUMINE / GLOBULINES RATIO",
+    ],
+  },
+  {
+    canonicalName: "Alcool Ethanol Sang",
+    code: "ALCO",
+    category: "Individuel",
+    aliases: [
+      "ALCOOL (ETHANOL) - SANG",
+    ],
+  },
+  {
+    canonicalName: "Alcool Ethanol Urine (Urine)",
+    code: "ETOH",
+    category: "Individuel",
+    aliases: [
+      "ALCOOL (ETHANOL) URINE",
+      "ALCOOL (ETHANOL) - URINE",
+    ],
+  },
+  {
+    canonicalName: "Aldolase",
+    code: "ADLASE",
+    category: "Individuel",
+    aliases: [
+      "ALDOLASE",
+    ],
+  },
+  {
+    canonicalName: "Aldosterone (ALDO)",
+    code: "ALDO",
+    category: "Individuel",
+    aliases: [
+      "ALDOSTÉRONE",
+    ],
+  },
+  {
+    canonicalName: "Aldosterone (DOST)",
+    code: "DOST",
+    category: "Individuel",
+    aliases: [
+      "ALDOSTÉRONE",
+    ],
+  },
+  {
+    canonicalName: "Aldosterone Urines 24 Heures (Urine 24h)",
+    code: "DOSTU",
+    category: "Individuel",
+    aliases: [
+      "ALDOSTÉRONE - URINES DE 24 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Alpha 1 Antitrypsine",
+    code: "A1AT",
+    category: "Individuel",
+    aliases: [
+      "ALPHA 1 ANTITRYPSINE",
+      "ALPHA 1-ANTITRYPSINE",
+    ],
+  },
+  {
+    canonicalName: "Alpha 2 Macroglobuline",
+    code: "ALPHA2",
+    category: "Individuel",
+    aliases: [
+      "ALPHA 2 MACROGLOBULINE",
+    ],
+  },
+  {
+    canonicalName: "Alphafetoproteine",
+    code: "AFP",
+    category: "Individuel",
+    aliases: [
+      "ALPHAFÉTOPROTÉINE",
+      "ALPHA-FŒTOPROTÉINE (AFP)",
+    ],
+  },
+  {
+    canonicalName: "Aluminium Sang Entier (Sang Entier)",
+    code: "AL",
+    category: "Individuel",
+    aliases: [
+      "ALUMINIUM, SANG ENTIER",
+    ],
+  },
+  {
+    canonicalName: "Amikacine",
+    code: "AMIK",
+    category: "Individuel",
+    aliases: [
+      "AMIKACINE",
+    ],
+  },
+  {
+    canonicalName: "Amitriptyline",
+    code: "AMITRIP",
+    category: "Individuel",
+    aliases: [
+      "AMITRIPTYLINE (ANTIDEPRESSEUR TRICYCLIQUE)",
+      "AMITRIPTYLINE",
+    ],
+  },
+  {
+    canonicalName: "Ammoniaque",
+    code: "AMMO",
+    category: "Individuel",
+    aliases: [
+      "AMMONIAQUE",
+    ],
+  },
+  {
+    canonicalName: "Amphetamine",
+    code: "AMPH",
+    category: "Individuel",
+    aliases: [
+      "AMPHETAMINE",
+      "DROGUE: AMPHETAMINES",
+    ],
+  },
+  {
+    canonicalName: "Amylase",
+    code: "AMYL",
+    category: "Individuel",
+    aliases: [
+      "AMYLASE",
+    ],
+  },
+  {
+    canonicalName: "Analyse Calculs Renaux",
+    code: "KIDNEY",
+    category: "Individuel",
+    aliases: [
+      "ANALYSE DES CALCULS RENAUX",
+    ],
+  },
+  {
+    canonicalName: "Analyse Culture Urine (Urine)",
+    code: "URC+",
+    category: "Profil",
+    aliases: [
+      "ANALYSE ET CULTURE D'URINE",
+      "CULTURE D'URINE + ANALYSE",
+    ],
+  },
+  {
+    canonicalName: "Analyse Urine (Urine)",
+    code: "URI",
+    category: "Individuel",
+    aliases: [
+      "ANALYSE D'URINE",
+    ],
+  },
+  {
+    canonicalName: "Androstene Dione",
+    code: "ANDRO",
+    category: "Individuel",
+    aliases: [
+      "ANDROSTENE-DIONE",
+    ],
+  },
+  {
+    canonicalName: "Androstenedione",
+    code: "ANDR",
+    category: "Individuel",
+    aliases: [
+      "ANDROSTÉNÉDIONE",
+    ],
+  },
+  {
+    canonicalName: "Anemie 1",
+    code: "ANE1",
+    category: "Profil",
+    aliases: [
+      "ANÉMIE #1",
+      "PROFIL ANÉMIE NO 1",
+    ],
+  },
+  {
+    canonicalName: "Anemie 11",
+    code: "ANEM11",
+    category: "Profil",
+    aliases: [
+      "PROFIL ANÉMIE NO 11",
+    ],
+  },
+  {
+    canonicalName: "Anemie 3",
+    code: "ANE3",
+    category: "Profil",
+    aliases: [
+      "ANÉMIE #3",
+    ],
+  },
+  {
+    canonicalName: "Anemie 4",
+    code: "ANE4",
+    category: "Profil",
+    aliases: [
+      "ANÉMIE #4",
+    ],
+  },
+  {
+    canonicalName: "Anemie 8",
+    code: "ANEM8",
+    category: "Profil",
+    aliases: [
+      "PROFIL ANÉMIE NO 8",
+    ],
+  },
+  {
+    canonicalName: "Anti Adndb",
+    code: "DNA",
+    category: "Individuel",
+    aliases: [
+      "ANTI-ADNDB",
+      "ANTICORPS ANTI-ADN (DOUBLE BRIN)",
+    ],
+  },
+  {
+    canonicalName: "Anti Cellules Parietales Anticorps",
+    code: "APA",
+    category: "Individuel",
+    aliases: [
+      "ANTI-CELLULES PARIÉTALES, ANTICORPS",
+      "ANTICORPS ANTI-CELLULES PARIÉTALES",
+    ],
+  },
+  {
+    canonicalName: "Anti Cenp",
+    code: "CENP",
+    category: "Individuel",
+    aliases: [
+      "ANTI-CENP",
+    ],
+  },
+  {
+    canonicalName: "Anti Dnase B",
+    code: "BDNA",
+    category: "Individuel",
+    aliases: [
+      "ANTI-DNASE B",
+    ],
+  },
+  {
+    canonicalName: "Anti Endomysiaux Anticorps IGA",
+    code: "AEML",
+    category: "Individuel",
+    aliases: [
+      "ANTI-ENDOMYSIAUX, ANTICORPS (IGA)",
+    ],
+  },
+  {
+    canonicalName: "Anti GAD Auto Anticorps",
+    code: "GAD",
+    category: "Individuel",
+    aliases: [
+      "ANTI-GAD AUTO-ANTICORPS",
+    ],
+  },
+  {
+    canonicalName: "Anti Gliadine IGA",
+    code: "GLIA",
+    category: "Individuel",
+    aliases: [
+      "ANTI-GLIADINE IGA",
+      "ANTICORPS ANTI-GLIADINE DE TYPE IGA",
+    ],
+  },
+  {
+    canonicalName: "Anti HBS",
+    code: "ANHBS",
+    category: "Individuel",
+    aliases: [
+      "ANTI-HBS",
+    ],
+  },
+  {
+    canonicalName: "Anti LKM Anticorps",
+    code: "ALKM",
+    category: "Individuel",
+    aliases: [
+      "ANTI-LKM, ANTICORPS",
+    ],
+  },
+  {
+    canonicalName: "Anti Mitochondries Anticorps",
+    code: "AMA",
+    category: "Individuel",
+    aliases: [
+      "ANTI-MITOCHONDRIES, ANTICORPS",
+      "ANTICORPS ANTI-MITOCHONDRIES",
+    ],
+  },
+  {
+    canonicalName: "Anti Muscle Lisse Anticorps",
+    code: "ASA",
+    category: "Individuel",
+    aliases: [
+      "ANTI-MUSCLE LISSE, ANTICORPS",
+      "ANTICORPS ANTI-MUSCLE LISSE",
+    ],
+  },
+  {
+    canonicalName: "Anti Nucleaire Anticorps",
+    code: "ANA",
+    category: "Individuel",
+    aliases: [
+      "ANTI-NUCLÉAIRE, ANTICORPS",
+      "ANTICORPS ANTINUCLÉAIRES (ANA)",
+    ],
+  },
+  {
+    canonicalName: "Anti TPO",
+    code: "TPO",
+    category: "Individuel",
+    aliases: [
+      "ANTI TPO",
+    ],
+  },
+  {
+    canonicalName: "Anti Transglutaminase IGG",
+    code: "GTTG",
+    category: "Individuel",
+    aliases: [
+      "ANTI-TRANSGLUTAMINASE IGG",
+    ],
+  },
+  {
+    canonicalName: "Anticoagulant Lupique",
+    code: "LUPUS",
+    category: "Individuel",
+    aliases: [
+      "ANTICOAGULANT LUPIQUE",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti CCP",
+    code: "ACCP",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI CYCLIQUE CITRULLINĖ (ANTICORPS ANTI-CCP)",
+      "ANTICORPS ANTI-CCP",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Cardiolipines",
+    code: "ANTICAR",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-CARDIOLIPINES",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Cytomegalovirus IGG",
+    code: "CMVG",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-CYTOMEGALOVIRUS DE TYPE IGG",
+      "ANTICORPS ANTI-CYTOMEGALOVIRUS IGG",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Cytoplasme Neutrophiles",
+    code: "ANCA",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-CYTOPLASME DES NEUTROPHILES (ANCA)",
+      "ANTICORPS ANTI-CYTOPLASME DES NEUTROPHILES",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Diphterie",
+    code: "DIPH",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-DIPHTÉRIE",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti EBV IGG",
+    code: "EBVIGG",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-EBV IGG",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti EBV IGM",
+    code: "EBVIGM",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-EBV IGM",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti ENA",
+    code: "ENA",
+    category: "Individuel",
+    aliases: [
+      "ANTI-NUCLÉAIRES EXTRACTABLES (DÉPISTAGE)",
+      "ANTICORPS ANTI-ENA",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Facteur Intrinseque",
+    code: "IFA",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-FACTEUR INTRINSÈQUE",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Gliadine IGG",
+    code: "DEGLIAG",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-GLIADINE DE TYPE IGG",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti HBC",
+    code: "HEPBC",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS DIRIGÉS CONTRE L'ANTIGÈNE CAPSIDIQUE DE L'HÉPATITE B (ANTI-HBC)",
+      "ANTICORPS ANTI-HBC",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti HBC IGM",
+    code: "HEPBCM",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-HBC IGM",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti HBE",
+    code: "HEPBE",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-HBE",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Hepatite A IGG",
+    code: "HEPAG",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-HEPATITE A IGG",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Hepatite A IGM",
+    code: "HEPAM",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-HEPATITE A IGM",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Histone",
+    code: "HISTAB",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-HISTONE",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Membrane Basale Glomerulaire",
+    code: "GBM",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-MEMBRANE BASALE GLOMERULAIRE (ANTI-GBM)",
+      "ANTICORPS ANTI-MEMBRANE BASALE GLOMERULAIRE",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Microsomes Thyroidiens",
+    code: "TAPRO",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-MICROSOMES THYROIDIENS",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Mitochondries M2",
+    code: "MITOM2",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-MITOCHONDRIES DE TYPE M2",
+      "ANTICORPS ANTI-MITOCHONDRIES M2",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Oreillons IGG",
+    code: "MUMPIGG",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-OREILLONS IGG",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Oreillons IGM",
+    code: "MUMPIGM",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-OREILLONS IGM",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Parvovirus IGG IGM",
+    code: "PARVO",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-PARVOVIRUS DE TYPES IGG ET IGM",
+      "ANTICORPS ANTI-PARVOVIRUS IGG ET IGM",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Rabiques Rage",
+    code: "RABI",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-RABIQUES (RAGE)",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Recepteur Acetylcholine",
+    code: "ARA",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-RÉCEPTEUR DE L'ACETYLCHOLINE",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Recepteurs TSH Tbii",
+    code: "ANTHY",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-RÉCEPTEURS TSH (TBII)",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Rougeole IGG",
+    code: "ROUGG",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-ROUGEOLE IGG",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Rougeole IGM",
+    code: "ROUGM",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-ROUGEOLE IGM",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Rubeole IGG",
+    code: "RUB",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS DE TYPE IGG DIRIGÉS CONTRE LE VIRUS DE LA RUBÉOLE",
+      "ANTICORPS ANTI-RUBÉOLE IGG",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Rubeole IGM",
+    code: "RUBIGM",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-RUBÉOLE IGM",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Streptolysine O",
+    code: "ASO",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-STREPTOLYSINE O",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Transglutaminase IGA",
+    code: "TRANSGLUT",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-TRANSGLUTAMINASE DE TYPE IGA",
+      "ANTICORPS ANTI-TRANSGLUTAMINASE IGA",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Varicelle IGG",
+    code: "VARIG",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-VARICELLE IGG",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Anti Varicelle IGM",
+    code: "VARIM",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTI-VARICELLE IGM",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Antitetaniques",
+    code: "TETA",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS ANTITÉTANIQUES",
+    ],
+  },
+  {
+    canonicalName: "Anticorps Surrenales",
+    code: "ADNAB",
+    category: "Individuel",
+    aliases: [
+      "ANTICORPS SURRÉNALES",
+    ],
+  },
+  {
+    canonicalName: "Antigene Hepatite BE Hbeag",
+    code: "HBEAG",
+    category: "Individuel",
+    aliases: [
+      "ANTIGÈNE HÉPATITE BE (HBEAG)",
+    ],
+  },
+  {
+    canonicalName: "Antigene Prostatique Specifique APS",
+    code: "PSA",
+    category: "Individuel",
+    aliases: [
+      "PROSTATE, ANTIGÈNE PROSTATIQUE SPÉCIFIQUE TOTAL",
+      "ANTIGÈNE PROSTATIQUE SPÉCIFIQUE (APS)",
+    ],
+  },
+  {
+    canonicalName: "Antigene Surface Hepatite B Hbsag",
+    code: "HBS",
+    category: "Individuel",
+    aliases: [
+      "ANTIGÈNE DE SURFACE DE L'HÉPATITE B (HBSAG)",
+      "ANTIGÈNE DE SURFACE HÉPATITE B (HBSAG)",
+    ],
+  },
+  {
+    canonicalName: "Antiphospholipine IGA",
+    code: "PHOA",
+    category: "Individuel",
+    aliases: [
+      "ANTIPHOSPHOLIPINE IGA",
+    ],
+  },
+  {
+    canonicalName: "Antiphospholipine IGG",
+    code: "PHOG",
+    category: "Individuel",
+    aliases: [
+      "ANTIPHOSPHOLIPINE IGG",
+    ],
+  },
+  {
+    canonicalName: "Antiphospholipine IGM",
+    code: "PHOM",
+    category: "Individuel",
+    aliases: [
+      "ANTIPHOSPHOLIPINE IGM",
+    ],
+  },
+  {
+    canonicalName: "Antiphospholipine IGM IGG IGA",
+    code: "PHOP",
+    category: "Individuel",
+    aliases: [
+      "ANTIPHOSPHOLIPINE IGM, IGG, IGA",
+    ],
+  },
+  {
+    canonicalName: "Antistreptolysine",
+    code: "ASOT",
+    category: "Individuel",
+    aliases: [
+      "ANTISTREPTOLYSINE",
+    ],
+  },
+  {
+    canonicalName: "Antithrombine III Activite",
+    code: "ANTITH",
+    category: "Individuel",
+    aliases: [
+      "ANTITHROMBINE III (ACTIVITÉ)",
+    ],
+  },
+  {
+    canonicalName: "Antithrombine III Antigene",
+    code: "AT3A",
+    category: "Individuel",
+    aliases: [
+      "ANTITHROMBINE III, ANTIGÈNE",
+    ],
+  },
+  {
+    canonicalName: "Antithrombine III Fonctionnelle",
+    code: "AT3F",
+    category: "Individuel",
+    aliases: [
+      "ANTITHROMBINE III, FONCTIONNELLE",
+    ],
+  },
+  {
+    canonicalName: "Apolipoproteine A1",
+    code: "APOA",
+    category: "Individuel",
+    aliases: [
+      "APOLIPOPROTÉINE A-1",
+      "APOLIPOPROTÉINE A1",
+    ],
+  },
+  {
+    canonicalName: "Apolipoproteine B",
+    code: "APOB",
+    category: "Individuel",
+    aliases: [
+      "APOLIPOPROTÉINE B",
+    ],
+  },
+  {
+    canonicalName: "Apolipoproteine E",
+    code: "APOE",
+    category: "Individuel",
+    aliases: [
+      "APOLIPOPROTÉINE E",
+    ],
+  },
+  {
+    canonicalName: "Arsenic Sang Entier (Sang Entier) (ARSENIWB)",
+    code: "ARSENIWB",
+    category: "Individuel",
+    aliases: [
+      "ARSENIC SANG ENTIER",
+    ],
+  },
+  {
+    canonicalName: "Arsenic Urine (Urine)",
+    code: "ARSENIRU",
+    category: "Individuel",
+    aliases: [
+      "ARSENIC URINE",
+    ],
+  },
+  {
+    canonicalName: "BIO 12",
+    code: "SMA12",
+    category: "Individuel",
+    aliases: [
+      "PROFIL BIO-12",
+    ],
+  },
+  {
+    canonicalName: "BIO 12 Electrolytes",
+    code: "SMA12LYT",
+    category: "Profil",
+    aliases: [
+      "PROFIL BIO-12 AVEC ÉLECTROLYTES",
+    ],
+  },
+  {
+    canonicalName: "BIO C",
+    code: "SMAC",
+    category: "Profil",
+    aliases: [
+      "PROFIL BIO-C",
+    ],
+  },
+  {
+    canonicalName: "BIO C Electrolytes",
+    code: "CHM5",
+    category: "Profil",
+    aliases: [
+      "BIOCHIMIE #2 AVEC ELECTROLYTES",
+      "PROFIL BIO-C AVEC ÉLECTROLYTES",
+    ],
+  },
+  {
+    canonicalName: "Bacille Koch Culture",
+    code: "CTTBP",
+    category: "Individuel",
+    aliases: [
+      "BACILLE DE KOCH, CULTURE",
+    ],
+  },
+  {
+    canonicalName: "Barbiturique 200 NG ML",
+    code: "UBAR",
+    category: "Individuel",
+    aliases: [
+      "BARBITURIQUE (200 NG/ML)",
+    ],
+  },
+  {
+    canonicalName: "Benzodiazepine 200 NG ML",
+    code: "BENZ",
+    category: "Individuel",
+    aliases: [
+      "BENZODIAZÉPINE (200 NG/ML)",
+    ],
+  },
+  {
+    canonicalName: "Beryllium Sang Entier (Sang Entier)",
+    code: "BERY",
+    category: "Individuel",
+    aliases: [
+      "BÉRYLLIUM SANG ENTIER",
+    ],
+  },
+  {
+    canonicalName: "Beta 2 Glycoproteine I Anticorps",
+    code: "B2GP",
+    category: "Profil",
+    aliases: [
+      "BETA 2 GLYCOPROTÉINE I ANTICORPS",
+      "ANTICORPS ANTI-BETA 2-GLYCOPROTÉINE I (IGG/IGM/IGA)",
+    ],
+  },
+  {
+    canonicalName: "Beta 2 Microglobuline (B2MICRO)",
+    code: "B2MICRO",
+    category: "Individuel",
+    aliases: [
+      "BETA-2-MICROGLOBULINE",
+    ],
+  },
+  {
+    canonicalName: "Beta HCG Intacte Quantitatif",
+    code: "BHCG",
+    category: "Individuel",
+    aliases: [
+      "BÉTA-HCG INTACTE (QUANTITATIF)",
+    ],
+  },
+  {
+    canonicalName: "Beta HCG Qualitatif Serum (Sérum)",
+    code: "PREG",
+    category: "Individuel",
+    aliases: [
+      "BÉTA-HCG QUALITATIF, SÉRUM",
+    ],
+  },
+  {
+    canonicalName: "Bicarbonate CO2 Total",
+    code: "CO2P",
+    category: "Individuel",
+    aliases: [
+      "BICARBONATE ET CO2 TOTAL",
+      "CO2 TOTAL (BICARBONATE)",
+    ],
+  },
+  {
+    canonicalName: "Bilan Immunodeficience",
+    code: "CD4",
+    category: "Individuel",
+    aliases: [
+      "BILAN D'IMMUNODÉFICIENCE",
+    ],
+  },
+  {
+    canonicalName: "Bilirubine Directe Conjuguee",
+    code: "BILITD",
+    category: "Individuel",
+    aliases: [
       "BILIRUBINE DIRECTE/CONJUGUÉE",
-      "Bilirubine Directe",
-    ],
-  },
-  {
-    canonicalName: "Bilirubine Totale",
-    code: "TBIL",
-    category: "Individuel",
-    aliases: [
-      "BILIRUBINE, TOTALE",
-      "BILIRUBINE TOTALE",
-      "Bilirubine Totale",
     ],
   },
   {
@@ -127,716 +1187,186 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "BILIRUBINE, INDIRECTE",
       "BILIRUBINE INDIRECTE/NON CONJUGUÉE",
-      "Bilirubine Indirecte",
     ],
   },
   {
-    canonicalName: "Électrophorèse des Protéines",
-    code: "SPEP",
+    canonicalName: "Bilirubine Totale (BILIT)",
+    code: "BILIT",
     category: "Individuel",
     aliases: [
-      "ÉLECTROPHORÈSE DES PROTÉINES",
-      "Électrophorèse des protéines (Sérum)",
-      "Électrophorèse des Protéines",
+      "BILIRUBINE TOTALE",
     ],
   },
   {
-    canonicalName: "Aldostérone",
-    code: "ALDO",
-    category: "Individuel",
+    canonicalName: "Biochimie 1A",
+    code: "BIO1",
+    category: "Profil",
     aliases: [
-      "ALDOSTÉRONE",
-      "Aldostérone",
+      "BIOCHIMIE #1A",
     ],
   },
   {
-    canonicalName: "Estradiol",
-    code: "ESTR",
-    category: "Individuel",
+    canonicalName: "Biochimie 1B",
+    code: "CHM1",
+    category: "Profil",
     aliases: [
-      "ESTRADIOL (E2)",
-      "ESTRADIOL",
-      "Estradiol",
+      "BIOCHIMIE #1B",
     ],
   },
   {
-    canonicalName: "Estrone",
-    code: "ESTN",
-    category: "Individuel",
+    canonicalName: "Biochimie 2",
+    code: "CHM2",
+    category: "Profil",
     aliases: [
-      "ESTRONE",
-      "Estrone",
+      "BIOCHIMIE #2",
     ],
   },
   {
-    canonicalName: "Prolactine",
-    code: "PRLA",
-    category: "Individuel",
+    canonicalName: "Biochimie 3",
+    code: "BIO3",
+    category: "Profil",
     aliases: [
-      "PROLACTINE",
-      "Prolactine",
+      "BIOCHIMIE #3",
     ],
   },
   {
-    canonicalName: "HbA1c (Hémoglobine Glyquée)",
-    code: "GLHBP",
-    category: "Individuel",
+    canonicalName: "Biochimie 3 Electrolytes",
+    code: "CHL3",
+    category: "Profil",
     aliases: [
-      "HÉMOGLOBINE GLYQUÉE",
-      "HÉMOGLOBINE A1C",
-      "HbA1c (Hémoglobine Glyquée)",
-      "HbA1c",
+      "BIOCHIMIE #3 AVEC ELECTROLYTES",
     ],
   },
   {
-    canonicalName: "Cortisol",
-    code: "SCORT",
-    category: "Individuel",
+    canonicalName: "Biochimie 4",
+    code: "CHM4",
+    category: "Profil",
     aliases: [
-      "CORTISOL AM/PM",
-      "CORTISOL (MATIN)",
-      "Cortisol (AM/PM)",
-      "Cortisol (AM)",
-      "Cortisol",
+      "BIOCHIMIE #4",
     ],
   },
   {
-    canonicalName: "Insuline",
-    code: "ISLN",
-    category: "Individuel",
+    canonicalName: "Biochimie 4 Complet",
+    code: "BIO4",
+    category: "Profil",
     aliases: [
-      "INSULINE",
-      "INSULINE (À JEUN)",
-      "Insuline",
+      "BIOCHIMIE #4 COMPLET",
     ],
   },
   {
-    canonicalName: "Hormone de Croissance (GH)",
-    code: "GH",
-    category: "Individuel",
+    canonicalName: "Biochimie 4 Electrolytes",
+    code: "CHL4",
+    category: "Profil",
     aliases: [
-      "HORMONE DE CROISSANCE",
-      "HORMONE DE CROISSANCE (GH)",
-      "Hormone de Croissance (GH)",
+      "BIOCHIMIE #4 AVEC ÉLECTROLYTES",
     ],
   },
   {
-    canonicalName: "Électrolytes (Na, K, Cl)",
-    code: "ELEC",
+    canonicalName: "Biopsie",
+    code: "BIOP",
     category: "Individuel",
     aliases: [
-      "ÉLECTROLYTES",
-      "ÉLECTROLYTES (Na, K, Cl)",
-      "Électrolytes (Na, K, Cl)",
+      "BIOPSIE",
     ],
   },
   {
-    canonicalName: "Bicarbonate / CO2 Total",
-    code: "CO2P",
+    canonicalName: "Bordetella Pertussis Parapertussis",
+    code: "BORP",
     category: "Individuel",
     aliases: [
-      "BICARBONATE ET CO2 TOTAL",
-      "CO2 TOTAL (BICARBONATE)",
-      "Bicarbonate (CO2 Total)",
-      "CO2 Total (Bicarbonate)",
-      "Bicarbonate / CO2 Total",
+      "BORDETELLA PERTUSSIS ET PARAPERTUSSIS",
     ],
   },
   {
-    canonicalName: "Protéines Totales",
-    code: "TP",
+    canonicalName: "Brca 1 2 Sequencage Deletion Duplication",
+    code: "BRCA1/2",
     category: "Individuel",
     aliases: [
-      "PROTÉINES TOTALES, SÉRUM",
-      "PROTÉINES TOTALES",
-      "Protéines Totales",
+      "BRCA 1/2 SEQUENÇAGE, DÉLÉTION ET DUPLICATION",
     ],
   },
   {
-    canonicalName: "CA 125",
-    code: "C125",
+    canonicalName: "Brucella Brucellose",
+    code: "BRUC",
     category: "Individuel",
     aliases: [
-      "CA-125",
+      "BRUCELLA/BRUCELLOSE",
+    ],
+  },
+  {
+    canonicalName: "C Peptide",
+    code: "CPEP",
+    category: "Individuel",
+    aliases: [
+      "C-PEPTIDE",
+    ],
+  },
+  {
+    canonicalName: "C Telopeptides",
+    code: "CTPP",
+    category: "Individuel",
+    aliases: [
+      "C-TÉLOPEPTIDES",
+    ],
+  },
+  {
+    canonicalName: "C1 Inhibiteur Esterase",
+    code: "C1EI",
+    category: "Individuel",
+    aliases: [
+      "C1 INHIBITEUR ESTÉRASE",
+    ],
+  },
+  {
+    canonicalName: "CA 125 (CA125)",
+    code: "CA125",
+    category: "Individuel",
+    aliases: [
+      "CA 125 (OVAIRE)",
       "CA 125",
     ],
   },
   {
-    canonicalName: "CA 15-3",
-    code: "C153",
+    canonicalName: "CA 15 3 (CA153)",
+    code: "CA153",
     category: "Individuel",
     aliases: [
+      "CA 15-3 (SEIN)",
       "CA 15-3",
     ],
   },
   {
-    canonicalName: "CA 19-9",
-    code: "C199",
+    canonicalName: "CA 19 9 (CA19)",
+    code: "CA19",
     category: "Individuel",
     aliases: [
+      "CA 19-9 (ANTIGENE CARBOHYDRATE 19-9)",
       "CA 19-9",
     ],
   },
   {
-    canonicalName: "Hépatite B (HBsAg)",
-    code: "HSAG",
+    canonicalName: "CD3 CD4 CD8",
+    code: "CD3",
     category: "Individuel",
     aliases: [
-      "HÉPATITE B ANTIGÈNE DE SURFACE",
-      "ANTIGÈNE DE SURFACE HÉPATITE B (HBsAg)",
-      "Hépatite B (Ag de surface - HBsAg)",
-      "Hépatite B (HBsAg)",
+      "CD3, CD4, CD8",
     ],
   },
   {
-    canonicalName: "Hépatite B Anti-HBs",
-    code: "HBAB",
+    canonicalName: "CK MB",
+    code: "CKMB",
     category: "Individuel",
     aliases: [
-      "HÉPATITE B ANTICORPS DE SURFACE",
-      "ANTI-HBs",
-      "Hépatite B (Anti-HBs)",
-      "Hépatite B Anti-HBs",
+      "CK-MB",
     ],
   },
   {
-    canonicalName: "Hépatite B Anti-HBc",
-    code: "HBCS",
-    category: "Individuel",
-    aliases: [
-      "HÉPATITE B ANTICORPS (CORE TOTAL)",
-      "ANTICORPS ANTI-HBc",
-      "Hépatite B (Anti-HBc Total)",
-      "Hépatite B Anti-HBc",
-    ],
-  },
-  {
-    canonicalName: "Hépatite B Anti-HBc IgM",
-    code: "CABM",
-    category: "Individuel",
-    aliases: [
-      "HÉPATITE B ANTICORPS (CORE IGM)",
-      "ANTICORPS ANTI-HBc IgM",
-      "Hépatite B Anti-HBc IgM",
-    ],
-  },
-  {
-    canonicalName: "Hépatite B Anti-HBe",
-    code: "HEAG",
-    category: "Individuel",
-    aliases: [
-      "HÉPATITE B E ANTICORPS",
-      "ANTICORPS ANTI-HBe",
-      "Hépatite B Anti-HBe",
-    ],
-  },
-  {
-    canonicalName: "Hépatite B E Antigène",
-    code: "HBEG",
-    category: "Individuel",
-    aliases: [
-      "HÉPATITE B E ANTIGÈNE",
-      "ANTIGÈNE HÉPATITE Be (HBeAg)",
-      "Hépatite B E Antigène",
-    ],
-  },
-  {
-    canonicalName: "Hépatite A IgG",
-    code: "HAVG",
-    category: "Individuel",
-    aliases: [
-      "HÉPATITE A IGG",
-      "ANTICORPS ANTI-HEPATITE A IgG",
-      "Hépatite A IgG",
-    ],
-  },
-  {
-    canonicalName: "Hépatite A IgM",
-    code: "HAVM",
-    category: "Individuel",
-    aliases: [
-      "HÉPATITE A IGM",
-      "ANTICORPS ANTI-HEPATITE A IgM",
-      "Hépatite A IgM",
-    ],
-  },
-  {
-    canonicalName: "HIV Charge Virale",
-    code: "HIVL",
-    category: "Individuel",
-    aliases: [
-      "VIH (VIRUS IMMUNODÉFICIENCE HUMAINE), CHARGE VIRALE",
-      "CHARGE VIRALE (VIH)",
-      "HIV Charge Virale",
-    ],
-  },
-  {
-    canonicalName: "Antistreptolysine O (ASO)",
-    code: "ASOT",
-    category: "Individuel",
-    aliases: [
-      "ANTISTREPTOLYSINE",
-      "ANTICORPS ANTI-STREPTOLYSINE O",
-      "Antistreptolysine O (ASO)",
-    ],
-  },
-  {
-    canonicalName: "Anti-TPO (Microsomes Thyroïdiens)",
-    code: "TPO",
-    category: "Individuel",
-    aliases: [
-      "ANTI TPO",
-      "ANTICORPS ANTI-MICROSOMES THYROIDIENS",
-      "Anti-TPO (Microsomes Thyroïdiens)",
-    ],
-  },
-  {
-    canonicalName: "Anticorps Anti-Récepteur TSH",
-    code: "TBII",
-    category: "Individuel",
-    aliases: [
-      "TSH, ANTICORPS ANTI-RÉCEPTEUR",
-      "ANTICORPS ANTI-RÉCEPTEURS TSH (TBII)",
-      "Anticorps Anti-Récepteur TSH",
-    ],
-  },
-  {
-    canonicalName: "Anti-Cytoplasme Neutrophiles (ANCA)",
-    code: "ANCAP",
-    category: "Individuel",
-    aliases: [
-      "ANTI-CYTOPLASME DES NEUTROPHILES, ANTICORPS",
-      "ANTICORPS ANTI-CYTOPLASME DES NEUTROPHILES",
-      "Anti-Cytoplasme Neutrophiles (ANCA)",
-    ],
-  },
-  {
-    canonicalName: "Anti-Cellules Pariétales",
-    code: "APA",
-    category: "Individuel",
-    aliases: [
-      "ANTI-CELLULES PARIÉTALES, ANTICORPS",
-      "ANTICORPS ANTI-CELLULES PARIÉTALES",
-      "Anti-Cellules Pariétales",
-    ],
-  },
-  {
-    canonicalName: "Anti-Mitochondries",
-    code: "AMA",
-    category: "Individuel",
-    aliases: [
-      "ANTI-MITOCHONDRIES, ANTICORPS",
-      "ANTICORPS ANTI-MITOCHONDRIES",
-      "Anti-Mitochondries",
-    ],
-  },
-  {
-    canonicalName: "Anti-Muscle Lisse",
-    code: "ASA",
-    category: "Individuel",
-    aliases: [
-      "ANTI-MUSCLE LISSE, ANTICORPS",
-      "ANTICORPS ANTI-MUSCLE LISSE",
-      "Anti-Muscle Lisse",
-    ],
-  },
-  {
-    canonicalName: "Anti-Gliadine IgA",
-    code: "GLIA",
-    category: "Individuel",
-    aliases: [
-      "ANTI-GLIADINE IGA",
-      "ANTICORPS ANTI-GLIADINE DE TYPE IgA",
-      "Anti-Gliadine IgA",
-    ],
-  },
-  {
-    canonicalName: "Anti-Gliadine IgG",
-    code: "GLIG",
-    category: "Individuel",
-    aliases: [
-      "ANTI-GLIADINE IGG",
-      "ANTICORPS ANTI-GLIADINE DE TYPE IgG",
-      "Anti-Gliadine IgG",
-    ],
-  },
-  {
-    canonicalName: "Anti-Transglutaminase IgA",
-    code: "TRSG",
-    category: "Individuel",
-    aliases: [
-      "ANTI-TRANSGLUTAMINASE IGA",
-      "ANTICORPS ANTI-TRANSGLUTAMINASE IgA",
-      "Anti-Transglutaminase IgA",
-    ],
-  },
-  {
-    canonicalName: "Anticorps Anti-CCP",
-    code: "CCPG",
-    category: "Individuel",
-    aliases: [
-      "PEPTIDE CYCLIQUE CITRULLINÉ IGG",
-      "ANTICORPS ANTI-CCP",
-      "Anticorps Anti-CCP",
-    ],
-  },
-  {
-    canonicalName: "Facteur Intrinseque Anticorps",
-    code: "IFAB",
-    category: "Individuel",
-    aliases: [
-      "FACTEUR INTRINSÈQUE ANTICORPS",
-      "ANTICORPS ANTI-FACTEUR INTRINSÈQUE",
-      "Facteur Intrinseque Anticorps",
-    ],
-  },
-  {
-    canonicalName: "Facteur Rhumatoïde",
-    code: "RA",
-    category: "Individuel",
-    aliases: [
-      "FACTEUR RHUMATOÏDE",
-      "Rhumatoïde (Facteur)",
-      "Facteur Rhumatoïde",
-    ],
-  },
-  {
-    canonicalName: "Lupus Anticoagulant",
-    code: "LAGT",
-    category: "Individuel",
-    aliases: [
-      "LUPUS ANTICOAGULANT",
-      "ANTICOAGULANT LUPIQUE",
-      "Lupus Anticoagulant",
-    ],
-  },
-  {
-    canonicalName: "Cytomégalovirus IgG",
-    code: "CMV",
-    category: "Individuel",
-    aliases: [
-      "CYTOMÉGALOVIRUS IGG",
-      "ANTICORPS ANTI-CYTOMEGALOVIRUS IgG",
-      "Cytomégalovirus IgG",
-    ],
-  },
-  {
-    canonicalName: "Epstein-Barr VCA IgG",
-    code: "EBVG",
-    category: "Individuel",
-    aliases: [
-      "EPSTEIN-BARR VCA IGG",
-      "ANTICORPS ANTI-EBV IgG",
-      "Epstein-Barr VCA IgG",
-    ],
-  },
-  {
-    canonicalName: "Epstein-Barr VCA IgM",
-    code: "EBAR",
-    category: "Individuel",
-    aliases: [
-      "EPSTEIN-BARR VCA IGM",
-      "ANTICORPS ANTI-EBV IgM",
-      "Epstein-Barr VCA IgM",
-    ],
-  },
-  {
-    canonicalName: "Rubéole IgG",
-    code: "RUBE",
-    category: "Individuel",
-    aliases: [
-      "RUBÉOLE IGG",
-      "ANTICORPS ANTI-RUBÉOLE IgG",
-      "Rubéole IgG",
-    ],
-  },
-  {
-    canonicalName: "Rubéole IgM",
-    code: "RUBM",
-    category: "Individuel",
-    aliases: [
-      "RUBÉOLE IGM",
-      "ANTICORPS ANTI-RUBÉOLE IgM",
-      "Rubéole IgM",
-    ],
-  },
-  {
-    canonicalName: "Rougeole IgG",
-    code: "RMES",
-    category: "Individuel",
-    aliases: [
-      "ROUGEOLE IGG",
-      "ANTICORPS ANTI-ROUGEOLE IgG",
-      "Rougeole IgG",
-    ],
-  },
-  {
-    canonicalName: "Rougeole IgM",
-    code: "RMEM",
-    category: "Individuel",
-    aliases: [
-      "ROUGEOLE IGM",
-      "ANTICORPS ANTI-ROUGEOLE IgM",
-      "Rougeole IgM",
-    ],
-  },
-  {
-    canonicalName: "Varicelle IgG",
-    code: "VARG",
-    category: "Individuel",
-    aliases: [
-      "VARICELLE IGG",
-      "ANTICORPS ANTI-VARICELLE IgG",
-      "Varicelle IgG",
-    ],
-  },
-  {
-    canonicalName: "Varicelle IgM",
-    code: "VARM",
-    category: "Individuel",
-    aliases: [
-      "VARICELLE IGM",
-      "ANTICORPS ANTI-VARICELLE IgM",
-      "Varicelle IgM",
-    ],
-  },
-  {
-    canonicalName: "Oreillons IgG",
-    code: "MUMG",
-    category: "Individuel",
-    aliases: [
-      "OREILLONS IGG",
-      "ANTICORPS ANTI-OREILLONS IgG",
-      "Oreillons IgG",
-    ],
-  },
-  {
-    canonicalName: "Oreillons IgM",
-    code: "MUMM",
-    category: "Individuel",
-    aliases: [
-      "OREILLONS IGM",
-      "ANTICORPS ANTI-OREILLONS IgM",
-      "Oreillons IgM",
-    ],
-  },
-  {
-    canonicalName: "Toxoplasmose IgG",
-    code: "TOXG",
-    category: "Individuel",
-    aliases: [
-      "TOXOPLASMOSE IGG",
-      "Toxoplasmose IgG",
-    ],
-  },
-  {
-    canonicalName: "Toxoplasmose IgM",
-    code: "TOXM",
-    category: "Individuel",
-    aliases: [
-      "TOXOPLASMOSE IGM",
-      "Toxoplasmose IgM",
-    ],
-  },
-  {
-    canonicalName: "Rage Anticorps",
-    code: "RABIES",
-    category: "Individuel",
-    aliases: [
-      "RAGE, ANTICORPS",
-      "ANTICORPS ANTI-RABIQUES (RAGE)",
-      "Rage Anticorps",
-    ],
-  },
-  {
-    canonicalName: "Sédimentation (Vitesse de)",
-    code: "SEDI",
-    category: "Individuel",
-    aliases: [
-      "SÉDIMENTATION, VITESSE DE",
-      "VITESSE DE SÉDIMENTATION",
-      "Sédimentation (Vitesse de)",
-      "Sédimentation (Vitesse)",
-    ],
-  },
-  {
-    canonicalName: "Réticulocytes",
-    code: "RTIC",
-    category: "Individuel",
-    aliases: [
-      "RÉTICULOCYTES",
-      "Réticulocytes",
-    ],
-  },
-  {
-    canonicalName: "Antithrombine III",
-    code: "AT3A",
-    category: "Individuel",
-    aliases: [
-      "ANTITHROMBINE III, ANTIGÈNE",
-      "ANTITHROMBINE III (ACTIVITÉ)",
-      "Antithrombine III",
-    ],
-  },
-  {
-    canonicalName: "D-Dimère",
-    code: "DDIM",
-    category: "Individuel",
-    aliases: [
-      "D-DIMÈRE",
-      "D-Dimère",
-    ],
-  },
-  {
-    canonicalName: "T3 Libre",
-    code: "FT3",
-    category: "Individuel",
-    aliases: [
-      "T3 LIBRE",
-      "T3 Libre",
-    ],
-  },
-  {
-    canonicalName: "T4 Libre",
-    code: "FT4",
-    category: "Individuel",
-    aliases: [
-      "T4 LIBRE",
-      "T4 Libre",
-    ],
-  },
-  {
-    canonicalName: "Thyroglobuline",
-    code: "THYG",
-    category: "Individuel",
-    aliases: [
-      "THYROGLOBULINE",
-      "Thyroglobuline",
-    ],
-  },
-  {
-    canonicalName: "Androsténédione",
-    code: "ANDR",
-    category: "Individuel",
-    aliases: [
-      "ANDROSTÉNÉDIONE",
-      "ANDROSTENE-DIONE",
-      "Androsténédione",
-      "Androstènedione",
-    ],
-  },
-  {
-    canonicalName: "Testostérone Biodisponible",
-    code: "TESBC",
-    category: "Individuel",
-    aliases: [
-      "TESTOSTÉRONE Biodisponible",
-      "Testostérone Biodisponible",
-    ],
-  },
-  {
-    canonicalName: "Testostérone Libre",
-    code: "TESFC",
-    category: "Individuel",
-    aliases: [
-      "TESTOSTÉRONE Libre",
-      "Testostérone Libre",
-    ],
-  },
-  {
-    canonicalName: "Arsenic (Sang)",
-    code: "BARS",
-    category: "Individuel",
-    aliases: [
-      "ARSENIC, SANG ENTIER",
-      "ARSENIC SANG ENTIER",
-      "Arsenic",
-      "Arsenic (Sang Total)",
-      "Arsenic (Sang)",
-    ],
-  },
-  {
-    canonicalName: "Cadmium (Sang)",
+    canonicalName: "Cadmium Sang Entier (Sang Entier)",
     code: "CD",
     category: "Individuel",
     aliases: [
       "CADMIUM, SANG ENTIER",
       "CADMIUM SANG ENTIER",
-      "Cadmium",
-      "Cadmium (Sang)",
-    ],
-  },
-  {
-    canonicalName: "Plomb (Sang)",
-    code: "PB",
-    category: "Individuel",
-    aliases: [
-      "PLOMB, SANG ENTIER",
-      "Plomb (Sang)",
-    ],
-  },
-  {
-    canonicalName: "Zinc",
-    code: "ZN",
-    category: "Individuel",
-    aliases: [
-      "ZINC, PLASMA",
-      "Zinc (Plasma)",
-      "Zinc (Sang Total)",
-      "Zinc",
-    ],
-  },
-  {
-    canonicalName: "Acide Valproïque",
-    code: "VALP",
-    category: "Individuel",
-    aliases: [
-      "ACIDE VALPROÏQUE",
-      "ACIDE VALPROÏQUE (DEPAKENE)",
-      "Acide Valproïque (Depakene/Epival)",
-      "Acide Valproïque (Depakene)",
-      "Acide Valproïque",
-    ],
-  },
-  {
-    canonicalName: "Alpha-1 Antitrypsine",
-    code: "A1AT",
-    category: "Individuel",
-    aliases: [
-      "ALPHA 1 ANTITRYPSINE",
-      "Alpha-1 Antitrypsine",
-    ],
-  },
-  {
-    canonicalName: "Béta-2 Microglobuline",
-    code: "B2MG",
-    category: "Individuel",
-    aliases: [
-      "BÉTA-2 MICROGLOBULINE",
-      "BETA-2-MICROGLOBULINE",
-      "Bêta-2 Microglobuline",
-      "Beta-2 Microglobuline",
-      "Béta-2 Microglobuline",
-    ],
-  },
-  {
-    canonicalName: "Béta-HCG Quantitative",
-    code: "BHCG",
-    category: "Individuel",
-    aliases: [
-      "BÉTA-HCG INTACTE (QUANTITATIF)",
-      "Bêta-HCG Quantitative (Grossesse)",
-      "Beta-HCG Quantitative",
-      "Béta-HCG Quantitative",
-    ],
-  },
-  {
-    canonicalName: "Calcium Ionisé",
-    code: "CAIP",
-    category: "Individuel",
-    aliases: [
-      "CALCIUM IONISÉ",
-      "Calcium Ionisé",
     ],
   },
   {
@@ -845,46 +1375,340 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "CALCITONINE",
-      "Calcitonine",
     ],
   },
   {
-    canonicalName: "Carbamazépine",
-    code: "CARM",
+    canonicalName: "Calcium",
+    code: "CA",
     category: "Individuel",
     aliases: [
-      "CARBAMAZÉPINE",
-      "CARBAMAZEPINE (TEGRETOL)",
-      "Carbamazépine (Tegretol)",
-      "Carbamazépine",
+      "CALCIUM",
     ],
   },
   {
-    canonicalName: "Céruloplasmine",
+    canonicalName: "Calcium Creatinine Ratio",
+    code: "CACR",
+    category: "Individuel",
+    aliases: [
+      "CALCIUM / CRÉATININE RATIO",
+    ],
+  },
+  {
+    canonicalName: "Calcium Ionise (CAI)",
+    code: "CAI",
+    category: "Individuel",
+    aliases: [
+      "CALCIUM-IONISÉ (CALCIUM LIBRE)",
+      "CALCIUM IONISÉ",
+    ],
+  },
+  {
+    canonicalName: "Calcium Urine 24 Heures (Urine 24h)",
+    code: "CA/U",
+    category: "Individuel",
+    aliases: [
+      "CALCIUM, URINE 24 HEURES",
+      "CALCIUM - URINES DE 24 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Calcium Urine Hasard (Urine Hasard)",
+    code: "CAURAN",
+    category: "Individuel",
+    aliases: [
+      "CALCIUM - URINE AU HASARD",
+    ],
+  },
+  {
+    canonicalName: "Calcul Analyse",
+    code: "CALU",
+    category: "Individuel",
+    aliases: [
+      "CALCUL, ANALYSE DE",
+    ],
+  },
+  {
+    canonicalName: "Calprotectine",
+    code: "CLPTN",
+    category: "Individuel",
+    aliases: [
+      "CALPROTECTINE",
+    ],
+  },
+  {
+    canonicalName: "Cannabis 20 NG ML 50 NG ML",
+    code: "CN20",
+    category: "Individuel",
+    aliases: [
+      "CANNABIS (20 NG/ML, 50 NG/ML)",
+    ],
+  },
+  {
+    canonicalName: "Carbamazepine Tegretol",
+    code: "TEG",
+    category: "Individuel",
+    aliases: [
+      "CARBAMAZEPINE (TEGRETOL)",
+    ],
+  },
+  {
+    canonicalName: "Carcino Embryonique Antigene CEA",
+    code: "CEA",
+    category: "Individuel",
+    aliases: [
+      "CARCINO-EMBRYONIQUE ANTIGÈNE (CEA)",
+      "ANTIGÈNE CARCINO-EMBRYONNAIRE (ACE)",
+    ],
+  },
+  {
+    canonicalName: "Carnitine",
+    code: "CARNITH",
+    category: "Individuel",
+    aliases: [
+      "CARNITINE",
+    ],
+  },
+  {
+    canonicalName: "Catecholamines Metanephrine 24H",
+    code: "CATEMETA",
+    category: "Individuel",
+    aliases: [
+      "CATÉCHOLAMINES ET MÉTANÉPHRINE (24H)",
+    ],
+  },
+  {
+    canonicalName: "Catecholamines Plasma (Plasma)",
+    code: "CATS",
+    category: "Individuel",
+    aliases: [
+      "CATÉCHOLAMINES, PLASMA",
+    ],
+  },
+  {
+    canonicalName: "Catecholamines Urinaire 24H (Urine 24h)",
+    code: "UCAT",
+    category: "Individuel",
+    aliases: [
+      "CATÉCHOLAMINES URINAIRE, 24H",
+    ],
+  },
+  {
+    canonicalName: "Ccl4",
+    code: "CCL4",
+    category: "Profil",
+    aliases: [
+      "CCL4",
+    ],
+  },
+  {
+    canonicalName: "Ceruloplasmine",
     code: "CUBP",
     category: "Individuel",
     aliases: [
       "CÉRULOPLASMINE",
-      "Céruloplasmine",
     ],
   },
   {
-    canonicalName: "Transferrine",
-    code: "TRFN",
+    canonicalName: "Ch50 Complement Total",
+    code: "CH50",
     category: "Individuel",
     aliases: [
-      "TRANSFERRINE",
-      "Transferrine",
+      "COMPLÉMENT HÉMOLYTIQUE",
+      "CH50, COMPLÉMENT TOTAL",
     ],
   },
   {
-    canonicalName: "Cocaïne (Dépistage)",
-    code: "COKE",
+    canonicalName: "Chaines Legeres Kappa Lambda Libre",
+    code: "FKLP",
     category: "Individuel",
     aliases: [
-      "COCAÏNE",
-      "DROGUE: COCAINE",
-      "Cocaïne (Dépistage)",
+      "CHAÎNES LÉGÈRES KAPPA ET LAMBDA LIBRE",
+    ],
+  },
+  {
+    canonicalName: "Chaines Legeres Kappa Libre",
+    code: "KLCF",
+    category: "Individuel",
+    aliases: [
+      "CHAÎNES LÉGÈRES KAPPA LIBRE",
+    ],
+  },
+  {
+    canonicalName: "Chaines Legeres Lambda Libre",
+    code: "LLCF",
+    category: "Individuel",
+    aliases: [
+      "CHAÎNES LÉGÈRES LAMBDA LIBRE",
+    ],
+  },
+  {
+    canonicalName: "Chaines Legeres Libres",
+    code: "FLC",
+    category: "Individuel",
+    aliases: [
+      "CHAÎNES LÉGÈRES LIBRES",
+    ],
+  },
+  {
+    canonicalName: "Charge Virale VIH",
+    code: "HIVCV",
+    category: "Individuel",
+    aliases: [
+      "CHARGE VIRALE (VIH)",
+    ],
+  },
+  {
+    canonicalName: "Chlamydia Gonorrhee PCR 1 Echantillon",
+    code: "CGPCR1",
+    category: "Profil",
+    aliases: [
+      "CHLAMYDIA ET GONORRHÉE PAR PCR (1 ÉCHANTILLON)",
+    ],
+  },
+  {
+    canonicalName: "Chlamydia Gonorrhee PCR 2 Echantillons",
+    code: "CGPCR2",
+    category: "Profil",
+    aliases: [
+      "CHLAMYDIA ET GONORRHÉE PAR PCR (2 ÉCHANTILLONS)",
+    ],
+  },
+  {
+    canonicalName: "Chlamydia Gonorrhee PCR 3 Echantillons",
+    code: "CGPCR3",
+    category: "Profil",
+    aliases: [
+      "CHLAMYDIA ET GONORRHÉE PAR PCR (3 ÉCHANTILLONS)",
+    ],
+  },
+  {
+    canonicalName: "Chlamydia Gonorrhoeae Trichomonas Taan Urine (Urine)",
+    code: "TGCD",
+    category: "Individuel",
+    aliases: [
+      "CHLAMYDIA/GONORRHOEAE/TRICHOMONAS (TAAN) - URINE",
+    ],
+  },
+  {
+    canonicalName: "Chlamydia PCR",
+    code: "CMPC",
+    category: "Individuel",
+    aliases: [
+      "CHLAMYDIA PAR PCR",
+    ],
+  },
+  {
+    canonicalName: "Chlamydia PCR Rectal Incluant LGV (Rectal)",
+    code: "CMPCR",
+    category: "Individuel",
+    aliases: [
+      "CHLAMYDIA PAR PCR, RECTAL (INCLUANT LGV)",
+    ],
+  },
+  {
+    canonicalName: "Chlamydia Urine (Urine)",
+    code: "CMPCU",
+    category: "Individuel",
+    aliases: [
+      "CHLAMYDIA URINE",
+    ],
+  },
+  {
+    canonicalName: "Chlorure",
+    code: "CL",
+    category: "Individuel",
+    aliases: [
+      "CHLORURE",
+      "CHLORURES",
+    ],
+  },
+  {
+    canonicalName: "Chlorure Urine 24 Heures (Urine 24h)",
+    code: "UCL",
+    category: "Individuel",
+    aliases: [
+      "CHLORURE, URINE 24 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Cholera Test Selles (Selles)",
+    code: "SCHL",
+    category: "Individuel",
+    aliases: [
+      "CHOLÉRA, TEST (SELLES)",
+    ],
+  },
+  {
+    canonicalName: "Cholesterol HDL",
+    code: "HDL",
+    category: "Individuel",
+    aliases: [
+      "CHOLESTÉROL HDL",
+    ],
+  },
+  {
+    canonicalName: "Cholesterol LDL",
+    code: "LDLD",
+    category: "Individuel",
+    aliases: [
+      "CHOLESTÉROL LDL",
+    ],
+  },
+  {
+    canonicalName: "Cholesterol N HDL",
+    code: "NHDL",
+    category: "Individuel",
+    aliases: [
+      "CHOLESTÉROL NON HDL",
+    ],
+  },
+  {
+    canonicalName: "Cholesterol Total",
+    code: "CHOL",
+    category: "Individuel",
+    aliases: [
+      "CHOLESTÉROL, TOTAL",
+      "CHOLESTÉROL TOTAL",
+    ],
+  },
+  {
+    canonicalName: "Chrome Sang Entier (Sang Entier)",
+    code: "CR",
+    category: "Individuel",
+    aliases: [
+      "CHROME, SANG ENTIER",
+    ],
+  },
+  {
+    canonicalName: "Chromogranine A",
+    code: "CGA",
+    category: "Individuel",
+    aliases: [
+      "CHROMOGRANINE A",
+    ],
+  },
+  {
+    canonicalName: "Chylomicrons",
+    code: "CHYL",
+    category: "Individuel",
+    aliases: [
+      "CHYLOMICRONS",
+    ],
+  },
+  {
+    canonicalName: "Citrate Urine 24 Heures (Urine 24h)",
+    code: "CI/U",
+    category: "Individuel",
+    aliases: [
+      "CITRATE, URINE 24 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Clairance Creatinine",
+    code: "CTCL",
+    category: "Individuel",
+    aliases: [
+      "CLAIRANCE DE LA CRÉATININE",
     ],
   },
   {
@@ -894,7 +1718,1069 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     aliases: [
       "CLOSTRIDIUM DIFFICILE, GÈNE DE LA TOXINE",
       "CLOSTRIDIUM DIFFICILE",
-      "Clostridium Difficile",
+    ],
+  },
+  {
+    canonicalName: "Coagulation Hemogramme",
+    code: "CBCCOAG",
+    category: "Profil",
+    aliases: [
+      "PROFIL COAGULATION/HÉMOGRAMME",
+    ],
+  },
+  {
+    canonicalName: "Coagulogramme",
+    code: "COAG",
+    category: "Profil",
+    aliases: [
+      "COAGULOGRAMME",
+      "PROFIL COAGULOGRAMME",
+    ],
+  },
+  {
+    canonicalName: "Cobalt Sang Entier (Sang Entier)",
+    code: "CO",
+    category: "Individuel",
+    aliases: [
+      "COBALT, SANG ENTIER",
+    ],
+  },
+  {
+    canonicalName: "Cocaine",
+    code: "COKE",
+    category: "Individuel",
+    aliases: [
+      "COCAÏNE",
+    ],
+  },
+  {
+    canonicalName: "Complement C1Q",
+    code: "C1Q",
+    category: "Individuel",
+    aliases: [
+      "COMPLÉMENT C1Q",
+    ],
+  },
+  {
+    canonicalName: "Complement C3",
+    code: "C3",
+    category: "Individuel",
+    aliases: [
+      "COMPLÉMENT C3",
+    ],
+  },
+  {
+    canonicalName: "Complement C4",
+    code: "C4",
+    category: "Individuel",
+    aliases: [
+      "COMPLÉMENT C4",
+    ],
+  },
+  {
+    canonicalName: "Complet CRP Ultrasensible",
+    code: "CH4SC",
+    category: "Profil",
+    aliases: [
+      "COMPLET, CRP ULTRASENSIBLE",
+    ],
+  },
+  {
+    canonicalName: "Complete Biochemistry",
+    code: "CHP4",
+    category: "Profil",
+    aliases: [
+      "COMPLETE BIOCHEMISTRY",
+    ],
+  },
+  {
+    canonicalName: "Complete Biochemistry General TSH",
+    code: "CHP4T",
+    category: "Profil",
+    aliases: [
+      "COMPLETE BIOCHEMISTRY GENERAL & TSH",
+    ],
+  },
+  {
+    canonicalName: "Complete Biochemistry TSH PSA",
+    code: "CHP4A",
+    category: "Profil",
+    aliases: [
+      "COMPLETE BIOCHEMISTRY + TSH & PSA",
+    ],
+  },
+  {
+    canonicalName: "Complete Biochemistry Without Urine (Urine)",
+    code: "CH4U",
+    category: "Profil",
+    aliases: [
+      "COMPLETE BIOCHEMISTRY, WITHOUT URINE",
+    ],
+  },
+  {
+    canonicalName: "Coombs Direct",
+    code: "DCOM",
+    category: "Individuel",
+    aliases: [
+      "COOMBS, DIRECT",
+    ],
+  },
+  {
+    canonicalName: "Cortisol AM PM",
+    code: "SCORT",
+    category: "Individuel",
+    aliases: [
+      "CORTISOL AM/PM",
+    ],
+  },
+  {
+    canonicalName: "Cortisol Matin",
+    code: "CORTIAM",
+    category: "Individuel",
+    aliases: [
+      "CORTISOL (MATIN)",
+    ],
+  },
+  {
+    canonicalName: "Cortisol Urine 24 Heures (Urine 24h)",
+    code: "CORU",
+    category: "Individuel",
+    aliases: [
+      "CORTISOL, URINE 24 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Creatine Kinase",
+    code: "CK",
+    category: "Individuel",
+    aliases: [
+      "CRÉATINE KINASE",
+      "CK (CRÉATINE KINASE)",
+    ],
+  },
+  {
+    canonicalName: "Creatinine (Sérum)",
+    code: "CREA",
+    category: "Individuel",
+    aliases: [
+      "CRÉATININE, SÉRUM",
+      "CRÉATININE",
+    ],
+  },
+  {
+    canonicalName: "Cryogobuline",
+    code: "CRYO",
+    category: "Individuel",
+    aliases: [
+      "CRYOGOBULINE",
+    ],
+  },
+  {
+    canonicalName: "Cuivre Globules Rouges (Globules Rouges)",
+    code: "CURBC",
+    category: "Individuel",
+    aliases: [
+      "CUIVRE, GLOBULES ROUGES",
+    ],
+  },
+  {
+    canonicalName: "Cuivre Plasma OU Serum (Plasma)",
+    code: "CU",
+    category: "Individuel",
+    aliases: [
+      "CUIVRE, PLASMA OU SÉRUM",
+    ],
+  },
+  {
+    canonicalName: "Cuivre Urine 24 Heures (Urine 24h)",
+    code: "CU/U",
+    category: "Individuel",
+    aliases: [
+      "CUIVRE, URINE 24 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Culture Cervicale (Cervical)",
+    code: "CULC",
+    category: "Individuel",
+    aliases: [
+      "CULTURE CERVICALE",
+    ],
+  },
+  {
+    canonicalName: "Culture Chlamydia",
+    code: "CCHMD",
+    category: "Individuel",
+    aliases: [
+      "CULTURE, CHLAMYDIA",
+    ],
+  },
+  {
+    canonicalName: "Culture Crachat (Crachat)",
+    code: "SPUT",
+    category: "Individuel",
+    aliases: [
+      "CULTURE CRACHAT",
+    ],
+  },
+  {
+    canonicalName: "Culture Fluide Corporel",
+    code: "CFLU",
+    category: "Individuel",
+    aliases: [
+      "CULTURE DE FLUIDE CORPOREL",
+    ],
+  },
+  {
+    canonicalName: "Culture Fongique Autres",
+    code: "CULFS",
+    category: "Individuel",
+    aliases: [
+      "CULTURE FONGIQUE (AUTRES)",
+    ],
+  },
+  {
+    canonicalName: "Culture Fongique Peau Cheveux Ongles (Cheveux)",
+    code: "CULF",
+    category: "Individuel",
+    aliases: [
+      "CULTURE FONGIQUE (PEAU, CHEVEUX, ONGLES)",
+    ],
+  },
+  {
+    canonicalName: "Culture Genital Gono Chlam",
+    code: "STDMU",
+    category: "Profil",
+    aliases: [
+      "PROFIL CULTURE GENITAL ET GONO/CHLAM",
+    ],
+  },
+  {
+    canonicalName: "Culture Gonorrhee Gorge Rectal (Gorge)",
+    code: "GONT",
+    category: "Individuel",
+    aliases: [
+      "CULTURE GONORRHÉE (GORGE / RECTAL)",
+    ],
+  },
+  {
+    canonicalName: "Culture Gorge Strep A Rapide (Gorge)",
+    code: "STREP",
+    category: "Individuel",
+    aliases: [
+      "CULTURE GORGE + STREP A RAPIDE",
+    ],
+  },
+  {
+    canonicalName: "Culture Mycoplasma",
+    code: "MYPS",
+    category: "Individuel",
+    aliases: [
+      "CULTURE MYCOPLASMA",
+    ],
+  },
+  {
+    canonicalName: "Culture NEZ (Nasal)",
+    code: "CULN",
+    category: "Individuel",
+    aliases: [
+      "CULTURE NEZ",
+    ],
+  },
+  {
+    canonicalName: "Culture PUS Plaie Profonde (Plaie)",
+    code: "CULZ",
+    category: "Individuel",
+    aliases: [
+      "CULTURE PUS / PLAIE PROFONDE",
+    ],
+  },
+  {
+    canonicalName: "Culture Plaie Supperficielle (Plaie)",
+    code: "CULW",
+    category: "Individuel",
+    aliases: [
+      "CULTURE PLAIE SUPPERFICIELLE",
+    ],
+  },
+  {
+    canonicalName: "Culture Selles Culture Traditionnelle (Selles)",
+    code: "CULS",
+    category: "Individuel",
+    aliases: [
+      "CULTURE SELLES (CULTURE TRADITIONNELLE)",
+    ],
+  },
+  {
+    canonicalName: "Culture Selles Methode PCR (Selles)",
+    code: "STOOLPCR",
+    category: "Individuel",
+    aliases: [
+      "CULTURE SELLES (MÉTHODE PCR)",
+    ],
+  },
+  {
+    canonicalName: "Culture Ureaplasma Mycoplasma",
+    code: "UPCU",
+    category: "Individuel",
+    aliases: [
+      "CULTURE URÉAPLASMA ET MYCOPLASMA",
+    ],
+  },
+  {
+    canonicalName: "Culture Urethrale",
+    code: "CULP",
+    category: "Individuel",
+    aliases: [
+      "CULTURE URÉTHRALE",
+    ],
+  },
+  {
+    canonicalName: "Culture Vaginale Culture Traditionnelle (Vaginal)",
+    code: "CULV",
+    category: "Individuel",
+    aliases: [
+      "CULTURE VAGINALE (CULTURE TRADITIONNELLE)",
+    ],
+  },
+  {
+    canonicalName: "Culture Vaginale Methode PCR (Vaginal)",
+    code: "PCRCULV",
+    category: "Individuel",
+    aliases: [
+      "CULTURE VAGINALE (MÉTHODE PCR)",
+    ],
+  },
+  {
+    canonicalName: "Cystatin C",
+    code: "CYSC",
+    category: "Individuel",
+    aliases: [
+      "CYSTATIN C",
+    ],
+  },
+  {
+    canonicalName: "Cytologie Urine (Urine)",
+    code: "UCYT",
+    category: "Individuel",
+    aliases: [
+      "CYTOLOGIE, URINE",
+    ],
+  },
+  {
+    canonicalName: "Cytomegalovirus IGG IGM",
+    code: "CMVP",
+    category: "Individuel",
+    aliases: [
+      "CYTOMÉGALOVIRUS IGG, IGM",
+    ],
+  },
+  {
+    canonicalName: "Cytomegalovirus IGM",
+    code: "CMVM",
+    category: "Individuel",
+    aliases: [
+      "CYTOMÉGALOVIRUS IGM",
+      "ANTICORPS ANTI-CYTOMEGALOVIRUS IGM",
+    ],
+  },
+  {
+    canonicalName: "D Dimere",
+    code: "DDIM",
+    category: "Individuel",
+    aliases: [
+      "D-DIMÈRE",
+    ],
+  },
+  {
+    canonicalName: "Depistage Hepatite A B",
+    code: "HEPAB",
+    category: "Profil",
+    aliases: [
+      "PROFIL DÉPISTAGE HÉPATITE A ET B",
+    ],
+  },
+  {
+    canonicalName: "Depistage Hepatite A B C",
+    code: "HEPABC",
+    category: "Profil",
+    aliases: [
+      "PROFIL DÉPISTAGE HÉPATITE A, B ET C",
+    ],
+  },
+  {
+    canonicalName: "Depistage Hepatite B",
+    code: "HEPB",
+    category: "Profil",
+    aliases: [
+      "PROFIL DÉPISTAGE HÉPATITE B",
+    ],
+  },
+  {
+    canonicalName: "Dhea",
+    code: "DHEA",
+    category: "Individuel",
+    aliases: [
+      "DHEA",
+    ],
+  },
+  {
+    canonicalName: "Dheas",
+    code: "DH-S",
+    category: "Individuel",
+    aliases: [
+      "DHEA-S",
+      "DHEAS",
+    ],
+  },
+  {
+    canonicalName: "Diabetique 1",
+    code: "DIAB",
+    category: "Profil",
+    aliases: [
+      "DIABÉTIQUE #1",
+      "PROFIL DIABÉTIQUE NO 1",
+    ],
+  },
+  {
+    canonicalName: "Diabetique 6",
+    code: "DIAB6",
+    category: "Profil",
+    aliases: [
+      "PROFIL DIABÉTIQUE NO 6",
+    ],
+  },
+  {
+    canonicalName: "Digoxin",
+    code: "DIGX",
+    category: "Individuel",
+    aliases: [
+      "DIGOXIN",
+    ],
+  },
+  {
+    canonicalName: "Dihydrotestosterone",
+    code: "DHT",
+    category: "Individuel",
+    aliases: [
+      "DIHYDROTESTOSTÉRONE",
+    ],
+  },
+  {
+    canonicalName: "Drogue Cannabinoides",
+    code: "CAN",
+    category: "Individuel",
+    aliases: [
+      "DROGUE: CANNABINOIDES",
+    ],
+  },
+  {
+    canonicalName: "Drogue Cocaine",
+    code: "COCAINE",
+    category: "Individuel",
+    aliases: [
+      "DROGUE: COCAINE",
+    ],
+  },
+  {
+    canonicalName: "Drogues 4 Tests 1",
+    code: "DAU450",
+    category: "Profil",
+    aliases: [
+      "DROGUES 4 TESTS #1",
+    ],
+  },
+  {
+    canonicalName: "Drogues 5 Tests 1",
+    code: "DAUP",
+    category: "Profil",
+    aliases: [
+      "DROGUES 5 TESTS #1",
+    ],
+  },
+  {
+    canonicalName: "Drogues 5 Tests 2",
+    code: "DAUB50",
+    category: "Profil",
+    aliases: [
+      "DROGUES 5 TESTS #2",
+    ],
+  },
+  {
+    canonicalName: "Drogues Dans Cheveux (Cheveux)",
+    code: "DRUGH",
+    category: "Profil",
+    aliases: [
+      "DROGUES DANS LES CHEVEUX",
+    ],
+  },
+  {
+    canonicalName: "Echographie Endovaginale",
+    code: "ENDV",
+    category: "Profil",
+    aliases: [
+      "ÉCHOGRAPHIE ENDOVAGINALE",
+    ],
+  },
+  {
+    canonicalName: "Echographie Endovaginale Pelvienne",
+    code: "ENDPE",
+    category: "Profil",
+    aliases: [
+      "ÉCHOGRAPHIE ENDOVAGINALE ET PELVIENNE",
+    ],
+  },
+  {
+    canonicalName: "Echographie Obstetricale 1ER Trimestre",
+    code: "1TRI",
+    category: "Profil",
+    aliases: [
+      "ÉCHOGRAPHIE OBSTÉTRICALE, 1ER TRIMESTRE",
+    ],
+  },
+  {
+    canonicalName: "Echographie Obstetricale 2eme Trimestre",
+    code: "2TRI",
+    category: "Profil",
+    aliases: [
+      "ÉCHOGRAPHIE OBSTÉTRICALE, 2ÈME TRIMESTRE",
+    ],
+  },
+  {
+    canonicalName: "Echographie Obstetricale 3eme Trimestre",
+    code: "3TRI",
+    category: "Profil",
+    aliases: [
+      "ÉCHOGRAPHIE OBSTÉTRICALE, 3ÈME TRIMESTRE",
+    ],
+  },
+  {
+    canonicalName: "Echographie Viabilite Datation",
+    code: "VIAB",
+    category: "Profil",
+    aliases: [
+      "ÉCHOGRAPHIE DE VIABILITÉ-DATATION",
+    ],
+  },
+  {
+    canonicalName: "Electrocardiogramme",
+    code: "ECG",
+    category: "Individuel",
+    aliases: [
+      "ÉLECTROCARDIOGRAMME AU REPOS (ECG)",
+      "ÉLECTROCARDIOGRAMME",
+    ],
+  },
+  {
+    canonicalName: "Electrocardiogramme Sans Interpretation",
+    code: "ECGW",
+    category: "Individuel",
+    aliases: [
+      "ÉLECTROCARDIOGRAMME SANS INTERPRÉTATION",
+    ],
+  },
+  {
+    canonicalName: "Electrolytes",
+    code: "ELEC",
+    category: "Individuel",
+    aliases: [
+      "ÉLECTROLYTES",
+    ],
+  },
+  {
+    canonicalName: "Electrolytes NA K CL",
+    code: "LYTES",
+    category: "Individuel",
+    aliases: [
+      "ÉLECTROLYTES (NA, K, CL)",
+    ],
+  },
+  {
+    canonicalName: "Electrolytes Urine 24 Heures (Urine 24h)",
+    code: "UELE",
+    category: "Individuel",
+    aliases: [
+      "ÉLECTROLYTES, URINE 24 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Electrophorese Hemoglobine",
+    code: "HBEL",
+    category: "Individuel",
+    aliases: [
+      "ÉLECTROPHORÈSE DE L'HÉMOGLOBINE",
+    ],
+  },
+  {
+    canonicalName: "Electrophorese Proteines",
+    code: "SPEP",
+    category: "Individuel",
+    aliases: [
+      "ÉLECTROPHORÈSE DES PROTÉINES",
+    ],
+  },
+  {
+    canonicalName: "Electrophorese Proteines Urine (Urine)",
+    code: "UELP",
+    category: "Individuel",
+    aliases: [
+      "ÉLECTROPHORÈSE DES PROTÉINES, URINE",
+    ],
+  },
+  {
+    canonicalName: "Enzyme Conversion Angiotensine ACE",
+    code: "ACE",
+    category: "Individuel",
+    aliases: [
+      "ENZYME DE CONVERSION ANGIOTENSINE (ACE)",
+    ],
+  },
+  {
+    canonicalName: "Epstein Barr Ebar Ebvna",
+    code: "EBVP",
+    category: "Individuel",
+    aliases: [
+      "EPSTEIN-BARR, PROFIL (EBAR+EBVNA)",
+    ],
+  },
+  {
+    canonicalName: "Epstein Barr Ebna IGG",
+    code: "EBVNA",
+    category: "Individuel",
+    aliases: [
+      "EPSTEIN-BARR EBNA IGG",
+    ],
+  },
+  {
+    canonicalName: "Epstein Barr VCA IGG",
+    code: "EBVG",
+    category: "Individuel",
+    aliases: [
+      "EPSTEIN-BARR VCA IGG",
+    ],
+  },
+  {
+    canonicalName: "Epstein Barr VCA IGM",
+    code: "EBAR",
+    category: "Individuel",
+    aliases: [
+      "EPSTEIN-BARR VCA IGM",
+    ],
+  },
+  {
+    canonicalName: "Erythropoietine",
+    code: "ERYT",
+    category: "Individuel",
+    aliases: [
+      "ÉRYTHROPOIETINE",
+    ],
+  },
+  {
+    canonicalName: "Estradiol",
+    code: "ESTR",
+    category: "Individuel",
+    aliases: [
+      "ESTRADIOL (E2)",
+      "ESTRADIOL",
+    ],
+  },
+  {
+    canonicalName: "Estrone",
+    code: "ESTN",
+    category: "Individuel",
+    aliases: [
+      "ESTRONE",
+    ],
+  },
+  {
+    canonicalName: "Ethanol Serum (Sérum)",
+    code: "SETH",
+    category: "Individuel",
+    aliases: [
+      "ÉTHANOL, SÉRUM",
+    ],
+  },
+  {
+    canonicalName: "FER (FE)",
+    code: "FE",
+    category: "Individuel",
+    aliases: [
+      "FER, TOTAL",
+      "FER",
+    ],
+  },
+  {
+    canonicalName: "FER (IRON)",
+    code: "IRON",
+    category: "Profil",
+    aliases: [
+      "FER",
+    ],
+  },
+  {
+    canonicalName: "FER 1",
+    code: "IRN1",
+    category: "Profil",
+    aliases: [
+      "FER #1",
+    ],
+  },
+  {
+    canonicalName: "FER 2",
+    code: "IRN2",
+    category: "Profil",
+    aliases: [
+      "FER #2",
+    ],
+  },
+  {
+    canonicalName: "FER 3",
+    code: "IRN3",
+    category: "Profil",
+    aliases: [
+      "FER #3",
+    ],
+  },
+  {
+    canonicalName: "FER 6",
+    code: "IRN6",
+    category: "Profil",
+    aliases: [
+      "FER #6",
+    ],
+  },
+  {
+    canonicalName: "FSH",
+    code: "FSH",
+    category: "Individuel",
+    aliases: [
+      "FSH",
+    ],
+  },
+  {
+    canonicalName: "Facteur II Mutation",
+    code: "FIIM",
+    category: "Individuel",
+    aliases: [
+      "FACTEUR II MUTATION",
+    ],
+  },
+  {
+    canonicalName: "Facteur Rhumatoide",
+    code: "RA",
+    category: "Individuel",
+    aliases: [
+      "FACTEUR RHUMATOÏDE",
+    ],
+  },
+  {
+    canonicalName: "Facteur V Leiden",
+    code: "FVL",
+    category: "Individuel",
+    aliases: [
+      "FACTEUR V LEIDEN",
+    ],
+  },
+  {
+    canonicalName: "Facteur Viii Fonctionnel",
+    code: "FAC8",
+    category: "Individuel",
+    aliases: [
+      "FACTEUR VIII FONCTIONNEL",
+    ],
+  },
+  {
+    canonicalName: "Ferritine",
+    code: "FERR",
+    category: "Individuel",
+    aliases: [
+      "FERRITINE",
+    ],
+  },
+  {
+    canonicalName: "Fertilite 1",
+    code: "FERT",
+    category: "Profil",
+    aliases: [
+      "FERTILITÉ #1",
+      "PROFIL FERTILITÉ NO 1",
+    ],
+  },
+  {
+    canonicalName: "Fertilite 2",
+    code: "SPGMF",
+    category: "Individuel",
+    aliases: [
+      "SPERMOGRAMME FERTILITÉ",
+      "PROFIL FERTILITÉ NO 2",
+    ],
+  },
+  {
+    canonicalName: "Fibrinogene",
+    code: "FIB",
+    category: "Individuel",
+    aliases: [
+      "FIBRINOGÈNE",
+    ],
+  },
+  {
+    canonicalName: "Fibrose Kystique Depistage",
+    code: "CFC",
+    category: "Individuel",
+    aliases: [
+      "FIBROSE KYSTIQUE, DÉPISTAGE",
+    ],
+  },
+  {
+    canonicalName: "Formule Sanguine Complete FSC",
+    code: "CBC",
+    category: "Individuel",
+    aliases: [
+      "FORMULE SANGUINE COMPLÈTE (FSC)",
+      "FORMULE SANGUINE COMPLETE (FSC)",
+    ],
+  },
+  {
+    canonicalName: "Formule Sanguine Complete Sedimentation",
+    code: "CBCS",
+    category: "Profil",
+    aliases: [
+      "FORMULE SANGUINE COMPLÈTE ET SÉDIMENTATION",
+    ],
+  },
+  {
+    canonicalName: "Fructosamine",
+    code: "FRUC",
+    category: "Individuel",
+    aliases: [
+      "FRUCTOSAMINE",
+    ],
+  },
+  {
+    canonicalName: "GGT",
+    code: "GGT",
+    category: "Individuel",
+    aliases: [
+      "GGT",
+    ],
+  },
+  {
+    canonicalName: "Gastrine",
+    code: "GAST",
+    category: "Individuel",
+    aliases: [
+      "GASTRINE",
+    ],
+  },
+  {
+    canonicalName: "General 1",
+    code: "CHP1",
+    category: "Profil",
+    aliases: [
+      "GÉNÉRAL #1",
+      "PROFIL GÉNÉRAL NO 1",
+    ],
+  },
+  {
+    canonicalName: "General 1 CRP",
+    code: "FIN1",
+    category: "Profil",
+    aliases: [
+      "GÉNÉRAL #1, CRP",
+    ],
+  },
+  {
+    canonicalName: "General 2",
+    code: "CHP2",
+    category: "Profil",
+    aliases: [
+      "GÉNÉRAL #2",
+      "PROFIL GÉNÉRAL NO 2",
+    ],
+  },
+  {
+    canonicalName: "General 3",
+    code: "CHP3",
+    category: "Profil",
+    aliases: [
+      "GENERAL BIOCHEMISTRY #3",
+      "PROFIL GÉNÉRAL NO 3",
+    ],
+  },
+  {
+    canonicalName: "General 3 Sans Urine (Urine)",
+    code: "CH3U",
+    category: "Profil",
+    aliases: [
+      "GÉNÉRAL #3, SANS URINE",
+    ],
+  },
+  {
+    canonicalName: "General 4",
+    code: "GP4",
+    category: "Profil",
+    aliases: [
+      "PROFIL GÉNÉRAL NO 4",
+    ],
+  },
+  {
+    canonicalName: "General 5",
+    code: "GN5",
+    category: "Profil",
+    aliases: [
+      "GÉNÉRAL #5",
+    ],
+  },
+  {
+    canonicalName: "General 6",
+    code: "PNL6",
+    category: "Profil",
+    aliases: [
+      "GÉNÉRAL #6",
+    ],
+  },
+  {
+    canonicalName: "Globulines",
+    code: "GLOB",
+    category: "Individuel",
+    aliases: [
+      "GLOBULINES",
+    ],
+  },
+  {
+    canonicalName: "Glucagon",
+    code: "GLGN",
+    category: "Individuel",
+    aliases: [
+      "GLUCAGON",
+    ],
+  },
+  {
+    canonicalName: "Glucose 6 PO4 DH Quantitatif Sang Entier (Sang Entier)",
+    code: "G6PDQ",
+    category: "Individuel",
+    aliases: [
+      "GLUCOSE-6-PO4-DH QUANTITATIF, SANG ENTIER",
+    ],
+  },
+  {
+    canonicalName: "Glucose AC",
+    code: "ACGL",
+    category: "Individuel",
+    aliases: [
+      "GLUCOSE AC",
+    ],
+  },
+  {
+    canonicalName: "Glucose AC PC 1H",
+    code: "ACPC1H",
+    category: "Individuel",
+    aliases: [
+      "GLUCOSE AC & PC 1H",
+    ],
+  },
+  {
+    canonicalName: "Glucose AC PC 2H",
+    code: "ACPC2H",
+    category: "Individuel",
+    aliases: [
+      "GLUCOSE AC & PC 2H",
+    ],
+  },
+  {
+    canonicalName: "Glucose Aleatoire",
+    code: "GLU",
+    category: "Individuel",
+    aliases: [
+      "GLUCOSE, ALÉATOIRE",
+    ],
+  },
+  {
+    canonicalName: "Glucose Hasard",
+    code: "ACP",
+    category: "Individuel",
+    aliases: [
+      "GLUCOSE AU HASARD",
+    ],
+  },
+  {
+    canonicalName: "Glucose Hyperglycemie Orale 75G N Gestationnel 2 Heures",
+    code: "GLU75",
+    category: "Individuel",
+    aliases: [
+      "GLUCOSE - HYPERGLYCÉMIE ORALE 75G NON-GESTATIONNEL (2 HEURES)",
+    ],
+  },
+  {
+    canonicalName: "Glucose PC",
+    code: "PCGL",
+    category: "Individuel",
+    aliases: [
+      "GLUCOSE PC",
+    ],
+  },
+  {
+    canonicalName: "Glucose Test Tolerance 2 Heures",
+    code: "2HGTT",
+    category: "Individuel",
+    aliases: [
+      "GLUCOSE TEST DE TOLÉRANCE, 2 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Gono Chlam",
+    code: "ITSS",
+    category: "Profil",
+    aliases: [
+      "PROFIL GONO-CHLAM",
+    ],
+  },
+  {
+    canonicalName: "Gonorrhee PCR",
+    code: "GONO",
+    category: "Individuel",
+    aliases: [
+      "GONORRHÉE PAR PCR",
+    ],
+  },
+  {
+    canonicalName: "Gonorrhee PCR Urine (Urine)",
+    code: "GONOU",
+    category: "Individuel",
+    aliases: [
+      "GONORRHÉE PAR PCR (URINE)",
+    ],
+  },
+  {
+    canonicalName: "Groupe Sanguin RH",
+    code: "BLDT",
+    category: "Individuel",
+    aliases: [
+      "GROUPE SANGUIN & RH",
+    ],
+  },
+  {
+    canonicalName: "H Pylori Selles (Selles)",
+    code: "HELAG",
+    category: "Individuel",
+    aliases: [
+      "H. PYLORI, SELLES",
+    ],
+  },
+  {
+    canonicalName: "H Pylori Test Respiratoire",
+    code: "HPBT",
+    category: "Individuel",
+    aliases: [
+      "H. PYLORI, TEST RESPIRATOIRE",
+    ],
+  },
+  {
+    canonicalName: "HFE Genotype",
+    code: "HFE",
+    category: "Individuel",
+    aliases: [
+      "HFE GÉNOTYPE",
     ],
   },
   {
@@ -907,153 +2793,11 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "Homocystéine",
-    code: "HCYS",
+    canonicalName: "HLA Celiac",
+    code: "HLACELIAC",
     category: "Individuel",
     aliases: [
-      "HOMOCYSTÉINE",
-      "Homocystéine",
-    ],
-  },
-  {
-    canonicalName: "Glucose (À Jeun)",
-    code: "ACGL",
-    category: "Individuel",
-    aliases: [
-      "GLUCOSE AC",
-      "Glucose (À Jeun/AC)",
-      "Glucose (À Jeun)",
-    ],
-  },
-  {
-    canonicalName: "Glucose (Aléatoire)",
-    code: "GLU",
-    category: "Individuel",
-    aliases: [
-      "GLUCOSE, ALÉATOIRE",
-      "GLUCOSE AU HASARD",
-      "Glucose (Aléatoire)",
-    ],
-  },
-  {
-    canonicalName: "DHEA-S",
-    code: "DH-S",
-    category: "Individuel",
-    aliases: [
-      "DHEA-S",
-      "DHEAS",
-      "DHEA-Sulfate",
-    ],
-  },
-  {
-    canonicalName: "Digoxin",
-    code: "DIGX",
-    category: "Individuel",
-    aliases: [
-      "DIGOXIN",
-      "Digoxin (Lanoxin)",
-      "Digoxine",
-      "Digoxin",
-    ],
-  },
-  {
-    canonicalName: "Lipase",
-    code: "LASE",
-    category: "Individuel",
-    aliases: [
-      "LIPASE",
-      "Lipase",
-    ],
-  },
-  {
-    canonicalName: "Lithium",
-    code: "LITH",
-    category: "Individuel",
-    aliases: [
-      "LITHIUM",
-      "Lithium",
-    ],
-  },
-  {
-    canonicalName: "Groupe Sanguin & Rh",
-    code: "BLDT",
-    category: "Individuel",
-    aliases: [
-      "GROUPE SANGUIN & RH",
-      "Groupe Sanguin & Rh",
-    ],
-  },
-  {
-    canonicalName: "Osmolalite (Serum)",
-    code: "OSMS",
-    category: "Individuel",
-    aliases: [
-      "OSMOLALITÉ, SÉRUM",
-      "Osmolalité (Sérum)",
-      "Osmolalite (Serum)",
-    ],
-  },
-  {
-    canonicalName: "Syphilis",
-    code: "SYPEIA",
-    category: "Individuel",
-    aliases: [
-      "SYPHILIS (EIA)",
-      "Syphilis (VDRL/RPR)",
-      "Syphilis (Dépistage)",
-      "Syphilis",
-    ],
-  },
-  {
-    canonicalName: "Chaînes Légères Libres",
-    code: "FKLP",
-    category: "Individuel",
-    aliases: [
-      "CHAÎNES LÉGÈRES KAPPA ET LAMBDA LIBRE",
-      "CHAÎNES LÉGÈRES LIBRES",
-      "Chaînes Légères Libres",
-    ],
-  },
-  {
-    canonicalName: "Urine (Culture)",
-    code: "CULU",
-    category: "Individuel",
-    aliases: [
-      "URINE, CULTURE",
-      "CULTURE: URINE",
-      "Urine (Culture)",
-    ],
-  },
-  {
-    canonicalName: "Urine (Analyse)",
-    code: "URC",
-    category: "Individuel",
-    aliases: [
-      "URINE, ANALYSE",
-      "ANALYSE D'URINE",
-      "Urine (Analyse)",
-    ],
-  },
-  {
-    canonicalName: "Cannabis (Dépistage)",
-    code: "CN20",
-    category: "Individuel",
-    aliases: [
-      "CANNABIS (20 ng/mL, 50 ng/mL)",
-      "DROGUE: CANNABINOIDES",
-      "Cannabis (Dépistage)",
-    ],
-  },
-  {
-    canonicalName: "Éthanol",
-    code: "SETH",
-    category: "Individuel",
-    aliases: [
-      "ÉTHANOL, SÉRUM",
-      "ALCOOL (ETHANOL) - SANG",
-      "Éthanol (Sérum)",
-      "Alcool (Ethanol) - Sang",
-      "Éthanol",
+      "HLA CELIAC",
     ],
   },
   {
@@ -1062,964 +2806,10 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "HAPTOGLOBINE",
-      "Haptoglobine",
     ],
   },
   {
-    canonicalName: "PTT (TCA)",
-    code: "PTT",
-    category: "Individuel",
-    aliases: [
-      "PTT (TCA)",
-      "INR + PTT",
-    ],
-  },
-  {
-    canonicalName: "Érythropoiétine",
-    code: "ERYT",
-    category: "Individuel",
-    aliases: [
-      "ÉRYTHROPOIETINE",
-      "Érythropoiétine",
-    ],
-  },
-  {
-    canonicalName: "C-Peptide",
-    code: "CPEP",
-    category: "Individuel",
-    aliases: [
-      "C-PEPTIDE",
-      "C-Peptide",
-    ],
-  },
-  {
-    canonicalName: "Gastrine",
-    code: "GAST",
-    category: "Individuel",
-    aliases: [
-      "GASTRINE",
-      "Gastrine",
-    ],
-  },
-  {
-    canonicalName: "Électrophorèse de l'Hémoglobine",
-    code: "HBEL",
-    category: "Individuel",
-    aliases: [
-      "ÉLECTROPHORÈSE DE L'HÉMOGLOBINE",
-      "Électrophorèse de l'Hémoglobine",
-    ],
-  },
-  {
-    canonicalName: "Chlamydia/Gonorrhée (TAAN) Urine",
-    code: "CMPCU",
-    category: "Individuel",
-    aliases: [
-      "CHLAMYDIA URINE",
-      "CHLAMYDIA/GONORRHOEAE/TRICHOMONAS (TAAN) - URINE",
-      "Chlamydia (Urine)",
-      "Chlamydia/Gonorrhée (TAAN) Urine",
-    ],
-  },
-  {
-    canonicalName: "Bordetella Pertussis",
-    code: "BORP",
-    category: "Individuel",
-    aliases: [
-      "BORDETELLA PERTUSSIS ET PARAPERTUSSIS",
-      "Bordetella Pertussis (Coqueluche)",
-      "Bordetella Pertussis",
-    ],
-  },
-  {
-    canonicalName: "Calprotectine",
-    code: "CLPTN",
-    category: "Individuel",
-    aliases: [
-      "CALPROTECTINE",
-      "Calprotectine",
-    ],
-  },
-  {
-    canonicalName: "Phosphore",
-    code: "PO4",
-    category: "Individuel",
-    aliases: [
-      "PHOSPHATE",
-      "PHOSPHORE",
-      "Phosphore (Phosphate)",
-      "Phosphore",
-    ],
-  },
-  {
-    canonicalName: "Dihydrotestostérone",
-    code: "DHT",
-    category: "Individuel",
-    aliases: [
-      "DIHYDROTESTOSTÉRONE",
-      "Dihydrotestostérone",
-    ],
-  },
-  {
-    canonicalName: "Cytomégalovirus IgM",
-    code: "CMVM",
-    category: "Individuel",
-    aliases: [
-      "CYTOMÉGALOVIRUS IGM",
-      "Cytomégalovirus IgM",
-    ],
-  },
-  {
-    canonicalName: "Cholestérol HDL",
-    code: "HDL",
-    category: "Individuel",
-    aliases: [
-      "CHOLESTÉROL HDL",
-      "Cholestérol HDL",
-    ],
-  },
-  {
-    canonicalName: "Cholestérol LDL",
-    code: "LDLD",
-    category: "Individuel",
-    aliases: [
-      "CHOLESTÉROL LDL",
-      "Cholestérol LDL",
-    ],
-  },
-  {
-    canonicalName: "Triglycérides",
-    code: "TRIG",
-    category: "Individuel",
-    aliases: [
-      "TRIGLYCÉRIDES",
-      "Triglycérides",
-    ],
-  },
-  {
-    canonicalName: "Potassium",
-    code: "K",
-    category: "Individuel",
-    aliases: [
-      "POTASSIUM",
-      "Potassium",
-    ],
-  },
-  {
-    canonicalName: "Cholestérol Non HDL",
-    code: "NHDL",
-    category: "Individuel",
-    aliases: [
-      "CHOLESTÉROL NON HDL",
-      "Cholestérol Non HDL",
-    ],
-  },
-  {
-    canonicalName: "GGT",
-    code: "GGT",
-    category: "Individuel",
-    aliases: [
-      "GGT",
-    ],
-  },
-  {
-    canonicalName: "Béta-HCG Qualitatif",
-    code: "PREG",
-    category: "Individuel",
-    aliases: [
-      "BÉTA-HCG QUALITATIF, SÉRUM",
-      "Bêta-HCG Qualitative",
-      "Béta-HCG Qualitatif",
-    ],
-  },
-  {
-    canonicalName: "Immunoglobuline A (IgA)",
-    code: "IGA",
-    category: "Individuel",
-    aliases: [
-      "IMMUNOGLOBULINE IGA",
-      "Immunoglobuline A (IgA)",
-    ],
-  },
-  {
-    canonicalName: "Immunoglobuline G (IgG)",
-    code: "IGG",
-    category: "Individuel",
-    aliases: [
-      "IMMUNOGLOBULINE IGG",
-      "Immunoglobuline G (IgG)",
-    ],
-  },
-  {
-    canonicalName: "Immunoglobuline M (IgM)",
-    code: "IGM",
-    category: "Individuel",
-    aliases: [
-      "IMMUNOGLOBULINE IGM",
-      "Immunoglobuline M (IgM)",
-    ],
-  },
-  {
-    canonicalName: "Immunoglobuline E (IgE)",
-    code: "IGE",
-    category: "Individuel",
-    aliases: [
-      "IMMUNOGLOBULINE IGE",
-      "Immunoglobuline E (IgE)",
-    ],
-  },
-  {
-    canonicalName: "Lactate Déshydrogénase (LDH)",
-    code: "LD",
-    category: "Individuel",
-    aliases: [
-      "LACTATE DÉHYDROGÉNASE (LDH)",
-      "Lactate Déshydrogénase (LDH)",
-    ],
-  },
-  {
-    canonicalName: "Biopsie",
-    code: "BIOP",
-    category: "Individuel",
-    aliases: [
-      "BIOPSIE",
-      "Biopsie",
-    ],
-  },
-  {
-    canonicalName: "Parathormone (PTH)",
-    code: "PTH",
-    category: "Individuel",
-    aliases: [
-      "HORMONE PARATHYR OÏDIENNE",
-      "Parathormone (PTH)",
-    ],
-  },
-  {
-    canonicalName: "BETA 2 GLYCOPROTÉINE I ANTICORPS",
-    code: "B2GP",
-    category: "Profil",
-    aliases: [
-      "BETA 2 GLYCOPROTÉINE I ANTICORPS",
-      "ANTICORPS ANTI-BETA 2-GLYCOPROTÉINE I (IgG/IgM/IgA)",
-    ],
-  },
-  {
-    canonicalName: "DIABÉTIQUE #1",
-    code: "DIAB",
-    category: "Profil",
-    aliases: [
-      "DIABÉTIQUE #1",
-      "Profil DIABÉTIQUE No 1",
-    ],
-  },
-  {
-    canonicalName: "COAGULOGRAMME",
-    code: "COAG",
-    category: "Profil",
-    aliases: [
-      "COAGULOGRAMME",
-      "Profil COAGULOGRAMME",
-    ],
-  },
-  {
-    canonicalName: "Acide Urique",
-    code: "URIC",
-    category: "Individuel",
-    aliases: [
-      "ACIDE URIQUE",
-      "Acide Urique",
-    ],
-  },
-  {
-    canonicalName: "Albumine",
-    code: "ALB",
-    category: "Individuel",
-    aliases: [
-      "ALBUMINE",
-      "Albumine",
-    ],
-  },
-  {
-    canonicalName: "Alpha-Foetoprotéine",
-    code: "AFP",
-    category: "Individuel",
-    aliases: [
-      "ALPHAFÉTOPROTÉINE",
-      "ALPHA-FŒTOPROTÉINE (AFP)",
-      "Alpha-Foetoprotéine",
-      "Alpha-Foetoprotéine (AFP)",
-    ],
-  },
-  {
-    canonicalName: "ALT (SGPT)",
-    code: "ALT",
-    category: "Individuel",
-    aliases: [
-      "ALT",
-      "ALT (SGPT)",
-    ],
-  },
-  {
-    canonicalName: "Amphétamine (Dépistage)",
-    code: "AMPH",
-    category: "Individuel",
-    aliases: [
-      "AMPHETAMINE",
-      "DROGUE: AMPHETAMINES",
-      "Amphétamine (Dépistage)",
-    ],
-  },
-  {
-    canonicalName: "Amylase",
-    code: "AMYL",
-    category: "Individuel",
-    aliases: [
-      "AMYLASE",
-      "Amylase",
-    ],
-  },
-  {
-    canonicalName: "ANTI-ADNdb",
-    code: "DNA",
-    category: "Individuel",
-    aliases: [
-      "ANTI-ADNdb",
-      "ANTICORPS ANTI-ADN (Double brin)",
-      "Anticorps Anti-ADN (Double Brin)",
-    ],
-  },
-  {
-    canonicalName: "Anti-Nucléaire Anticorps (ANA)",
-    code: "ANA",
-    category: "Individuel",
-    aliases: [
-      "ANTI-NUCLÉAIRE, ANTICORPS",
-      "ANTICORPS ANTINUCLÉAIRES (ANA)",
-      "Anti-Nucléaire Anticorps (ANA)",
-      "Anticorps Antinucléaires (ANA)",
-    ],
-  },
-  {
-    canonicalName: "Anti-Nucléaires Extractables (ENA)",
-    code: "ENA",
-    category: "Individuel",
-    aliases: [
-      "ANTI-NUCLÉAIRES EXTRACTABLES (DÉPISTAGE)",
-      "ANTICORPS ANTI-ENA",
-      "Anti-Nucléaires Extractables (ENA)",
-    ],
-  },
-  {
-    canonicalName: "Apolipoprotéine A-1",
-    code: "APOA",
-    category: "Individuel",
-    aliases: [
-      "APOLIPOPROTÉINE A-1",
-      "APOLIPOPROTÉINE A1",
-      "Apolipoprotéine A-1",
-    ],
-  },
-  {
-    canonicalName: "Apolipoprotéine B",
-    code: "APOB",
-    category: "Individuel",
-    aliases: [
-      "APOLIPOPROTÉINE B",
-      "Apolipoprotéine B",
-    ],
-  },
-  {
-    canonicalName: "AST (SGOT)",
-    code: "AST",
-    category: "Individuel",
-    aliases: [
-      "AST (GOT, SGOT)",
-      "AST",
-      "AST (SGOT)",
-    ],
-  },
-  {
-    canonicalName: "Calcium",
-    code: "CA",
-    category: "Individuel",
-    aliases: [
-      "CALCIUM",
-      "Calcium",
-    ],
-  },
-  {
-    canonicalName: "Carcino-Embryonic Antigen (CEA)",
-    code: "CEA",
-    category: "Individuel",
-    aliases: [
-      "CARCINO-EMBRYONIQUE ANTIGÈNE (CEA)",
-      "ANTIGÈNE CARCINO-EMBRYONNAIRE (ACE)",
-      "Carcino-Embryonic Antigen (CEA)",
-    ],
-  },
-  {
-    canonicalName: "Chlorure",
-    code: "CL",
-    category: "Individuel",
-    aliases: [
-      "CHLORURE",
-      "CHLORURES",
-      "Chlorure",
-    ],
-  },
-  {
-    canonicalName: "Cholestérol Total",
-    code: "CHOL",
-    category: "Individuel",
-    aliases: [
-      "CHOLESTÉROL, TOTAL",
-      "CHOLESTÉROL TOTAL",
-      "Cholestérol Total",
-    ],
-  },
-  {
-    canonicalName: "CK-MB",
-    code: "CKMB",
-    category: "Individuel",
-    aliases: [
-      "CK-MB",
-    ],
-  },
-  {
-    canonicalName: "COMPLÉMENT C3",
-    code: "C3",
-    category: "Individuel",
-    aliases: [
-      "COMPLÉMENT C3",
-      "Complément C3",
-    ],
-  },
-  {
-    canonicalName: "COMPLÉMENT C4",
-    code: "C4",
-    category: "Individuel",
-    aliases: [
-      "COMPLÉMENT C4",
-      "Complément C4",
-    ],
-  },
-  {
-    canonicalName: "COMPLÉMENT HÉMOLYTIQUE",
-    code: "CH50",
-    category: "Individuel",
-    aliases: [
-      "COMPLÉMENT HÉMOLYTIQUE",
-      "CH50, COMPLÉMENT TOTAL",
-    ],
-  },
-  {
-    canonicalName: "Créatine Kinase (CK)",
-    code: "CK",
-    category: "Individuel",
-    aliases: [
-      "CRÉATINE KINASE",
-      "CK (CRÉATINE KINASE)",
-      "Créatine Kinase (CK)",
-    ],
-  },
-  {
-    canonicalName: "Créatinine",
-    code: "CREA",
-    category: "Individuel",
-    aliases: [
-      "CRÉATININE, SÉRUM",
-      "CRÉATININE",
-      "Créatinine",
-    ],
-  },
-  {
-    canonicalName: "ÉLECTROCARDIOGRAMME AU REPOS (ECG)",
-    code: "ECG",
-    category: "Individuel",
-    aliases: [
-      "ÉLECTROCARDIOGRAMME AU REPOS (ECG)",
-      "ÉLECTROCARDIOGRAMME",
-    ],
-  },
-  {
-    canonicalName: "Formule Sanguine Complète (FSC)",
-    code: "CBC",
-    category: "Individuel",
-    aliases: [
-      "FORMULE SANGUINE COMPLÈTE (FSC)",
-      "FORMULE SANGUINE COMPLETE (FSC)",
-      "Formule Sanguine Complète (FSC)",
-    ],
-  },
-  {
-    canonicalName: "Fer Total",
-    code: "FE",
-    category: "Individuel",
-    aliases: [
-      "FER, TOTAL",
-      "FER",
-      "Fer Total",
-      "Fer",
-    ],
-  },
-  {
-    canonicalName: "FSH (Hormone Folliculo-stimulante)",
-    code: "FSH",
-    category: "Individuel",
-    aliases: [
-      "FSH",
-      "FSH (Hormone Folliculo-stimulante)",
-    ],
-  },
-  {
-    canonicalName: "Hépatite C (Anticorps)",
-    code: "HEPC",
-    category: "Individuel",
-    aliases: [
-      "HÉPATITE ANTICORPS",
-      "ANTICORPS ANTI-HEPATITE C",
-      "Hépatite C (Anticorps)",
-    ],
-  },
-  {
-    canonicalName: "TSH",
-    code: "TSH",
-    category: "Individuel",
-    aliases: [
-      "HORMONE DE STIMULATION THYROIDIENNE",
-      "TSH ULTRASENSIBLE",
-      "TSH",
-    ],
-  },
-  {
-    canonicalName: "LH (Hormone Lutéinisante)",
-    code: "LH",
-    category: "Individuel",
-    aliases: [
-      "LH",
-      "LH (Hormone Lutéinisante)",
-    ],
-  },
-  {
-    canonicalName: "Magnésium",
-    code: "MG",
-    category: "Individuel",
-    aliases: [
-      "MAGNÉSIUM, SÉRUM",
-      "MAGNÉSIUM",
-      "Magnésium",
-    ],
-  },
-  {
-    canonicalName: "Monotest (Mononucléose)",
-    code: "MONO",
-    category: "Individuel",
-    aliases: [
-      "MONOTEST",
-      "MONONUCLÉOSE",
-      "Monotest (Mononucléose)",
-      "Mononucléose (Monotest)",
-    ],
-  },
-  {
-    canonicalName: "Progestérone",
-    code: "PROG",
-    category: "Individuel",
-    aliases: [
-      "PROGESTÉRONE",
-      "Progestérone",
-    ],
-  },
-  {
-    canonicalName: "Protéine C-Réactive (CRP)",
-    code: "CRP",
-    category: "Individuel",
-    aliases: [
-      "PROTÉINE C-RÉACTIVE (CRP)",
-      "PROTÉINE C-RÉACTIVE",
-      "Protéine C-Réactive (CRP)",
-    ],
-  },
-  {
-    canonicalName: "CRP Haute Sensibilité (Cardio)",
-    code: "CRPHS",
-    category: "Individuel",
-    aliases: [
-      "PROTÉINE C-RÉACTIVE HAUTE SENSIBILITÉ (CRPHS)",
-      "PROTÉINE C-RÉACTIVE HAUTE SENSIBILITÉ",
-      "CRP Haute Sensibilité (Cardio)",
-      "CRP Haute Sensibilité",
-    ],
-  },
-  {
-    canonicalName: "PSA (APS) Total",
-    code: "PSA",
-    category: "Individuel",
-    aliases: [
-      "PROSTATE, ANTIGÈNE PROSTATIQUE SPÉCIFIQUE TOTAL",
-      "ANTIGÈNE PROSTATIQUE SPÉCIFIQUE (APS)",
-      "PSA (APS) Total",
-      "PSA Total",
-    ],
-  },
-  {
-    canonicalName: "PSA (APS) Libre",
-    code: "FPSA",
-    category: "Individuel",
-    aliases: [
-      "PROSTATE, ANTIGÈNE PROSTATIQUE SPÉCIFIQUE LIBRE",
-      "APS LIBRE",
-      "PSA (APS) Libre",
-      "PSA Libre (avec Total)",
-    ],
-  },
-  {
-    canonicalName: "INR / PT",
-    code: "PT",
-    category: "Individuel",
-    aliases: [
-      "PT INR (TEMPS DE QUICK)",
-      "RAPPORT INTERNATIONAL NORMALISÉ (INR)",
-      "INR / PT",
-      "INR (Rapport International Normalisé)",
-    ],
-  },
-  {
-    canonicalName: "Sodium",
-    code: "NA",
-    category: "Individuel",
-    aliases: [
-      "SODIUM",
-      "Sodium",
-    ],
-  },
-  {
-    canonicalName: "Testostérone Totale",
-    code: "TEST",
-    category: "Individuel",
-    aliases: [
-      "TESTOSTÉRONE Total",
-      "TESTOSTÉRONE TOTALE",
-      "Testostérone Totale",
-    ],
-  },
-  {
-    canonicalName: "TRANSFERRINE CARBOXY DÉFICIENTE",
-    code: "CDT",
-    category: "Individuel",
-    aliases: [
-      "TRANSFERRINE CARBOXY DÉFICIENTE",
-      "% CDT",
-    ],
-  },
-  {
-    canonicalName: "Urée",
-    code: "UREA",
-    category: "Individuel",
-    aliases: [
-      "URÉE",
-      "Urée",
-    ],
-  },
-  {
-    canonicalName: "ANALYSE ET CULTURE D'URINE",
-    code: "URC+",
-    category: "Profil",
-    aliases: [
-      "ANALYSE ET CULTURE D'URINE",
-    ],
-  },
-  {
-    canonicalName: "VITAMINE B12 ET ACIDE FOLIQUE",
-    code: "FA12",
-    category: "Profil",
-    aliases: [
-      "VITAMINE B12 ET ACIDE FOLIQUE",
-    ],
-  },
-  {
-    canonicalName: "FER #2",
-    code: "IRN2",
-    category: "Profil",
-    aliases: [
-      "FER #2",
-    ],
-  },
-  {
-    canonicalName: "Profil FER",
-    code: "IRON",
-    category: "Profil",
-    aliases: [
-      "FER",
-    ],
-  },
-  {
-    canonicalName: "FER #6",
-    code: "IRN6",
-    category: "Profil",
-    aliases: [
-      "FER #6",
-    ],
-  },
-  {
-    canonicalName: "FER #1",
-    code: "IRN1",
-    category: "Profil",
-    aliases: [
-      "FER #1",
-    ],
-  },
-  {
-    canonicalName: "ANÉMIE #1",
-    code: "ANE1",
-    category: "Profil",
-    aliases: [
-      "ANÉMIE #1",
-    ],
-  },
-  {
-    canonicalName: "ANÉMIE #4",
-    code: "ANE4",
-    category: "Profil",
-    aliases: [
-      "ANÉMIE #4",
-    ],
-  },
-  {
-    canonicalName: "ANÉMIE #3",
-    code: "ANE3",
-    category: "Profil",
-    aliases: [
-      "ANÉMIE #3",
-    ],
-  },
-  {
-    canonicalName: "FER #3",
-    code: "IRN3",
-    category: "Profil",
-    aliases: [
-      "FER #3",
-    ],
-  },
-  {
-    canonicalName: "HÉPATIQUE #1",
-    code: "LIV1",
-    category: "Profil",
-    aliases: [
-      "HÉPATIQUE #1",
-    ],
-  },
-  {
-    canonicalName: "PANCRÉATIQUE",
-    code: "PANC",
-    category: "Profil",
-    aliases: [
-      "PANCRÉATIQUE",
-    ],
-  },
-  {
-    canonicalName: "RÉNAL #2",
-    code: "REN2",
-    category: "Profil",
-    aliases: [
-      "RÉNAL #2",
-    ],
-  },
-  {
-    canonicalName: "BIOCHIMIE #1A",
-    code: "BIO1",
-    category: "Profil",
-    aliases: [
-      "BIOCHIMIE #1A",
-    ],
-  },
-  {
-    canonicalName: "BIOCHIMIE #1B",
-    code: "CHM1",
-    category: "Profil",
-    aliases: [
-      "BIOCHIMIE #1B",
-    ],
-  },
-  {
-    canonicalName: "BIOCHIMIE #2",
-    code: "CHM2",
-    category: "Profil",
-    aliases: [
-      "BIOCHIMIE #2",
-    ],
-  },
-  {
-    canonicalName: "BIOCHIMIE #2 AVEC ELECTROLYTES",
-    code: "CHM5",
-    category: "Profil",
-    aliases: [
-      "BIOCHIMIE #2 AVEC ELECTROLYTES",
-    ],
-  },
-  {
-    canonicalName: "BIOCHIMIE #3 AVEC ELECTROLYTES",
-    code: "CHL3",
-    category: "Profil",
-    aliases: [
-      "BIOCHIMIE #3 AVEC ELECTROLYTES",
-    ],
-  },
-  {
-    canonicalName: "GENERAL BIOCHEMISTRY #3",
-    code: "CHP3",
-    category: "Profil",
-    aliases: [
-      "GENERAL BIOCHEMISTRY #3",
-    ],
-  },
-  {
-    canonicalName: "BIOCHIMIE #3",
-    code: "BIO3",
-    category: "Profil",
-    aliases: [
-      "BIOCHIMIE #3",
-    ],
-  },
-  {
-    canonicalName: "BIOCHIMIE #4",
-    code: "CHM4",
-    category: "Profil",
-    aliases: [
-      "BIOCHIMIE #4",
-    ],
-  },
-  {
-    canonicalName: "BIOCHIMIE #4 AVEC ÉLECTROLYTES",
-    code: "CHL4",
-    category: "Profil",
-    aliases: [
-      "BIOCHIMIE #4 AVEC ÉLECTROLYTES",
-    ],
-  },
-  {
-    canonicalName: "BIOCHIMIE #4 COMPLET",
-    code: "BIO4",
-    category: "Profil",
-    aliases: [
-      "BIOCHIMIE #4 COMPLET",
-    ],
-  },
-  {
-    canonicalName: "COMPLETE BIOCHEMISTRY, WITHOUT URINE",
-    code: "CH4U",
-    category: "Profil",
-    aliases: [
-      "COMPLETE BIOCHEMISTRY, WITHOUT URINE",
-    ],
-  },
-  {
-    canonicalName: "COMPLETE BIOCHEMISTRY",
-    code: "CHP4",
-    category: "Profil",
-    aliases: [
-      "COMPLETE BIOCHEMISTRY",
-    ],
-  },
-  {
-    canonicalName: "COMPLETE BIOCHEMISTRY GENERAL & TSH",
-    code: "CHP4T",
-    category: "Profil",
-    aliases: [
-      "COMPLETE BIOCHEMISTRY GENERAL & TSH",
-    ],
-  },
-  {
-    canonicalName: "COMPLETE BIOCHEMISTRY + TSH & PSA",
-    code: "CHP4A",
-    category: "Profil",
-    aliases: [
-      "COMPLETE BIOCHEMISTRY + TSH & PSA",
-    ],
-  },
-  {
-    canonicalName: "PT ET PTT",
-    code: "PTPT",
-    category: "Profil",
-    aliases: [
-      "PT ET PTT",
-    ],
-  },
-  {
-    canonicalName: "TEST PAP THIN PREP + HPV DNA",
-    code: "PAPTHPV",
-    category: "Profil",
-    aliases: [
-      "TEST PAP THIN PREP + HPV DNA",
-    ],
-  },
-  {
-    canonicalName: "VPH DNA, TEST PAP THINPREP EN CASCADE",
-    code: "PVTP",
-    category: "Profil",
-    aliases: [
-      "VPH DNA, TEST PAP THINPREP EN CASCADE",
-    ],
-  },
-  {
-    canonicalName: "TEST PAP THIN PREP, VPH DNA EN CASCADE",
-    code: "TPPV",
-    category: "Profil",
-    aliases: [
-      "TEST PAP THIN PREP, VPH DNA EN CASCADE",
-    ],
-  },
-  {
-    canonicalName: "PRÉNATAL #1",
-    code: "PREN",
-    category: "Profil",
-    aliases: [
-      "PRÉNATAL #1",
-    ],
-  },
-  {
-    canonicalName: "PRÉNATAL, GLUCOSE AC",
-    code: "PRENG",
-    category: "Profil",
-    aliases: [
-      "PRÉNATAL, GLUCOSE AC",
-    ],
-  },
-  {
-    canonicalName: "PRÉNATAL #3",
-    code: "DAL2",
-    category: "Profil",
-    aliases: [
-      "PRÉNATAL #3",
-    ],
-  },
-  {
-    canonicalName: "PRÉNATAL #3, GLUCOSE",
-    code: "DAL2G",
-    category: "Profil",
-    aliases: [
-      "PRÉNATAL #3, GLUCOSE",
-    ],
-  },
-  {
-    canonicalName: "PANORAMA®",
-    code: "PANO",
-    category: "Profil",
-    aliases: [
-      "PANORAMA®",
-    ],
-  },
-  {
-    canonicalName: "PANORAMA® ET MICRODÉLÉTIONS",
-    code: "PANOE",
-    category: "Profil",
-    aliases: [
-      "PANORAMA® ET MICRODÉLÉTIONS",
-    ],
-  },
-  {
-    canonicalName: "HARMONY®",
+    canonicalName: "Harmony®",
     code: "HARMP",
     category: "Profil",
     aliases: [
@@ -2027,1121 +2817,48 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "DROGUES DANS LES CHEVEUX",
-    code: "DRUGH",
+    canonicalName: "Hemoglobine A1C",
+    code: "HBA1C",
+    category: "Individuel",
+    aliases: [
+      "HÉMOGLOBINE A1C",
+    ],
+  },
+  {
+    canonicalName: "Hemoglobine Glyquee",
+    code: "GLHBP",
+    category: "Individuel",
+    aliases: [
+      "HÉMOGLOBINE GLYQUÉE",
+    ],
+  },
+  {
+    canonicalName: "Hepatique",
+    code: "LIV1",
     category: "Profil",
     aliases: [
-      "DROGUES DANS LES CHEVEUX",
+      "HÉPATIQUE #1",
+      "PROFIL HÉPATIQUE",
     ],
   },
   {
-    canonicalName: "DROGUES 4 TESTS #1",
-    code: "DAU450",
-    category: "Profil",
-    aliases: [
-      "DROGUES 4 TESTS #1",
-    ],
-  },
-  {
-    canonicalName: "DROGUES 5 TESTS #1",
-    code: "DAUP",
-    category: "Profil",
-    aliases: [
-      "DROGUES 5 TESTS #1",
-    ],
-  },
-  {
-    canonicalName: "DROGUES 5 TESTS #2",
-    code: "DAUB50",
-    category: "Profil",
-    aliases: [
-      "DROGUES 5 TESTS #2",
-    ],
-  },
-  {
-    canonicalName: "ÉCHOGRAPHIE ENDOVAGINALE ET PELVIENNE",
-    code: "ENDPE",
-    category: "Profil",
-    aliases: [
-      "ÉCHOGRAPHIE ENDOVAGINALE ET PELVIENNE",
-    ],
-  },
-  {
-    canonicalName: "ÉCHOGRAPHIE ENDOVAGINALE",
-    code: "ENDV",
-    category: "Profil",
-    aliases: [
-      "ÉCHOGRAPHIE ENDOVAGINALE",
-    ],
-  },
-  {
-    canonicalName: "ÉCHOGRAPHIE OBSTÉTRICALE, 1er Trimestre",
-    code: "1TRI",
-    category: "Profil",
-    aliases: [
-      "ÉCHOGRAPHIE OBSTÉTRICALE, 1er Trimestre",
-    ],
-  },
-  {
-    canonicalName: "ÉCHOGRAPHIE OBSTÉTRICALE, 2ème Trimestre",
-    code: "2TRI",
-    category: "Profil",
-    aliases: [
-      "ÉCHOGRAPHIE OBSTÉTRICALE, 2ème Trimestre",
-    ],
-  },
-  {
-    canonicalName: "ÉCHOGRAPHIE OBSTÉTRICALE, 3ème Trimestre",
-    code: "3TRI",
-    category: "Profil",
-    aliases: [
-      "ÉCHOGRAPHIE OBSTÉTRICALE, 3ème Trimestre",
-    ],
-  },
-  {
-    canonicalName: "ÉCHOGRAPHIE DE VIABILITÉ-DATATION",
-    code: "VIAB",
-    category: "Profil",
-    aliases: [
-      "ÉCHOGRAPHIE DE VIABILITÉ-DATATION",
-    ],
-  },
-  {
-    canonicalName: "FERTILITÉ #1",
-    code: "FERT",
-    category: "Profil",
-    aliases: [
-      "FERTILITÉ #1",
-    ],
-  },
-  {
-    canonicalName: "MÉNOPAUSE #1",
-    code: "MEN1",
-    category: "Profil",
-    aliases: [
-      "MÉNOPAUSE #1",
-    ],
-  },
-  {
-    canonicalName: "MÉNOPAUSE #3",
-    code: "MEN3",
-    category: "Profil",
-    aliases: [
-      "MÉNOPAUSE #3",
-    ],
-  },
-  {
-    canonicalName: "MÉNOPAUSE #2",
-    code: "MEN2",
-    category: "Profil",
-    aliases: [
-      "MÉNOPAUSE #2",
-    ],
-  },
-  {
-    canonicalName: "MÉNOPAUSE #4",
-    code: "MEN4",
-    category: "Profil",
-    aliases: [
-      "MÉNOPAUSE #4",
-    ],
-  },
-  {
-    canonicalName: "THYROÏDE #1, CASCADE",
-    code: "THY1R",
-    category: "Profil",
-    aliases: [
-      "THYROÏDE #1, CASCADE",
-    ],
-  },
-  {
-    canonicalName: "THYROÏDE #3, CASCADE",
-    code: "THY3R",
-    category: "Profil",
-    aliases: [
-      "THYROÏDE #3, CASCADE",
-    ],
-  },
-  {
-    canonicalName: "THYROÏDE #1",
-    code: "THY1",
-    category: "Profil",
-    aliases: [
-      "THYROÏDE #1",
-    ],
-  },
-  {
-    canonicalName: "THYROÏDE #3",
-    code: "THY3",
-    category: "Profil",
-    aliases: [
-      "THYROÏDE #3",
-    ],
-  },
-  {
-    canonicalName: "THYROÏDE #4",
-    code: "THY4",
-    category: "Profil",
-    aliases: [
-      "THYROÏDE #4",
-    ],
-  },
-  {
-    canonicalName: "GÉNÉRAL #3, SANS URINE",
-    code: "CH3U",
-    category: "Profil",
-    aliases: [
-      "GÉNÉRAL #3, SANS URINE",
-    ],
-  },
-  {
-    canonicalName: "GÉNÉRAL #1",
-    code: "CHP1",
-    category: "Profil",
-    aliases: [
-      "GÉNÉRAL #1",
-    ],
-  },
-  {
-    canonicalName: "GÉNÉRAL #1, CRP",
-    code: "FIN1",
-    category: "Profil",
-    aliases: [
-      "GÉNÉRAL #1, CRP",
-    ],
-  },
-  {
-    canonicalName: "GÉNÉRAL #2",
-    code: "CHP2",
-    category: "Profil",
-    aliases: [
-      "GÉNÉRAL #2",
-    ],
-  },
-  {
-    canonicalName: "COMPLET, CRP ULTRASENSIBLE",
-    code: "CH4SC",
-    category: "Profil",
-    aliases: [
-      "COMPLET, CRP ULTRASENSIBLE",
-    ],
-  },
-  {
-    canonicalName: "GÉNÉRAL #5",
-    code: "GN5",
-    category: "Profil",
-    aliases: [
-      "GÉNÉRAL #5",
-    ],
-  },
-  {
-    canonicalName: "GÉNÉRAL #6",
-    code: "PNL6",
-    category: "Profil",
-    aliases: [
-      "GÉNÉRAL #6",
-    ],
-  },
-  {
-    canonicalName: "FORMULE SANGUINE COMPLÈTE ET SÉDIMENTATION",
-    code: "CBCS",
-    category: "Profil",
-    aliases: [
-      "FORMULE SANGUINE COMPLÈTE ET SÉDIMENTATION",
-    ],
-  },
-  {
-    canonicalName: "MONOTEST #1",
-    code: "MON+",
-    category: "Profil",
-    aliases: [
-      "MONOTEST #1",
-    ],
-  },
-  {
-    canonicalName: "MALADIE COELIAQUE",
-    code: "CELP",
-    category: "Profil",
-    aliases: [
-      "MALADIE COELIAQUE",
-    ],
-  },
-  {
-    canonicalName: "RISQUE CARDIOVASCULAIRE #1",
-    code: "CVRK",
-    category: "Profil",
-    aliases: [
-      "RISQUE CARDIOVASCULAIRE #1",
-    ],
-  },
-  {
-    canonicalName: "RISQUE CARDIOVASCULAIRE #2 PLUS APOB",
-    code: "CVK2",
-    category: "Profil",
-    aliases: [
-      "RISQUE CARDIOVASCULAIRE #2 PLUS APOB",
-    ],
-  },
-  {
-    canonicalName: "CCL4",
-    code: "CCL4",
-    category: "Profil",
-    aliases: [
-      "CCL4",
-    ],
-  },
-  {
-    canonicalName: "CHLAMYDIA ET GONORRHÉE PAR PCR (1 échantillon)",
-    code: "CGPCR1",
-    category: "Profil",
-    aliases: [
-      "CHLAMYDIA ET GONORRHÉE PAR PCR (1 échantillon)",
-    ],
-  },
-  {
-    canonicalName: "CHLAMYDIA ET GONORRHÉE PAR PCR (2 échantillons)",
-    code: "CGPCR2",
-    category: "Profil",
-    aliases: [
-      "CHLAMYDIA ET GONORRHÉE PAR PCR (2 échantillons)",
-    ],
-  },
-  {
-    canonicalName: "CHLAMYDIA ET GONORRHÉE PAR PCR (3 échantillons)",
-    code: "CGPCR3",
-    category: "Profil",
-    aliases: [
-      "CHLAMYDIA ET GONORRHÉE PAR PCR (3 échantillons)",
-    ],
-  },
-  {
-    canonicalName: "HÉPATITE B AIGÜE",
-    code: "HPBA",
-    category: "Profil",
-    aliases: [
-      "HÉPATITE B AIGÜE",
-    ],
-  },
-  {
-    canonicalName: "MTS #2, FEMME",
-    code: "STD2",
-    category: "Profil",
-    aliases: [
-      "MTS #2, FEMME",
-    ],
-  },
-  {
-    canonicalName: "MTS #1, VIH - HOMME",
-    code: "STDMH",
-    category: "Profil",
-    aliases: [
-      "MTS #1, VIH - HOMME",
-    ],
-  },
-  {
-    canonicalName: "5-HIAA (5-Hydroxyindoleacetic Acid)",
-    code: "HIAA",
-    category: "Individuel",
-    aliases: [
-      "5'HIAA",
-      "5-HIAA (5-Hydroxyindoleacetic Acid)",
-    ],
-  },
-  {
-    canonicalName: "Acetylcholine, Anticorps Bloquants",
-    code: "ACBA",
-    category: "Individuel",
-    aliases: [
-      "ACETYLCHOLINE, ANTICORPS BLOQUANTS",
-      "Acetylcholine, Anticorps Bloquants",
-    ],
-  },
-  {
-    canonicalName: "Acetylcholine, Anticorps Liant",
-    code: "ACRA",
-    category: "Individuel",
-    aliases: [
-      "ACETYLCHOLINE, ANTICORPS LIANT",
-      "Acetylcholine, Anticorps Liant",
-    ],
-  },
-  {
-    canonicalName: "ACETYLCHOLINE, MODULATEURS D'ANTICORPS",
-    code: "ACMA",
-    category: "Individuel",
-    aliases: [
-      "ACETYLCHOLINE, MODULATEURS D'ANTICORPS",
-    ],
-  },
-  {
-    canonicalName: "Acide Méthylmalonique",
-    code: "MMAS",
-    category: "Individuel",
-    aliases: [
-      "ACIDE MÉTHYLMALONIQUE, SÉRUM",
-      "Acide Méthylmalonique",
-    ],
-  },
-  {
-    canonicalName: "Acide Urique (Urine 24h)",
-    code: "UA/U",
-    category: "Individuel",
-    aliases: [
-      "ACIDE URIQUE, URINE 24 HEURES",
-      "Acide Urique (Urine 24h)",
-    ],
-  },
-  {
-    canonicalName: "Adalimumab",
-    code: "ADUL",
-    category: "Individuel",
-    aliases: [
-      "ADALIMUMAB",
-      "Adalimumab",
-    ],
-  },
-  {
-    canonicalName: "ALBUMINE / GLOBULINES RATIO",
-    code: "AGR",
-    category: "Individuel",
-    aliases: [
-      "ALBUMINE / GLOBULINES RATIO",
-    ],
-  },
-  {
-    canonicalName: "ALDOLASE",
-    code: "ADLASE",
-    category: "Individuel",
-    aliases: [
-      "ALDOLASE",
-    ],
-  },
-  {
-    canonicalName: "Aluminium",
-    code: "AL",
-    category: "Individuel",
-    aliases: [
-      "ALUMINIUM, SANG ENTIER",
-      "Aluminium",
-    ],
-  },
-  {
-    canonicalName: "ANTI-CENP",
-    code: "CENP",
-    category: "Individuel",
-    aliases: [
-      "ANTI-CENP",
-    ],
-  },
-  {
-    canonicalName: "ANTICORPS SURRÉNALES",
-    code: "ADNAB",
-    category: "Individuel",
-    aliases: [
-      "ANTICORPS SURRÉNALES",
-    ],
-  },
-  {
-    canonicalName: "ANTI-DNASE B",
-    code: "BDNA",
-    category: "Individuel",
-    aliases: [
-      "ANTI-DNASE B",
-    ],
-  },
-  {
-    canonicalName: "ANTI-ENDOMYSIAUX, ANTICORPS (IgA)",
-    code: "AEML",
-    category: "Individuel",
-    aliases: [
-      "ANTI-ENDOMYSIAUX, ANTICORPS (IgA)",
-    ],
-  },
-  {
-    canonicalName: "ANTI-GAD AUTO-ANTICORPS",
-    code: "GAD",
-    category: "Individuel",
-    aliases: [
-      "ANTI-GAD AUTO-ANTICORPS",
-    ],
-  },
-  {
-    canonicalName: "ANTI-LKM, ANTICORPS",
-    code: "ALKM",
-    category: "Individuel",
-    aliases: [
-      "ANTI-LKM, ANTICORPS",
-    ],
-  },
-  {
-    canonicalName: "ANTIPHOSPHOLIPINE IGA",
-    code: "PHOA",
-    category: "Individuel",
-    aliases: [
-      "ANTIPHOSPHOLIPINE IGA",
-    ],
-  },
-  {
-    canonicalName: "ANTIPHOSPHOLIPINE IGG",
-    code: "PHOG",
-    category: "Individuel",
-    aliases: [
-      "ANTIPHOSPHOLIPINE IGG",
-    ],
-  },
-  {
-    canonicalName: "ANTIPHOSPHOLIPINE IGM",
-    code: "PHOM",
-    category: "Individuel",
-    aliases: [
-      "ANTIPHOSPHOLIPINE IGM",
-    ],
-  },
-  {
-    canonicalName: "ANTIPHOSPHOLIPINE IGM, IGG",
-    code: "PHOS",
-    category: "Individuel",
-    aliases: [
-      "ANTIPHOSPHOLIPINE IGM, IGG",
-    ],
-  },
-  {
-    canonicalName: "ANTIPHOSPHOLIPINE IGM, IGG, IGA",
-    code: "PHOP",
-    category: "Individuel",
-    aliases: [
-      "ANTIPHOSPHOLIPINE IGM, IGG, IGA",
-    ],
-  },
-  {
-    canonicalName: "ANTITHROMBINE III, FONCTIONNELLE",
-    code: "AT3F",
-    category: "Individuel",
-    aliases: [
-      "ANTITHROMBINE III, FONCTIONNELLE",
-    ],
-  },
-  {
-    canonicalName: "ANTI-TRANSGLUTAMINASE IGG",
-    code: "GTTG",
-    category: "Individuel",
-    aliases: [
-      "ANTI-TRANSGLUTAMINASE IGG",
-    ],
-  },
-  {
-    canonicalName: "Apolipoprotéine E (Genotyping)",
-    code: "APOE",
-    category: "Individuel",
-    aliases: [
-      "APOLIPOPROTÉINE E",
-      "Apolipoprotéine E (Genotyping)",
-    ],
-  },
-  {
-    canonicalName: "Bacille de Koch (Tuberculose) Culture",
-    code: "CTTBP",
-    category: "Individuel",
-    aliases: [
-      "BACILLE DE KOCH, CULTURE",
-      "Bacille de Koch (Tuberculose) Culture",
-    ],
-  },
-  {
-    canonicalName: "Barbituriques (Dépistage)",
-    code: "UBAR",
-    category: "Individuel",
-    aliases: [
-      "BARBITURIQUE (200 ng/ml)",
-      "Barbituriques (Dépistage)",
-    ],
-  },
-  {
-    canonicalName: "Benzodiazépines (Dépistage)",
-    code: "BENZ",
-    category: "Individuel",
-    aliases: [
-      "BENZODIAZÉPINE (200 ng/ml)",
-      "Benzodiazépines (Dépistage)",
-    ],
-  },
-  {
-    canonicalName: "BRCA 1/2 SEQUENÇAGE, DÉLÉTION ET DUPLICATION",
-    code: "BRCA1/2",
-    category: "Individuel",
-    aliases: [
-      "BRCA 1/2 SEQUENÇAGE, DÉLÉTION ET DUPLICATION",
-    ],
-  },
-  {
-    canonicalName: "C1 INHIBITEUR ESTÉRASE",
-    code: "C1EI",
-    category: "Individuel",
-    aliases: [
-      "C1 INHIBITEUR ESTÉRASE",
-    ],
-  },
-  {
-    canonicalName: "CALCIUM / CRÉATININE RATIO",
-    code: "CACR",
-    category: "Individuel",
-    aliases: [
-      "CALCIUM / CRÉATININE RATIO",
-    ],
-  },
-  {
-    canonicalName: "CALCIUM, URINE 24 HEURES",
-    code: "CA/U",
-    category: "Individuel",
-    aliases: [
-      "CALCIUM, URINE 24 HEURES",
-    ],
-  },
-  {
-    canonicalName: "CALCUL, ANALYSE DE",
-    code: "CALU",
-    category: "Individuel",
-    aliases: [
-      "CALCUL, ANALYSE DE",
-    ],
-  },
-  {
-    canonicalName: "Catécholamines (Urine)",
-    code: "UCAT",
-    category: "Individuel",
-    aliases: [
-      "CATÉCHOLAMINES URINAIRE, 24H",
-      "Catécholamines (Urine)",
-    ],
-  },
-  {
-    canonicalName: "Catécholamines (Plasma)",
-    code: "CATS",
-    category: "Individuel",
-    aliases: [
-      "CATÉCHOLAMINES, PLASMA",
-      "Catécholamines (Plasma)",
-    ],
-  },
-  {
-    canonicalName: "CD3, CD4, CD8",
-    code: "CD3",
-    category: "Individuel",
-    aliases: [
-      "CD3, CD4, CD8",
-    ],
-  },
-  {
-    canonicalName: "Chlamydia (PCR Cervical/Endocervical)",
-    code: "CMPC",
-    category: "Individuel",
-    aliases: [
-      "CHLAMYDIA PAR PCR",
-      "Chlamydia (PCR Cervical/Endocervical)",
-    ],
-  },
-  {
-    canonicalName: "CHAÎNES LÉGÈRES KAPPA LIBRE",
-    code: "KLCF",
-    category: "Individuel",
-    aliases: [
-      "CHAÎNES LÉGÈRES KAPPA LIBRE",
-    ],
-  },
-  {
-    canonicalName: "CHLAMYDIA PAR PCR, RECTAL (INCLUANT LGV)",
-    code: "CMPCR",
-    category: "Individuel",
-    aliases: [
-      "CHLAMYDIA PAR PCR, RECTAL (INCLUANT LGV)",
-    ],
-  },
-  {
-    canonicalName: "CHAÎNES LÉGÈRES LAMBDA LIBRE",
-    code: "LLCF",
-    category: "Individuel",
-    aliases: [
-      "CHAÎNES LÉGÈRES LAMBDA LIBRE",
-    ],
-  },
-  {
-    canonicalName: "CHLORURE, URINE 24 HEURES",
-    code: "UCL",
-    category: "Individuel",
-    aliases: [
-      "CHLORURE, URINE 24 HEURES",
-    ],
-  },
-  {
-    canonicalName: "CHROME, SANG ENTIER",
-    code: "CR",
-    category: "Individuel",
-    aliases: [
-      "CHROME, SANG ENTIER",
-    ],
-  },
-  {
-    canonicalName: "CHOLÉRA, TEST (SELLES)",
-    code: "SCHL",
-    category: "Individuel",
-    aliases: [
-      "CHOLÉRA, TEST (SELLES)",
-    ],
-  },
-  {
-    canonicalName: "CHROMOGRANINE A",
-    code: "CGA",
-    category: "Individuel",
-    aliases: [
-      "CHROMOGRANINE A",
-    ],
-  },
-  {
-    canonicalName: "CHYLOMICRONS",
-    code: "CHYL",
-    category: "Individuel",
-    aliases: [
-      "CHYLOMICRONS",
-    ],
-  },
-  {
-    canonicalName: "COBALT, SANG ENTIER",
-    code: "CO",
-    category: "Individuel",
-    aliases: [
-      "COBALT, SANG ENTIER",
-    ],
-  },
-  {
-    canonicalName: "CITRATE, URINE 24 HEURES",
-    code: "CI/U",
-    category: "Individuel",
-    aliases: [
-      "CITRATE, URINE 24 HEURES",
-    ],
-  },
-  {
-    canonicalName: "CLAIRANCE DE LA CRÉATININE",
-    code: "CTCL",
-    category: "Individuel",
-    aliases: [
-      "CLAIRANCE DE LA CRÉATININE",
-    ],
-  },
-  {
-    canonicalName: "COMPLÉMENT C1Q",
-    code: "C1Q",
-    category: "Individuel",
-    aliases: [
-      "COMPLÉMENT C1Q",
-    ],
-  },
-  {
-    canonicalName: "COOMBS, DIRECT",
-    code: "DCOM",
-    category: "Individuel",
-    aliases: [
-      "COOMBS, DIRECT",
-    ],
-  },
-  {
-    canonicalName: "CRYOGOBULINE",
-    code: "CRYO",
-    category: "Individuel",
-    aliases: [
-      "CRYOGOBULINE",
-    ],
-  },
-  {
-    canonicalName: "CORTISOL, URINE 24 HEURES",
-    code: "CORU",
-    category: "Individuel",
-    aliases: [
-      "CORTISOL, URINE 24 HEURES",
-    ],
-  },
-  {
-    canonicalName: "C-TÉLOPEPTIDES",
-    code: "CTPP",
-    category: "Individuel",
-    aliases: [
-      "C-TÉLOPEPTIDES",
-    ],
-  },
-  {
-    canonicalName: "CUIVRE, GLOBULES ROUGES",
-    code: "CURBC",
-    category: "Individuel",
-    aliases: [
-      "CUIVRE, GLOBULES ROUGES",
-    ],
-  },
-  {
-    canonicalName: "CULTURE CRACHAT",
-    code: "SPUT",
-    category: "Individuel",
-    aliases: [
-      "CULTURE CRACHAT",
-    ],
-  },
-  {
-    canonicalName: "CUIVRE, PLASMA OU SÉRUM",
-    code: "CU",
-    category: "Individuel",
-    aliases: [
-      "CUIVRE, PLASMA OU SÉRUM",
-    ],
-  },
-  {
-    canonicalName: "CULTURE DE FLUIDE CORPOREL",
-    code: "CFLU",
-    category: "Individuel",
-    aliases: [
-      "CULTURE DE FLUIDE CORPOREL",
-    ],
-  },
-  {
-    canonicalName: "CUIVRE, URINE 24 HEURES",
-    code: "CU/U",
-    category: "Individuel",
-    aliases: [
-      "CUIVRE, URINE 24 HEURES",
-    ],
-  },
-  {
-    canonicalName: "CULTURE FONGIQUE (peau, cheveux, ongles)",
-    code: "CULF",
-    category: "Individuel",
-    aliases: [
-      "CULTURE FONGIQUE (peau, cheveux, ongles)",
-    ],
-  },
-  {
-    canonicalName: "CULTURE CERVICALE",
-    code: "CULC",
-    category: "Individuel",
-    aliases: [
-      "CULTURE CERVICALE",
-    ],
-  },
-  {
-    canonicalName: "CULTURE, CHLAMYDIA",
-    code: "CCHMD",
-    category: "Individuel",
-    aliases: [
-      "CULTURE, CHLAMYDIA",
-    ],
-  },
-  {
-    canonicalName: "CULTURE FONGIQUE (autres)",
-    code: "CULFS",
-    category: "Individuel",
-    aliases: [
-      "CULTURE FONGIQUE (autres)",
-    ],
-  },
-  {
-    canonicalName: "CULTURE GONORRHÉE (GORGE / RECTAL)",
-    code: "GONT",
-    category: "Individuel",
-    aliases: [
-      "CULTURE GONORRHÉE (GORGE / RECTAL)",
-    ],
-  },
-  {
-    canonicalName: "CULTURE SELLES (CULTURE TRADITIONNELLE)",
-    code: "CULS",
-    category: "Individuel",
-    aliases: [
-      "CULTURE SELLES (CULTURE TRADITIONNELLE)",
-    ],
-  },
-  {
-    canonicalName: "CULTURE MYCOPLASMA",
-    code: "MYPS",
-    category: "Individuel",
-    aliases: [
-      "CULTURE MYCOPLASMA",
-    ],
-  },
-  {
-    canonicalName: "CULTURE SELLES (MÉTHODE PCR)",
-    code: "STOOLPCR",
-    category: "Individuel",
-    aliases: [
-      "CULTURE SELLES (MÉTHODE PCR)",
-    ],
-  },
-  {
-    canonicalName: "CULTURE NEZ",
-    code: "CULN",
-    category: "Individuel",
-    aliases: [
-      "CULTURE NEZ",
-    ],
-  },
-  {
-    canonicalName: "CULTURE URÉAPLASMA ET MYCOPLASMA",
-    code: "UPCU",
-    category: "Individuel",
-    aliases: [
-      "CULTURE URÉAPLASMA ET MYCOPLASMA",
-    ],
-  },
-  {
-    canonicalName: "CULTURE PLAIE SUPPERFICIELLE",
-    code: "CULW",
-    category: "Individuel",
-    aliases: [
-      "CULTURE PLAIE SUPPERFICIELLE",
-    ],
-  },
-  {
-    canonicalName: "CULTURE URÉTHRALE",
-    code: "CULP",
-    category: "Individuel",
-    aliases: [
-      "CULTURE URÉTHRALE",
-    ],
-  },
-  {
-    canonicalName: "CULTURE PUS / PLAIE PROFONDE",
-    code: "CULZ",
-    category: "Individuel",
-    aliases: [
-      "CULTURE PUS / PLAIE PROFONDE",
-    ],
-  },
-  {
-    canonicalName: "CULTURE VAGINALE (CULTURE TRADITIONNELLE)",
-    code: "CULV",
-    category: "Individuel",
-    aliases: [
-      "CULTURE VAGINALE (CULTURE TRADITIONNELLE)",
-    ],
-  },
-  {
-    canonicalName: "CULTURE VAGINALE (MÉTHODE PCR)",
-    code: "PCRCULV",
-    category: "Individuel",
-    aliases: [
-      "CULTURE VAGINALE (MÉTHODE PCR)",
-    ],
-  },
-  {
-    canonicalName: "CYSTATIN C",
-    code: "CYSC",
-    category: "Individuel",
-    aliases: [
-      "CYSTATIN C",
-    ],
-  },
-  {
-    canonicalName: "CYTOLOGIE, URINE",
-    code: "UCYT",
-    category: "Individuel",
-    aliases: [
-      "CYTOLOGIE, URINE",
-    ],
-  },
-  {
-    canonicalName: "CYTOMÉGALOVIRUS IgG, IgM",
-    code: "CMVP",
-    category: "Individuel",
-    aliases: [
-      "CYTOMÉGALOVIRUS IgG, IgM",
-    ],
-  },
-  {
-    canonicalName: "ÉLECTROPHORÈSE DES PROTÉINES, URINE",
-    code: "UELP",
-    category: "Individuel",
-    aliases: [
-      "ÉLECTROPHORÈSE DES PROTÉINES, URINE",
-    ],
-  },
-  {
-    canonicalName: "ÉLECTROCARDIOGRAMME SANS INTERPRÉTATION",
-    code: "ECGW",
-    category: "Individuel",
-    aliases: [
-      "ÉLECTROCARDIOGRAMME SANS INTERPRÉTATION",
-    ],
-  },
-  {
-    canonicalName: "ENZYME DE CONVERSION ANGIOTENSINE (ACE)",
-    code: "ACE",
-    category: "Individuel",
-    aliases: [
-      "ENZYME DE CONVERSION ANGIOTENSINE (ACE)",
-    ],
-  },
-  {
-    canonicalName: "ÉLECTROLYTES, URINE 24 HEURES",
-    code: "UELE",
-    category: "Individuel",
-    aliases: [
-      "ÉLECTROLYTES, URINE 24 HEURES",
-    ],
-  },
-  {
-    canonicalName: "EPSTEIN-BARR, PROFIL (EBAR+EBVNA)",
-    code: "EBVP",
-    category: "Individuel",
-    aliases: [
-      "EPSTEIN-BARR, PROFIL (EBAR+EBVNA)",
-    ],
-  },
-  {
-    canonicalName: "EPSTEIN-BARR EBNA IGG",
-    code: "EBVNA",
-    category: "Individuel",
-    aliases: [
-      "EPSTEIN-BARR EBNA IGG",
-    ],
-  },
-  {
-    canonicalName: "ÉTHANOL, URINE",
-    code: "UETH",
-    category: "Individuel",
-    aliases: [
-      "ÉTHANOL, URINE",
-    ],
-  },
-  {
-    canonicalName: "FACTEUR II MUTATION",
-    code: "FIIM",
-    category: "Individuel",
-    aliases: [
-      "FACTEUR II MUTATION",
-    ],
-  },
-  {
-    canonicalName: "FACTEUR V LEIDEN",
-    code: "FVL",
-    category: "Individuel",
-    aliases: [
-      "FACTEUR V LEIDEN",
-    ],
-  },
-  {
-    canonicalName: "FACTEUR VIII FONCTIONNEL",
-    code: "FAC8",
-    category: "Individuel",
-    aliases: [
-      "FACTEUR VIII FONCTIONNEL",
-    ],
-  },
-  {
-    canonicalName: "FIBROSE KYSTIQUE, DÉPISTAGE",
-    code: "CFC",
-    category: "Individuel",
-    aliases: [
-      "FIBROSE KYSTIQUE, DÉPISTAGE",
-    ],
-  },
-  {
-    canonicalName: "FRUCTOSAMINE",
-    code: "FRUC",
-    category: "Individuel",
-    aliases: [
-      "FRUCTOSAMINE",
-    ],
-  },
-  {
-    canonicalName: "GLUCOSE AC & PC 1H",
-    code: "ACPC1H",
-    category: "Individuel",
-    aliases: [
-      "GLUCOSE AC & PC 1H",
-    ],
-  },
-  {
-    canonicalName: "GLUCOSE AC & PC 2H",
-    code: "ACPC2H",
-    category: "Individuel",
-    aliases: [
-      "GLUCOSE AC & PC 2H",
-    ],
-  },
-  {
-    canonicalName: "GLOBULINES",
-    code: "GLOB",
-    category: "Individuel",
-    aliases: [
-      "GLOBULINES",
-    ],
-  },
-  {
-    canonicalName: "GLUCOSE PC",
-    code: "PCGL",
-    category: "Individuel",
-    aliases: [
-      "GLUCOSE PC",
-    ],
-  },
-  {
-    canonicalName: "GLUCAGON",
-    code: "GLGN",
-    category: "Individuel",
-    aliases: [
-      "GLUCAGON",
-    ],
-  },
-  {
-    canonicalName: "GLUCOSE-6-PO4-DH QUANTITATIF, SANG ENTIER",
-    code: "G6PDQ",
-    category: "Individuel",
-    aliases: [
-      "GLUCOSE-6-PO4-DH QUANTITATIF, SANG ENTIER",
-    ],
-  },
-  {
-    canonicalName: "Glucose Tolerance Test (2h)",
-    code: "2HGTT",
-    category: "Individuel",
-    aliases: [
-      "GLUCOSE TEST DE TOLÉRANCE, 2 HEURES",
-      "Glucose Tolerance Test (2h)",
-    ],
-  },
-  {
-    canonicalName: "Gonorrhée (PCR Cervical/Endocervical)",
-    code: "GONO",
-    category: "Individuel",
-    aliases: [
-      "GONORRHÉE PAR PCR",
-      "Gonorrhée (PCR Cervical/Endocervical)",
-    ],
-  },
-  {
-    canonicalName: "Gonorrhée (Urine)",
-    code: "GONOU",
-    category: "Individuel",
-    aliases: [
-      "GONORRHÉE PAR PCR (URINE)",
-      "Gonorrhée (Urine)",
-    ],
-  },
-  {
-    canonicalName: "H. PYLORI, SELLES",
-    code: "HELAG",
+    canonicalName: "Hepatite A IGG",
+    code: "HAVG",
     category: "Individuel",
     aliases: [
-      "H. PYLORI, SELLES",
+      "HÉPATITE A IGG",
     ],
   },
   {
-    canonicalName: "H. Pylori Breath Test",
-    code: "HPBT",
+    canonicalName: "Hepatite A IGM",
+    code: "HAVM",
     category: "Individuel",
     aliases: [
-      "H. PYLORI, TEST RESPIRATOIRE",
-      "H. Pylori Breath Test",
+      "HÉPATITE A IGM",
     ],
   },
   {
-    canonicalName: "HÉPATITE A TOTAL",
+    canonicalName: "Hepatite A Total",
     code: "HAVT",
     category: "Individuel",
     aliases: [
@@ -3149,7 +2866,48 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "HÉPATITE B ANTIGÈNE DE SURFACE CONFIRMATION",
+    canonicalName: "Hepatite Anticorps",
+    code: "HEPC",
+    category: "Individuel",
+    aliases: [
+      "HÉPATITE ANTICORPS",
+      "ANTICORPS ANTI-HEPATITE C",
+    ],
+  },
+  {
+    canonicalName: "Hepatite B Aigue",
+    code: "HPBA",
+    category: "Profil",
+    aliases: [
+      "HÉPATITE B AIGÜE",
+    ],
+  },
+  {
+    canonicalName: "Hepatite B Anticorps Core IGM",
+    code: "CABM",
+    category: "Individuel",
+    aliases: [
+      "HÉPATITE B ANTICORPS (CORE IGM)",
+    ],
+  },
+  {
+    canonicalName: "Hepatite B Anticorps Core Total",
+    code: "HBCS",
+    category: "Individuel",
+    aliases: [
+      "HÉPATITE B ANTICORPS (CORE TOTAL)",
+    ],
+  },
+  {
+    canonicalName: "Hepatite B Anticorps Surface",
+    code: "HBAB",
+    category: "Individuel",
+    aliases: [
+      "HÉPATITE B ANTICORPS DE SURFACE",
+    ],
+  },
+  {
+    canonicalName: "Hepatite B Antigene Surface Confirmation",
     code: "HBCN",
     category: "Individuel",
     aliases: [
@@ -3157,7 +2915,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "HÉPATITE B CHARGE VIRALE",
+    canonicalName: "Hepatite B Charge Virale",
     code: "HEPBL",
     category: "Individuel",
     aliases: [
@@ -3165,7 +2923,31 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "HÈRPES SIMPLEX VIRUS 1 ET 2 ADN, PCR",
+    canonicalName: "Hepatite B E Anticorps",
+    code: "HEAG",
+    category: "Individuel",
+    aliases: [
+      "HÉPATITE B E ANTICORPS",
+    ],
+  },
+  {
+    canonicalName: "Hepatite B E Antigene",
+    code: "HBEG",
+    category: "Individuel",
+    aliases: [
+      "HÉPATITE B E ANTIGÈNE",
+    ],
+  },
+  {
+    canonicalName: "Hepatite C Charge Virale",
+    code: "HCVL",
+    category: "Individuel",
+    aliases: [
+      "HÉPATITE C CHARGE VIRALE",
+    ],
+  },
+  {
+    canonicalName: "Herpes Simplex Virus 1 2 ADN PCR",
     code: "HSVPCR",
     category: "Individuel",
     aliases: [
@@ -3173,7 +2955,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "HÈRPES SIMPLEX VIRUS 1 IGG",
+    canonicalName: "Herpes Simplex Virus 1 2 IGG",
+    code: "HSSP",
+    category: "Individuel",
+    aliases: [
+      "HÈRPES SIMPLEX VIRUS 1 ET 2 IGG",
+    ],
+  },
+  {
+    canonicalName: "Herpes Simplex Virus 1 IGG",
     code: "SEH1",
     category: "Individuel",
     aliases: [
@@ -3181,7 +2971,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "HÈRPES SIMPLEX VIRUS 2 IGG",
+    canonicalName: "Herpes Simplex Virus 2 IGG",
     code: "SEH2",
     category: "Individuel",
     aliases: [
@@ -3189,56 +2979,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "HÈRPES SIMPLEX VIRUS 1 ET 2 IgG",
-    code: "HSSP",
-    category: "Individuel",
-    aliases: [
-      "HÈRPES SIMPLEX VIRUS 1 ET 2 IgG",
-    ],
-  },
-  {
-    canonicalName: "HFE GÉNOTYPE",
-    code: "HFE",
-    category: "Individuel",
-    aliases: [
-      "HFE GÉNOTYPE",
-    ],
-  },
-  {
-    canonicalName: "Hépatite C Charge Virale",
-    code: "HCVL",
-    category: "Individuel",
-    aliases: [
-      "HÉPATITE C CHARGE VIRALE",
-      "Hépatite C Charge Virale",
-    ],
-  },
-  {
-    canonicalName: "HORMONE ADRÉNOCORTICOÏDE",
-    code: "ACTH",
-    category: "Individuel",
-    aliases: [
-      "HORMONE ADRÉNOCORTICOÏDE",
-    ],
-  },
-  {
-    canonicalName: "HORMONE ANTI-MÜLÉRIENNE",
-    code: "AMH",
-    category: "Individuel",
-    aliases: [
-      "HORMONE ANTI-MÜLÉRIENNE",
-    ],
-  },
-  {
-    canonicalName: "HLA CELIAC",
-    code: "HLACELIAC",
-    category: "Individuel",
-    aliases: [
-      "HLA CELIAC",
-    ],
-  },
-  {
-    canonicalName: "HOLTER 24 HEURES",
+    canonicalName: "Holter 24 Heures",
     code: "HLTR",
     category: "Individuel",
     aliases: [
@@ -3246,7 +2987,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "HOLTER 48 HEURES",
+    canonicalName: "Holter 48 Heures",
     code: "HLTR48",
     category: "Individuel",
     aliases: [
@@ -3254,15 +2995,48 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "ÎLOTS DE LANGERHANS, ANTICORPS",
-    code: "ICAB",
+    canonicalName: "Homocysteine",
+    code: "HCYS",
     category: "Individuel",
     aliases: [
-      "ÎLOTS DE LANGERHANS, ANTICORPS",
+      "HOMOCYSTÉINE",
     ],
   },
   {
-    canonicalName: "HTLV I & II",
+    canonicalName: "Hormone Adrenocorticoide",
+    code: "ACTH",
+    category: "Individuel",
+    aliases: [
+      "HORMONE ADRÉNOCORTICOÏDE",
+    ],
+  },
+  {
+    canonicalName: "Hormone Anti Mulerienne",
+    code: "AMH",
+    category: "Individuel",
+    aliases: [
+      "HORMONE ANTI-MÜLÉRIENNE",
+    ],
+  },
+  {
+    canonicalName: "Hormone Croissance",
+    code: "GH",
+    category: "Individuel",
+    aliases: [
+      "HORMONE DE CROISSANCE",
+      "HORMONE DE CROISSANCE (GH)",
+    ],
+  },
+  {
+    canonicalName: "Hormone Parathyr Oidienne",
+    code: "PTH",
+    category: "Individuel",
+    aliases: [
+      "HORMONE PARATHYR OÏDIENNE",
+    ],
+  },
+  {
+    canonicalName: "Htlv I II",
     code: "HTLV",
     category: "Individuel",
     aliases: [
@@ -3270,23 +3044,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "IMMUNOÉLECTROPHORÈSE, SÉRUM",
-    code: "IEP",
-    category: "Individuel",
-    aliases: [
-      "IMMUNOÉLECTROPHORÈSE, SÉRUM",
-    ],
-  },
-  {
-    canonicalName: "IMMUNOÉLECTROPHORÈSE, URINE",
-    code: "IEUR",
-    category: "Individuel",
-    aliases: [
-      "IMMUNOÉLECTROPHORÈSE, URINE",
-    ],
-  },
-  {
-    canonicalName: "IGF-1",
+    canonicalName: "IGF 1",
     code: "IGF1",
     category: "Individuel",
     aliases: [
@@ -3294,7 +3052,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "IGG SOUS CLASSE",
+    canonicalName: "IGG Sous Classe",
     code: "IGGSUB",
     category: "Individuel",
     aliases: [
@@ -3302,7 +3060,39 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "IMMUNOÉLECTROPHORÈSE, URINE 24 HEURES",
+    canonicalName: "INR PTT",
+    code: "PTPTT",
+    category: "Individuel",
+    aliases: [
+      "INR + PTT",
+    ],
+  },
+  {
+    canonicalName: "Ilots Langerhans Anticorps",
+    code: "ICAB",
+    category: "Individuel",
+    aliases: [
+      "ÎLOTS DE LANGERHANS, ANTICORPS",
+    ],
+  },
+  {
+    canonicalName: "Immunoelectrophorese Serum (Sérum)",
+    code: "IEP",
+    category: "Individuel",
+    aliases: [
+      "IMMUNOÉLECTROPHORÈSE, SÉRUM",
+    ],
+  },
+  {
+    canonicalName: "Immunoelectrophorese Urine (Urine)",
+    code: "IEUR",
+    category: "Individuel",
+    aliases: [
+      "IMMUNOÉLECTROPHORÈSE, URINE",
+    ],
+  },
+  {
+    canonicalName: "Immunoelectrophorese Urine 24 Heures (Urine 24h)",
     code: "IEU",
     category: "Individuel",
     aliases: [
@@ -3310,15 +3100,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "INTERLEUKINE 6",
-    code: "IL6",
-    category: "Individuel",
-    aliases: [
-      "INTERLEUKINE 6",
-    ],
-  },
-  {
-    canonicalName: "IMMUNOGLOBULINE",
+    canonicalName: "Immunoglobuline",
     code: "IMM",
     category: "Individuel",
     aliases: [
@@ -3326,47 +3108,39 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "IODINE PLASMA",
-    code: "IODL",
+    canonicalName: "Immunoglobuline IGA",
+    code: "IGA",
     category: "Individuel",
     aliases: [
-      "IODINE PLASMA",
+      "IMMUNOGLOBULINE IGA",
     ],
   },
   {
-    canonicalName: "KARYOTYPE",
-    code: "KART",
+    canonicalName: "Immunoglobuline IGE",
+    code: "IGE",
     category: "Individuel",
     aliases: [
-      "KARYOTYPE",
+      "IMMUNOGLOBULINE IGE",
     ],
   },
   {
-    canonicalName: "INFLUENZA A, DÉPISTAGE",
-    code: "FLUAPCR",
+    canonicalName: "Immunoglobuline IGG",
+    code: "IGG",
     category: "Individuel",
     aliases: [
-      "INFLUENZA A, DÉPISTAGE",
+      "IMMUNOGLOBULINE IGG",
     ],
   },
   {
-    canonicalName: "INFLUENZA B, DÉPISTAGE",
-    code: "FLUBPCR",
+    canonicalName: "Immunoglobuline IGM",
+    code: "IGM",
     category: "Individuel",
     aliases: [
-      "INFLUENZA B, DÉPISTAGE",
+      "IMMUNOGLOBULINE IGM",
     ],
   },
   {
-    canonicalName: "LACTOSE TEST DE TOLÉRANCE, SÉRUM",
-    code: "OLTT",
-    category: "Individuel",
-    aliases: [
-      "LACTOSE TEST DE TOLÉRANCE, SÉRUM",
-    ],
-  },
-  {
-    canonicalName: "INFLUENZA A + B, DÉPISTAGE",
+    canonicalName: "Influenza A B Depistage",
     code: "FLUABPCR",
     category: "Individuel",
     aliases: [
@@ -3374,7 +3148,71 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "LP (A)",
+    canonicalName: "Influenza A Depistage",
+    code: "FLUAPCR",
+    category: "Individuel",
+    aliases: [
+      "INFLUENZA A, DÉPISTAGE",
+    ],
+  },
+  {
+    canonicalName: "Influenza B Depistage",
+    code: "FLUBPCR",
+    category: "Individuel",
+    aliases: [
+      "INFLUENZA B, DÉPISTAGE",
+    ],
+  },
+  {
+    canonicalName: "Insuline",
+    code: "ISLN",
+    category: "Individuel",
+    aliases: [
+      "INSULINE",
+    ],
+  },
+  {
+    canonicalName: "Insuline A Jeun",
+    code: "INSUL",
+    category: "Individuel",
+    aliases: [
+      "INSULINE (À JEUN)",
+    ],
+  },
+  {
+    canonicalName: "Interleukine 6",
+    code: "IL6",
+    category: "Individuel",
+    aliases: [
+      "INTERLEUKINE 6",
+    ],
+  },
+  {
+    canonicalName: "Iodine Plasma (Plasma)",
+    code: "IODL",
+    category: "Individuel",
+    aliases: [
+      "IODINE PLASMA",
+    ],
+  },
+  {
+    canonicalName: "Karyotype",
+    code: "KART",
+    category: "Individuel",
+    aliases: [
+      "KARYOTYPE",
+    ],
+  },
+  {
+    canonicalName: "LH",
+    code: "LH",
+    category: "Individuel",
+    aliases: [
+      "LH",
+    ],
+  },
+  {
+    canonicalName: "LP A",
     code: "LPA",
     category: "Individuel",
     aliases: [
@@ -3382,7 +3220,23 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "LAMOTRIGINE",
+    canonicalName: "Lactate Dehydrogenase LDH",
+    code: "LD",
+    category: "Individuel",
+    aliases: [
+      "LACTATE DÉHYDROGÉNASE (LDH)",
+    ],
+  },
+  {
+    canonicalName: "Lactose Test Tolerance Serum (Sérum)",
+    code: "OLTT",
+    category: "Individuel",
+    aliases: [
+      "LACTOSE TEST DE TOLÉRANCE, SÉRUM",
+    ],
+  },
+  {
+    canonicalName: "Lamotrigine",
     code: "LAMT",
     category: "Individuel",
     aliases: [
@@ -3390,23 +3244,71 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "LYME, MALADIE DE, IGG ou IGM (LYMG/LYMM)",
-    code: "LYMG",
+    canonicalName: "Lipase",
+    code: "LASE",
     category: "Individuel",
     aliases: [
-      "LYME, MALADIE DE, IGG ou IGM (LYMG/LYMM)",
+      "LIPASE",
     ],
   },
   {
-    canonicalName: "LYME, MALADIE DE, IGG ou IGM (IMMUNOBLOT)",
+    canonicalName: "Lipidique Cardiovasculaire",
+    code: "LIPID",
+    category: "Profil",
+    aliases: [
+      "PROFIL LIPIDIQUE CARDIOVASCULAIRE",
+    ],
+  },
+  {
+    canonicalName: "Lipidique Cardiovasculaire 18",
+    code: "LIPID18",
+    category: "Profil",
+    aliases: [
+      "PROFIL LIPIDIQUE CARDIOVASCULAIRE NO 18",
+    ],
+  },
+  {
+    canonicalName: "Lipidique Cardiovasculaire 6",
+    code: "LIPID6",
+    category: "Profil",
+    aliases: [
+      "PROFIL LIPIDIQUE CARDIOVASCULAIRE NO 6",
+    ],
+  },
+  {
+    canonicalName: "Lithium",
+    code: "LITH",
+    category: "Individuel",
+    aliases: [
+      "LITHIUM",
+    ],
+  },
+  {
+    canonicalName: "Lupus Anticoagulant",
+    code: "LAGT",
+    category: "Individuel",
+    aliases: [
+      "LUPUS ANTICOAGULANT",
+    ],
+  },
+  {
+    canonicalName: "Lyme Maladie IGG OU IGM Immunoblot",
     code: "IBLYMP",
     category: "Individuel",
     aliases: [
-      "LYME, MALADIE DE, IGG ou IGM (IMMUNOBLOT)",
+      "LYME, MALADIE DE, IGG OU IGM (IMMUNOBLOT)",
     ],
   },
   {
-    canonicalName: "LYMPHOCYTES",
+    canonicalName: "Lyme Maladie IGG OU IGM Lymg Lymm",
+    code: "LYMG",
+    category: "Individuel",
+    aliases: [
+      "LYME, MALADIE DE, IGG OU IGM (LYMG/LYMM)",
+    ],
+  },
+  {
+    canonicalName: "Lymphocytes",
     code: "LYMSP1",
     category: "Individuel",
     aliases: [
@@ -3414,7 +3316,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "LYSOZYMES",
+    canonicalName: "Lysozymes",
     code: "LYSZ",
     category: "Individuel",
     aliases: [
@@ -3422,7 +3324,23 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "MACROPROLACTINE",
+    canonicalName: "MTS 1 VIH Homme",
+    code: "STDMH",
+    category: "Profil",
+    aliases: [
+      "MTS #1, VIH - HOMME",
+    ],
+  },
+  {
+    canonicalName: "MTS 2 Femme",
+    code: "STD2",
+    category: "Profil",
+    aliases: [
+      "MTS #2, FEMME",
+    ],
+  },
+  {
+    canonicalName: "Macroprolactine",
     code: "MNPRLA",
     category: "Individuel",
     aliases: [
@@ -3430,31 +3348,16 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "MANGANESE, SANG ENTIER",
-    code: "MN",
+    canonicalName: "Magnesium (Sérum)",
+    code: "MG",
     category: "Individuel",
     aliases: [
-      "MANGANESE, SANG ENTIER",
+      "MAGNÉSIUM, SÉRUM",
+      "MAGNÉSIUM",
     ],
   },
   {
-    canonicalName: "MERCURE, SANG ENTIER",
-    code: "HG",
-    category: "Individuel",
-    aliases: [
-      "MERCURE, SANG ENTIER",
-    ],
-  },
-  {
-    canonicalName: "MÉTANÉPHRINES, PLASMA",
-    code: "METS",
-    category: "Individuel",
-    aliases: [
-      "MÉTANÉPHRINES, PLASMA",
-    ],
-  },
-  {
-    canonicalName: "MAGNÉSIUM, URINE 24 HEURES",
+    canonicalName: "Magnesium Urine 24 Heures (Urine 24h)",
     code: "MG/U",
     category: "Individuel",
     aliases: [
@@ -3462,15 +3365,16 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "MÉTANÉPHRINES, URINAIRE (24 HEURES)",
-    code: "UMET",
-    category: "Individuel",
+    canonicalName: "Maladie Coeliaque",
+    code: "CELP",
+    category: "Profil",
     aliases: [
-      "MÉTANÉPHRINES, URINAIRE (24 HEURES)",
+      "MALADIE COELIAQUE",
+      "PROFIL DÉPISTAGE MALADIE COELIAQUE",
     ],
   },
   {
-    canonicalName: "MALARIA, FROTTIS",
+    canonicalName: "Malaria Frottis",
     code: "MALR",
     category: "Individuel",
     aliases: [
@@ -3478,7 +3382,79 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "MÉTHADONE",
+    canonicalName: "Manganese Sang Entier (Sang Entier)",
+    code: "MN",
+    category: "Individuel",
+    aliases: [
+      "MANGANESE, SANG ENTIER",
+    ],
+  },
+  {
+    canonicalName: "Marqueurs Prostatiques",
+    code: "FPSA_PROF",
+    category: "Profil",
+    aliases: [
+      "PROFIL MARQUEURS PROSTATIQUES",
+    ],
+  },
+  {
+    canonicalName: "Menopause 1",
+    code: "MEN1",
+    category: "Profil",
+    aliases: [
+      "MÉNOPAUSE #1",
+    ],
+  },
+  {
+    canonicalName: "Menopause 2",
+    code: "MEN2",
+    category: "Profil",
+    aliases: [
+      "MÉNOPAUSE #2",
+    ],
+  },
+  {
+    canonicalName: "Menopause 3",
+    code: "MEN3",
+    category: "Profil",
+    aliases: [
+      "MÉNOPAUSE #3",
+    ],
+  },
+  {
+    canonicalName: "Menopause 4",
+    code: "MEN4",
+    category: "Profil",
+    aliases: [
+      "MÉNOPAUSE #4",
+    ],
+  },
+  {
+    canonicalName: "Mercure Sang Entier (Sang Entier)",
+    code: "HG",
+    category: "Individuel",
+    aliases: [
+      "MERCURE, SANG ENTIER",
+    ],
+  },
+  {
+    canonicalName: "Metanephrines Plasma (Plasma)",
+    code: "METS",
+    category: "Individuel",
+    aliases: [
+      "MÉTANÉPHRINES, PLASMA",
+    ],
+  },
+  {
+    canonicalName: "Metanephrines Urinaire 24 Heures (Urine)",
+    code: "UMET",
+    category: "Individuel",
+    aliases: [
+      "MÉTANÉPHRINES, URINAIRE (24 HEURES)",
+    ],
+  },
+  {
+    canonicalName: "Methadone",
     code: "UMDN",
     category: "Individuel",
     aliases: [
@@ -3486,7 +3462,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "MÉTHAMPHETAMINE",
+    canonicalName: "Methamphetamine",
     code: "METHAM",
     category: "Individuel",
     aliases: [
@@ -3494,15 +3470,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "MICROSCOPIE URINAIRE",
-    code: "UMICP",
-    category: "Individuel",
-    aliases: [
-      "MICROSCOPIE URINAIRE",
-    ],
-  },
-  {
-    canonicalName: "MÉTHAQUALONE",
+    canonicalName: "Methaqualone",
     code: "LUDE",
     category: "Individuel",
     aliases: [
@@ -3510,15 +3478,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "MUTATION DU GÈNE MTHFR",
-    code: "MTHFR",
-    category: "Individuel",
-    aliases: [
-      "MUTATION DU GÈNE MTHFR",
-    ],
-  },
-  {
-    canonicalName: "MICROALBUMINURIE (ALÉATOIRE)",
+    canonicalName: "Microalbuminurie Aleatoire",
     code: "A/CU",
     category: "Individuel",
     aliases: [
@@ -3526,15 +3486,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "MYELOPEROXIDASE ANTICORPS",
-    code: "MPO",
-    category: "Individuel",
-    aliases: [
-      "MYELOPEROXIDASE ANTICORPS",
-    ],
-  },
-  {
-    canonicalName: "MICROALBUMINURIE, URINE 24 HEURES",
+    canonicalName: "Microalbuminurie Urine 24 Heures (Urine 24h)",
     code: "MALB",
     category: "Individuel",
     aliases: [
@@ -3542,7 +3494,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "MICRODÉLÉTION DU CHROMOSOME Y",
+    canonicalName: "Microdeletion Chromosome Y",
     code: "YXMD",
     category: "Individuel",
     aliases: [
@@ -3550,7 +3502,49 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "MYOSITE",
+    canonicalName: "Microscopie Urinaire (Urine)",
+    code: "UMICP",
+    category: "Individuel",
+    aliases: [
+      "MICROSCOPIE URINAIRE",
+    ],
+  },
+  {
+    canonicalName: "Monotest (MON+)",
+    code: "MON+",
+    category: "Profil",
+    aliases: [
+      "MONOTEST #1",
+      "PROFIL MONOTEST",
+    ],
+  },
+  {
+    canonicalName: "Monotest (MONO)",
+    code: "MONO",
+    category: "Individuel",
+    aliases: [
+      "MONOTEST",
+      "MONONUCLÉOSE",
+    ],
+  },
+  {
+    canonicalName: "Mutation Gene Mthfr",
+    code: "MTHFR",
+    category: "Individuel",
+    aliases: [
+      "MUTATION DU GÈNE MTHFR",
+    ],
+  },
+  {
+    canonicalName: "Myeloperoxidase Anticorps",
+    code: "MPO",
+    category: "Individuel",
+    aliases: [
+      "MYELOPEROXIDASE ANTICORPS",
+    ],
+  },
+  {
+    canonicalName: "Myosite",
     code: "MYOSIT",
     category: "Individuel",
     aliases: [
@@ -3558,7 +3552,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "NICKEL, SANG ENTIER",
+    canonicalName: "Nickel Sang Entier (Sang Entier)",
     code: "NIB",
     category: "Individuel",
     aliases: [
@@ -3566,24 +3560,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "OPIACÉS",
-    code: "OPIT",
-    category: "Individuel",
-    aliases: [
-      "OPIACÉS",
-    ],
-  },
-  {
-    canonicalName: "Ova and Parasites (Oeufs et Parasites) - Selles",
-    code: "PARA",
-    category: "Individuel",
-    aliases: [
-      "OEUFS & PARASITES, SELLES (SANS PRÉSERVATIF)",
-      "Ova and Parasites (Oeufs et Parasites) - Selles",
-    ],
-  },
-  {
-    canonicalName: "OEUFS & PARASITES, SELLES (AVEC PRÉSERVATIF)",
+    canonicalName: "Oeufs Parasites Selles Preservatif (Selles)",
     code: "PARAPCR",
     category: "Individuel",
     aliases: [
@@ -3591,7 +3568,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "OEUFS & PARASITES, URINE",
+    canonicalName: "Oeufs Parasites Selles Sans Preservatif (Selles)",
+    code: "PARA",
+    category: "Individuel",
+    aliases: [
+      "OEUFS & PARASITES, SELLES (SANS PRÉSERVATIF)",
+    ],
+  },
+  {
+    canonicalName: "Oeufs Parasites Urine (Urine)",
     code: "BILH",
     category: "Individuel",
     aliases: [
@@ -3599,7 +3584,39 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "OSMOLALITÉ, URINE",
+    canonicalName: "Opiaces",
+    code: "OPIT",
+    category: "Individuel",
+    aliases: [
+      "OPIACÉS",
+    ],
+  },
+  {
+    canonicalName: "Oreillons IGG",
+    code: "MUMG",
+    category: "Individuel",
+    aliases: [
+      "OREILLONS IGG",
+    ],
+  },
+  {
+    canonicalName: "Oreillons IGM",
+    code: "MUMM",
+    category: "Individuel",
+    aliases: [
+      "OREILLONS IGM",
+    ],
+  },
+  {
+    canonicalName: "Osmolalite Serum (Sérum)",
+    code: "OSMS",
+    category: "Individuel",
+    aliases: [
+      "OSMOLALITÉ, SÉRUM",
+    ],
+  },
+  {
+    canonicalName: "Osmolalite Urine (Urine)",
     code: "OSMU",
     category: "Individuel",
     aliases: [
@@ -3607,15 +3624,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PAP, FROTTIS (TRADITIONNEL)",
-    code: "PAPS",
-    category: "Individuel",
-    aliases: [
-      "PAP, FROTTIS (TRADITIONNEL)",
-    ],
-  },
-  {
-    canonicalName: "OSTÉOCALCINE",
+    canonicalName: "Osteocalcine",
     code: "OSTO",
     category: "Individuel",
     aliases: [
@@ -3623,7 +3632,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "OXALATE, URINE 24 HEURES",
+    canonicalName: "Osteoporosis",
+    code: "OSTEOP",
+    category: "Profil",
+    aliases: [
+      "PROFIL OSTEOPOROSIS",
+    ],
+  },
+  {
+    canonicalName: "Oxalate Urine 24 Heures (Urine 24h)",
     code: "OXAL",
     category: "Individuel",
     aliases: [
@@ -3631,15 +3648,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PAP THINPREPTM, TEST",
-    code: "PAPT",
-    category: "Individuel",
-    aliases: [
-      "PAP THINPREPTM, TEST",
-    ],
-  },
-  {
-    canonicalName: "OXYURES",
+    canonicalName: "Oxyures",
     code: "PINW",
     category: "Individuel",
     aliases: [
@@ -3647,7 +3656,80 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PARVOVIRUS IGG",
+    canonicalName: "PAP Frottis Traditionnel",
+    code: "PAPS",
+    category: "Individuel",
+    aliases: [
+      "PAP, FROTTIS (TRADITIONNEL)",
+    ],
+  },
+  {
+    canonicalName: "PAP Thinpreptm Test",
+    code: "PAPT",
+    category: "Individuel",
+    aliases: [
+      "PAP THINPREPTM, TEST",
+    ],
+  },
+  {
+    canonicalName: "PRO BNP",
+    code: "NTPROBNP",
+    category: "Individuel",
+    aliases: [
+      "PRO-BNP",
+    ],
+  },
+  {
+    canonicalName: "PT INR Temps Quick",
+    code: "PT",
+    category: "Individuel",
+    aliases: [
+      "PT INR (TEMPS DE QUICK)",
+      "RAPPORT INTERNATIONAL NORMALISÉ (INR)",
+    ],
+  },
+  {
+    canonicalName: "PT PTT",
+    code: "PTPT",
+    category: "Profil",
+    aliases: [
+      "PT ET PTT",
+    ],
+  },
+  {
+    canonicalName: "PTT TCA",
+    code: "PTT",
+    category: "Individuel",
+    aliases: [
+      "PTT (TCA)",
+    ],
+  },
+  {
+    canonicalName: "Pancreatique",
+    code: "PANC",
+    category: "Profil",
+    aliases: [
+      "PANCRÉATIQUE",
+    ],
+  },
+  {
+    canonicalName: "Panorama®",
+    code: "PANO",
+    category: "Profil",
+    aliases: [
+      "PANORAMA®",
+    ],
+  },
+  {
+    canonicalName: "Panorama® Microdeletions",
+    code: "PANOE",
+    category: "Profil",
+    aliases: [
+      "PANORAMA® ET MICRODÉLÉTIONS",
+    ],
+  },
+  {
+    canonicalName: "Parvovirus IGG",
     code: "PARV",
     category: "Individuel",
     aliases: [
@@ -3655,7 +3737,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PARVOVIRUS IGM",
+    canonicalName: "Parvovirus IGM",
     code: "PARM",
     category: "Individuel",
     aliases: [
@@ -3663,15 +3745,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PARVOVIRUS IgGIgM",
+    canonicalName: "Parvovirus Iggigm",
     code: "PARP",
     category: "Individuel",
     aliases: [
-      "PARVOVIRUS IgGIgM",
+      "PARVOVIRUS IGGIGM",
     ],
   },
   {
-    canonicalName: "PATERNITÉ, TEST DE (ADN)",
+    canonicalName: "Paternite Test ADN",
     code: "PATT",
     category: "Individuel",
     aliases: [
@@ -3679,7 +3761,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PATERNITÉ, TEST DE (SANG MATERNEL)",
+    canonicalName: "Paternite Test Sang Maternel",
     code: "MATPAT",
     category: "Individuel",
     aliases: [
@@ -3687,7 +3769,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PHENCYCLIDINE (PCP)",
+    canonicalName: "Peptide Cyclique Citrulline IGG",
+    code: "CCPG",
+    category: "Individuel",
+    aliases: [
+      "PEPTIDE CYCLIQUE CITRULLINÉ IGG",
+    ],
+  },
+  {
+    canonicalName: "Phencyclidine PCP",
     code: "PCP",
     category: "Individuel",
     aliases: [
@@ -3695,7 +3785,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PHÉNYTOINE",
+    canonicalName: "Phenytoine",
     code: "PHTN",
     category: "Individuel",
     aliases: [
@@ -3703,7 +3793,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PHOSPHATASE ALCALINE",
+    canonicalName: "Phosphatase Alcaline",
     code: "ALKP",
     category: "Individuel",
     aliases: [
@@ -3711,7 +3801,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PHOSPHATASE ALCALINE ISOENZYMES",
+    canonicalName: "Phosphatase Alcaline Isoenzymes",
     code: "ALKPI",
     category: "Individuel",
     aliases: [
@@ -3719,11 +3809,28 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PHOSPHATE, URINE 24 HEURES",
+    canonicalName: "Phosphate",
+    code: "PO4",
+    category: "Individuel",
+    aliases: [
+      "PHOSPHATE",
+    ],
+  },
+  {
+    canonicalName: "Phosphate Urine 24 Heures (Urine 24h)",
     code: "PO/U",
     category: "Individuel",
     aliases: [
       "PHOSPHATE, URINE 24 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Phosphore",
+    code: "PHOS",
+    category: "Individuel",
+    aliases: [
+      "ANTIPHOSPHOLIPINE IGM, IGG",
+      "PHOSPHORE",
     ],
   },
   {
@@ -3732,19 +3839,34 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "PLAQUETTES",
-      "Plaquettes",
     ],
   },
   {
-    canonicalName: "PLAQUETTES (tube bleu)",
+    canonicalName: "Plaquettes Tube Bleu",
     code: "PLTB",
     category: "Individuel",
     aliases: [
-      "PLAQUETTES (tube bleu)",
+      "PLAQUETTES (TUBE BLEU)",
     ],
   },
   {
-    canonicalName: "PRÉALBUMINE",
+    canonicalName: "Plomb Sang Entier (Sang Entier)",
+    code: "PB",
+    category: "Individuel",
+    aliases: [
+      "PLOMB, SANG ENTIER",
+    ],
+  },
+  {
+    canonicalName: "Potassium",
+    code: "K",
+    category: "Individuel",
+    aliases: [
+      "POTASSIUM",
+    ],
+  },
+  {
+    canonicalName: "Prealbumine",
     code: "PALB",
     category: "Individuel",
     aliases: [
@@ -3752,7 +3874,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PRÉGNENOLONE 17-OH",
+    canonicalName: "Pregnenolone 17 OH",
     code: "17PGLN",
     category: "Individuel",
     aliases: [
@@ -3760,79 +3882,73 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "PRO-BNP",
-    code: "NTPROBNP",
-    category: "Individuel",
+    canonicalName: "Prenatal 1",
+    code: "PREN",
+    category: "Profil",
     aliases: [
-      "PRO-BNP",
+      "PRÉNATAL #1",
+      "PROFIL PRÉNATAL NO 1",
     ],
   },
   {
-    canonicalName: "PROGESTÉRONE 17-OH",
-    code: "17PR",
-    category: "Individuel",
+    canonicalName: "Prenatal 2",
+    code: "PREN2",
+    category: "Profil",
     aliases: [
-      "PROGESTÉRONE 17-OH",
+      "PROFIL PRÉNATAL NO 2",
     ],
   },
   {
-    canonicalName: "PROTEINASE-3 ANTICORPS",
-    code: "PRTASE",
-    category: "Individuel",
+    canonicalName: "Prenatal 3 (DAL2)",
+    code: "DAL2",
+    category: "Profil",
     aliases: [
-      "PROTEINASE-3 ANTICORPS",
+      "PRÉNATAL #3",
     ],
   },
   {
-    canonicalName: "PROTÉINE C, ANTIGÈNE",
-    code: "PRCA",
-    category: "Individuel",
+    canonicalName: "Prenatal 3 (DAL2G)",
+    code: "DAL2G",
+    category: "Profil",
     aliases: [
-      "PROTÉINE C, ANTIGÈNE",
+      "PRÉNATAL #3, GLUCOSE",
+      "PROFIL PRÉNATAL NO 3",
     ],
   },
   {
-    canonicalName: "PROTÉINE C, FONCTIONNELLE",
-    code: "PRCF",
-    category: "Individuel",
+    canonicalName: "Prenatal Glucose AC",
+    code: "PRENG",
+    category: "Profil",
     aliases: [
-      "PROTÉINE C, FONCTIONNELLE",
+      "PRÉNATAL, GLUCOSE AC",
     ],
   },
   {
-    canonicalName: "PROTÉINE CRÉATININE RATIO",
-    code: "P/CU",
+    canonicalName: "Progesterone",
+    code: "PROG",
     category: "Individuel",
     aliases: [
-      "PROTÉINE CRÉATININE RATIO",
+      "PROGESTÉRONE",
     ],
   },
   {
-    canonicalName: "PROTÉINE S, ANTIGÈNE",
-    code: "PRSA",
+    canonicalName: "Prolactine (PRLA)",
+    code: "PRLA",
     category: "Individuel",
     aliases: [
-      "PROTÉINE S, ANTIGÈNE",
+      "PROLACTINE",
     ],
   },
   {
-    canonicalName: "PROTÉINE S, FONCTIONNELLE",
-    code: "PRSF",
+    canonicalName: "Prolactine (PROL)",
+    code: "PROL",
     category: "Individuel",
     aliases: [
-      "PROTÉINE S, FONCTIONNELLE",
+      "PROLACTINE",
     ],
   },
   {
-    canonicalName: "PROTÉINES, URINE 24 HEURES",
-    code: "PR/U",
-    category: "Individuel",
-    aliases: [
-      "PROTÉINES, URINE 24 HEURES",
-    ],
-  },
-  {
-    canonicalName: "PROSTATE, APS FACTEURS DE RISQUE CLARITYDX",
+    canonicalName: "Prostate APS Facteurs Risque Claritydx",
     code: "CLRYDX",
     category: "Individuel",
     aliases: [
@@ -3840,7 +3956,98 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "QUANTIFÉRON-TB GOLD",
+    canonicalName: "Proteinase 3 Anticorps",
+    code: "PRTASE",
+    category: "Individuel",
+    aliases: [
+      "PROTEINASE-3 ANTICORPS",
+    ],
+  },
+  {
+    canonicalName: "Proteine C Antigene",
+    code: "PRCA",
+    category: "Individuel",
+    aliases: [
+      "PROTÉINE C, ANTIGÈNE",
+      "ANTIGÈNE PROTÉINE C",
+    ],
+  },
+  {
+    canonicalName: "Proteine C Fonctionnelle",
+    code: "PRCF",
+    category: "Individuel",
+    aliases: [
+      "PROTÉINE C, FONCTIONNELLE",
+    ],
+  },
+  {
+    canonicalName: "Proteine C Reactive",
+    code: "CRP",
+    category: "Individuel",
+    aliases: [
+      "PROTÉINE C-RÉACTIVE (CRP)",
+      "PROTÉINE C-RÉACTIVE",
+    ],
+  },
+  {
+    canonicalName: "Proteine C Reactive Haute Sensibilite",
+    code: "CRPHS",
+    category: "Individuel",
+    aliases: [
+      "PROTÉINE C-RÉACTIVE HAUTE SENSIBILITÉ (CRPHS)",
+      "PROTÉINE C-RÉACTIVE HAUTE SENSIBILITÉ",
+    ],
+  },
+  {
+    canonicalName: "Proteine Creatinine Ratio",
+    code: "P/CU",
+    category: "Individuel",
+    aliases: [
+      "PROTÉINE CRÉATININE RATIO",
+    ],
+  },
+  {
+    canonicalName: "Proteine S Antigene",
+    code: "PRSA",
+    category: "Individuel",
+    aliases: [
+      "PROTÉINE S, ANTIGÈNE",
+    ],
+  },
+  {
+    canonicalName: "Proteine S Fonctionnelle",
+    code: "PRSF",
+    category: "Individuel",
+    aliases: [
+      "PROTÉINE S, FONCTIONNELLE",
+    ],
+  },
+  {
+    canonicalName: "Proteines Totales",
+    code: "PROT",
+    category: "Individuel",
+    aliases: [
+      "PROTÉINES TOTALES",
+    ],
+  },
+  {
+    canonicalName: "Proteines Totales Serum (Sérum)",
+    code: "TP",
+    category: "Individuel",
+    aliases: [
+      "PROTÉINES TOTALES, SÉRUM",
+    ],
+  },
+  {
+    canonicalName: "Proteines Urine 24 Heures (Urine 24h)",
+    code: "PR/U",
+    category: "Individuel",
+    aliases: [
+      "PROTÉINES, URINE 24 HEURES",
+    ],
+  },
+  {
+    canonicalName: "Quantiferon TB Gold",
     code: "QFINT",
     category: "Individuel",
     aliases: [
@@ -3848,7 +4055,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "RECHERCHE D’ANTICORPS",
+    canonicalName: "Rage Anticorps",
+    code: "RABIES",
+    category: "Individuel",
+    aliases: [
+      "RAGE, ANTICORPS",
+    ],
+  },
+  {
+    canonicalName: "Recherche D’anticorps",
     code: "ABSN",
     category: "Individuel",
     aliases: [
@@ -3856,7 +4071,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "RÉNINE",
+    canonicalName: "Renal 2",
+    code: "REN2",
+    category: "Profil",
+    aliases: [
+      "RÉNAL #2",
+    ],
+  },
+  {
+    canonicalName: "Renine",
     code: "RENN",
     category: "Individuel",
     aliases: [
@@ -3864,7 +4087,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "RÉSISTANCE PROTÉINE C ACTIVÉE",
+    canonicalName: "Resistance Proteine C Activee",
     code: "RPC",
     category: "Individuel",
     aliases: [
@@ -3872,7 +4095,87 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "SANG DANS LES SELLES IMMUNOLOGIQUE, QUANTITATIF",
+    canonicalName: "Reticulocytes",
+    code: "RTIC",
+    category: "Individuel",
+    aliases: [
+      "RÉTICULOCYTES",
+    ],
+  },
+  {
+    canonicalName: "Risque Cardiovasculaire 1",
+    code: "CVRK",
+    category: "Profil",
+    aliases: [
+      "RISQUE CARDIOVASCULAIRE #1",
+    ],
+  },
+  {
+    canonicalName: "Risque Cardiovasculaire 2 Plus Apob",
+    code: "CVK2",
+    category: "Profil",
+    aliases: [
+      "RISQUE CARDIOVASCULAIRE #2 PLUS APOB",
+    ],
+  },
+  {
+    canonicalName: "Rougeole IGG",
+    code: "RMES",
+    category: "Individuel",
+    aliases: [
+      "ROUGEOLE IGG",
+    ],
+  },
+  {
+    canonicalName: "Rougeole IGM",
+    code: "RMEM",
+    category: "Individuel",
+    aliases: [
+      "ROUGEOLE IGM",
+    ],
+  },
+  {
+    canonicalName: "Rubeole IGM",
+    code: "RUBM",
+    category: "Individuel",
+    aliases: [
+      "RUBÉOLE IGM",
+    ],
+  },
+  {
+    canonicalName: "SMA 16",
+    code: "SMA16",
+    category: "Profil",
+    aliases: [
+      "PROFIL SMA-16",
+    ],
+  },
+  {
+    canonicalName: "SMA 5",
+    code: "SMA5",
+    category: "Profil",
+    aliases: [
+      "PROFIL SMA-5",
+    ],
+  },
+  {
+    canonicalName: "SMA 6",
+    code: "SMA6",
+    category: "Profil",
+    aliases: [
+      "PROFIL SMA-6",
+    ],
+  },
+  {
+    canonicalName: "SMA 7",
+    code: "SMA7",
+    category: "Profil",
+    aliases: [
+      "PROFIL SMA-7",
+    ],
+  },
+  {
+    canonicalName: "Sang Dans Selles Immunologique Quantitatif (Selles)",
     code: "QIFOB",
     category: "Individuel",
     aliases: [
@@ -3880,7 +4183,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "SÉLÉNIUM, SANG ENTIER",
+    canonicalName: "Selenium Sang Entier (Sang Entier)",
     code: "SE",
     category: "Individuel",
     aliases: [
@@ -3888,7 +4191,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "SHBG (GLOBULINE RELIÉE À L’HORMONE DU SEXE)",
+    canonicalName: "Shbg Globuline Reliee A L’hormone Sexe",
     code: "SHBG",
     category: "Individuel",
     aliases: [
@@ -3896,15 +4199,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "SODIUM, URINE 24 HEURES",
-    code: "UNA",
+    canonicalName: "Sodium",
+    code: "NA",
     category: "Individuel",
     aliases: [
-      "SODIUM, URINE 24 HEURES",
+      "SODIUM",
     ],
   },
   {
-    canonicalName: "SODIUM / CRÉATININE RATIO",
+    canonicalName: "Sodium Creatinine Ratio",
     code: "NACR",
     category: "Individuel",
     aliases: [
@@ -3912,15 +4215,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "SPERMOGRAMME FERTILITÉ",
-    code: "SPGMF",
+    canonicalName: "Sodium Urine 24 Heures (Urine 24h)",
+    code: "UNA",
     category: "Individuel",
     aliases: [
-      "SPERMOGRAMME FERTILITÉ",
+      "SODIUM, URINE 24 HEURES",
     ],
   },
   {
-    canonicalName: "SPERMOGRAMME POST-VASECTOMIE",
+    canonicalName: "Spermogramme Post Vasectomie",
     code: "SPGMPV",
     category: "Individuel",
     aliases: [
@@ -3928,15 +4231,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "STREP A, CANDIDA",
-    code: "STPT",
-    category: "Individuel",
-    aliases: [
-      "STREP A, CANDIDA",
-    ],
-  },
-  {
-    canonicalName: "STREP A, C, G (PCR)",
+    canonicalName: "Strep A C G PCR",
     code: "STPCR",
     category: "Individuel",
     aliases: [
@@ -3944,7 +4239,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "STREP A, C, G (PCR), CANDIDA",
+    canonicalName: "Strep A C G PCR Candida",
     code: "CULT",
     category: "Individuel",
     aliases: [
@@ -3952,7 +4247,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "STREP A, RAPIDE",
+    canonicalName: "Strep A Candida",
+    code: "STPT",
+    category: "Individuel",
+    aliases: [
+      "STREP A, CANDIDA",
+    ],
+  },
+  {
+    canonicalName: "Strep A Rapide",
     code: "STRP",
     category: "Individuel",
     aliases: [
@@ -3960,7 +4263,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "STREP GROUPE B PCR, VAGINAL",
+    canonicalName: "Strep Groupe B PCR Vaginal (Vaginal)",
     code: "VAGS",
     category: "Individuel",
     aliases: [
@@ -3968,7 +4271,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "SYNDRÔME FRAGILE X",
+    canonicalName: "Syndrome Fragile X",
     code: "FRGX",
     category: "Individuel",
     aliases: [
@@ -3976,7 +4279,23 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "T3 REVERSE",
+    canonicalName: "Syphilis EIA",
+    code: "SYPEIA",
+    category: "Individuel",
+    aliases: [
+      "SYPHILIS (EIA)",
+    ],
+  },
+  {
+    canonicalName: "T3 Libre (T3F)",
+    code: "T3F",
+    category: "Individuel",
+    aliases: [
+      "T3 LIBRE",
+    ],
+  },
+  {
+    canonicalName: "T3 Reverse",
     code: "RT3",
     category: "Individuel",
     aliases: [
@@ -3984,7 +4303,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "T3 TOTALE",
+    canonicalName: "T3 Totale",
     code: "TT3",
     category: "Individuel",
     aliases: [
@@ -3992,7 +4311,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "T4 TOTAL",
+    canonicalName: "T4 Libre (T4F)",
+    code: "T4F",
+    category: "Individuel",
+    aliases: [
+      "T4 LIBRE",
+    ],
+  },
+  {
+    canonicalName: "T4 Total",
     code: "TT4",
     category: "Individuel",
     aliases: [
@@ -4000,15 +4327,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "TACROLIMUS (FK506, Prograf)",
-    code: "TCLM",
-    category: "Individuel",
-    aliases: [
-      "TACROLIMUS (FK506, Prograf)",
-    ],
-  },
-  {
-    canonicalName: "TAY SACHS, PLAQUETTES",
+    canonicalName: "TAY Sachs Plaquettes",
     code: "TAYS",
     category: "Individuel",
     aliases: [
@@ -4016,7 +4335,32 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "TERIFLUNOMIDE",
+    canonicalName: "TSH Anticorps Anti Recepteur",
+    code: "TBII",
+    category: "Individuel",
+    aliases: [
+      "TSH, ANTICORPS ANTI-RÉCEPTEUR",
+    ],
+  },
+  {
+    canonicalName: "TSH Ultrasensible",
+    code: "TSH",
+    category: "Individuel",
+    aliases: [
+      "HORMONE DE STIMULATION THYROIDIENNE",
+      "TSH ULTRASENSIBLE",
+    ],
+  },
+  {
+    canonicalName: "Tacrolimus Fk506 Prograf",
+    code: "TCLM",
+    category: "Individuel",
+    aliases: [
+      "TACROLIMUS (FK506, PROGRAF)",
+    ],
+  },
+  {
+    canonicalName: "Teriflunomide",
     code: "TERI",
     category: "Individuel",
     aliases: [
@@ -4024,7 +4368,48 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "TESTS RESPIRATOIRES D-XYLOSE",
+    canonicalName: "Test PAP Thin Prep HPV DNA",
+    code: "PAPTHPV",
+    category: "Profil",
+    aliases: [
+      "TEST PAP THIN PREP + HPV DNA",
+    ],
+  },
+  {
+    canonicalName: "Test PAP Thin Prep VPH DNA Cascade",
+    code: "TPPV",
+    category: "Profil",
+    aliases: [
+      "TEST PAP THIN PREP, VPH DNA EN CASCADE",
+    ],
+  },
+  {
+    canonicalName: "Testosterone Biodisponible",
+    code: "TESBC",
+    category: "Individuel",
+    aliases: [
+      "TESTOSTÉRONE BIODISPONIBLE",
+    ],
+  },
+  {
+    canonicalName: "Testosterone Libre",
+    code: "TESFC",
+    category: "Individuel",
+    aliases: [
+      "TESTOSTÉRONE LIBRE",
+    ],
+  },
+  {
+    canonicalName: "Testosterone Total",
+    code: "TEST",
+    category: "Individuel",
+    aliases: [
+      "TESTOSTÉRONE TOTAL",
+      "TESTOSTÉRONE TOTALE",
+    ],
+  },
+  {
+    canonicalName: "Tests Respiratoires D Xylose",
     code: "HBTDXP",
     category: "Individuel",
     aliases: [
@@ -4032,7 +4417,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "THALASSEMIE ALPHA",
+    canonicalName: "Thalassemie Alpha",
     code: "ATHAL",
     category: "Individuel",
     aliases: [
@@ -4040,7 +4425,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "THYROGLOBULINE, ANTICORPS",
+    canonicalName: "Thyroglobuline",
+    code: "THYG",
+    category: "Individuel",
+    aliases: [
+      "THYROGLOBULINE",
+    ],
+  },
+  {
+    canonicalName: "Thyroglobuline Anticorps",
     code: "TGAB",
     category: "Individuel",
     aliases: [
@@ -4048,7 +4441,64 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "THYROÏDIENS, ANTICORPS",
+    canonicalName: "Thyroide 1",
+    code: "THY1",
+    category: "Profil",
+    aliases: [
+      "THYROÏDE #1",
+    ],
+  },
+  {
+    canonicalName: "Thyroide 1 Cascade",
+    code: "THY1R",
+    category: "Profil",
+    aliases: [
+      "THYROÏDE #1, CASCADE",
+    ],
+  },
+  {
+    canonicalName: "Thyroide 3",
+    code: "THY3",
+    category: "Profil",
+    aliases: [
+      "THYROÏDE #3",
+    ],
+  },
+  {
+    canonicalName: "Thyroide 3 Cascade",
+    code: "THY3R",
+    category: "Profil",
+    aliases: [
+      "THYROÏDE #3, CASCADE",
+    ],
+  },
+  {
+    canonicalName: "Thyroide 4",
+    code: "THY4",
+    category: "Profil",
+    aliases: [
+      "THYROÏDE #4",
+    ],
+  },
+  {
+    canonicalName: "Thyroidien 2",
+    code: "TH2",
+    category: "Individuel",
+    aliases: [
+      "PROFIL THYROÏDIEN NO 2 (TSH, T4 LIBRE)",
+      "PROFIL THYROÏDIEN NO 2",
+    ],
+  },
+  {
+    canonicalName: "Thyroidien 6",
+    code: "TH6",
+    category: "Profil",
+    aliases: [
+      "PROFIL THYROÏDIEN NO 6",
+    ],
+  },
+  {
+    canonicalName: "Thyroidiens Anticorps",
     code: "THAB",
     category: "Individuel",
     aliases: [
@@ -4056,23 +4506,39 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "TOXOPLASMOSE IgG, IgM",
+    canonicalName: "Toxoplasmose IGG",
+    code: "TOXG",
+    category: "Individuel",
+    aliases: [
+      "TOXOPLASMOSE IGG",
+    ],
+  },
+  {
+    canonicalName: "Toxoplasmose IGG IGM",
     code: "TOXP",
     category: "Individuel",
     aliases: [
-      "TOXOPLASMOSE IgG, IgM",
+      "TOXOPLASMOSE IGG, IGM",
     ],
   },
   {
-    canonicalName: "TRICHOMONAS VAGINALIS PCR",
-    code: "TRIPCR",
+    canonicalName: "Toxoplasmose IGM",
+    code: "TOXM",
     category: "Individuel",
     aliases: [
-      "TRICHOMONAS VAGINALIS PCR",
+      "TOXOPLASMOSE IGM",
     ],
   },
   {
-    canonicalName: "TRICHOMONAS PCR (URINE)",
+    canonicalName: "Transferrine",
+    code: "TRFN",
+    category: "Individuel",
+    aliases: [
+      "TRANSFERRINE",
+    ],
+  },
+  {
+    canonicalName: "Trichomonas PCR Urine (Urine)",
     code: "UTRIPCR",
     category: "Individuel",
     aliases: [
@@ -4080,7 +4546,23 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "TROPONINE T",
+    canonicalName: "Trichomonas Vaginalis PCR (Vaginal)",
+    code: "TRIPCR",
+    category: "Individuel",
+    aliases: [
+      "TRICHOMONAS VAGINALIS PCR",
+    ],
+  },
+  {
+    canonicalName: "Triglycerides",
+    code: "TRIG",
+    category: "Individuel",
+    aliases: [
+      "TRIGLYCÉRIDES",
+    ],
+  },
+  {
+    canonicalName: "Troponine T",
     code: "TROPHS",
     category: "Individuel",
     aliases: [
@@ -4088,7 +4570,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "TRYPTASE",
+    canonicalName: "Tryptase",
     code: "TRYP",
     category: "Individuel",
     aliases: [
@@ -4096,7 +4578,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "URÉALYTICUM (PCR)",
+    canonicalName: "Urealyticum PCR",
     code: "UREAP",
     category: "Individuel",
     aliases: [
@@ -4104,7 +4586,15 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "URÉE / CRÉATININE, RATIO",
+    canonicalName: "Uree",
+    code: "UREA",
+    category: "Individuel",
+    aliases: [
+      "URÉE",
+    ],
+  },
+  {
+    canonicalName: "Uree Creatinine Ratio",
     code: "UCR",
     category: "Individuel",
     aliases: [
@@ -4112,7 +4602,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "URÉE, URINE 24 HEURES (BUN)",
+    canonicalName: "Uree Urine 24 Heures BUN (Urine 24h)",
     code: "UR/U",
     category: "Individuel",
     aliases: [
@@ -4120,40 +4610,40 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "HIV (VIH) Dépistage",
+    canonicalName: "Urine Culture (Urine)",
+    code: "CULU",
+    category: "Individuel",
+    aliases: [
+      "URINE, CULTURE",
+      "CULTURE: URINE",
+    ],
+  },
+  {
+    canonicalName: "Urolithiase",
+    code: "STONE",
+    category: "Profil",
+    aliases: [
+      "PROFIL UROLITHIASE",
+    ],
+  },
+  {
+    canonicalName: "VIH Virus Immunodeficience Humaine Charge Virale",
+    code: "HIVL",
+    category: "Individuel",
+    aliases: [
+      "VIH (VIRUS IMMUNODÉFICIENCE HUMAINE), CHARGE VIRALE",
+    ],
+  },
+  {
+    canonicalName: "VIH Virus L’immunodeficience Humaine",
     code: "HIV",
     category: "Individuel",
     aliases: [
       "VIH (VIRUS DE L’IMMUNODÉFICIENCE HUMAINE)",
-      "HIV (VIH) Dépistage",
     ],
   },
   {
-    canonicalName: "VITAMINE A (RETINOL)",
-    code: "VITA",
-    category: "Individuel",
-    aliases: [
-      "VITAMINE A (RETINOL)",
-    ],
-  },
-  {
-    canonicalName: "VITAMINE B6",
-    code: "VITB6",
-    category: "Individuel",
-    aliases: [
-      "VITAMINE B6",
-    ],
-  },
-  {
-    canonicalName: "VITAMINE D 1,25 OH",
-    code: "125D",
-    category: "Individuel",
-    aliases: [
-      "VITAMINE D 1,25 OH",
-    ],
-  },
-  {
-    canonicalName: "VON WILLEBRAND, ANTIGÈNE",
+    canonicalName: "VON Willebrand Antigene",
     code: "VWF",
     category: "Individuel",
     aliases: [
@@ -4161,7 +4651,23 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "VPH (VIRUS DU PAPILLOME HUMAIN)",
+    canonicalName: "VPH DNA Test PAP Thinprep Cascade",
+    code: "PVTP",
+    category: "Profil",
+    aliases: [
+      "VPH DNA, TEST PAP THINPREP EN CASCADE",
+    ],
+  },
+  {
+    canonicalName: "VPH Genotypage Homme Femme",
+    code: "GENHPV",
+    category: "Individuel",
+    aliases: [
+      "VPH GENOTYPAGE (HOMME ET FEMME)",
+    ],
+  },
+  {
+    canonicalName: "VPH Virus Papillome Humain",
     code: "HPV",
     category: "Individuel",
     aliases: [
@@ -4169,15 +4675,55 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "VPH GENOTYPAGE (homme et femme)",
-    code: "GENHPV",
+    canonicalName: "Varicelle IGG",
+    code: "VARG",
     category: "Individuel",
     aliases: [
-      "VPH GENOTYPAGE (homme et femme)",
+      "VARICELLE IGG",
     ],
   },
   {
-    canonicalName: "ZINC, GLOBULES ROUGES",
+    canonicalName: "Varicelle IGM",
+    code: "VARM",
+    category: "Individuel",
+    aliases: [
+      "VARICELLE IGM",
+    ],
+  },
+  {
+    canonicalName: "Vitamine A Retinol",
+    code: "VITA",
+    category: "Individuel",
+    aliases: [
+      "VITAMINE A (RETINOL)",
+    ],
+  },
+  {
+    canonicalName: "Vitamine B12 (VB12)",
+    code: "VB12",
+    category: "Individuel",
+    aliases: [
+      "VITAMINE B12",
+    ],
+  },
+  {
+    canonicalName: "Vitamine B6",
+    code: "VITB6",
+    category: "Individuel",
+    aliases: [
+      "VITAMINE B6",
+    ],
+  },
+  {
+    canonicalName: "Vitesse Sedimentation",
+    code: "SED",
+    category: "Individuel",
+    aliases: [
+      "VITESSE DE SÉDIMENTATION",
+    ],
+  },
+  {
+    canonicalName: "Zinc Globules Rouges (Globules Rouges)",
     code: "ZNRBC",
     category: "Individuel",
     aliases: [
@@ -4185,662 +4731,11 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "Profil SMA-7",
-    code: "SMA7",
-    category: "Profil",
-    aliases: [
-      "Profil SMA-7",
-    ],
-  },
-  {
-    canonicalName: "Profil THYROÏDIEN No 2",
-    code: "TH2",
-    category: "Profil",
-    aliases: [
-      "Profil THYROÏDIEN No 2",
-    ],
-  },
-  {
-    canonicalName: "Profil THYROÏDIEN No 6",
-    code: "TH6",
-    category: "Profil",
-    aliases: [
-      "Profil THYROÏDIEN No 6",
-    ],
-  },
-  {
-    canonicalName: "Profil UROLITHIASE",
-    code: "STONE",
-    category: "Profil",
-    aliases: [
-      "Profil UROLITHIASE",
-    ],
-  },
-  {
-    canonicalName: "Profil BIO-12",
-    code: "SMA12",
-    category: "Profil",
-    aliases: [
-      "Profil BIO-12",
-    ],
-  },
-  {
-    canonicalName: "Profil BIO-12 AVEC ÉLECTROLYTES",
-    code: "SMA12LYT",
-    category: "Profil",
-    aliases: [
-      "Profil BIO-12 AVEC ÉLECTROLYTES",
-    ],
-  },
-  {
-    canonicalName: "Profil BIO-C",
-    code: "SMAC",
-    category: "Profil",
-    aliases: [
-      "Profil BIO-C",
-    ],
-  },
-  {
-    canonicalName: "Profil BIO-C AVEC ÉLECTROLYTES",
-    code: "SMACLYT",
-    category: "Profil",
-    aliases: [
-      "Profil BIO-C AVEC ÉLECTROLYTES",
-    ],
-  },
-  {
-    canonicalName: "Profil COAGULATION/HÉMOGRAMME",
-    code: "CBCCOAG",
-    category: "Profil",
-    aliases: [
-      "Profil COAGULATION/HÉMOGRAMME",
-    ],
-  },
-  {
-    canonicalName: "Profil CULTURE GENITAL et GONO/CHLAM",
-    code: "STDMU",
-    category: "Profil",
-    aliases: [
-      "Profil CULTURE GENITAL et GONO/CHLAM",
-    ],
-  },
-  {
-    canonicalName: "Profil DÉPISTAGE HÉPATITE A et B",
-    code: "HEPAB",
-    category: "Profil",
-    aliases: [
-      "Profil DÉPISTAGE HÉPATITE A et B",
-    ],
-  },
-  {
-    canonicalName: "Profil DÉPISTAGE HÉPATITE A, B et C",
-    code: "HEPABC",
-    category: "Profil",
-    aliases: [
-      "Profil DÉPISTAGE HÉPATITE A, B et C",
-    ],
-  },
-  {
-    canonicalName: "Profil DÉPISTAGE HÉPATITE B",
-    code: "HEPB",
-    category: "Profil",
-    aliases: [
-      "Profil DÉPISTAGE HÉPATITE B",
-    ],
-  },
-  {
-    canonicalName: "Profil DÉPISTAGE MALADIE COELIAQUE",
-    code: "CELISCRE",
-    category: "Profil",
-    aliases: [
-      "Profil DÉPISTAGE MALADIE COELIAQUE",
-    ],
-  },
-  {
-    canonicalName: "Profil DIABÉTIQUE No 6",
-    code: "DIAB6",
-    category: "Profil",
-    aliases: [
-      "Profil DIABÉTIQUE No 6",
-    ],
-  },
-  {
-    canonicalName: "Profil FERTILITÉ No 1",
-    code: "FERT1",
-    category: "Profil",
-    aliases: [
-      "Profil FERTILITÉ No 1",
-    ],
-  },
-  {
-    canonicalName: "Profil FERTILITÉ No 2",
-    code: "FERT2",
-    category: "Profil",
-    aliases: [
-      "Profil FERTILITÉ No 2",
-    ],
-  },
-  {
-    canonicalName: "Profil GÉNÉRAL No 1",
-    code: "GP1",
-    category: "Profil",
-    aliases: [
-      "Profil GÉNÉRAL No 1",
-    ],
-  },
-  {
-    canonicalName: "Profil GÉNÉRAL No 2",
-    code: "GP2",
-    category: "Profil",
-    aliases: [
-      "Profil GÉNÉRAL No 2",
-    ],
-  },
-  {
-    canonicalName: "Profil GÉNÉRAL No 3",
-    code: "GP3",
-    category: "Profil",
-    aliases: [
-      "Profil GÉNÉRAL No 3",
-    ],
-  },
-  {
-    canonicalName: "Profil GÉNÉRAL No 4",
-    code: "GP4",
-    category: "Profil",
-    aliases: [
-      "Profil GÉNÉRAL No 4",
-    ],
-  },
-  {
-    canonicalName: "Profil GONO-CHLAM",
-    code: "ITSS",
-    category: "Profil",
-    aliases: [
-      "Profil GONO-CHLAM",
-    ],
-  },
-  {
-    canonicalName: "Profil HÉPATIQUE",
-    code: "LFT",
-    category: "Profil",
-    aliases: [
-      "Profil HÉPATIQUE",
-    ],
-  },
-  {
-    canonicalName: "Profil LIPIDIQUE CARDIOVASCULAIRE",
-    code: "LIPID",
-    category: "Profil",
-    aliases: [
-      "Profil LIPIDIQUE CARDIOVASCULAIRE",
-    ],
-  },
-  {
-    canonicalName: "Profil LIPIDIQUE CARDIOVASCULAIRE No 18",
-    code: "LIPID18",
-    category: "Profil",
-    aliases: [
-      "Profil LIPIDIQUE CARDIOVASCULAIRE No 18",
-    ],
-  },
-  {
-    canonicalName: "Profil LIPIDIQUE CARDIOVASCULAIRE No 6",
-    code: "LIPID6",
-    category: "Profil",
-    aliases: [
-      "Profil LIPIDIQUE CARDIOVASCULAIRE No 6",
-    ],
-  },
-  {
-    canonicalName: "Profil MARQUEURS PROSTATIQUES",
-    code: "FPSA_PROF",
-    category: "Profil",
-    aliases: [
-      "Profil MARQUEURS PROSTATIQUES",
-    ],
-  },
-  {
-    canonicalName: "Profil MONOTEST",
-    code: "MONOP",
-    category: "Profil",
-    aliases: [
-      "Profil MONOTEST",
-    ],
-  },
-  {
-    canonicalName: "Profil OSTEOPOROSIS",
-    code: "OSTEOP",
-    category: "Profil",
-    aliases: [
-      "Profil OSTEOPOROSIS",
-    ],
-  },
-  {
-    canonicalName: "Profil PRÉNATAL No 1",
-    code: "PREN1",
-    category: "Profil",
-    aliases: [
-      "Profil PRÉNATAL No 1",
-    ],
-  },
-  {
-    canonicalName: "Profil PRÉNATAL No 2",
-    code: "PREN2",
-    category: "Profil",
-    aliases: [
-      "Profil PRÉNATAL No 2",
-    ],
-  },
-  {
-    canonicalName: "Profil PRÉNATAL No 3",
-    code: "PREN3",
-    category: "Profil",
-    aliases: [
-      "Profil PRÉNATAL No 3",
-    ],
-  },
-  {
-    canonicalName: "Profil SMA-16",
-    code: "SMA16",
-    category: "Profil",
-    aliases: [
-      "Profil SMA-16",
-    ],
-  },
-  {
-    canonicalName: "Profil SMA-5",
-    code: "SMA5",
-    category: "Profil",
-    aliases: [
-      "Profil SMA-5",
-    ],
-  },
-  {
-    canonicalName: "Profil SMA-6",
-    code: "SMA6",
-    category: "Profil",
-    aliases: [
-      "Profil SMA-6",
-    ],
-  },
-  {
-    canonicalName: "Profil ANÉMIE No 1",
-    code: "ANEM1",
-    category: "Profil",
-    aliases: [
-      "Profil ANÉMIE No 1",
-    ],
-  },
-  {
-    canonicalName: "Profil ANÉMIE No 11",
-    code: "ANEM11",
-    category: "Profil",
-    aliases: [
-      "Profil ANÉMIE No 11",
-    ],
-  },
-  {
-    canonicalName: "Profil ANÉMIE No 8",
-    code: "ANEM8",
-    category: "Profil",
-    aliases: [
-      "Profil ANÉMIE No 8",
-    ],
-  },
-  {
-    canonicalName: "1.25-DIHYDROXY-VITAMINE D",
-    code: "VITD125",
+    canonicalName: "Zinc Plasma (Plasma)",
+    code: "ZN",
     category: "Individuel",
     aliases: [
-      "1.25-DIHYDROXY-VITAMINE D",
-    ],
-  },
-  {
-    canonicalName: "17-HYDROXY-PROGESTERONE",
-    code: "17HYPROG",
-    category: "Individuel",
-    aliases: [
-      "17-HYDROXY-PROGESTERONE",
-    ],
-  },
-  {
-    canonicalName: "5-HIAA",
-    code: "24U5HIAA",
-    category: "Individuel",
-    aliases: [
-      "5-HIAA",
-    ],
-  },
-  {
-    canonicalName: "ACÉTAMINOPHÈNE",
-    code: "APH",
-    category: "Individuel",
-    aliases: [
-      "ACÉTAMINOPHÈNE",
-    ],
-  },
-  {
-    canonicalName: "ACÉTONE",
-    code: "ACETONE",
-    category: "Individuel",
-    aliases: [
-      "ACÉTONE",
-    ],
-  },
-  {
-    canonicalName: "ACIDE ASCORBIQUE (VITAMINE C)",
-    code: "VITC",
-    category: "Individuel",
-    aliases: [
-      "ACIDE ASCORBIQUE (VITAMINE C)",
-    ],
-  },
-  {
-    canonicalName: "ACIDE FOLIQUE ET VITAMINE B12",
-    code: "B12FOL",
-    category: "Individuel",
-    aliases: [
-      "ACIDE FOLIQUE ET VITAMINE B12",
-    ],
-  },
-  {
-    canonicalName: "ACIDE LACTIQUE",
-    code: "LAC",
-    category: "Individuel",
-    aliases: [
-      "ACIDE LACTIQUE",
-    ],
-  },
-  {
-    canonicalName: "ACIDE MÉTHYLMALONIQUE - URINE",
-    code: "METMALAU",
-    category: "Individuel",
-    aliases: [
-      "ACIDE MÉTHYLMALONIQUE - URINE",
-    ],
-  },
-  {
-    canonicalName: "ACIDE MÉTHYLMALONIQUE - SANG",
-    code: "METMALA",
-    category: "Individuel",
-    aliases: [
-      "ACIDE MÉTHYLMALONIQUE - SANG",
-    ],
-  },
-  {
-    canonicalName: "ACIDE URIQUE - URINE AU HASARD",
-    code: "URICURAN",
-    category: "Individuel",
-    aliases: [
-      "ACIDE URIQUE - URINE AU HASARD",
-    ],
-  },
-  {
-    canonicalName: "ACIDE URIQUE - URINES DE 24 HEURES",
-    code: "24UURIC",
-    category: "Individuel",
-    aliases: [
-      "ACIDE URIQUE - URINES DE 24 HEURES",
-    ],
-  },
-  {
-    canonicalName: "ACIDE VANYLMANDÉLIQUE (VMA)",
-    code: "VMA",
-    category: "Individuel",
-    aliases: [
-      "ACIDE VANYLMANDÉLIQUE (VMA)",
-    ],
-  },
-  {
-    canonicalName: "ACIDES GRAS LIBRES",
-    code: "FFA",
-    category: "Individuel",
-    aliases: [
-      "ACIDES GRAS LIBRES",
-    ],
-  },
-  {
-    canonicalName: "ACTIVITÉ DE LA PROTÉINE C",
-    code: "PROCACT",
-    category: "Individuel",
-    aliases: [
-      "ACTIVITÉ DE LA PROTÉINE C",
-    ],
-  },
-  {
-    canonicalName: "AGGLUTININES FROIDES",
-    code: "AGG",
-    category: "Individuel",
-    aliases: [
-      "AGGLUTININES FROIDES",
-    ],
-  },
-  {
-    canonicalName: "ALCOOL (ETHANOL) - URINE",
-    code: "ETOH",
-    category: "Individuel",
-    aliases: [
-      "ALCOOL (ETHANOL) - URINE",
-    ],
-  },
-  {
-    canonicalName: "ALDOSTÉRONE - URINES DE 24 HEURES",
-    code: "DOSTU",
-    category: "Individuel",
-    aliases: [
-      "ALDOSTÉRONE - URINES DE 24 HEURES",
-    ],
-  },
-  {
-    canonicalName: "ALPHA 1-ANTITRYPSINE",
-    code: "TRYP_A1AT",
-    category: "Individuel",
-    aliases: [
-      "ALPHA 1-ANTITRYPSINE",
-    ],
-  },
-  {
-    canonicalName: "ALPHA 2 MACROGLOBULINE",
-    code: "ALPHA2",
-    category: "Individuel",
-    aliases: [
-      "ALPHA 2 MACROGLOBULINE",
-    ],
-  },
-  {
-    canonicalName: "Amikacine (Au hasard/Pré/Post)",
-    code: "AMIK",
-    category: "Individuel",
-    aliases: [
-      "AMIKACINE",
-      "Amikacine (Au hasard/Pré/Post)",
-    ],
-  },
-  {
-    canonicalName: "Amitriptyline",
-    code: "AMITRIP",
-    category: "Individuel",
-    aliases: [
-      "AMITRIPTYLINE",
-      "Amitriptyline",
-    ],
-  },
-  {
-    canonicalName: "Ammoniaque",
-    code: "AMMO",
-    category: "Individuel",
-    aliases: [
-      "AMMONIAQUE",
-      "Ammoniaque",
-    ],
-  },
-  {
-    canonicalName: "ANALYSE DES CALCULS RENAUX",
-    code: "KIDNEY",
-    category: "Individuel",
-    aliases: [
-      "ANALYSE DES CALCULS RENAUX",
-    ],
-  },
-  {
-    canonicalName: "ANTICORPS ANTI-HISTONE",
-    code: "HISTAB",
-    category: "Individuel",
-    aliases: [
-      "ANTICORPS ANTI-HISTONE",
-    ],
-  },
-  {
-    canonicalName: "ANTICORPS ANTI-MEMBRANE BASALE GLOMERULAIRE",
-    code: "GBM",
-    category: "Individuel",
-    aliases: [
-      "ANTICORPS ANTI-MEMBRANE BASALE GLOMERULAIRE",
-    ],
-  },
-  {
-    canonicalName: "ANTICORPS ANTI-PARVOVIRUS IgG ET IgM",
-    code: "PARVO",
-    category: "Individuel",
-    aliases: [
-      "ANTICORPS ANTI-PARVOVIRUS IgG ET IgM",
-    ],
-  },
-  {
-    canonicalName: "ANTICORPS ANTI-MITOCHONDRIES M2",
-    code: "MITOM2",
-    category: "Individuel",
-    aliases: [
-      "ANTICORPS ANTI-MITOCHONDRIES M2",
-    ],
-  },
-  {
-    canonicalName: "ANTICORPS ANTI-CARDIOLIPINES",
-    code: "ANTICAR",
-    category: "Individuel",
-    aliases: [
-      "ANTICORPS ANTI-CARDIOLIPINES",
-    ],
-  },
-  {
-    canonicalName: "ANTICORPS ANTI-CYTOMEGALOVIRUS IgM",
-    code: "CMVM",
-    category: "Individuel",
-    aliases: [
-      "ANTICORPS ANTI-CYTOMEGALOVIRUS IgM",
-    ],
-  },
-  {
-    canonicalName: "ANTICORPS ANTI-RÉCEPTEUR DE L'ACETYLCHOLINE",
-    code: "ARA",
-    category: "Individuel",
-    aliases: [
-      "ANTICORPS ANTI-RÉCEPTEUR DE L'ACETYLCHOLINE",
-    ],
-  },
-  {
-    canonicalName: "ANTICORPS ANTITÉTANIQUES",
-    code: "TETA",
-    category: "Individuel",
-    aliases: [
-      "ANTICORPS ANTITÉTANIQUES",
-    ],
-  },
-  {
-    canonicalName: "ANTIGÈNE PROTÉINE C",
-    code: "PROCAG",
-    category: "Individuel",
-    aliases: [
-      "ANTIGÈNE PROTÉINE C",
-    ],
-  },
-  {
-    canonicalName: "ARSENIC URINE",
-    code: "ARSENIRU",
-    category: "Individuel",
-    aliases: [
-      "ARSENIC URINE",
-    ],
-  },
-  {
-    canonicalName: "BÉRYLLIUM SANG ENTIER",
-    code: "BERY",
-    category: "Individuel",
-    aliases: [
-      "BÉRYLLIUM SANG ENTIER",
-    ],
-  },
-  {
-    canonicalName: "BILAN D'IMMUNODÉFICIENCE",
-    code: "CD4",
-    category: "Individuel",
-    aliases: [
-      "BILAN D'IMMUNODÉFICIENCE",
-    ],
-  },
-  {
-    canonicalName: "BRUCELLA/BRUCELLOSE",
-    code: "BRUC",
-    category: "Individuel",
-    aliases: [
-      "BRUCELLA/BRUCELLOSE",
-    ],
-  },
-  {
-    canonicalName: "CALCIUM - URINE AU HASARD",
-    code: "CAURAN",
-    category: "Individuel",
-    aliases: [
-      "CALCIUM - URINE AU HASARD",
-    ],
-  },
-  {
-    canonicalName: "CALCIUM - URINES DE 24 HEURES",
-    code: "24UCA",
-    category: "Individuel",
-    aliases: [
-      "CALCIUM - URINES DE 24 HEURES",
-    ],
-  },
-  {
-    canonicalName: "CARNITINE",
-    code: "CARNITH",
-    category: "Individuel",
-    aliases: [
-      "CARNITINE",
-    ],
-  },
-  {
-    canonicalName: "CATÉCHOLAMINES ET MÉTANÉPHRINE (24H)",
-    code: "CATEMETA",
-    category: "Individuel",
-    aliases: [
-      "CATÉCHOLAMINES ET MÉTANÉPHRINE (24H)",
-    ],
-  },
-  {
-    canonicalName: "CULTURE D'URINE + ANALYSE",
-    code: "UC",
-    category: "Individuel",
-    aliases: [
-      "CULTURE D'URINE + ANALYSE",
-    ],
-  },
-  {
-    canonicalName: "CULTURE GORGE + STREP A RAPIDE",
-    code: "STREP",
-    category: "Individuel",
-    aliases: [
-      "CULTURE GORGE + STREP A RAPIDE",
-    ],
-  },
-  {
-    canonicalName: "DHEA",
-    code: "DHEA",
-    category: "Individuel",
-    aliases: [
-      "DHEA",
+      "ZINC, PLASMA",
     ],
   },
 ];

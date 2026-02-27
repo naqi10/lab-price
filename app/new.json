@@ -1,0 +1,818 @@
+[
+    {
+      "code": "CDT",
+      "description": "% CDT",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "4",
+      "price": "63.00 $"
+    },
+    {
+      "code": "VITD125",
+      "description": "1.25-DIHYDROXY- VITAMINE D",
+      "tube": "1 tube gel",
+      "temperature": "-20°C",
+      "turnaroundTime": "11",
+      "price": "104.00 $"
+    },
+    {
+      "code": "17HYPROG",
+      "description": "17- HYDROXY- PROGESTERONE (17-OH-PROGESTERONE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "9",
+      "price": "109.00 $"
+    },
+    {
+      "code": "VITD",
+      "description": "25-HYDROXY VITAMINE D (CHOLECALCIFEROL)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "53.00 $"
+    },
+    {
+      "code": "24U5HIAA",
+      "description": "5-HIAA (MÉTABOLITE DE LA SEROTONINE) URINES DE 24 HEURES",
+      "tube": "Contenant pour collecte des urines de 24 heures avec 25mL de 6N HCL",
+      "temperature": "2-8°C",
+      "turnaroundTime": "11",
+      "price": "95.00 $"
+    },
+    {
+      "code": "APH",
+      "description": "ACETAMINOPHÈNE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "4",
+      "price": "90.00 $"
+    },
+    {
+      "code": "ACETONE",
+      "description": "ACÉTONE (ANALYSE QUANTITATIVE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "5",
+      "price": "50.00 $"
+    },
+    {
+      "code": "VITC",
+      "description": "ACIDE ASCORBIQUE (VITAMINE C)",
+      "tube": "1 tube gel",
+      "temperature": "-20°C",
+      "turnaroundTime": "11",
+      "price": "105.00 $"
+    },
+    {
+      "code": "FOL",
+      "description": "ACIDE FOLIQUE (FOLATE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "45.00 $"
+    },
+    {
+      "code": "B12FOL",
+      "description": "ACIDE FOLIQUE ET VITAMINE B12",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "108.00 $"
+    },
+    {
+      "code": "LAC",
+      "description": "ACIDE LACTIQUE",
+      "tube": "1 tube à bouchon gris",
+      "temperature": "2-8°C",
+      "turnaroundTime": "5",
+      "price": "76.00 $"
+    },
+    {
+      "code": "METMALAU",
+      "description": "ACIDE MÉTHYLMALONIQUE (ANALYSE QUANTITATIVE) - URINE",
+      "tube": "Contenant stérile",
+      "temperature": "2-8°C",
+      "turnaroundTime": "37",
+      "price": "149.00 $"
+    },
+    {
+      "code": "METMALA",
+      "description": "ACIDE MÉTHYLMALONIQUE - SANG",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "37",
+      "price": "149.00 $"
+    },
+    {
+      "code": "URIC",
+      "description": "ACIDE URIQUE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "URICURAN",
+      "description": "ACIDE URIQUE URINE AU HASARD",
+      "tube": "Contenant stérile",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "36.00 $"
+    },
+    {
+      "code": "24UURIC",
+      "description": "ACIDE URIQUE - URINES DE 24 HEURES",
+      "tube": "Contenant pour collecte des urines de 24 heures",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "VAL",
+      "description": "ACIDE VALPROÏQUE (DEPAKENE)",
+      "tube": "Tube à bouchon rouge avec activateur de coagulation",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "66.00 $"
+    },
+    {
+      "code": "VMA",
+      "description": "ACIDE VANYLMANDÉLIQUE (VMA) URINES DE 24 HEURES",
+      "tube": "Contenant pour collecte des urines de 24 heures avec 25mL de 6N HCL",
+      "temperature": "2-8°C",
+      "turnaroundTime": "11",
+      "price": "96.00 $"
+    },
+    {
+      "code": "FFA",
+      "description": "ACIDES GRAS LIBRES",
+      "tube": "1 tube gel",
+      "temperature": "-20°C",
+      "turnaroundTime": "15",
+      "price": "55.00 $"
+    },
+    {
+      "code": "PROCACT",
+      "description": "ACTIVITÉ DE LA PROTÉINE C",
+      "tube": "2 tubes à bouchon bleu clair",
+      "temperature": "-20°C",
+      "turnaroundTime": "17",
+      "price": "96.00 $"
+    },
+    {
+      "code": "AGG",
+      "description": "AGGLUTININES FROIDES",
+      "tube": "1 tube lavande",
+      "temperature": "18-25°C",
+      "turnaroundTime": "4",
+      "price": "37.00 $"
+    },
+    {
+      "code": "ALB",
+      "description": "ALBUMINE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "ALCO",
+      "description": "ALCOOL (ETHANOL) - SANG",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "51.00 $"
+    },
+    {
+      "code": "ETOH",
+      "description": "ALCOOL (ETHANOL) URINE",
+      "tube": "Contenant stérile ou trousse de dépistage de drogue",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "58.00 $"
+    },
+    {
+      "code": "DOST",
+      "description": "ALDOSTÉRONE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "11",
+      "price": "100.00 $"
+    },
+    {
+      "code": "DOSTU",
+      "description": "ALDOSTÉRONE - URINES DE 24 HEURES",
+      "tube": "Contenant pour collecte des urines de 24 heures",
+      "temperature": "2-8°C",
+      "turnaroundTime": "11",
+      "price": "95.00 $"
+    },
+    {
+      "code": "TRYP",
+      "description": "ALPHA 1- ANTITRYPSINE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "4",
+      "price": "91.00 $"
+    },
+    {
+      "code": "ALPHA2",
+      "description": "ALPHA 2 MACROGLOBULINE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "4",
+      "price": "28.00 $"
+    },
+    {
+      "code": "AFP",
+      "description": "ALPHA-FŒTOPROTÉINE (AFP)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "80.00 $"
+    },
+    {
+      "code": "ALT",
+      "description": "ALT",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "AMIK",
+      "description": "AMIKACINE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "3",
+      "price": "114.00 $"
+    },
+    {
+      "code": "AMITRIP",
+      "description": "AMITRIPTYLINE (ANTIDEPRESSEUR TRICYCLIQUE)",
+      "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+      "temperature": "2-8°C",
+      "turnaroundTime": "11",
+      "price": "105.00 $"
+    },
+    {
+      "code": "AMMO",
+      "description": "AMMONIAQUE",
+      "tube": "1 tube lavande",
+      "temperature": "-20°C",
+      "turnaroundTime": "9",
+      "price": "51.00 $"
+    },
+    {
+      "code": "AMYL",
+      "description": "AMYLASE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "URI",
+      "description": "ANALYSE D'URINE",
+      "tube": "1 tube urine BD avec préservatif",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "31.00 $"
+    },
+    {
+      "code": "KIDNEY",
+      "description": "ANALYSE DES CALCULS RENAUX",
+      "tube": "Contenant stérile",
+      "temperature": "18-25°C",
+      "turnaroundTime": "6",
+      "price": "76.00 $"
+    },
+    {
+      "code": "ANDRO",
+      "description": "ANDROSTENE-DIONE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "11",
+      "price": "93.00 $"
+    },
+    {
+      "code": "LUPUS",
+      "description": "ANTICOAGULANT LUPIQUE",
+      "tube": "2 tubes à bouchon bleu clair + 1 tube gel",
+      "temperature": "-20°C",
+      "turnaroundTime": "12",
+      "price": "137.00 $"
+    },
+    {
+      "code": "DEGLIAG",
+      "description": "ANTICORPS ANTI-GLIADINE DE TYPE IgG",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "6",
+      "price": "53.00 $"
+    },
+    {
+      "code": "DIPH",
+      "description": "ANTICORPS ANTI-DIPHTÉRIE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "21",
+      "price": "39.00 $"
+    },
+    {
+      "code": "DNA",
+      "description": "ANTICORPS ANTI-ADN (ANTI-ADN double brin)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "4",
+      "price": "134.00 $"
+    },
+    {
+      "code": "IFA",
+      "description": "ANTICORPS ANTI-FACTEUR INTRINSÈQUE",
+      "tube": "2 tubes gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "37",
+      "price": "120.00 $"
+    },
+    {
+      "code": "HISTAB",
+      "description": "ANTICORPS ANTI-HISTONE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "17",
+      "price": "72.00 $"
+    },
+    {
+      "code": "GBM",
+      "description": "ANTICORPS ANTI-MEMBRANE BASALE GLOMERULAIRE (ANTI-GBM)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "5",
+      "price": "57.00 $"
+    },
+    {
+      "code": "HEPC",
+      "description": "ANTICORPS ANTI-HEPATITE C (ANTI-VHC)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "76.00 $"
+    },
+    {
+      "code": "PARVO",
+      "description": "ANTICORPS ANTI-PARVOVIRUS DE TYPES IgG ET IgM",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "9",
+      "price": "173.00 $"
+    },
+    {
+      "code": "ENA",
+      "description": "ANTICORPS ANTI-ANTIGÈNES NUCLÉAIRES SOLUBES (ANTI-ΕΝΑ)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "4",
+      "price": "108.00 $"
+    },
+    {
+      "code": "MITOM2",
+      "description": "ANTICORPS ANTI-MITOCHONDRIES DE TYPE M2",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "10",
+      "price": "114.00 $"
+    },
+    {
+      "code": "ACCP",
+      "description": "ANTICORPS ANTI CYCLIQUE CITRULLINĖ (ANTICORPS ANTI-CCP)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "4",
+      "price": "83.00 $"
+    },
+    {
+      "code": "CMVG",
+      "description": "ANTICORPS ANTI-CYTOMEGALOVIRUS DE TYPE IgG",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "12",
+      "price": "93.00 $"
+    },
+    {
+      "code": "CMVM",
+      "description": "ANTICORPS ANTI-CYTOMÉGALOVIRUS DE TYPE IgM",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "12",
+      "price": "93.00 $"
+    },
+    {
+      "code": "ANCA",
+      "description": "ANTICORPS ANTI-CYTOPLASME DES NEUTROPHILES (ANCA)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "5",
+      "price": "142.00 $"
+    },
+    {
+      "code": "ANA",
+      "description": "ANTICORPS ANTINUCLÉAIRES (ANA)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "3",
+      "price": "79.00 $"
+    },
+    {
+      "code": "ARA",
+      "description": "ANTICORPS ANTI-RÉCEPTEUR DE L'ACETYLCHOLINE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "32",
+      "price": "455.00 $"
+    },
+    {
+      "code": "ASO",
+      "description": "ANTICORPS ANTI-STREPTOLYSINE O",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "28.00 $"
+    },
+    {
+      "code": "TRANSGLUT",
+      "description": "ANTICORPS ANTI-TRANSGLUTAMINASE DE TYPE IgA",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "6",
+      "price": "89.00 $"
+    },
+    {
+      "code": "RUB",
+      "description": "ANTICORPS DE TYPE IgG DIRIGÉS CONTRE LE VIRUS DE LA RUBÉOLE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "54.00 $"
+    },
+    {
+      "code": "HEPBC",
+      "description": "ANTICORPS DIRIGÉS CONTRE L'ANTIGÈNE CAPSIDIQUE DE L'HÉPATITE B (ANTI-HBC)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "89.00 $"
+    },
+    {
+      "code": "CEA",
+      "description": "ANTIGÈNE CARCINO-EMBRYONNAIRE (ACE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "79.00 $"
+    },
+    {
+      "code": "HBS",
+      "description": "ANTIGÈNE DE SURFACE DE L'HÉPATITE B (HBsAg)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "64.00 $"
+    },
+    {
+      "code": "PSA",
+      "description": "ANTIGÈNE PROSTATIQUE SPÉCIFIQUE (APS)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "69.00 $"
+    },
+    {
+      "code": "APOA",
+      "description": "APOLIPOPROTÉINE A1",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "4",
+      "price": "69.00 $"
+    },
+    {
+      "code": "APOB",
+      "description": "APOLIPOPROTÉINE B",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "60.00 $"
+    },
+    {
+      "code": "FPSA",
+      "description": "APS LIBRE (APS TOTAL ET RATIO APS LIBRE/APS TOTAL)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "115.00 $"
+    },
+    {
+      "code": "ARSENIWB",
+      "description": "ARSENIC SANG ENTIER",
+      "tube": "1 tube bleu foncé (K2EDTA)",
+      "temperature": "2-8°C",
+      "turnaroundTime": "9",
+      "price": "59.00 $"
+    },
+    {
+      "code": "AST",
+      "description": "AST",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "B2MICRO",
+      "description": "BETA-2-MICROGLOBULINE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "15",
+      "price": "76.00 $"
+    },
+    {
+      "code": "BILITD",
+      "description": "BILIRUBINE DIRECTE/CONJUGUÉE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "45.00 $"
+    },
+    {
+      "code": "BILIT",
+      "description": "BILIRUBINE TOTALE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "CA19",
+      "description": "CA 19-9 (ANTIGENE CARBOHYDRATE 19-9)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "3",
+      "price": "79.00 $"
+    },
+    {
+      "code": "CA125",
+      "description": "CA 125 (OVAIRE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "82.00 $"
+    },
+    {
+      "code": "CA153",
+      "description": "CA 15-3 (SEIN)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "3",
+      "price": "79.00 $"
+    },
+    {
+      "code": "CA",
+      "description": "CALCIUM",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "CAI",
+      "description": "CALCIUM-IONISÉ (CALCIUM LIBRE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "4",
+      "price": "47.00 $"
+    },
+    {
+      "code": "TEG",
+      "description": "CARBAMAZEPINE (TEGRETOL)",
+      "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "54.00 $"
+    },
+    {
+      "code": "CHOL",
+      "description": "CHOLESTÉROL TOTAL",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "CK",
+      "description": "CK (CRÉATINE KINASE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "CL",
+      "description": "CHLORURES",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "CREA",
+      "description": "CRÉATININE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "27.00 $"
+    },
+    {
+      "code": "CBC",
+      "description": "FORMULE SANGUINE COMPLETE (FSC)",
+      "tube": "1 tube lavande",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "53.00 $"
+    },
+    {
+      "code": "FSH",
+      "description": "FSH (HORMONE FOLLICULOSTIMULANTE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "63.00 $"
+    },
+    {
+      "code": "GGT",
+      "description": "GGT (GAMMA GLUTAMYLTRANSFERASE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "GLU75",
+      "description": "GLUCOSE - HYPERGLYCÉMIE ORALE 75g NON-GESTATIONNEL (2 HEURES)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "58.00 $"
+    },
+    {
+      "code": "HBA1C",
+      "description": "HÉMOGLOBINE A1C",
+      "tube": "1 tube lavande",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "53.00 $"
+    },
+    {
+      "code": "HIV",
+      "description": "COMBO VIH (ANTICORPS ANTI-VIH-1 ET ANTI-VIH-2 + ANTIGÈNE P24)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "69.00 $"
+    },
+    {
+      "code": "LD",
+      "description": "LACTATE DÉSHYDROGÉNASE (LDH)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "LH",
+      "description": "HORMONE LUTÉINISANTE (LH)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "66.00 $"
+    },
+    {
+      "code": "MG",
+      "description": "MAGNÉSIUM",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "3",
+      "price": "38.00 $"
+    },
+    {
+      "code": "PHOS",
+      "description": "PHOSPHORE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "K",
+      "description": "POTASSIUM (K)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "PROG",
+      "description": "PROGESTERONE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "66.00 $"
+    },
+    {
+      "code": "PROL",
+      "description": "PROLACTINE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "71.00 $"
+    },
+    {
+      "code": "PROT",
+      "description": "PROTÉINES TOTALES",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "NA",
+      "description": "SODIUM",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "T3F",
+      "description": "T3 LIBRE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "47.00 $"
+    },
+    {
+      "code": "T4F",
+      "description": "T4 LIBRE",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "63.00 $"
+    },
+    {
+      "code": "TSH",
+      "description": "TSH ULTRASENSIBLE, (DOSAGE DE LA THYRÉOSTIMULINE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "69.00 $"
+    },
+    {
+      "code": "UREA",
+      "description": "URÉE (AZOTE URÉIQUE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "38.00 $"
+    },
+    {
+      "code": "VITB12",
+      "description": "VITAMINE B12 (CYANOCOBALAMINE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "56.00 $"
+    },
+    {
+      "code": "SED",
+      "description": "VITESSE DE SÉDIMENTATION",
+      "tube": "1 tube lavande",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "42.00 $"
+    },
+    {
+      "code": "SMA12",
+      "description": "Profil BIO-12",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "60.00 $"
+    },
+    {
+      "code": "TH2",
+      "description": "Profil THYROÏDIEN No 2 (TSH, T4 LIBRE)",
+      "tube": "1 tube gel",
+      "temperature": "2-8°C",
+      "turnaroundTime": "1",
+      "price": "120.00 $"
+    }
+  ]

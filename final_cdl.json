@@ -1,0 +1,5222 @@
+[
+  {
+    "lab": "CDL",
+    "raw_name": "ANALYSE ET CULTURE D'URINE",
+    "code": "URC+",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VITAMINE B12 ET ACIDE FOLIQUE",
+    "code": "FA12",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FER #2",
+    "code": "IRN2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FER",
+    "code": "IRON",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FER #6",
+    "code": "IRN6",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 145
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FER #1",
+    "code": "IRN1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 165
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANÉMIE #1",
+    "code": "ANE1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANÉMIE #4",
+    "code": "ANE4",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 210
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANÉMIE #3",
+    "code": "ANE3",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 260
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FER #3",
+    "code": "IRN3",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 235
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BETA 2 GLYCOPROTÉINE I ANTICORPS",
+    "code": "B2GP",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "DIABÉTIQUE #1",
+    "code": "DIAB",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATIQUE #1",
+    "code": "LIV1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PANCRÉATIQUE",
+    "code": "PANC",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "RÉNAL #2",
+    "code": "REN2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BIOCHIMIE #1A",
+    "code": "BIO1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BIOCHIMIE #1B",
+    "code": "CHM1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BIOCHIMIE #2",
+    "code": "CHM2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BIOCHIMIE #2 AVEC ELECTROLYTES",
+    "code": "CHM5",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BIOCHIMIE #3 AVEC ELECTROLYTES",
+    "code": "CHL3",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 160
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GENERAL BIOCHEMISTRY #3",
+    "code": "CHP3",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 210
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BIOCHIMIE #3",
+    "code": "BIO3",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BIOCHIMIE #4",
+    "code": "CHM4",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BIOCHIMIE #4 AVEC ÉLECTROLYTES",
+    "code": "CHL4",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 170
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BIOCHIMIE #4 COMPLET",
+    "code": "BIO4",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 170
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COMPLETE BIOCHEMISTRY, WITHOUT URINE",
+    "code": "CH4U",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 215
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COMPLETE BIOCHEMISTRY",
+    "code": "CHP4",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 230
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COMPLETE BIOCHEMISTRY GENERAL & TSH",
+    "code": "CHP4T",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 300
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COMPLETE BIOCHEMISTRY + TSH & PSA",
+    "code": "CHP4A",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 320
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COAGULOGRAMME",
+    "code": "COAG",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PT ET PTT",
+    "code": "PTPT",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 70
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TEST PAP THIN PREP + HPV DNA",
+    "code": "PAPTHPV",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 245
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VPH DNA, TEST PAP THINPREP EN CASCADE",
+    "code": "PVTP",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 185
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TEST PAP THIN PREP, VPH DNA EN CASCADE",
+    "code": "TPPV",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 170
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PRÉNATAL #1",
+    "code": "PREN",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 285
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PRÉNATAL, GLUCOSE AC",
+    "code": "PRENG",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 300
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PRÉNATAL #3",
+    "code": "DAL2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 390
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PRÉNATAL #3, GLUCOSE",
+    "code": "DAL2G",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 410
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PANORAMA®",
+    "code": "PANO",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 610
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PANORAMA® ET MICRODÉLÉTIONS",
+    "code": "PANOE",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 810
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HARMONY®",
+    "code": "HARMP",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 555
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "DROGUES DANS LES CHEVEUX",
+    "code": "DRUGH",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 270
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "DROGUES 4 TESTS #1",
+    "code": "DAU450",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 195
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "DROGUES 5 TESTS #1",
+    "code": "DAUP",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 205
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "DROGUES 5 TESTS #2",
+    "code": "DAUB50",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 200
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉCHOGRAPHIE ENDOVAGINALE ET PELVIENNE",
+    "code": "ENDPE",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 190
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉCHOGRAPHIE ENDOVAGINALE",
+    "code": "ENDV",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 185
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉCHOGRAPHIE OBSTÉTRICALE, 1er Trimestre",
+    "code": "1TRI",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 175
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉCHOGRAPHIE OBSTÉTRICALE, 2ème Trimestre",
+    "code": "2TRI",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 235
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉCHOGRAPHIE OBSTÉTRICALE, 3ème Trimestre",
+    "code": "3TRI",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 235
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉCHOGRAPHIE DE VIABILITÉ-DATATION",
+    "code": "VIAB",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FERTILITÉ #1",
+    "code": "FERT",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MÉNOPAUSE #1",
+    "code": "MEN1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 205
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MÉNOPAUSE #3",
+    "code": "MEN3",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 240
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MÉNOPAUSE #2",
+    "code": "MEN2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 300
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MÉNOPAUSE #4",
+    "code": "MEN4",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 400
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "THYROÏDE #1, CASCADE",
+    "code": "THY1R",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 145
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "THYROÏDE #3, CASCADE",
+    "code": "THY3R",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "THYROÏDE #1",
+    "code": "THY1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "THYROÏDE #3",
+    "code": "THY3",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 210
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "THYROÏDE #4",
+    "code": "THY4",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 250
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GÉNÉRAL #3, SANS URINE",
+    "code": "CH3U",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 180
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GÉNÉRAL #1",
+    "code": "CHP1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 185
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GÉNÉRAL #1, CRP",
+    "code": "FIN1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 215
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GÉNÉRAL #2",
+    "code": "CHP2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 205
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COMPLET, CRP ULTRASENSIBLE",
+    "code": "CH4SC",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 245
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GÉNÉRAL #5",
+    "code": "GN5",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 235
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GÉNÉRAL #6",
+    "code": "PNL6",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 220
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FORMULE SANGUINE COMPLÈTE ET SÉDIMENTATION",
+    "code": "CBCS",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 98
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MONOTEST #1",
+    "code": "MON+",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MALADIE COELIAQUE",
+    "code": "CELP",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 365
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "RISQUE CARDIOVASCULAIRE #1",
+    "code": "CVRK",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "RISQUE CARDIOVASCULAIRE #2 PLUS APOB",
+    "code": "CVK2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CCL4",
+    "code": "CCL4",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHLAMYDIA ET GONORRHÉE PAR PCR (1 échantillon)",
+    "code": "CGPCR1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 145
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHLAMYDIA ET GONORRHÉE PAR PCR (2 échantillons)",
+    "code": "CGPCR2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 230
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHLAMYDIA ET GONORRHÉE PAR PCR (3 échantillons)",
+    "code": "CGPCR3",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 310
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE B AIGÜE",
+    "code": "HPBA",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 225
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MTS #2, FEMME",
+    "code": "STD2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 210
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MTS #1, VIH - HOMME",
+    "code": "STDMH",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 255
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "5'HIAA",
+    "code": "HIAA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACETYLCHOLINE, ANTICORPS BLOQUANTS",
+    "code": "ACBA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 225
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACETYLCHOLINE, ANTICORPS LIANT",
+    "code": "ACRA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 200
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACETYLCHOLINE, MODULATEURS D'ANTICORPS",
+    "code": "ACMA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 270
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE FOLIQUE",
+    "code": "FOLC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 82
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE MÉTHYLMALONIQUE, SÉRUM",
+    "code": "MMAS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 250
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE URIQUE",
+    "code": "URIC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE URIQUE, URINE 24 HEURES",
+    "code": "UA/U",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE VALPROÏQUE",
+    "code": "VALP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 78
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ADALIMUMAB",
+    "code": "ADUL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 500
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALBUMINE",
+    "code": "ALB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALBUMINE / GLOBULINES RATIO",
+    "code": "AGR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 70
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALDOLASE",
+    "code": "ADLASE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 102
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALDOSTÉRONE",
+    "code": "ALDO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALPHA 1 ANTITRYPSINE",
+    "code": "A1AT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALPHAFÉTOPROTÉINE",
+    "code": "AFP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALT",
+    "code": "ALT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALUMINIUM, SANG ENTIER",
+    "code": "AL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "AMPHETAMINE",
+    "code": "AMPH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 75
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "AMYLASE",
+    "code": "AMYL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANDROSTÉNÉDIONE",
+    "code": "ANDR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-CELLULES PARIÉTALES, ANTICORPS",
+    "code": "APA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 107
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-CENP",
+    "code": "CENP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 215
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS SURRÉNALES",
+    "code": "ADNAB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 195
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-CYTOPLASME DES NEUTROPHILES, ANTICORPS",
+    "code": "ANCAP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 320
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-DNASE B",
+    "code": "BDNA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 210
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-ADNdb",
+    "code": "DNA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 160
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-ENDOMYSIAUX, ANTICORPS (IgA)",
+    "code": "AEML",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-GAD AUTO-ANTICORPS",
+    "code": "GAD",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 200
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-GLIADINE IGA",
+    "code": "GLIA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-GLIADINE IGG",
+    "code": "GLIG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 113
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-LKM, ANTICORPS",
+    "code": "ALKM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-MITOCHONDRIES, ANTICORPS",
+    "code": "AMA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-MUSCLE LISSE, ANTICORPS",
+    "code": "ASA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-NUCLÉAIRE, ANTICORPS",
+    "code": "ANA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-NUCLÉAIRES EXTRACTABLES (DÉPISTAGE)",
+    "code": "ENA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 235
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTIPHOSPHOLIPINE IGA",
+    "code": "PHOA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTIPHOSPHOLIPINE IGG",
+    "code": "PHOG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTIPHOSPHOLIPINE IGM",
+    "code": "PHOM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTIPHOSPHOLIPINE IGM, IGG",
+    "code": "PHOS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 130
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTIPHOSPHOLIPINE IGM, IGG, IGA",
+    "code": "PHOP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 175
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTISTREPTOLYSINE",
+    "code": "ASOT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTITHROMBINE III, ANTIGÈNE",
+    "code": "AT3A",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTITHROMBINE III, FONCTIONNELLE",
+    "code": "AT3F",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 113
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI TPO",
+    "code": "TPO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-TRANSGLUTAMINASE IGA",
+    "code": "TRSG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 200
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTI-TRANSGLUTAMINASE IGG",
+    "code": "GTTG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "APOLIPOPROTÉINE A-1",
+    "code": "APOA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "APOLIPOPROTÉINE B",
+    "code": "APOB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 87
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "APOLIPOPROTÉINE E",
+    "code": "APOE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 345
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ARSENIC, SANG ENTIER",
+    "code": "BARS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "AST (GOT, SGOT)",
+    "code": "AST",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BACILLE DE KOCH, CULTURE",
+    "code": "CTTBP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 200
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BARBITURIQUE (200 ng/ml)",
+    "code": "UBAR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 75
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BENZODIAZÉPINE (200 ng/ml)",
+    "code": "BENZ",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 72
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BÉTA-2 MICROGLOBULINE",
+    "code": "B2MG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BILIRUBINE, DIRECTE",
+    "code": "DBIL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BILIRUBINE, INDIRECTE",
+    "code": "IBIL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 83
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BÉTA-HCG INTACTE (QUANTITATIF)",
+    "code": "BHCG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 83
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BILIRUBINE, TOTALE",
+    "code": "TBIL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BÉTA-HCG QUALITATIF, SÉRUM",
+    "code": "PREG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BIOPSIE",
+    "code": "BIOP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 220
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BICARBONATE ET CO2 TOTAL",
+    "code": "CO2P",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 62
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BORDETELLA PERTUSSIS ET PARAPERTUSSIS",
+    "code": "BORP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 180
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CA-125",
+    "code": "C125",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BRCA 1/2 SEQUENÇAGE, DÉLÉTION ET DUPLICATION",
+    "code": "BRCA1/2",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 1415
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CADMIUM, SANG ENTIER",
+    "code": "CD",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 185
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CALCITONINE",
+    "code": "CLTN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "C1 INHIBITEUR ESTÉRASE",
+    "code": "C1EI",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CALCIUM",
+    "code": "CA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CA 15-3",
+    "code": "C153",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CALCIUM / CRÉATININE RATIO",
+    "code": "CACR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CA 19-9",
+    "code": "C199",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CALCIUM IONISÉ",
+    "code": "CAIP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 83
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CANNABIS (20 ng/mL, 50 ng/mL)",
+    "code": "CN20",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CALCIUM, URINE 24 HEURES",
+    "code": "CA/U",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 55
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CALCUL, ANALYSE DE",
+    "code": "CALU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CARBAMAZÉPINE",
+    "code": "CARM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 83
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CARCINO-EMBRYONIQUE ANTIGÈNE (CEA)",
+    "code": "CEA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 103
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CALPROTECTINE",
+    "code": "CLPTN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CATÉCHOLAMINES URINAIRE, 24H",
+    "code": "UCAT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 200
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CATÉCHOLAMINES, PLASMA",
+    "code": "CATS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 295
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHAÎNES LÉGÈRES KAPPA ET LAMBDA LIBRE",
+    "code": "FKLP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 200
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CD3, CD4, CD8",
+    "code": "CD3",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHLAMYDIA PAR PCR",
+    "code": "CMPC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CÉRULOPLASMINE",
+    "code": "CUBP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHAÎNES LÉGÈRES KAPPA LIBRE",
+    "code": "KLCF",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 190
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHLAMYDIA PAR PCR, RECTAL (INCLUANT LGV)",
+    "code": "CMPCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 130
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHLAMYDIA URINE",
+    "code": "CMPCU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHAÎNES LÉGÈRES LAMBDA LIBRE",
+    "code": "LLCF",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHOLESTÉROL NON HDL",
+    "code": "NHDL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHLORURE",
+    "code": "CL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHLORURE, URINE 24 HEURES",
+    "code": "UCL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 47
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHOLESTÉROL, TOTAL",
+    "code": "CHOL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHROME, SANG ENTIER",
+    "code": "CR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 135
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHOLÉRA, TEST (SELLES)",
+    "code": "SCHL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 165
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHOLESTÉROL HDL",
+    "code": "HDL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHOLESTÉROL LDL",
+    "code": "LDLD",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 55
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHROMOGRANINE A",
+    "code": "CGA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 290
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHYLOMICRONS",
+    "code": "CHYL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 55
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COBALT, SANG ENTIER",
+    "code": "CO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CITRATE, URINE 24 HEURES",
+    "code": "CI/U",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CK-MB",
+    "code": "CKMB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COCAÏNE",
+    "code": "COKE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 75
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CLAIRANCE DE LA CRÉATININE",
+    "code": "CTCL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 79
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CLOSTRIDIUM DIFFICILE, GÈNE DE LA TOXINE",
+    "code": "CDIF",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COMPLÉMENT C1Q",
+    "code": "C1Q",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 165
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COMPLÉMENT C3",
+    "code": "C3",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 75
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COMPLÉMENT C4",
+    "code": "C4",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 75
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "C-PEPTIDE",
+    "code": "CPEP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 72
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COMPLÉMENT HÉMOLYTIQUE",
+    "code": "CH50",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CRÉATINE KINASE",
+    "code": "CK",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 70
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COOMBS, DIRECT",
+    "code": "DCOM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CRÉATININE, SÉRUM",
+    "code": "CREA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 55
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CORTISOL AM/PM",
+    "code": "SCORT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 83
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CRYOGOBULINE",
+    "code": "CRYO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 160
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CORTISOL, URINE 24 HEURES",
+    "code": "CORU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "C-TÉLOPEPTIDES",
+    "code": "CTPP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CUIVRE, GLOBULES ROUGES",
+    "code": "CURBC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE CRACHAT",
+    "code": "SPUT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 65
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CUIVRE, PLASMA OU SÉRUM",
+    "code": "CU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 97
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE DE FLUIDE CORPOREL",
+    "code": "CFLU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CUIVRE, URINE 24 HEURES",
+    "code": "CU/U",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE FONGIQUE (peau, cheveux, ongles)",
+    "code": "CULF",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 130
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE CERVICALE",
+    "code": "CULC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 68
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE, CHLAMYDIA",
+    "code": "CCHMD",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE FONGIQUE (autres)",
+    "code": "CULFS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE GONORRHÉE (GORGE / RECTAL)",
+    "code": "GONT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 65
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE SELLES (CULTURE TRADITIONNELLE)",
+    "code": "CULS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 88
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE MYCOPLASMA",
+    "code": "MYPS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE SELLES (MÉTHODE PCR)",
+    "code": "STOOLPCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE NEZ",
+    "code": "CULN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE URÉAPLASMA ET MYCOPLASMA",
+    "code": "UPCU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE PLAIE SUPPERFICIELLE",
+    "code": "CULW",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE URÉTHRALE",
+    "code": "CULP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 70
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE PUS / PLAIE PROFONDE",
+    "code": "CULZ",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 68
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE VAGINALE (CULTURE TRADITIONNELLE)",
+    "code": "CULV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CULTURE VAGINALE (MÉTHODE PCR)",
+    "code": "PCRCULV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CYTOMÉGALOVIRUS IGM",
+    "code": "CMVM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CYSTATIN C",
+    "code": "CYSC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 65
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "D-DIMÈRE",
+    "code": "DDIM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CYTOLOGIE, URINE",
+    "code": "UCYT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "DHEA-S",
+    "code": "DH-S",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "DIGOXIN",
+    "code": "DIGX",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CYTOMÉGALOVIRUS IGG",
+    "code": "CMV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CYTOMÉGALOVIRUS IgG, IgM",
+    "code": "CMVP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 210
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "DIHYDROTESTOSTÉRONE",
+    "code": "DHT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 295
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉLECTROPHORÈSE DES PROTÉINES",
+    "code": "SPEP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉLECTROCARDIOGRAMME AU REPOS (ECG)",
+    "code": "ECG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉLECTROPHORÈSE DES PROTÉINES, URINE",
+    "code": "UELP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉLECTROCARDIOGRAMME SANS INTERPRÉTATION",
+    "code": "ECGW",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 75
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ENZYME DE CONVERSION ANGIOTENSINE (ACE)",
+    "code": "ACE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉLECTROLYTES",
+    "code": "ELEC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉLECTROLYTES, URINE 24 HEURES",
+    "code": "UELE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 63
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "EPSTEIN-BARR, PROFIL (EBAR+EBVNA)",
+    "code": "EBVP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 165
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "EPSTEIN-BARR EBNA IGG",
+    "code": "EBVNA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 130
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉLECTROPHORÈSE DE L'HÉMOGLOBINE",
+    "code": "HBEL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "EPSTEIN-BARR VCA IGG",
+    "code": "EBVG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ESTRONE",
+    "code": "ESTN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 103
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "EPSTEIN-BARR VCA IGM",
+    "code": "EBAR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 130
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉTHANOL, URINE",
+    "code": "UETH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉRYTHROPOIETINE",
+    "code": "ERYT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÉTHANOL, SÉRUM",
+    "code": "SETH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ESTRADIOL (E2)",
+    "code": "ESTR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FACTEUR II MUTATION",
+    "code": "FIIM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 275
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FERRITINE",
+    "code": "FERR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 92
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FACTEUR V LEIDEN",
+    "code": "FVL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 255
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FACTEUR VIII FONCTIONNEL",
+    "code": "FAC8",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 205
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FIBRINOGÈNE",
+    "code": "FIB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FACTEUR INTRINSÈQUE ANTICORPS",
+    "code": "IFAB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FIBROSE KYSTIQUE, DÉPISTAGE",
+    "code": "CFC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 520
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FACTEUR RHUMATOÏDE",
+    "code": "RA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 72
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FORMULE SANGUINE COMPLÈTE (FSC)",
+    "code": "CBC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 75
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FER, TOTAL",
+    "code": "FE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 73
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FRUCTOSAMINE",
+    "code": "FRUC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 99
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FSH",
+    "code": "FSH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GLUCOSE AC",
+    "code": "ACGL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GASTRINE",
+    "code": "GAST",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GGT",
+    "code": "GGT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GLUCOSE AC & PC 1H",
+    "code": "ACPC1H",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GLUCOSE AC & PC 2H",
+    "code": "ACPC2H",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GLOBULINES",
+    "code": "GLOB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GLUCOSE PC",
+    "code": "PCGL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GLUCAGON",
+    "code": "GLGN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 130
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GLUCOSE-6-PO4-DH QUANTITATIF, SANG ENTIER",
+    "code": "G6PDQ",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GLUCOSE TEST DE TOLÉRANCE, 2 HEURES",
+    "code": "2HGTT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GLUCOSE, ALÉATOIRE",
+    "code": "GLU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GONORRHÉE PAR PCR",
+    "code": "GONO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GONORRHÉE PAR PCR (URINE)",
+    "code": "GONOU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GROUPE SANGUIN & RH",
+    "code": "BLDT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HAPTOGLOBINE",
+    "code": "HPGN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 72
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "H. PYLORI, SELLES",
+    "code": "HELAG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "H. PYLORI, TEST RESPIRATOIRE",
+    "code": "HPBT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 195
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉMOGLOBINE GLYQUÉE",
+    "code": "GLHBP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE A IGG",
+    "code": "HAVG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 135
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE A IGM",
+    "code": "HAVM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE A TOTAL",
+    "code": "HAVT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE B ANTICORPS (CORE TOTAL)",
+    "code": "HBCS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE B ANTICORPS (CORE IGM)",
+    "code": "CABM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 92
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE B ANTIGÈNE DE SURFACE",
+    "code": "HSAG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE B ANTIGÈNE DE SURFACE CONFIRMATION",
+    "code": "HBCN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE B ANTICORPS DE SURFACE",
+    "code": "HBAB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 88
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE B CHARGE VIRALE",
+    "code": "HEPBL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 400
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE B E ANTICORPS",
+    "code": "HEAG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÈRPES SIMPLEX VIRUS 1 ET 2 ADN, PCR",
+    "code": "HSVPCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 210
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE B E ANTIGÈNE",
+    "code": "HBEG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE ANTICORPS",
+    "code": "HEPC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÈRPES SIMPLEX VIRUS 1 IGG",
+    "code": "SEH1",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÈRPES SIMPLEX VIRUS 2 IGG",
+    "code": "SEH2",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 145
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÈRPES SIMPLEX VIRUS 1 ET 2 IgG",
+    "code": "HSSP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 205
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HFE GÉNOTYPE",
+    "code": "HFE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 225
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉPATITE C CHARGE VIRALE",
+    "code": "HCVL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 390
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HLA B27",
+    "code": "HB27",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 185
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HORMONE ADRÉNOCORTICOÏDE",
+    "code": "ACTH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HORMONE ANTI-MÜLÉRIENNE",
+    "code": "AMH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 195
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HLA CELIAC",
+    "code": "HLACELIAC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 530
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HOLTER 24 HEURES",
+    "code": "HLTR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 295
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HOLTER 48 HEURES",
+    "code": "HLTR48",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 325
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HORMONE DE CROISSANCE",
+    "code": "GH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HOMOCYSTÉINE",
+    "code": "HCYS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HORMONE PARATHYR OÏDIENNE",
+    "code": "PTH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 145
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HORMONE DE STIMULATION THYROIDIENNE",
+    "code": "TSH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ÎLOTS DE LANGERHANS, ANTICORPS",
+    "code": "ICAB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HTLV I & II",
+    "code": "HTLV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 165
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IMMUNOÉLECTROPHORÈSE, SÉRUM",
+    "code": "IEP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 180
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IMMUNOÉLECTROPHORÈSE, URINE",
+    "code": "IEUR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 145
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IGF-1",
+    "code": "IGF1",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IGG SOUS CLASSE",
+    "code": "IGGSUB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 220
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IMMUNOÉLECTROPHORÈSE, URINE 24 HEURES",
+    "code": "IEU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 285
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "INTERLEUKINE 6",
+    "code": "IL6",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 145
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IMMUNOGLOBULINE",
+    "code": "IMM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 270
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IMMUNOGLOBULINE IGA",
+    "code": "IGA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "INSULINE",
+    "code": "ISLN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IMMUNOGLOBULINE IGE",
+    "code": "IGE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IODINE PLASMA",
+    "code": "IODL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 195
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IMMUNOGLOBULINE IGG",
+    "code": "IGG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "KARYOTYPE",
+    "code": "KART",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 590
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "IMMUNOGLOBULINE IGM",
+    "code": "IGM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "INFLUENZA A, DÉPISTAGE",
+    "code": "FLUAPCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LACTATE DÉHYDROGÉNASE (LDH)",
+    "code": "LD",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "INFLUENZA B, DÉPISTAGE",
+    "code": "FLUBPCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LACTOSE TEST DE TOLÉRANCE, SÉRUM",
+    "code": "OLTT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 160
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "INFLUENZA A + B, DÉPISTAGE",
+    "code": "FLUABPCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 160
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LP (A)",
+    "code": "LPA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LUPUS ANTICOAGULANT",
+    "code": "LAGT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LAMOTRIGINE",
+    "code": "LAMT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LYME, MALADIE DE, IGG ou IGM (LYMG/LYMM)",
+    "code": "LYMG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LH",
+    "code": "LH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LYME, MALADIE DE, IGG ou IGM (IMMUNOBLOT)",
+    "code": "IBLYMP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 325
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LIPASE",
+    "code": "LASE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LYMPHOCYTES",
+    "code": "LYMSP1",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 305
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LITHIUM",
+    "code": "LITH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 78
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LYSOZYMES",
+    "code": "LYSZ",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 205
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MACROPROLACTINE",
+    "code": "MNPRLA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 250
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MAGNÉSIUM, SÉRUM",
+    "code": "MG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MANGANESE, SANG ENTIER",
+    "code": "MN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 180
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MERCURE, SANG ENTIER",
+    "code": "HG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MÉTANÉPHRINES, PLASMA",
+    "code": "METS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 355
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MAGNÉSIUM, URINE 24 HEURES",
+    "code": "MG/U",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MÉTANÉPHRINES, URINAIRE (24 HEURES)",
+    "code": "UMET",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 180
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MALARIA, FROTTIS",
+    "code": "MALR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 72
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MÉTHADONE",
+    "code": "UMDN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MÉTHAMPHETAMINE",
+    "code": "METHAM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 230
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MICROSCOPIE URINAIRE",
+    "code": "UMICP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 36
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MÉTHAQUALONE",
+    "code": "LUDE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MONOTEST",
+    "code": "MONO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MUTATION DU GÈNE MTHFR",
+    "code": "MTHFR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 205
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MICROALBUMINURIE (ALÉATOIRE)",
+    "code": "A/CU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MYELOPEROXIDASE ANTICORPS",
+    "code": "MPO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 170
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MICROALBUMINURIE, URINE 24 HEURES",
+    "code": "MALB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 72
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MICRODÉLÉTION DU CHROMOSOME Y",
+    "code": "YXMD",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 595
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MYOSITE",
+    "code": "MYOSIT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 655
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "NICKEL, SANG ENTIER",
+    "code": "NIB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 145
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OPIACÉS",
+    "code": "OPIT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 75
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OEUFS & PARASITES, SELLES (SANS PRÉSERVATIF)",
+    "code": "PARA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OEUFS & PARASITES, SELLES (AVEC PRÉSERVATIF)",
+    "code": "PARAPCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OREILLONS IGG",
+    "code": "MUMG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OREILLONS IGM",
+    "code": "MUMM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OSMOLALITÉ, SÉRUM",
+    "code": "OSMS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OEUFS & PARASITES, URINE",
+    "code": "BILH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OSMOLALITÉ, URINE",
+    "code": "OSMU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PAP, FROTTIS (TRADITIONNEL)",
+    "code": "PAPS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OSTÉOCALCINE",
+    "code": "OSTO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OXALATE, URINE 24 HEURES",
+    "code": "OXAL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 175
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PAP THINPREPTM, TEST",
+    "code": "PAPT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "OXYURES",
+    "code": "PINW",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PAP THINPREPT™ VPH EN CASCADE",
+    "code": "TPPV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 170
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PARVOVIRUS IGG",
+    "code": "PARV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PARVOVIRUS IGM",
+    "code": "PARM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 130
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PARVOVIRUS IgGIgM",
+    "code": "PARP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 195
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PATERNITÉ, TEST DE (ADN)",
+    "code": "PATT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 830
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PATERNITÉ, TEST DE (SANG MATERNEL)",
+    "code": "MATPAT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 2305
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PEPTIDE CYCLIQUE CITRULLINÉ IGG",
+    "code": "CCPG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 270
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PHENCYCLIDINE (PCP)",
+    "code": "PCP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 75
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PHÉNYTOINE",
+    "code": "PHTN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 78
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PHOSPHATASE ALCALINE",
+    "code": "ALKP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PHOSPHATASE ALCALINE ISOENZYMES",
+    "code": "ALKPI",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 210
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PHOSPHATE",
+    "code": "PO4",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PHOSPHATE, URINE 24 HEURES",
+    "code": "PO/U",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 55
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PLAQUETTES",
+    "code": "PLT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 59
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PLAQUETTES (tube bleu)",
+    "code": "PLTB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 65
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PLOMB, SANG ENTIER",
+    "code": "PB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "POTASSIUM",
+    "code": "K",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PRÉALBUMINE",
+    "code": "PALB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PRÉGNENOLONE 17-OH",
+    "code": "17PGLN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 335
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PRO-BNP",
+    "code": "NTPROBNP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 200
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROGESTÉRONE",
+    "code": "PROG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROGESTÉRONE 17-OH",
+    "code": "17PR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROLACTINE",
+    "code": "PRLA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 88
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTEINASE-3 ANTICORPS",
+    "code": "PRTASE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 159
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTÉINE C, ANTIGÈNE",
+    "code": "PRCA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTÉINE C, FONCTIONNELLE",
+    "code": "PRCF",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTÉINE C-RÉACTIVE (CRP)",
+    "code": "CRP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 78
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTÉINE C-RÉACTIVE HAUTE SENSIBILITÉ (CRPHS)",
+    "code": "CRPHS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 84
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTÉINE CRÉATININE RATIO",
+    "code": "P/CU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 85
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTÉINE S, ANTIGÈNE",
+    "code": "PRSA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTÉINE S, FONCTIONNELLE",
+    "code": "PRSF",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 118
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTÉINES TOTALES, SÉRUM",
+    "code": "TP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTÉINES, URINE 24 HEURES",
+    "code": "PR/U",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROSTATE, ANTIGÈNE PROSTATIQUE SPÉCIFIQUE TOTAL",
+    "code": "PSA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 87
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROSTATE, ANTIGÈNE PROSTATIQUE SPÉCIFIQUE LIBRE",
+    "code": "FPSA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROSTATE, APS FACTEURS DE RISQUE CLARITYDX",
+    "code": "CLRYDX",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 300
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PT INR (TEMPS DE QUICK)",
+    "code": "PT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 55
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PTT (TCA)",
+    "code": "PTT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "QUANTIFÉRON-TB GOLD",
+    "code": "QFINT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 285
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "RAGE, ANTICORPS",
+    "code": "RABIES",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 185
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "RECHERCHE D’ANTICORPS",
+    "code": "ABSN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 87
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "RÉNINE",
+    "code": "RENN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "RÉSISTANCE PROTÉINE C ACTIVÉE",
+    "code": "RPC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "RÉTICULOCYTES",
+    "code": "RTIC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ROUGEOLE IGG",
+    "code": "RMES",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ROUGEOLE IGM",
+    "code": "RMEM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "RUBÉOLE IGG",
+    "code": "RUBE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "RUBÉOLE IGM",
+    "code": "RUBM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SANG DANS LES SELLES IMMUNOLOGIQUE, QUANTITATIF",
+    "code": "QIFOB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SÉDIMENTATION, VITESSE DE",
+    "code": "SEDI",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 62
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SÉLÉNIUM, SANG ENTIER",
+    "code": "SE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 145
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SHBG (GLOBULINE RELIÉE À L’HORMONE DU SEXE)",
+    "code": "SHBG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SODIUM",
+    "code": "NA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SODIUM, URINE 24 HEURES",
+    "code": "UNA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SODIUM / CRÉATININE RATIO",
+    "code": "NACR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 57
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SPERMOGRAMME FERTILITÉ",
+    "code": "SPGMF",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SPERMOGRAMME POST-VASECTOMIE",
+    "code": "SPGMPV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "STREP A, CANDIDA",
+    "code": "STPT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "STREP A, C, G (PCR)",
+    "code": "STPCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 78
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "STREP A, C, G (PCR), CANDIDA",
+    "code": "CULT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "STREP A, RAPIDE",
+    "code": "STRP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 68
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "STREP GROUPE B PCR, VAGINAL",
+    "code": "VAGS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 70
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SYNDRÔME FRAGILE X",
+    "code": "FRGX",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 580
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SYPHILIS (EIA)",
+    "code": "SYPEIA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "T3 LIBRE",
+    "code": "FT3",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 88
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "T3 REVERSE",
+    "code": "RT3",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "T3 TOTALE",
+    "code": "TT3",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 84
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "T4 LIBRE",
+    "code": "FT4",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "T4 TOTAL",
+    "code": "TT4",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 84
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TACROLIMUS (FK506, Prograf)",
+    "code": "TCLM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TAY SACHS, PLAQUETTES",
+    "code": "TAYS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 340
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TERIFLUNOMIDE",
+    "code": "TERI",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 450
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TESTOSTÉRONE Biodisponible",
+    "code": "TESBC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TESTOSTÉRONE Libre",
+    "code": "TESFC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TESTOSTÉRONE Total",
+    "code": "TEST",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TESTS RESPIRATOIRES D-XYLOSE",
+    "code": "HBTDXP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 360
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "THALASSEMIE ALPHA",
+    "code": "ATHAL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 645
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "THYROGLOBULINE",
+    "code": "THYG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "THYROGLOBULINE, ANTICORPS",
+    "code": "TGAB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 68
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "THYROÏDIENS, ANTICORPS",
+    "code": "THAB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TOXOPLASMOSE IGG",
+    "code": "TOXG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 125
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TOXOPLASMOSE IGM",
+    "code": "TOXM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TOXOPLASMOSE IgG, IgM",
+    "code": "TOXP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 205
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TRANSFERRINE",
+    "code": "TRFN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 88
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TRANSFERRINE CARBOXY DÉFICIENTE",
+    "code": "CDT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 250
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TRICHOMONAS VAGINALIS PCR",
+    "code": "TRIPCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 89
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TRICHOMONAS PCR (URINE)",
+    "code": "UTRIPCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 89
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TRIGLYCÉRIDES",
+    "code": "TRIG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TROPONINE T",
+    "code": "TROPHS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TRYPTASE",
+    "code": "TRYP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 270
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TSH, ANTICORPS ANTI-RÉCEPTEUR",
+    "code": "TBII",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "URÉALYTICUM (PCR)",
+    "code": "UREAP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 335
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "URÉE",
+    "code": "UREA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 52
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "URÉE / CRÉATININE, RATIO",
+    "code": "UCR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 40
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "URÉE, URINE 24 HEURES (BUN)",
+    "code": "UR/U",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 45
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "URINE, ANALYSE",
+    "code": "URC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 57
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "URINE, CULTURE",
+    "code": "CULU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 77
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VARICELLE IGG",
+    "code": "VARG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 88
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VARICELLE IGM",
+    "code": "VARM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VIH (VIRUS DE L’IMMUNODÉFICIENCE HUMAINE)",
+    "code": "HIV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VIH (VIRUS IMMUNODÉFICIENCE HUMAINE), CHARGE VIRALE",
+    "code": "HIVL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 340
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VITAMINE A (RETINOL)",
+    "code": "VITA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VITAMINE B12",
+    "code": "VB12",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 82
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VITAMINE B6",
+    "code": "VITB6",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 270
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VITAMINE D 1,25 OH",
+    "code": "125D",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 195
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VITAMINE D 25 OH",
+    "code": "25D",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VON WILLEBRAND, ANTIGÈNE",
+    "code": "VWF",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VPH (VIRUS DU PAPILLOME HUMAIN)",
+    "code": "HPV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 155
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VPH AVEC THINPREP EN CASCADE",
+    "code": "PVTP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 185
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VPH GENOTYPAGE (homme et femme)",
+    "code": "GENHPV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 395
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ZINC, PLASMA",
+    "code": "ZN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 88
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ZINC, GLOBULES ROUGES",
+    "code": "ZNRBC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 88
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "% CDT",
+    "code": "CDT",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 63
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "1.25-DIHYDROXY- VITAMINE D",
+    "code": "VITD125",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 104
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "17- HYDROXY- PROGESTERONE (17-OH-PROGESTERONE)",
+    "code": "17HYPROG",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 109
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "25-HYDROXY VITAMINE D (CHOLECALCIFEROL)",
+    "code": "VITD",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "5-HIAA (MÉTABOLITE DE LA SEROTONINE) URINES DE 24 HEURES",
+    "code": "24U5HIAA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACETAMINOPHÈNE",
+    "code": "APH",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACÉTONE (ANALYSE QUANTITATIVE)",
+    "code": "ACETONE",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 50
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE ASCORBIQUE (VITAMINE C)",
+    "code": "VITC",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE FOLIQUE (FOLATE)",
+    "code": "FOL",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 45
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE FOLIQUE ET VITAMINE B12",
+    "code": "B12FOL",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE LACTIQUE",
+    "code": "LAC",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE MÉTHYLMALONIQUE (ANALYSE QUANTITATIVE) - URINE",
+    "code": "METMALAU",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 149
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE MÉTHYLMALONIQUE - SANG",
+    "code": "METMALA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 149
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE URIQUE",
+    "code": "URIC",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE URIQUE URINE AU HASARD",
+    "code": "URICURAN",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 36
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE URIQUE - URINES DE 24 HEURES",
+    "code": "24UURIC",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE VALPROÏQUE (DEPAKENE)",
+    "code": "VAL",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 66
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDE VANYLMANDÉLIQUE (VMA) URINES DE 24 HEURES",
+    "code": "VMA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 96
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACIDES GRAS LIBRES",
+    "code": "FFA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 55
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ACTIVITÉ DE LA PROTÉINE C",
+    "code": "PROCACT",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 96
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "AGGLUTININES FROIDES",
+    "code": "AGG",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 37
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALBUMINE",
+    "code": "ALB",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALCOOL (ETHANOL) - SANG",
+    "code": "ALCO",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 51
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALCOOL (ETHANOL) URINE",
+    "code": "ETOH",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALDOSTÉRONE",
+    "code": "DOST",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALDOSTÉRONE - URINES DE 24 HEURES",
+    "code": "DOSTU",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALPHA 1- ANTITRYPSINE",
+    "code": "TRYP",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 91
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALPHA 2 MACROGLOBULINE",
+    "code": "ALPHA2",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 28
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALPHA-FŒTOPROTÉINE (AFP)",
+    "code": "AFP",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ALT",
+    "code": "ALT",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "AMIKACINE",
+    "code": "AMIK",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 114
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "AMITRIPTYLINE (ANTIDEPRESSEUR TRICYCLIQUE)",
+    "code": "AMITRIP",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "AMMONIAQUE",
+    "code": "AMMO",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 51
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "AMYLASE",
+    "code": "AMYL",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANALYSE D'URINE",
+    "code": "URI",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 31
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANALYSE DES CALCULS RENAUX",
+    "code": "KIDNEY",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANDROSTENE-DIONE",
+    "code": "ANDRO",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICOAGULANT LUPIQUE",
+    "code": "LUPUS",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 137
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-GLIADINE DE TYPE IgG",
+    "code": "DEGLIAG",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-DIPHTÉRIE",
+    "code": "DIPH",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 39
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-ADN (ANTI-ADN double brin)",
+    "code": "DNA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 134
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-FACTEUR INTRINSÈQUE",
+    "code": "IFA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-HISTONE",
+    "code": "HISTAB",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 72
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-MEMBRANE BASALE GLOMERULAIRE (ANTI-GBM)",
+    "code": "GBM",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 57
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-HEPATITE C (ANTI-VHC)",
+    "code": "HEPC",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-PARVOVIRUS DE TYPES IgG ET IgM",
+    "code": "PARVO",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 173
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-ANTIGÈNES NUCLÉAIRES SOLUBES (ANTI-ΕΝΑ)",
+    "code": "ENA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-MITOCHONDRIES DE TYPE M2",
+    "code": "MITOM2",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 114
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI CYCLIQUE CITRULLINĖ (ANTICORPS ANTI-CCP)",
+    "code": "ACCP",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 83
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-CYTOMEGALOVIRUS DE TYPE IgG",
+    "code": "CMVG",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-CYTOMÉGALOVIRUS DE TYPE IgM",
+    "code": "CMVM",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-CYTOPLASME DES NEUTROPHILES (ANCA)",
+    "code": "ANCA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 142
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTINUCLÉAIRES (ANA)",
+    "code": "ANA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 79
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-RÉCEPTEUR DE L'ACETYLCHOLINE",
+    "code": "ARA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 455
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-STREPTOLYSINE O",
+    "code": "ASO",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 28
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS ANTI-TRANSGLUTAMINASE DE TYPE IgA",
+    "code": "TRANSGLUT",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 89
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS DE TYPE IgG DIRIGÉS CONTRE LE VIRUS DE LA RUBÉOLE",
+    "code": "RUB",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 54
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTICORPS DIRIGÉS CONTRE L'ANTIGÈNE CAPSIDIQUE DE L'HÉPATITE B (ANTI-HBC)",
+    "code": "HEPBC",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 89
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTIGÈNE CARCINO-EMBRYONNAIRE (ACE)",
+    "code": "CEA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 79
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTIGÈNE DE SURFACE DE L'HÉPATITE B (HBsAg)",
+    "code": "HBS",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 64
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ANTIGÈNE PROSTATIQUE SPÉCIFIQUE (APS)",
+    "code": "PSA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "APOLIPOPROTÉINE A1",
+    "code": "APOA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "APOLIPOPROTÉINE B",
+    "code": "APOB",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "APS LIBRE (APS TOTAL ET RATIO APS LIBRE/APS TOTAL)",
+    "code": "FPSA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "ARSENIC SANG ENTIER",
+    "code": "ARSENIWB",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 59
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "AST",
+    "code": "AST",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BETA-2-MICROGLOBULINE",
+    "code": "B2MICRO",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BILIRUBINE DIRECTE/CONJUGUÉE",
+    "code": "BILITD",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 45
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "BILIRUBINE TOTALE",
+    "code": "BILIT",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CA 19-9 (ANTIGENE CARBOHYDRATE 19-9)",
+    "code": "CA19",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 79
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CA 125 (OVAIRE)",
+    "code": "CA125",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 82
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CA 15-3 (SEIN)",
+    "code": "CA153",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 79
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CALCIUM",
+    "code": "CA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CALCIUM-IONISÉ (CALCIUM LIBRE)",
+    "code": "CAI",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 47
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CARBAMAZEPINE (TEGRETOL)",
+    "code": "TEG",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 54
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHOLESTÉROL TOTAL",
+    "code": "CHOL",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CK (CRÉATINE KINASE)",
+    "code": "CK",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CHLORURES",
+    "code": "CL",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "CRÉATININE",
+    "code": "CREA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 27
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FORMULE SANGUINE COMPLETE (FSC)",
+    "code": "CBC",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "FSH (HORMONE FOLLICULOSTIMULANTE)",
+    "code": "FSH",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 63
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GGT (GAMMA GLUTAMYLTRANSFERASE)",
+    "code": "GGT",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "GLUCOSE - HYPERGLYCÉMIE ORALE 75g NON-GESTATIONNEL (2 HEURES)",
+    "code": "GLU75",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HÉMOGLOBINE A1C",
+    "code": "HBA1C",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "COMBO VIH (ANTICORPS ANTI-VIH-1 ET ANTI-VIH-2 + ANTIGÈNE P24)",
+    "code": "HIV",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "LACTATE DÉSHYDROGÉNASE (LDH)",
+    "code": "LD",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "HORMONE LUTÉINISANTE (LH)",
+    "code": "LH",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 66
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "MAGNÉSIUM",
+    "code": "MG",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PHOSPHORE",
+    "code": "PHOS",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "POTASSIUM (K)",
+    "code": "K",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROGESTERONE",
+    "code": "PROG",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 66
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROLACTINE",
+    "code": "PROL",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 71
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "PROTÉINES TOTALES",
+    "code": "PROT",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "SODIUM",
+    "code": "NA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "T3 LIBRE",
+    "code": "T3F",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 47
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "T4 LIBRE",
+    "code": "T4F",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 63
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "TSH ULTRASENSIBLE, (DOSAGE DE LA THYRÉOSTIMULINE)",
+    "code": "TSH",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "URÉE (AZOTE URÉIQUE)",
+    "code": "UREA",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VITAMINE B12 (CYANOCOBALAMINE)",
+    "code": "VITB12",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 56
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "VITESSE DE SÉDIMENTATION",
+    "code": "SED",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 42
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "Profil BIO-12",
+    "code": "SMA12",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "CDL",
+    "raw_name": "Profil THYROÏDIEN No 2 (TSH, T4 LIBRE)",
+    "code": "TH2",
+    "category": null,
+    "type": "individual",
+    "components": [],
+    "price": 120
+  }
+]

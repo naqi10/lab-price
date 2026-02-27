@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Search, PlusCircle, CheckCircle2, X } from "lucide-react";
+import { Search, PlusCircle, CheckCircle2, X, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,7 @@ interface SearchResult {
   category: string | null;
   price: number;
   unit: string | null;
+  turnaroundTime: string | null;
   tubeType: string | null;
   laboratoryId: string;
   laboratoryName: string;
@@ -126,7 +127,8 @@ export default function TestSearch({
           </div>
           <ul className="divide-y divide-border/30">
             {grouped.map((group) => {
-              const isMultiLab = group.testMappingId != null && group.tests.length > 1;
+              const uniqueLabNames = [...new Set(group.tests.map(t => t.laboratoryName))];
+              const isMultiLab = group.testMappingId != null && uniqueLabNames.length > 1;
               const primary = group.tests[0];
               const displayName = isMultiLab ? (group.canonicalName || primary.name) : primary.name;
               const selectedMappingId = group.tests.find((t) => t.testMappingId && cartItemIds?.has(t.testMappingId))?.testMappingId
@@ -165,7 +167,7 @@ export default function TestSearch({
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
                       {isMultiLab ? (
                         <span className="text-xs text-muted-foreground/80 whitespace-normal break-words">
-                          {group.tests.map(t => t.laboratoryName).join(", ")}
+                          {uniqueLabNames.join(", ")}
                         </span>
                       ) : (
                         <>
@@ -177,6 +179,12 @@ export default function TestSearch({
                           )}
                         </>
                       )}
+                      {primary.turnaroundTime && (
+                        <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                          <Clock className="h-2.5 w-2.5 shrink-0" />
+                          {primary.turnaroundTime}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -186,7 +194,7 @@ export default function TestSearch({
                     )}
                     {isMultiLab ? (
                       <Badge variant="outline" className="text-[10px]">
-                        {group.tests.length} labs
+                        {uniqueLabNames.length} labs
                       </Badge>
                     ) : (
                       <span className="text-xs sm:text-sm font-semibold tabular-nums whitespace-nowrap min-w-[64px] sm:min-w-[72px] text-right">

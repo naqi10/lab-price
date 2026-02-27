@@ -19,6 +19,7 @@ const TUBE_COLORS: Record<string, string> = {
   yellow: "#facc15",
   gold: "#facc15",      // gold — SST / gel separator (same as yellow)
   sst: "#facc15",       // SST tube = gold/yellow
+  gel: "#facc15",       // gel separator tube = gold/yellow (SST)
   gris: "#9ca3af",      // gray — fluoride / oxalate
   grey: "#9ca3af",
   gray: "#9ca3af",

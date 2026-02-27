@@ -1,0 +1,1874 @@
+[
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil SMA-7",
+    "code": "SMA7",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 71
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil THYROÏDIEN No 2",
+    "code": "TH2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil THYROÏDIEN No 6",
+    "code": "TH6",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 202
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil UROLITHIASE",
+    "code": "STONE",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 170
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil BIO-12",
+    "code": "SMA12",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil BIO-12 AVEC ÉLECTROLYTES",
+    "code": "SMA12LYT",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil BIO-C",
+    "code": "SMAC",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 71
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil BIO-C AVEC ÉLECTROLYTES",
+    "code": "SMACLYT",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 91
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil COAGULATION/HÉMOGRAMME",
+    "code": "CBCCOAG",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 123
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil COAGULOGRAMME",
+    "code": "COAG",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 117
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil CULTURE GENITAL et GONO/CHLAM",
+    "code": "STDMU",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil DÉPISTAGE HÉPATITE A et B",
+    "code": "HEPAB",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 273
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil DÉPISTAGE HÉPATITE A, B et C",
+    "code": "HEPABC",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 273
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil DÉPISTAGE HÉPATITE B",
+    "code": "HEPB",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 188
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil DÉPISTAGE MALADIE COELIAQUE",
+    "code": "CELISCRE",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 104
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil DIABÉTIQUE No 1",
+    "code": "DIAB",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil DIABÉTIQUE No 6",
+    "code": "DIAB6",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 72
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil FERTILITÉ No 1",
+    "code": "FERT1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 114
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil FERTILITÉ No 2",
+    "code": "FERT2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 180
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil GÉNÉRAL No 1",
+    "code": "GP1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil GÉNÉRAL No 2",
+    "code": "GP2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 158
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil GÉNÉRAL No 3",
+    "code": "GP3",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 166
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil GÉNÉRAL No 4",
+    "code": "GP4",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 183
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil GONO-CHLAM",
+    "code": "ITSS",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 212
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil HÉPATIQUE",
+    "code": "LFT",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 71
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil LIPIDIQUE CARDIOVASCULAIRE",
+    "code": "LIPID",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 72
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil LIPIDIQUE CARDIOVASCULAIRE No 18",
+    "code": "LIPID18",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 109
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil LIPIDIQUE CARDIOVASCULAIRE No 6",
+    "code": "LIPID6",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 137
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil MARQUEURS PROSTATIQUES",
+    "code": "FPSA_PROF",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil MONOTEST",
+    "code": "MONOP",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 65
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil OSTEOPOROSIS",
+    "code": "OSTEOP",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 314
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil PRÉNATAL No 1",
+    "code": "PREN1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 134
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil PRÉNATAL No 2",
+    "code": "PREN2",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 164
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil PRÉNATAL No 3",
+    "code": "PREN3",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 187
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil SMA-16",
+    "code": "SMA16",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 74
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil SMA-5",
+    "code": "SMA5",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 74
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil SMA-6",
+    "code": "SMA6",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil ANÉMIE No 1",
+    "code": "ANEM1",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 161
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil ANÉMIE No 11",
+    "code": "ANEM11",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 121
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "Profil ANÉMIE No 8",
+    "code": "ANEM8",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 173
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "% CDT",
+    "code": "CDT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 63
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "1.25-DIHYDROXY-VITAMINE D",
+    "code": "VITD125",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 104
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "17-HYDROXY-PROGESTERONE",
+    "code": "17HYPROG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 109
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "25-HYDROXY VITAMINE D",
+    "code": "VITD",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "5-HIAA",
+    "code": "24U5HIAA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACÉTAMINOPHÈNE",
+    "code": "APH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACÉTONE",
+    "code": "ACETONE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 50
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE ASCORBIQUE (VITAMINE C)",
+    "code": "VITC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 105
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE FOLIQUE (FOLATE)",
+    "code": "FOL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 45
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE FOLIQUE ET VITAMINE B12",
+    "code": "B12FOL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE LACTIQUE",
+    "code": "LAC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE MÉTHYLMALONIQUE - URINE",
+    "code": "METMALAU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 149
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE MÉTHYLMALONIQUE - SANG",
+    "code": "METMALA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 149
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE URIQUE",
+    "code": "URIC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE URIQUE - URINE AU HASARD",
+    "code": "URICURAN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 36
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE URIQUE - URINES DE 24 HEURES",
+    "code": "24UURIC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE VALPROÏQUE (DEPAKENE)",
+    "code": "VAL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 66
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDE VANYLMANDÉLIQUE (VMA)",
+    "code": "VMA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 96
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACIDES GRAS LIBRES",
+    "code": "FFA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 55
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ACTIVITÉ DE LA PROTÉINE C",
+    "code": "PROCACT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 96
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "AGGLUTININES FROIDES",
+    "code": "AGG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 37
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ALBUMINE",
+    "code": "ALB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ALCOOL (ETHANOL) - SANG",
+    "code": "ALCO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 51
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ALCOOL (ETHANOL) - URINE",
+    "code": "ETOH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ALDOSTÉRONE",
+    "code": "DOST",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ALDOSTÉRONE - URINES DE 24 HEURES",
+    "code": "DOSTU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ALPHA 1-ANTITRYPSINE",
+    "code": "TRYP_A1AT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 91
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ALPHA 2 MACROGLOBULINE",
+    "code": "ALPHA2",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 28
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ALPHA-FŒTOPROTÉINE (AFP)",
+    "code": "AFP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ALT",
+    "code": "ALT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "AMIKACINE",
+    "code": "AMIK",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 114
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "AMITRIPTYLINE",
+    "code": "AMITRIP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 114
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "AMMONIAQUE",
+    "code": "AMMO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 51
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "AMYLASE",
+    "code": "AMYL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANALYSE D'URINE",
+    "code": "URI",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 31
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANALYSE DES CALCULS RENAUX",
+    "code": "KIDNEY",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANDROSTENE-DIONE",
+    "code": "ANDRO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICOAGULANT LUPIQUE",
+    "code": "LUPUS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 137
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-GLIADINE DE TYPE IgG",
+    "code": "DEGLIAG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-GLIADINE DE TYPE IgA",
+    "code": "DEGLIAA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-ADN (Double brin)",
+    "code": "DNA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 134
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-FACTEUR INTRINSÈQUE",
+    "code": "IFA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 120
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-HISTONE",
+    "code": "HISTAB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 72
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-MEMBRANE BASALE GLOMERULAIRE",
+    "code": "GBM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 57
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-HEPATITE C",
+    "code": "HEPC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-PARVOVIRUS IgG ET IgM",
+    "code": "PARVO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 173
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-ENA",
+    "code": "ENA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-MITOCHONDRIES M2",
+    "code": "MITOM2",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 114
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-MICROSOMES THYROIDIENS",
+    "code": "TAPRO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 106
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-CCP",
+    "code": "ACCP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 83
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-BETA 2-GLYCOPROTÉINE I (IgG/IgM/IgA)",
+    "code": "B2GP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 90
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-CARDIOLIPINES",
+    "code": "ANTICAR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 70
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-CELLULES PARIÉTALES",
+    "code": "APC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 106
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-CYTOMEGALOVIRUS IgG",
+    "code": "CMVG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-CYTOMEGALOVIRUS IgM",
+    "code": "CMVM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-CYTOPLASME DES NEUTROPHILES",
+    "code": "ANCA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 142
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-HEPATITE A IgM",
+    "code": "HEPAM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 89
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-MITOCHONDRIES",
+    "code": "AMITO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-MUSCLE LISSE",
+    "code": "AML",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 92
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTINUCLÉAIRES (ANA)",
+    "code": "ANA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 79
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-RABIQUES (RAGE)",
+    "code": "RABI",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 73
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-RÉCEPTEUR DE L'ACETYLCHOLINE",
+    "code": "ARA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 455
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-RÉCEPTEURS TSH (TBII)",
+    "code": "ANTHY",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 171
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-STREPTOLYSINE O",
+    "code": "ASO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 28
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTITÉTANIQUES",
+    "code": "TETA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 65
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-TRANSGLUTAMINASE IgA",
+    "code": "TRANSGLUT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 89
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-EBV IgG",
+    "code": "EBVIGG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 103
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-EBV IgM",
+    "code": "EBVIGM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 103
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-VARICELLE IgG",
+    "code": "VARIG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-OREILLONS IgG",
+    "code": "MUMPIGG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 95
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-ROUGEOLE IgG",
+    "code": "ROUGG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 68
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-RUBÉOLE IgG",
+    "code": "RUB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 54
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-HBc IgM",
+    "code": "HEPBCM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 110
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-VARICELLE IgM",
+    "code": "VARIM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 84
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-OREILLONS IgM",
+    "code": "MUMPIGM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 79
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-ROUGEOLE IgM",
+    "code": "ROUGM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 84
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-RUBÉOLE IgM",
+    "code": "RUBIGM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-HBc",
+    "code": "HEPBC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 89
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-HBe",
+    "code": "HEPBE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 73
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTICORPS ANTI-HEPATITE A IgG",
+    "code": "HEPAG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 84
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTIGÈNE CARCINO-EMBRYONNAIRE (ACE)",
+    "code": "CEA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 79
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTIGÈNE DE SURFACE HÉPATITE B (HBsAg)",
+    "code": "HBS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 64
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTIGÈNE HÉPATITE Be (HBeAg)",
+    "code": "HBEAG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 73
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTIGÈNE HLA-B27",
+    "code": "HLAB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 184
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTIGÈNE PROSTATIQUE SPÉCIFIQUE (APS)",
+    "code": "PSA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTIGÈNE PROTÉINE C",
+    "code": "PROCAG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 108
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTI-HBs",
+    "code": "ANHBS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ANTITHROMBINE III (ACTIVITÉ)",
+    "code": "ANTITH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 84
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "APOLIPOPROTÉINE A1",
+    "code": "APOA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "APOLIPOPROTÉINE B",
+    "code": "APOB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 60
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "APS LIBRE",
+    "code": "FPSA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 115
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ARSENIC SANG ENTIER",
+    "code": "ARSENIWB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 59
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ARSENIC URINE",
+    "code": "ARSENIRU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 59
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "AST",
+    "code": "AST",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "BÉRYLLIUM SANG ENTIER",
+    "code": "BERY",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 166
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "BETA-2-MICROGLOBULINE",
+    "code": "B2MICRO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "BILAN D'IMMUNODÉFICIENCE",
+    "code": "CD4",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 253
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "BILIRUBINE DIRECTE/CONJUGUÉE",
+    "code": "BILITD",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 45
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "BILIRUBINE INDIRECTE/NON CONJUGUÉE",
+    "code": "BILINDP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 54
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "BILIRUBINE TOTALE",
+    "code": "BILIT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "BRUCELLA/BRUCELLOSE",
+    "code": "BRUC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 33
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CA 19-9",
+    "code": "CA19",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 79
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CA 125",
+    "code": "CA125",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 82
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CA 15-3",
+    "code": "CA153",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 79
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CADMIUM SANG ENTIER",
+    "code": "CADMIWB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CALCITONINE",
+    "code": "CALCI",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 136
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CALCIUM",
+    "code": "CA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CALCIUM IONISÉ",
+    "code": "CAI",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 47
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CALCIUM - URINE AU HASARD",
+    "code": "CAURAN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CALCIUM - URINES DE 24 HEURES",
+    "code": "24UCA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CARBAMAZEPINE (TEGRETOL)",
+    "code": "TEG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 54
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CARNITINE",
+    "code": "CARNITH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CATÉCHOLAMINES ET MÉTANÉPHRINE (24H)",
+    "code": "CATEMETA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 150
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CÉRULOPLASMINE",
+    "code": "CERU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CH50, COMPLÉMENT TOTAL",
+    "code": "CH50",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 74
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CHAÎNES LÉGÈRES LIBRES",
+    "code": "FLC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CHARGE VIRALE (VIH)",
+    "code": "HIVCV",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 93
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CHLAMYDIA/GONORRHOEAE/TRICHOMONAS (TAAN) - URINE",
+    "code": "TGCD",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 142
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CHLORURES",
+    "code": "CL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CHOLESTÉROL TOTAL",
+    "code": "CHOL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CK (CRÉATINE KINASE)",
+    "code": "CK",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CK-MB",
+    "code": "CKMB",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CLOSTRIDIUM DIFFICILE",
+    "code": "CLOS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 100
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CO2 TOTAL (BICARBONATE)",
+    "code": "CO2",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "COMPLÉMENT C3",
+    "code": "C3",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 70
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "COMPLÉMENT C4",
+    "code": "C4",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 70
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CORTISOL (MATIN)",
+    "code": "CORTIAM",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 63
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CRÉATININE",
+    "code": "CREA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 27
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "PROTÉINE C-RÉACTIVE",
+    "code": "CRP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 49
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "PROTÉINE C-RÉACTIVE HAUTE SENSIBILITÉ",
+    "code": "CRPHS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 49
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CULTURE: URINE",
+    "code": "CSU",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 64
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CULTURE D'URINE + ANALYSE",
+    "code": "UC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "CULTURE GORGE + STREP A RAPIDE",
+    "code": "STREP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 33
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "DHEA",
+    "code": "DHEA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 114
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "DHEAS",
+    "code": "DHEAS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 89
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "DROGUE: AMPHETAMINES",
+    "code": "AMPH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "DROGUE: CANNABINOIDES",
+    "code": "CAN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 51
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "DROGUE: COCAINE",
+    "code": "COCAINE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ÉLECTROCARDIOGRAMME",
+    "code": "ECG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 68
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ÉLECTROLYTES (Na, K, Cl)",
+    "code": "LYTES",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 37
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "ESTRADIOL",
+    "code": "ESTRA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 66
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "FER",
+    "code": "FE",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "FERRITINE",
+    "code": "FERI",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "FIBRINOGÈNE",
+    "code": "FIBR",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 63
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "FORMULE SANGUINE COMPLETE (FSC)",
+    "code": "CBC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "FSH",
+    "code": "FSH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 63
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "GLUCOSE AC",
+    "code": "AC",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "GLUCOSE AU HASARD",
+    "code": "ACP",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "HÉMOGLOBINE A1C",
+    "code": "HBA1C",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 53
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "HORMONE DE CROISSANCE (GH)",
+    "code": "HGH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 76
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "LH",
+    "code": "LH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 66
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "INSULINE (À JEUN)",
+    "code": "INSUL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 70
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "MAGNÉSIUM",
+    "code": "MG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "MONONUCLÉOSE",
+    "code": "MONO",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 30
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "PHOSPHORE",
+    "code": "PHOS",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "PROGESTÉRONE",
+    "code": "PROG",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 66
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "PROLACTINE",
+    "code": "PROL",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 71
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "PROTÉINES TOTALES",
+    "code": "PROT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "RAPPORT INTERNATIONAL NORMALISÉ (INR)",
+    "code": "PT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 37
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "INR + PTT",
+    "code": "PTPTT",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 58
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "SODIUM",
+    "code": "NA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "T3 LIBRE",
+    "code": "T3F",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 47
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "T4 LIBRE",
+    "code": "T4F",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 63
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "TESTOSTÉRONE TOTALE",
+    "code": "TEST",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 80
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "TSH ULTRASENSIBLE",
+    "code": "TSH",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 69
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "URÉE",
+    "code": "UREA",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 38
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "VITAMINE B12",
+    "code": "B12",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 56
+  },
+  {
+    "lab": "Dynacare",
+    "raw_name": "VITESSE DE SÉDIMENTATION",
+    "code": "SED",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 42
+  }
+]

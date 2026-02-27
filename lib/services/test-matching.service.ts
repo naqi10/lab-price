@@ -81,6 +81,7 @@ export async function searchTests(
     `         WHEN tm."canonical_name" ILIKE '%' || $1 || '%' THEN 0.88`, // canonical name match
     "         ELSE 0 END",
     "  ) AS similarity,",
+    '  t."turnaround_time" AS "turnaroundTime",',
     '  t."tube_type" AS "tubeType",',
     '  tme."test_mapping_id" AS "testMappingId",',
     '  tm."canonical_name" AS "canonicalName"',
@@ -137,6 +138,7 @@ export async function searchTests(
       laboratoryName: string;
       laboratoryCode: string;
       similarity: number;
+      turnaroundTime: string | null;
       tubeType: string | null;
       testMappingId: string | null;
       canonicalName: string | null;
