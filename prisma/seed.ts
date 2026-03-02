@@ -9,6 +9,7 @@ import {
   buildCanonicalIndexes,
   normalizeForLookup,
 } from "../lib/data/canonical-test-registry.js";
+import { cdlSeedData, qcSeedData } from "./seed1.js";
 
 const connectionString = process.env.DATABASE_URL!;
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
@@ -71,6 +72,15 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
     fs.readFileSync(path.join(rootDir, "prisma/cdl-tube-map.json"), "utf8")
   );
 
+  // Build lookups from seed1.ts (most accurate English tube names + clean French test names)
+  // Merge both seed arrays: cdlSeedData + qcSeedData (cdlSeedData takes priority for duplicates)
+  const seed1TubeByCode = new Map<string, string>();
+  const seed1NameByCode = new Map<string, string>();
+  for (const t of [...qcSeedData, ...cdlSeedData]) {
+    if (t.tube) seed1TubeByCode.set(t.code, t.tube);
+    if (t.name) seed1NameByCode.set(t.code, t.name);
+  }
+
   // Deduplicate CDL: prefer non-null category entries,
   // BUT keep both when they are genuinely different tests sharing a code
   const cdlByCode = new Map<string, (typeof cdlRaw)[number][]>();
@@ -88,10 +98,11 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
       // Single entry — straightforward
       const t = entries[0];
       const spec = specimenByCode.get(t.code);
-      const tubeType = spec?.tube || tubeMap[t.code] || "";
+      const tubeType = seed1TubeByCode.get(t.code) || tubeMap[t.code] || spec?.tube || "";
+      const displayName = seed1NameByCode.get(t.code) || t.raw_name;
       cdlTests.push({
         code: t.code,
-        name: t.raw_name,
+        name: displayName,
         description: t.raw_name,
         specimen: typeof tubeType === "string" ? tubeType : "",
         price: t.price,
@@ -121,10 +132,11 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
 
       for (const t of kept) {
         const spec = specimenByCode.get(t.code);
-        const tubeType = spec?.tube || tubeMap[t.code] || "";
+        const tubeType = seed1TubeByCode.get(t.code) || tubeMap[t.code] || spec?.tube || "";
+        const displayName = seed1NameByCode.get(t.code) || t.raw_name;
         cdlTests.push({
           code: t.code,
-          name: t.raw_name,
+          name: displayName,
           description: t.raw_name,
           specimen: typeof tubeType === "string" ? tubeType : "",
           price: t.price,
@@ -135,12 +147,47 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
     }
   }
 
-  // Convert Dynacare to RawTest format
+  // Build lookup for Dynacare tube types from qcSeedData (+ cdlSeedData fallback)
+  // qcSeedData is specifically for Dynacare/QC specimen collection
+  const dynTubeByCode = new Map<string, string>();
+  for (const t of [...cdlSeedData, ...qcSeedData]) {
+    if (t.tube) dynTubeByCode.set(t.code, t.tube);
+  }
+
+  // Default tube type for Dynacare tests with no seed1.ts match
+  const inferDynacareTube = (code: string, name: string): string => {
+    const lower = name.toLowerCase();
+    // Urine tests
+    if (lower.includes("urine") || lower.includes("urines") || code.startsWith("24U") || code.endsWith("U"))
+      return "Urine Container";
+    // Coagulation tests
+    if (lower.includes("coagul") || lower.includes("inr") || lower.includes("ptt") || code === "PTPTT" || code === "COAG")
+      return "Light Blue";
+    // CBC / hematology
+    if (lower.includes("hémogramme") || lower.includes("hemogramme") || code.includes("CBC"))
+      return "Lavender";
+    // Culture / swab tests
+    if (lower.includes("culture") || lower.includes("écouvillon") || lower.includes("gorge"))
+      return "Swab";
+    // ECG (not blood)
+    if (code === "ECG") return "";
+    // Calculs renaux (not blood)
+    if (code === "KIDNEY" || code === "STONE") return "Sterile";
+    // Stool test
+    if (lower.includes("selles") || code === "CLOS") return "Stool";
+    // Drug screen / tox
+    if (lower.includes("drogue") || lower.includes("cannabin") || lower.includes("cocaine"))
+      return "Gold";
+    // Default: Gold (SST) — most common tube for serology, chemistry, antibody tests
+    return "Gold";
+  };
+
+  // Convert Dynacare to RawTest format — now with tube type from seed1.ts or inferred
   const dynacareTests: RawTest[] = dynRaw.map((t) => ({
     code: t.code,
     name: t.raw_name,
     description: t.raw_name,
-    specimen: "",
+    specimen: dynTubeByCode.get(t.code) || inferDynacareTube(t.code, t.raw_name),
     price: t.price,
     turnaroundTime: "",
     type: t.type === "profile" ? "profile" : "individual",
@@ -283,7 +330,9 @@ async function main() {
     for (const raw of rawTests) {
       // Resolution: try both code and name lookup; prefer name match when it
       // finds a different canonical entry (handles code collisions like PHOS/TRYP)
-      const normalizedName = normalizeForLookup(raw.name);
+      // Use description (original catalog name) for alias lookup since name may be from seed1.ts
+      const lookupName = raw.description || raw.name;
+      const normalizedName = normalizeForLookup(lookupName);
       const codeDef = byCode.get(raw.code);
       const nameDef = byAlias.get(normalizedName);
       const def = (nameDef && nameDef !== codeDef) ? nameDef : (codeDef ?? nameDef);
@@ -327,12 +376,20 @@ async function main() {
       }
     }
 
+    // Enrich aliases with seed1.ts French names for better searchability
+    const enrichedAliases = [...def.aliases];
+    const allSeed1 = [...qcSeedData, ...cdlSeedData];
+    const seed1Entry = allSeed1.find((s) => s.code === def.code);
+    if (seed1Entry && !enrichedAliases.some((a) => a.toUpperCase() === seed1Entry.name.toUpperCase())) {
+      enrichedAliases.push(seed1Entry.name);
+    }
+
     const mapping = await prisma.testMapping.create({
       data: {
         canonicalName,
         code: def.code,
         category: def.category,
-        aliases: def.aliases,
+        aliases: enrichedAliases,
         entries: {
           create: uniqueLabs.map((e) => ({
             laboratoryId: e.labId,

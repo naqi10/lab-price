@@ -18,6 +18,21 @@ const SYNONYM_MAP: [RegExp, string[]][] = [
   [/\bphosphate\b/i, ["phosphore"]],
   [/\bphosphore\b/i, ["phosphate"]],
   [/\bfer\b/i, ["ferritine", "iron"]],
+  // seed1.ts alternate codes → actual test names
+  [/\bblood\b/i, ["groupe sanguin"]],
+  [/\bdig\b/i, ["digoxine"]],
+  [/\bdil\b/i, ["dilantin", "phenytoine"]],
+  [/\blytes\b/i, ["electrolytes"]],
+  [/\binsul\b/i, ["insuline"]],
+  [/\blip\b/i, ["lipase"]],
+  [/\bosm\b/i, ["osmolalite"]],
+  [/\bsyph\b/i, ["syphilis"]],
+  [/\bfolrbc\b/i, ["folate erythrocytaire"]],
+  [/\bbnp\b/i, ["nt-pro-bnp", "ntprobnp"]],
+  [/\bceru\b/i, ["ceruloplasmine"]],
+  [/\bdhea\b/i, ["dh-s", "dhea-sulfate"]],
+  [/\bfibr\b/i, ["fibrinogene"]],
+  [/\bferi\b/i, ["ferritine"]],
 ];
 
 function expandSearchSynonyms(query: string): string[] {
@@ -76,9 +91,11 @@ export async function searchTests(
     `    similarity(${normalizedNameExpr}, ${normalizedQueryExpr}),`,
     "    CASE WHEN t.name ILIKE $1 THEN 1.0",             // exact (case-insensitive)
     "         WHEN t.name ILIKE $1 || '%' THEN 0.95",     // prefix
-    "         WHEN t.name ILIKE '%' || $1 || '%' THEN 0.85", // substring
     "         WHEN t.code ILIKE $1 THEN 0.9",             // exact code match
     `         WHEN tm."canonical_name" ILIKE '%' || $1 || '%' THEN 0.88`, // canonical name match
+    "         WHEN t.name ILIKE '%' || $1 || '%' THEN 0.85", // substring
+    "         WHEN t.code ILIKE $1 || '%' THEN 0.87",     // code prefix match
+    `         WHEN array_to_string(tm.aliases, ' ') ILIKE '%' || $1 || '%' THEN 0.83`, // alias match
     "         ELSE 0 END",
     "  ) AS similarity,",
     '  t."turnaround_time" AS "turnaroundTime",',
@@ -106,7 +123,9 @@ export async function searchTests(
   const matchConditions = [
     "    t.name ILIKE '%' || $1 || '%'",
     "    OR t.code ILIKE $1",
+    "    OR t.code ILIKE $1 || '%'",
     `    OR tm."canonical_name" ILIKE '%' || $1 || '%'`,
+    `    OR array_to_string(tm.aliases, ' ') ILIKE '%' || $1 || '%'`,
     `    OR similarity(${normalizedNameExpr}, ${normalizedQueryExpr}) >= $2`,
     `    OR ${normalizedCanonicalExpr} = ${normalizedQueryExpr}`,
   ];

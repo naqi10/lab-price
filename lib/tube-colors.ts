@@ -36,6 +36,14 @@ const TUBE_COLORS: Record<string, string> = {
   thinprep: "#8b5cf6",  // ThinPrep vial — violet
   trousse: "#f59e0b",   // special kit — amber/orange
   "de formaline": "#ef4444",  // formalin container — red
+  formalin: "#ef4444",        // formalin container (English) — red
+  swab: "#10b981",            // swab (English for écouvillon) — emerald
+  stool: "#d97706",           // stool container — amber/brown
+  selles: "#d97706",          // stool container in French — amber/brown
+  sterile: "#94a3b8",         // sterile container — slate/neutral
+  "contenant sec": "#94a3b8", // dry container — slate/neutral
+  "pea green": "#84cc16",     // pea green tube — lime (lithium heparin + gel)
+  kit: "#f59e0b",             // test kit (breath, PCR, TB) — amber/orange
 };
 
 const FALLBACK_COLOR = "#6b7280";
