@@ -153,11 +153,16 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
   // Build lookup for Dynacare tube types from qcSeedData (+ cdlSeedData fallback)
   // qcSeedData is specifically for Dynacare/QC specimen collection
   const dynTubeByCode = new Map<string, string>();
+  const dynTatByCode = new Map<string, string>();
   for (const t of [...cdlSeedData.all, ...qcSeedData]) {
     if (t.tube) {
       const tubeStr = Array.isArray(t.tube) ? t.tube.join(", ") : t.tube;
       dynTubeByCode.set(t.code, tubeStr);
     }
+  }
+  // Build TAT lookup from qcSeedData (Dynacare/QC catalog has actual turnaround times)
+  for (const t of qcSeedData) {
+    if (t.turnaroundTime) dynTatByCode.set(t.code, t.turnaroundTime);
   }
 
   // Default tube type for Dynacare tests with no seed1.ts match
@@ -195,7 +200,7 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
     description: t.raw_name,
     specimen: dynTubeByCode.get(t.code) || inferDynacareTube(t.code, t.raw_name),
     price: t.price,
-    turnaroundTime: "",
+    turnaroundTime: dynTatByCode.has(t.code) ? `${dynTatByCode.get(t.code)} jour(s)` : "",
     type: t.type === "profile" ? "profile" : "individual",
   }));
 

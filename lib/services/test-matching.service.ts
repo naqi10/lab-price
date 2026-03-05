@@ -147,7 +147,6 @@ export async function searchTests(
       LEFT JOIN "test_mappings" tm ON tm.id = tme."test_mapping_id"
       WHERE pl."is_active" = true
         AND l."deleted_at" IS NULL
-        AND (t.category IS NULL OR t.category != 'Profil')
         ${labFilter}
         AND (
 ${matchWhere}
@@ -238,6 +237,11 @@ export async function createTestMapping(data: {
       entries: {
         include: {
           laboratory: { select: { id: true, name: true, code: true } },
+          tests: {
+            where: { priceList: { isActive: true } },
+            select: { code: true, turnaroundTime: true },
+            take: 1,
+          },
         },
       },
     },
@@ -275,6 +279,11 @@ export async function getTestMappings(options?: {
         entries: {
           include: {
             laboratory: { select: { id: true, name: true, code: true } },
+            tests: {
+              where: { priceList: { isActive: true } },
+              select: { code: true, turnaroundTime: true },
+              take: 1,
+            },
           },
         },
       },
@@ -338,6 +347,11 @@ export async function updateTestMapping(
         entries: {
           include: {
             laboratory: { select: { id: true, name: true, code: true } },
+            tests: {
+              where: { priceList: { isActive: true } },
+              select: { code: true, turnaroundTime: true },
+              take: 1,
+            },
           },
         },
       },

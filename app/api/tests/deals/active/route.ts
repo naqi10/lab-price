@@ -2,40 +2,227 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getActiveBundleDeals } from "@/lib/services/bundle-deal.service";
 import { getProfileMeta } from "@/lib/data/profile-metadata";
+import { cdlSeedData, qcSeedData } from "@/prisma/seed1";
 import prisma from "@/lib/db";
 import logger from "@/lib/logger";
+
+function cleanProfileName(name: string): string {
+  return name.replace(/,\s*PROFIL(E)?$/i, "").replace(/\s+PROFIL(E)?$/i, "").trim();
+}
+
+function normalizeLookup(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+function extractComponentsFromName(name: string): string[] {
+  const match = name.match(/\(([^)]+)\)/);
+  if (!match) return [];
+  return match[1]
+    .split(",")
+    .map((n) => n.trim())
+    .filter(Boolean);
+}
 
 export async function GET() {
   try {
     const session = await auth();
     if (!session) return NextResponse.json({ success: false, message: "Non autorisé" }, { status: 401 });
 
-    const deals = await getActiveBundleDeals();
+    const [deals, activeProfileTests, testsWithMapping, allMappings] = await Promise.all([
+      getActiveBundleDeals(),
+      prisma.test.findMany({
+        where: {
+          priceList: { isActive: true },
+          OR: [
+            { category: { equals: "Profil", mode: "insensitive" } },
+            { category: { equals: "Profile", mode: "insensitive" } },
+          ],
+          code: { not: null },
+          testMappingEntryId: { not: null },
+        },
+        select: {
+          id: true,
+          name: true,
+          code: true,
+          price: true,
+          tubeType: true,
+          turnaroundTime: true,
+          testMappingEntry: {
+            select: {
+              testMappingId: true,
+              testMapping: { select: { canonicalName: true } },
+            },
+          },
+          priceList: {
+            select: {
+              laboratory: { select: { code: true } },
+            },
+          },
+        },
+        orderBy: [{ name: "asc" }],
+      }),
+      prisma.test.findMany({
+        where: {
+          priceList: { isActive: true },
+          code: { not: null },
+          testMappingEntryId: { not: null },
+        },
+        select: {
+          code: true,
+          testMappingEntry: { select: { testMappingId: true } },
+        },
+      }),
+      prisma.testMapping.findMany({
+        select: { id: true, canonicalName: true },
+      }),
+    ]);
 
-    // Batch-resolve all testMappingIds → canonical names in a single query
-    const allIds = [...new Set(deals.flatMap((d) => d.testMappingIds))];
-    const mappings = allIds.length > 0
-      ? await prisma.testMapping.findMany({
-          where: { id: { in: allIds } },
-          select: { id: true, canonicalName: true },
-        })
-      : [];
+    const codeToMappingId = new Map<string, string>();
+    for (const t of testsWithMapping) {
+      if (!t.code || !t.testMappingEntry?.testMappingId) continue;
+      codeToMappingId.set(t.code.toUpperCase(), t.testMappingEntry.testMappingId);
+    }
 
-    const idToName = new Map(mappings.map((m) => [m.id, m.canonicalName]));
+    const profileCodeToComponents = new Map<string, string[]>();
+    const profileCodeToComponentNames = new Map<string, string[]>();
+    const profileCodeToDisplayName = new Map<string, string>();
+    for (const p of cdlSeedData.profiles) {
+      if (p.code && p.componentCodes?.length) profileCodeToComponents.set(p.code.toUpperCase(), p.componentCodes);
+      if (p.code) {
+        const namesFromParens = extractComponentsFromName(p.name);
+        if (namesFromParens.length > 0) profileCodeToComponentNames.set(p.code.toUpperCase(), namesFromParens);
+        profileCodeToDisplayName.set(p.code.toUpperCase(), p.name);
+      }
+    }
+    for (const p of qcSeedData) {
+      if (p.code && p.componentCodes?.length) profileCodeToComponents.set(p.code.toUpperCase(), p.componentCodes);
+      if (p.code && /^profil\b/i.test(p.name)) {
+        const namesFromParens = extractComponentsFromName(p.name);
+        if (namesFromParens.length > 0) profileCodeToComponentNames.set(p.code.toUpperCase(), namesFromParens);
+      }
+      if (p.code) profileCodeToDisplayName.set(p.code.toUpperCase(), p.name);
+    }
 
-    const enriched = deals.map((deal) => {
+    const normalizedCanonical = allMappings.map((m) => ({
+      id: m.id,
+      canonicalName: m.canonicalName,
+      normalized: normalizeLookup(m.canonicalName),
+    }));
+
+    const resolveByCanonicalName = (name: string): string | null => {
+      const target = normalizeLookup(name);
+      if (!target) return null;
+      // Exact normalized match first.
+      const exact = normalizedCanonical.find((m) => m.normalized === target);
+      if (exact) return exact.id;
+      // Prefix/contains fallback for catalog variations.
+      const loose = normalizedCanonical.find(
+        (m) =>
+          (m.normalized.includes(target) || target.includes(m.normalized)) &&
+          Math.min(m.normalized.length, target.length) >= 4
+      );
+      return loose?.id ?? null;
+    };
+
+    const resolveProfileComponents = (profileCode: string | null | undefined): string[] => {
+      if (!profileCode) return [];
+      const components = profileCodeToComponents.get(profileCode.toUpperCase()) ?? [];
+      const componentNames = profileCodeToComponentNames.get(profileCode.toUpperCase()) ?? [];
+      const ids = new Set<string>();
+      for (const code of components) {
+        const id = codeToMappingId.get(code.toUpperCase());
+        if (id) ids.add(id);
+      }
+      for (const componentName of componentNames) {
+        const id = resolveByCanonicalName(componentName);
+        if (id) ids.add(id);
+      }
+      return Array.from(ids);
+    };
+
+    // Add missing profile bundles from active seeded profile tests.
+    const existingKeys = new Set(
+      deals
+        .filter((d) => d.profileCode && d.sourceLabCode)
+        .map((d) => `${d.sourceLabCode}:${d.profileCode}`)
+    );
+
+    const fallbackDeals = activeProfileTests
+      .filter((t) => !!t.code && !!t.testMappingEntry?.testMappingId && !!t.priceList?.laboratory?.code)
+      .filter((t) => !existingKeys.has(`${t.priceList!.laboratory.code}:${t.code!}`))
+      .map((t, idx) => ({
+        id: `auto-${t.priceList!.laboratory.code}-${t.code}`,
+        dealName: cleanProfileName(t.name),
+        description: `Profil ${t.priceList!.laboratory.code} — ${t.code}`,
+        category: "Profil",
+        icon: "🧪",
+        popular: false,
+        sortOrder: 100000 + idx,
+        customRate: t.price,
+        testMappingIds:
+          resolveProfileComponents(t.code).length > 0
+            ? resolveProfileComponents(t.code)
+            : [t.testMappingEntry!.testMappingId],
+        sourceLabCode: t.priceList!.laboratory.code,
+        profileCode: t.code,
+        profilePrice: t.price,
+        isAutoGenerated: true,
+        isActive: true,
+      }));
+
+    const allDeals = [...deals, ...fallbackDeals].map((deal) => {
+      const resolved = resolveProfileComponents(deal.profileCode);
+      // If we can resolve richer component mappings for a profile, prefer them.
+      if (resolved.length > 0) {
+        return { ...deal, testMappingIds: resolved };
+      }
+      return deal;
+    });
+
+    // Resolve canonical names from already-loaded mappings.
+    const allIds = [...new Set(allDeals.flatMap((d) => d.testMappingIds))];
+    const idToName = new Map(allMappings.filter((m) => allIds.includes(m.id)).map((m) => [m.id, m.canonicalName]));
+
+    const profileByLabAndCode = new Map(
+      activeProfileTests
+        .filter((t) => t.code && t.priceList?.laboratory?.code)
+        .map((t) => [`${t.priceList!.laboratory.code}:${t.code!}`, t] as const)
+    );
+
+    const enriched = allDeals.map((deal) => {
       const canonicalNames = deal.testMappingIds
         .map((id) => idToName.get(id))
         .filter((n): n is string => !!n);
 
-      // Enrich with profile metadata (tube type, turnaround, notes)
+      // Enrich with profile metadata (tube type, turnaround, notes).
+      // Fallback to active seeded profile test data when metadata is absent.
+      const profileFromSeed = deal.profileCode && deal.sourceLabCode
+        ? profileByLabAndCode.get(`${deal.sourceLabCode}:${deal.profileCode}`)
+        : null;
       const meta = getProfileMeta(deal.profileCode);
+      const profileCodeKey = deal.profileCode?.toUpperCase();
+      const componentNamesFromSeed = profileCodeKey
+        ? profileCodeToComponentNames.get(profileCodeKey) ?? []
+        : [];
+      const seedDisplayName = profileCodeKey ? profileCodeToDisplayName.get(profileCodeKey) : null;
+      const fallbackParsed = seedDisplayName ? extractComponentsFromName(seedDisplayName) : [];
+      const profileComponentNames =
+        componentNamesFromSeed.length > 0
+          ? componentNamesFromSeed
+          : fallbackParsed.length > 0
+            ? fallbackParsed
+            : canonicalNames;
 
       return {
         ...deal,
         canonicalNames,
-        profileTube: meta?.tube ?? null,
-        profileTurnaround: meta?.turnaroundDays ?? null,
+        profileComponentNames,
+        profileTube: meta?.tube ?? profileFromSeed?.tubeType ?? null,
+        profileTurnaround: meta?.turnaroundDays ?? profileFromSeed?.turnaroundTime ?? null,
         profileNotes: meta?.notes ?? null,
       };
     });

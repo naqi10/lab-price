@@ -33,73 +33,37 @@ interface LabComparisonResult {
 }
 
 /**
- * Fetch turnaround times from Test records in active price lists.
- * Returns a Map keyed by "laboratoryId:testName" → turnaroundTime.
+ * Fetch turnaround times and tube types from Test records, keyed by TestMappingEntry ID.
+ * Uses the direct testMappingEntryId FK to avoid name-matching issues (case, whitespace).
+ * Returns a Map keyed by testMappingEntryId → { turnaroundTime, tubeType }.
  */
-async function fetchTurnaroundTimes(
-  labTestPairs: { laboratoryId: string; localTestName: string }[]
-): Promise<Map<string, string | null>> {
-  if (labTestPairs.length === 0) return new Map();
+async function fetchTestMetaByEntryId(
+  entryIds: string[]
+): Promise<Map<string, { turnaroundTime: string | null; tubeType: string | null }>> {
+  if (entryIds.length === 0) return new Map();
 
-  const labIds = [...new Set(labTestPairs.map((p) => p.laboratoryId))];
-  const testNames = [...new Set(labTestPairs.map((p) => p.localTestName))];
-
+  const unique = [...new Set(entryIds)];
   const tests = await prisma.test.findMany({
     where: {
-      priceList: {
-        laboratoryId: { in: labIds },
-        isActive: true,
-      },
-      name: { in: testNames },
+      testMappingEntryId: { in: unique },
       isActive: true,
+      priceList: { isActive: true },
     },
     select: {
-      name: true,
+      testMappingEntryId: true,
       turnaroundTime: true,
-      priceList: { select: { laboratoryId: true } },
-    },
-  });
-
-  const map = new Map<string, string | null>();
-  for (const test of tests) {
-    const key = `${test.priceList.laboratoryId}:${test.name}`;
-    map.set(key, test.turnaroundTime);
-  }
-  return map;
-}
-
-/**
- * Fetch tube types from Test records in active price lists.
- * Returns a Map keyed by "laboratoryId:testName" → tubeType.
- */
-async function fetchTubeTypes(
-  labTestPairs: { laboratoryId: string; localTestName: string }[]
-): Promise<Map<string, string | null>> {
-  if (labTestPairs.length === 0) return new Map();
-
-  const labIds = [...new Set(labTestPairs.map((p) => p.laboratoryId))];
-  const testNames = [...new Set(labTestPairs.map((p) => p.localTestName))];
-
-  const tests = await prisma.test.findMany({
-    where: {
-      priceList: {
-        laboratoryId: { in: labIds },
-        isActive: true,
-      },
-      name: { in: testNames },
-      isActive: true,
-    },
-    select: {
-      name: true,
       tubeType: true,
-      priceList: { select: { laboratoryId: true } },
     },
   });
 
-  const map = new Map<string, string | null>();
+  const map = new Map<string, { turnaroundTime: string | null; tubeType: string | null }>();
   for (const test of tests) {
-    const key = `${test.priceList.laboratoryId}:${test.name}`;
-    map.set(key, test.tubeType);
+    if (test.testMappingEntryId && !map.has(test.testMappingEntryId)) {
+      map.set(test.testMappingEntryId, {
+        turnaroundTime: test.turnaroundTime,
+        tubeType: test.tubeType,
+      });
+    }
   }
   return map;
 }
@@ -136,18 +100,15 @@ export async function compareLabPrices(
     throw new Error("Aucun test mapping trouvé");
   }
 
-  // Collect all (lab, testName) pairs to fetch turnaround times in one query
-  const labTestPairs: { laboratoryId: string; localTestName: string }[] = [];
+  // Collect all entry IDs to fetch turnaround times and tube types in one query
+  const entryIds: string[] = [];
   for (const mapping of testMappings) {
     for (const entry of mapping.entries) {
       if (!entry.laboratory.isActive) continue;
-      labTestPairs.push({ laboratoryId: entry.laboratory.id, localTestName: entry.localTestName });
+      entryIds.push(entry.id);
     }
   }
-  const [tatMap, tubeMap] = await Promise.all([
-    fetchTurnaroundTimes(labTestPairs),
-    fetchTubeTypes(labTestPairs),
-  ]);
+  const metaMap = await fetchTestMetaByEntryId(entryIds);
 
   const labResults = new Map<string, LabComparisonResult>();
 
@@ -169,8 +130,10 @@ export async function compareLabPrices(
       }
       const result = labResults.get(labId)!;
       const price = entry.price;
-      const turnaroundTime = tatMap.get(`${labId}:${entry.localTestName}`) ?? null;
-      const tubeType = tubeMap.get(`${labId}:${entry.localTestName}`) ?? null;
+      const meta = metaMap.get(entry.id);
+      // entry.duration is the per-lab TAT stored directly on the mapping entry (no extra query)
+      const turnaroundTime = entry.duration ?? meta?.turnaroundTime ?? null;
+      const tubeType = meta?.tubeType ?? null;
       result.tests.push({
         testMappingId: mapping.id,
         canonicalName: mapping.canonicalName,
@@ -202,6 +165,20 @@ export async function compareLabPrices(
  * @param testMappingIds - Array of TestMapping IDs
  * @returns Structured comparison data with price matrix
  */
+/** Normalize a name for fuzzy comparison: strip accents, lowercase, keep letters and digits. */
+function normalizeName(s: string): string {
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+/** Word-overlap (Jaccard) score between two normalized strings. */
+function wordOverlap(a: string, b: string): number {
+  const wa = new Set(a.split(" ").filter((w) => w.length > 2));
+  const wb = new Set(b.split(" ").filter((w) => w.length > 2));
+  if (wa.size === 0 || wb.size === 0) return 0;
+  const intersection = [...wa].filter((w) => wb.has(w)).length;
+  return intersection / Math.max(wa.size, wb.size);
+}
+
 export async function getComparisonDetails(testMappingIds: string[]) {
   const results = await compareLabPrices(testMappingIds);
 
@@ -239,6 +216,71 @@ export async function getComparisonDetails(testMappingIds: string[]) {
       matchMatrix[mapping.id][lab.id] = test
         ? { matchType: test.matchType, similarity: test.similarity, localTestName: test.localTestName }
         : null;
+    }
+  }
+
+  // ── Fallback: fill null prices via direct name-match in each lab's catalog ──
+  // When a lab is missing a TestMappingEntry for a test, try to find a matching
+  // Test record by normalized name (word overlap ≥ 0.6).
+  const labsWithGaps = laboratories.filter((lab) =>
+    testMappings.some((m) => priceMatrix[m.id][lab.id] == null)
+  );
+
+  if (labsWithGaps.length > 0) {
+    const gapLabIds = labsWithGaps.map((l) => l.id);
+
+    // Batch-fetch all active tests for labs that have gaps
+    const directTests = await prisma.test.findMany({
+      where: {
+        isActive: true,
+        priceList: { isActive: true, laboratoryId: { in: gapLabIds } },
+      },
+      select: {
+        name: true,
+        price: true,
+        turnaroundTime: true,
+        tubeType: true,
+        priceList: { select: { laboratoryId: true } },
+      },
+    });
+
+    // Index by labId
+    const labCatalog = new Map<string, { normName: string; name: string; price: number; tat: string | null; tubeType: string | null }[]>();
+    for (const t of directTests) {
+      const labId = t.priceList.laboratoryId;
+      if (!labCatalog.has(labId)) labCatalog.set(labId, []);
+      labCatalog.get(labId)!.push({
+        normName: normalizeName(t.name),
+        name: t.name,
+        price: t.price!,
+        tat: t.turnaroundTime,
+        tubeType: t.tubeType,
+      });
+    }
+
+    // For each (mapping, lab) pair that still has no price, find best name match
+    for (const mapping of testMappings) {
+      const normCanonical = normalizeName(mapping.canonicalName);
+      for (const lab of labsWithGaps) {
+        if (priceMatrix[mapping.id][lab.id] != null) continue;
+        const catalog = labCatalog.get(lab.id) ?? [];
+        let bestScore = 0;
+        let bestMatch: (typeof catalog)[number] | null = null;
+        for (const entry of catalog) {
+          const score = wordOverlap(normCanonical, entry.normName);
+          if (score > bestScore) { bestScore = score; bestMatch = entry; }
+        }
+        if (bestMatch && bestScore >= 0.6) {
+          priceMatrix[mapping.id][lab.id] = bestMatch.price;
+          tatMatrix[mapping.id][lab.id] = bestMatch.tat;
+          tubeTypeMatrix[mapping.id][lab.id] = bestMatch.tubeType;
+          matchMatrix[mapping.id][lab.id] = {
+            matchType: "FUZZY",
+            similarity: bestScore,
+            localTestName: bestMatch.name,
+          };
+        }
+      }
     }
   }
 
@@ -355,17 +397,17 @@ export async function buildComparisonResult(data: {
     );
   }
 
-  // ── Collect (lab, testName) pairs for turnaround time lookup ─────────────
-  const labTestPairs: { laboratoryId: string; localTestName: string }[] = [];
+  // ── Collect entry IDs for turnaround time lookup ─────────────────────────
+  const entryIds2: string[] = [];
   for (const mapping of testMappings) {
     for (const entry of mapping.entries) {
       if (!entry.laboratory.isActive) continue;
       const cpKey = `${mapping.id}-${entry.laboratory.id}`;
       if (entry.price == null && !(customPrices?.[cpKey] != null)) continue;
-      labTestPairs.push({ laboratoryId: entry.laboratory.id, localTestName: entry.localTestName });
+      entryIds2.push(entry.id);
     }
   }
-  const tatMap = await fetchTurnaroundTimes(labTestPairs);
+  const metaMap2 = await fetchTestMetaByEntryId(entryIds2);
 
   // ── Build per-lab price map ──────────────────────────────────────────────
   const labMap = new Map<
@@ -411,7 +453,7 @@ export async function buildComparisonResult(data: {
         canonicalName: mapping.canonicalName,
         localTestName: entry.localTestName,
         price: effectivePrice,
-        turnaroundTime: tatMap.get(`${labId}:${entry.localTestName}`) ?? null,
+        turnaroundTime: entry.duration ?? metaMap2.get(entry.id)?.turnaroundTime ?? null,
       });
       lab.totalPrice += effectivePrice;
     }

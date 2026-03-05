@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { formatCurrency, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import MatchIndicator from "@/components/tests/match-indicator";
@@ -9,9 +9,20 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link2, Check, Zap, DollarSign, RotateCcw, Clock, X } from "lucide-react";
+import { Link2, Check, Zap, DollarSign, RotateCcw, Clock, X, Package } from "lucide-react";
 import { parseTubeColor } from "@/lib/tube-colors";
 
+
+interface BundleGroup {
+  bundleId: string;
+  bundleName: string;
+  customRate: number;
+  testIds: string[];
+  componentNames?: string[];
+  profileTube?: string | null;
+  profileTurnaround?: string | null;
+  profileNotes?: string | null;
+}
 
 interface ComparisonTableData {
   tests: {
@@ -29,6 +40,7 @@ interface ComparisonTableData {
     Record<string, { matchType: string; similarity: number; localTestName: string } | null>
   >;
   onCreateMapping?: (testMappingId: string, laboratoryId: string) => void;
+  bundleGroups?: BundleGroup[];
 }
 
 function getEffectivePrice(
@@ -177,10 +189,11 @@ export default function ComparisonTable({
       }, 0)
     : 0;
 
-  // Calculate quickest lab overall (by average turnaround time)
+  // Calculate quickest lab overall (by average TAT) — only meaningful when ≥2 labs have TAT
   const quickestLabId = useMemo(() => {
     let quickestId = "";
     let quickestAvg = Infinity;
+    let labsWithTat = 0;
     for (const lab of visibleLabs) {
       const times: number[] = [];
       for (const test of data.tests) {
@@ -191,6 +204,7 @@ export default function ComparisonTable({
         }
       }
       if (times.length > 0) {
+        labsWithTat++;
         const avg = times.reduce((a, b) => a + b, 0) / times.length;
         if (avg < quickestAvg) {
           quickestAvg = avg;
@@ -198,7 +212,7 @@ export default function ComparisonTable({
         }
       }
     }
-    return quickestId;
+    return labsWithTat >= 2 ? quickestId : "";
   }, [visibleLabs, data.tests]);
 
   return (
@@ -303,7 +317,24 @@ export default function ComparisonTable({
 
               {/* ── Body rows ── */}
               <tbody>
-                {data.tests.map((test, rowIdx) => {
+                {(() => {
+                  // Build a map of testId → bundle for group headers
+                  const testToBundleMap = new Map<string, BundleGroup>();
+                  const testNameById = new Map(data.tests.map((t) => [t.id, t.canonicalName]));
+                  if (data.bundleGroups) {
+                    for (const bundle of data.bundleGroups) {
+                      for (const testId of bundle.testIds) {
+                        testToBundleMap.set(testId, bundle);
+                      }
+                    }
+                  }
+                  // Track which bundle headers have already been rendered
+                  const renderedBundleIds = new Set<string>();
+                  return data.tests.map((test, rowIdx) => {
+                  const bundle = testToBundleMap.get(test.id);
+                  const showBundleHeader = bundle && !renderedBundleIds.has(bundle.bundleId);
+                  if (showBundleHeader) renderedBundleIds.add(bundle.bundleId);
+
                   const effectivePrices: Record<string, number> = {};
                   visibleLabs.forEach((lab) => {
                     const eff = getEffectivePrice(test.id, lab.id, test.prices[lab.id], customPrices);
@@ -313,13 +344,15 @@ export default function ComparisonTable({
                     ? Math.min(...Object.values(effectivePrices))
                     : null;
 
-                  // Compute fastest TAT for this row
+                  // Compute fastest TAT for this row (only meaningful when ≥2 labs have TAT data)
                   let minTatHours = Infinity;
                   let minTatLabId = "";
+                  let tatLabCount = 0;
                   visibleLabs.forEach((lab) => {
                     const tat = test.turnaroundTimes?.[lab.id];
                     if (tat && effectivePrices[lab.id] != null) {
                       const hours = parseTatToHours(tat);
+                      tatLabCount++;
                       if (hours < minTatHours) {
                         minTatHours = hours;
                         minTatLabId = lab.id;
@@ -333,8 +366,53 @@ export default function ComparisonTable({
                   );
 
                   return (
+                    <React.Fragment key={test.id}>
+                    {showBundleHeader && bundle && (
+                      <tr className="border-b border-border/30 bg-primary/5">
+                        <td
+                          colSpan={visibleLabs.length + 1}
+                          className="px-3 sm:px-4 py-2"
+                        >
+                          <div className="flex items-start gap-2">
+                            <Package className="h-3.5 w-3.5 text-primary/60 shrink-0" />
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-semibold text-primary/80">
+                                  {bundle.bundleName}
+                                </span>
+                                <span className="text-xs text-muted-foreground/60">
+                                  — {bundle.testIds.length} test{bundle.testIds.length !== 1 ? "s" : ""}
+                                </span>
+                              </div>
+                              {(() => {
+                                const componentNames =
+                                  bundle.componentNames && bundle.componentNames.length > 0
+                                    ? bundle.componentNames
+                                    : bundle.testIds
+                                        .map((id) => testNameById.get(id))
+                                        .filter((name): name is string => !!name);
+                                const preview = componentNames.slice(0, 4);
+                                const remaining = componentNames.length - preview.length;
+                                return (
+                                  <p className="text-xs text-muted-foreground/70 mt-0.5 leading-snug">
+                                    {preview.join(" • ")}
+                                    {remaining > 0 ? ` • +${remaining} autres` : ""}
+                                  </p>
+                                );
+                              })()}
+                              {(bundle.profileTube || bundle.profileTurnaround || bundle.profileNotes) && (
+                                <p className="text-[11px] text-muted-foreground/70 mt-0.5 leading-snug">
+                                  {bundle.profileTube ? `Tube: ${bundle.profileTube}` : ""}
+                                  {bundle.profileTurnaround ? `${bundle.profileTube ? " · " : ""}Délai: ${bundle.profileTurnaround}` : ""}
+                                  {bundle.profileNotes ? `${bundle.profileTube || bundle.profileTurnaround ? " · " : ""}${bundle.profileNotes}` : ""}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
                     <tr
-                      key={test.id}
                       className={cn(
                         "border-b border-border/20 transition-colors",
                         rowIdx % 2 === 0 ? "bg-transparent" : "bg-muted/[0.03]",
@@ -359,7 +437,7 @@ export default function ComparisonTable({
                             {primaryTube && (
                               <span className="inline-flex items-center gap-1 text-sm text-muted-foreground/80">
                                 <span
-                                  className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-white/10"
+                                  className="inline-block h-2.5 w-2.5 min-h-[10px] min-w-[10px] shrink-0 rounded-full ring-1 ring-black/15"
                                   style={{ backgroundColor: primaryTube.color }}
                                 />
                                 {primaryTube.label}
@@ -380,7 +458,7 @@ export default function ComparisonTable({
                         const isCustomPrice = customPrices[customKey] !== undefined;
                         const effectivePrice = getEffectivePrice(test.id, lab.id, rawPrice, customPrices);
                         const isCheapest    = minPrice != null && effectivePrice != null && effectivePrice <= minPrice;
-                        const isFastestInRow = minTatLabId === lab.id && minTatHours !== Infinity && visibleLabs.length > 1;
+                        const isFastestInRow = minTatLabId === lab.id && minTatHours !== Infinity && tatLabCount >= 2;
                         const isSelected    = selectedLabId === lab.id;
 
                         return (
@@ -497,12 +575,12 @@ export default function ComparisonTable({
                                   {tube && (
                                     <Tooltip>
                                       <TooltipTrigger asChild>
-                                        <span className="inline-flex items-center gap-1">
+                                        <span className="inline-flex items-center gap-1 max-w-[120px]">
                                           <span
-                                            className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-white/10"
+                                            className="inline-block h-2.5 w-2.5 min-h-[10px] min-w-[10px] rounded-full ring-1 ring-black/15 shrink-0"
                                             style={{ backgroundColor: tube.color }}
                                           />
-                                          <span className="text-sm text-muted-foreground/70">{tube.label}</span>
+                                          <span className="text-sm text-muted-foreground/70 truncate">{tube.label}</span>
                                         </span>
                                       </TooltipTrigger>
                                       <TooltipContent side="top">{tube.label}</TooltipContent>
@@ -557,8 +635,10 @@ export default function ComparisonTable({
                         );
                       })}
                     </tr>
+                    </React.Fragment>
                   );
-                })}
+                });
+                })()}
               </tbody>
 
               {/* ── Footer totals ── */}

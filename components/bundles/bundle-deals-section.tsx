@@ -68,21 +68,25 @@ export default function BundleDealsSection() {
             const { laboratories, priceMatrix, bestLaboratory } = compData.data;
             const originalTotal: number | null = bestLaboratory?.totalPrice ?? null;
 
-            // Build customPrices: distribute customRate proportionally across all labs
+            // Build customPrices: distribute customRate proportionally.
+            // Only apply the discount when a lab has ALL bundle tests (full coverage).
             const customPrices: Record<string, number> = {};
             for (const lab of laboratories) {
+              const hasAllTests = deal.testMappingIds.every(
+                (testId) => (priceMatrix[testId]?.[lab.id] ?? null) != null
+              );
+              if (!hasAllTests) continue;
+
               let labTotal = 0;
               for (const testId of deal.testMappingIds) {
-                labTotal += priceMatrix[testId]?.[lab.id] ?? 0;
+                labTotal += priceMatrix[testId]![lab.id]!;
               }
               if (labTotal === 0) continue;
 
               const ratio = deal.customRate / labTotal;
               for (const testId of deal.testMappingIds) {
-                const origPrice = priceMatrix[testId]?.[lab.id];
-                if (origPrice != null) {
-                  customPrices[`${testId}-${lab.id}`] = Math.round(origPrice * ratio * 100) / 100;
-                }
+                const origPrice = priceMatrix[testId]![lab.id]!;
+                customPrices[`${testId}-${lab.id}`] = Math.round(origPrice * ratio * 100) / 100;
               }
             }
 

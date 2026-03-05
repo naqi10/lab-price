@@ -113,7 +113,7 @@ export default function TestCart({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span
-                      className="inline-block h-2 w-2 rounded-full shrink-0 ring-1 ring-white/10"
+                      className="inline-block h-2 w-2 rounded-full shrink-0 ring-1 ring-black/15"
                       style={{ backgroundColor: tube.color }}
                     />
                   </TooltipTrigger>

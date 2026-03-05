@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Plus, Trash2 } from "lucide-react";
+import { parseTubeColor } from "@/lib/tube-colors";
 
 interface MappingEntry {
   laboratoryId: string;
@@ -16,6 +17,15 @@ interface MappingEntry {
   code: string;
   duration: string;
 }
+
+const TUBE_OPTIONS = [
+  { value: "red", label: "Rouge (sec)", dot: "🔴" },
+  { value: "purple", label: "Violet (EDTA)", dot: "🟣" },
+  { value: "blue", label: "Bleu (citrate)", dot: "🔵" },
+  { value: "green", label: "Vert (héparine)", dot: "🟢" },
+  { value: "gold", label: "Or (gel séparateur)", dot: "🟡" },
+  { value: "gray", label: "Gris (fluorure)", dot: "⚪" },
+];
 
 interface TestMappingFormProps {
   open: boolean;
@@ -29,7 +39,15 @@ interface TestMappingFormProps {
     category?: string;
     description?: string;
     tubeType?: string;
-    entries?: { laboratoryId: string; localTestName: string; price?: number | null; code?: string | null; duration?: string | null; laboratory?: { id: string; name: string } }[];
+    entries?: {
+      laboratoryId: string;
+      localTestName: string;
+      price?: number | null;
+      code?: string | null;
+      duration?: string | null;
+      tests?: { code?: string | null; turnaroundTime?: string | null }[];
+      laboratory?: { id: string; name: string };
+    }[];
   };
 }
 
@@ -56,15 +74,23 @@ export default function TestMappingForm({
       setCategory(editData.category || "");
       setDescription(editData.description || "");
       setTubeType(editData.tubeType || "");
+      const entryByLab = new Map(
+        (editData.entries || []).map((e) => [e.laboratoryId || e.laboratory?.id || "", e])
+      );
       setEntries(
-        (editData.entries || []).map((e) => ({
-          laboratoryId: e.laboratoryId || e.laboratory?.id || "",
-          laboratoryName: e.laboratory?.name || "",
-          testName: e.localTestName || "",
-          price: e.price != null ? String(e.price) : "",
-          code: e.code || "",
-          duration: e.duration || "",
-        }))
+        laboratories.map((lab) => {
+          const e = entryByLab.get(lab.id);
+          const fallback = e?.tests?.[0];
+          return {
+            laboratoryId: lab.id,
+            laboratoryName: lab.name,
+            testName: e?.localTestName || "",
+            price: e?.price != null ? String(e.price) : "",
+            // Prefer explicit mapping fields, then fallback to seeded active tests.
+            code: e?.code || fallback?.code || "",
+            duration: e?.duration || fallback?.turnaroundTime || "",
+          };
+        })
       );
     } else {
       setCanonicalName("");
@@ -72,17 +98,27 @@ export default function TestMappingForm({
       setCategory("");
       setDescription("");
       setTubeType("");
-      setEntries([]);
+      setEntries(
+        laboratories.map((lab) => ({
+          laboratoryId: lab.id,
+          laboratoryName: lab.name,
+          testName: "",
+          price: "",
+          code: "",
+          duration: "",
+        }))
+      );
     }
-  }, [editData, open]);
+  }, [editData, open, laboratories]);
 
   const handleSubmit = async () => {
-    if (!canonicalName || entries.length === 0) return;
+    const validEntries = entries.filter((e) => e.testName.trim().length > 0);
+    if (!canonicalName || validEntries.length === 0) return;
     setIsLoading(true);
     try {
       await onSubmit({
         canonicalName, code, category, description, tubeType,
-        entries: entries.map((e) => ({
+        entries: validEntries.map((e) => ({
           ...e,
           price: e.price !== "" ? parseFloat(e.price) : null,
           code: e.code || null,
@@ -154,13 +190,22 @@ export default function TestMappingForm({
                 className="flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground transition-colors hover:border-border/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer"
               >
                 <option value="">Sélectionner un type de tube</option>
-                <option value="red">Rouge (sec)</option>
-                <option value="purple">Violet (EDTA)</option>
-                <option value="blue">Bleu (citrate)</option>
-                <option value="green">Vert (héparine)</option>
-                <option value="gold">Or (gel séparateur)</option>
-                <option value="gray">Gris (fluorure)</option>
+                {TUBE_OPTIONS.map((tube) => (
+                  <option key={tube.value} value={tube.value}>
+                    {tube.dot} {tube.label}
+                  </option>
+                ))}
               </select>
+              {tubeType && (() => {
+                const tube = parseTubeColor(tubeType);
+                if (!tube) return null;
+                return (
+                  <div className="inline-flex items-center gap-2 rounded-md border border-border/60 bg-muted/30 px-2.5 py-1 text-xs text-foreground">
+                    <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: tube.color }} />
+                    <span>{tube.label}</span>
+                  </div>
+                );
+              })()}
             </div>
           </div>
 
@@ -177,14 +222,22 @@ export default function TestMappingForm({
           <div className="space-y-2">
             <Label>Correspondances par laboratoire *</Label>
             {entries.map((entry, i) => (
-              <div key={i} className="flex flex-col gap-1.5 rounded-md border border-border/50 bg-muted/20 p-2.5">
+              <div key={entry.laboratoryId} className="flex flex-col gap-1.5 rounded-md border border-border/50 bg-muted/20 p-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium truncate">{entry.laboratoryName}</span>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-7 w-7 shrink-0"
-                    onClick={() => setEntries(entries.filter((_, idx) => idx !== i))}
+                    onClick={() =>
+                      setEntries((prev) =>
+                        prev.map((row, idx) =>
+                          idx === i
+                            ? { ...row, testName: "", price: "", code: "", duration: "" }
+                            : row
+                        )
+                      )
+                    }
                   >
                     <Trash2 className="h-3.5 w-3.5 text-destructive" />
                   </Button>
@@ -220,23 +273,29 @@ export default function TestMappingForm({
               </div>
             ))}
             <div className="flex flex-wrap gap-2 mt-2">
-              {laboratories
-                .filter((lab) => !entries.find((e) => e.laboratoryId === lab.id))
-                .map((lab) => (
+              {laboratories.map((lab) => {
+                const existing = entries.find((e) => e.laboratoryId === lab.id);
+                const isFilled = !!existing?.testName || !!existing?.price || !!existing?.code || !!existing?.duration;
+                if (isFilled) return null;
+                return (
                   <Button
                     key={lab.id}
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setEntries([
-                        ...entries,
-                        { laboratoryId: lab.id, laboratoryName: lab.name, testName: "", price: "", code: "", duration: "" },
-                      ])
+                      setEntries((prev) =>
+                        prev.map((row) =>
+                          row.laboratoryId === lab.id
+                            ? { ...row, testName: row.testName || canonicalName }
+                            : row
+                        )
+                      )
                     }
                   >
                     <Plus className="h-3 w-3 mr-1" /> {lab.name}
                   </Button>
-                ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -246,7 +305,7 @@ export default function TestMappingForm({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isLoading || !canonicalName || entries.length === 0}
+            disabled={isLoading || !canonicalName || entries.every((e) => e.testName.trim().length === 0)}
           >
             {isLoading ? "Enregistrement..." : "Enregistrer"}
           </Button>

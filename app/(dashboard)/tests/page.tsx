@@ -59,6 +59,12 @@ interface ActiveDeal {
   popular: boolean;
   testMappingIds: string[];
   canonicalNames: string[];
+  profileComponentNames?: string[];
+  profileTube?: string | null;
+  profileTurnaround?: string | null;
+  profileNotes?: string | null;
+  sourceLabCode?: string | null;
+  profileCode?: string | null;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -213,24 +219,29 @@ function UnifiedTestsContent() {
   }, [allIdsKey]);
 
   // ── Bundle custom prices (proportional distribution of customRate) ───────
+  // Only apply the bundle discount ratio when a lab offers ALL tests in the bundle.
+  // Partial-coverage labs show their individual prices without bundle adjustment.
   const bundleCustomPrices = useMemo(() => {
     if (selectedBundles.length === 0 || !comparison) return {};
     const prices: Record<string, number> = {};
     const priceMatrix = comparison.priceMatrix || {};
     for (const bundle of selectedBundles) {
       for (const lab of comparison.laboratories || []) {
+        // Check full coverage: every test in the bundle must have a price for this lab
+        const hasAllTests = bundle.testMappingIds.every(
+          (tmId) => (priceMatrix[tmId]?.[lab.id] ?? null) != null
+        );
+        if (!hasAllTests) continue; // skip partial-coverage labs
+
         let labTotal = 0;
         for (const tmId of bundle.testMappingIds) {
-          labTotal += priceMatrix[tmId]?.[lab.id] ?? 0;
+          labTotal += priceMatrix[tmId]![lab.id]!;
         }
         if (labTotal === 0) continue;
         const ratio = bundle.customRate / labTotal;
         for (const tmId of bundle.testMappingIds) {
-          const origPrice = priceMatrix[tmId]?.[lab.id];
-          if (origPrice != null) {
-            prices[`${tmId}-${lab.id}`] =
-              Math.round(origPrice * ratio * 100) / 100;
-          }
+          const origPrice = priceMatrix[tmId]![lab.id]!;
+          prices[`${tmId}-${lab.id}`] = Math.round(origPrice * ratio * 100) / 100;
         }
       }
     }
@@ -364,19 +375,41 @@ function UnifiedTestsContent() {
 
   const handlePresetCheapest = useCallback(() => {
     if (!tableData) return;
+    const totalTests = tableData.tests.length;
+    // Find best lab: prefer most coverage, then lowest total among equal-coverage labs
+    let bestLabId: string | null = null;
+    let bestCoverage = -1;
+    let bestTotal = Infinity;
+    for (const lab of tableData.laboratories) {
+      let total = 0;
+      let coverage = 0;
+      for (const test of tableData.tests) {
+        const price = mergedCustomPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
+        if (price != null) { total += price; coverage++; }
+      }
+      if (coverage === 0) continue;
+      if (coverage > bestCoverage || (coverage === bestCoverage && total < bestTotal)) {
+        bestCoverage = coverage; bestTotal = total; bestLabId = lab.id;
+      }
+    }
+    if (!bestLabId) return;
     const next: Record<string, string> = {};
     for (const test of tableData.tests) {
-      let cheapestLabId: string | null = null;
-      let cheapestPrice = Infinity;
-      for (const lab of tableData.laboratories) {
-        const price =
-          mergedCustomPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
-        if (price != null && price < cheapestPrice) {
-          cheapestPrice = price;
-          cheapestLabId = lab.id;
+      const price = mergedCustomPrices[`${test.id}-${bestLabId}`] ?? test.prices[bestLabId];
+      if (price != null) next[test.id] = bestLabId;
+    }
+    // If selected lab doesn't cover all tests, also assign cheapest available for missing ones
+    if (bestCoverage < totalTests) {
+      for (const test of tableData.tests) {
+        if (next[test.id]) continue;
+        let fallbackLabId: string | null = null;
+        let fallbackPrice = Infinity;
+        for (const lab of tableData.laboratories) {
+          const price = mergedCustomPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
+          if (price != null && price < fallbackPrice) { fallbackPrice = price; fallbackLabId = lab.id; }
         }
+        if (fallbackLabId) next[test.id] = fallbackLabId;
       }
-      if (cheapestLabId) next[test.id] = cheapestLabId;
     }
     setSelections(next);
     setSelectionMode("CHEAPEST");
@@ -384,24 +417,56 @@ function UnifiedTestsContent() {
 
   const handlePresetQuickest = useCallback(() => {
     if (!tableData) return;
+    const totalTests = tableData.tests.length;
+    // Find best lab: prefer most coverage, then best average TAT among equal-coverage labs
+    let bestLabId: string | null = null;
+    let bestCoverage = -1;
+    let bestAvgTat = Infinity;
+    let bestTotal = Infinity;
+    for (const lab of tableData.laboratories) {
+      let labTotal = 0;
+      let coverage = 0;
+      const times: number[] = [];
+      for (const test of tableData.tests) {
+        const price = mergedCustomPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
+        if (price != null) { labTotal += price; coverage++; }
+        const hours = parseTatToHours(test.turnaroundTimes?.[lab.id]);
+        if (hours !== Infinity) times.push(hours);
+      }
+      if (coverage === 0) continue;
+      const avgTat = times.length > 0 ? times.reduce((a, b) => a + b, 0) / times.length : Infinity;
+      const isBetter = coverage > bestCoverage
+        || (coverage === bestCoverage && avgTat < bestAvgTat)
+        || (coverage === bestCoverage && avgTat === bestAvgTat && labTotal < bestTotal);
+      if (isBetter) { bestCoverage = coverage; bestAvgTat = avgTat; bestTotal = labTotal; bestLabId = lab.id; }
+    }
+    if (!bestLabId) return;
     const next: Record<string, string> = {};
     for (const test of tableData.tests) {
-      let quickestLabId: string | null = null;
-      let quickestHours = Infinity;
-      for (const lab of tableData.laboratories) {
-        if (test.prices[lab.id] == null) continue;
-        const tat = test.turnaroundTimes?.[lab.id];
-        const hours = parseTatToHours(tat);
-        if (hours < quickestHours) {
-          quickestHours = hours;
-          quickestLabId = lab.id;
+      const price = mergedCustomPrices[`${test.id}-${bestLabId}`] ?? test.prices[bestLabId];
+      if (price != null) next[test.id] = bestLabId;
+    }
+    // If selected lab doesn't cover all tests, fill missing ones with fastest available
+    if (bestCoverage < totalTests) {
+      for (const test of tableData.tests) {
+        if (next[test.id]) continue;
+        let fallbackLabId: string | null = null;
+        let fallbackHours = Infinity;
+        let fallbackPrice = Infinity;
+        for (const lab of tableData.laboratories) {
+          const price = mergedCustomPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
+          if (price == null) continue;
+          const hours = parseTatToHours(test.turnaroundTimes?.[lab.id]);
+          if (hours < fallbackHours || (hours === fallbackHours && price < fallbackPrice)) {
+            fallbackHours = hours; fallbackPrice = price; fallbackLabId = lab.id;
+          }
         }
+        if (fallbackLabId) next[test.id] = fallbackLabId;
       }
-      if (quickestLabId) next[test.id] = quickestLabId;
     }
     setSelections(next);
     setSelectionMode("FASTEST");
-  }, [tableData]);
+  }, [tableData, mergedCustomPrices]);
 
   const handleClearSelections = useCallback(() => {
     setSelections({});
@@ -551,67 +616,100 @@ function UnifiedTestsContent() {
             {!showBundles ? (
               <button
                 onClick={() => setShowBundles(true)}
-                className="w-full mt-3 py-3 flex items-center justify-center gap-2 text-foreground font-semibold text-base hover:text-foreground/70 transition-colors border border-border rounded-xl hover:border-border/80 hover:bg-muted/50"
+                className="w-full mt-3 py-3.5 flex items-center justify-center gap-2 text-black font-semibold text-base sm:text-lg transition-colors border border-slate-300 rounded-xl bg-white hover:bg-slate-100"
               >
-                <Package className="h-4 w-4" />
+                <Package className="h-4 w-4 text-black" />
                 Voir les offres groupées
                 {!bundlesLoading && availableBundles.length > 0 && (
-                  <span className="text-sm text-muted-foreground">({availableBundles.length})</span>
+                  <span className="text-sm text-slate-600">({availableBundles.length})</span>
                 )}
               </button>
             ) : (
-              <div className="space-y-2 mt-2">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              <div className="space-y-2 mt-2 rounded-2xl border border-slate-300 bg-white p-2.5 sm:p-3 shadow-sm">
+                <div className="flex items-center justify-between mb-1 px-1">
+                  <p className="text-sm sm:text-base font-semibold text-black uppercase tracking-wide">
                     Offres groupées
                   </p>
                   <button
                     onClick={() => setShowBundles(false)}
-                    className="text-xs text-muted-foreground/60 hover:text-foreground/80 transition-colors"
+                    className="text-sm text-slate-600 hover:text-black transition-colors"
                   >
                     Réduire
                   </button>
                 </div>
-                {bundlesLoading && (
-                  <div className="space-y-2">
-                    <Skeleton className="h-12 rounded-lg" />
-                    <Skeleton className="h-12 rounded-lg" />
-                  </div>
-                )}
-                {availableBundles.map((bundle) => {
-                  const isSelected = selectedBundleIds.has(bundle.id);
-                  return (
-                    <button
-                      key={bundle.id}
-                      onClick={() => toggleBundle(bundle)}
-                      className={`w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all group ${
-                        isSelected
-                          ? "border-primary/40 bg-primary/8"
-                          : "border-border/30 hover:border-primary/30 hover:bg-muted/30"
-                      }`}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm sm:text-base font-semibold truncate text-foreground">
-                          {cleanBundleName(bundle.dealName)}
-                        </p>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          {formatCurrency(bundle.customRate)}
-                        </p>
-                        {bundle.canonicalNames.length > 0 && (
-                          <p className="text-xs text-muted-foreground/60 truncate mt-0.5">
-                            {bundle.canonicalNames.slice(0, 3).join(" · ")}
-                            {bundle.canonicalNames.length > 3 && "…"}
+
+                <div className="max-h-[300px] sm:max-h-[360px] overflow-y-auto pr-1 space-y-2">
+                  {bundlesLoading && (
+                    <div className="space-y-2">
+                      <Skeleton className="h-16 rounded-lg" />
+                      <Skeleton className="h-16 rounded-lg" />
+                    </div>
+                  )}
+                  {availableBundles.map((bundle) => {
+                    const isSelected = selectedBundleIds.has(bundle.id);
+                    const tube = parseTubeColor(bundle.profileTube);
+                    return (
+                      <button
+                        key={bundle.id}
+                        onClick={() => toggleBundle(bundle)}
+                        className={`w-full flex items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-all group ${
+                          isSelected
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-slate-200 bg-white hover:border-blue-300 hover:bg-slate-50"
+                        }`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-base sm:text-lg font-semibold truncate text-black">
+                            {cleanBundleName(bundle.dealName)}
                           </p>
+                          <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
+                            {bundle.sourceLabCode && (
+                              <Badge variant="outline" className="text-[10px] text-slate-700 border-slate-300">
+                                {bundle.sourceLabCode}
+                              </Badge>
+                            )}
+                            {bundle.profileCode && (
+                              <Badge variant="secondary" className="text-[10px]">
+                                {bundle.profileCode}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm sm:text-base text-slate-700 font-medium">
+                            {formatCurrency(bundle.customRate)}
+                          </p>
+                          {(tube || bundle.profileTurnaround) && (
+                            <p className="text-xs sm:text-sm text-slate-600 mt-0.5 flex items-center gap-2">
+                              {tube && (
+                                <span className="inline-flex items-center gap-1">
+                                  <span
+                                    className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-black/10"
+                                    style={{ backgroundColor: tube.color }}
+                                  />
+                                  <span>{tube.label}</span>
+                                </span>
+                              )}
+                              {bundle.profileTurnaround && <span>· {bundle.profileTurnaround}</span>}
+                            </p>
+                          )}
+                          {bundle.canonicalNames.length > 0 && (
+                            <p className="text-sm text-slate-600 truncate mt-0.5">
+                              {bundle.canonicalNames.slice(0, 3).join(" · ")}
+                              {bundle.canonicalNames.length > 3 && "…"}
+                            </p>
+                          )}
+                        </div>
+                        {isSelected ? (
+                          <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0" />
+                        ) : (
+                          <Plus className="h-4 w-4 text-slate-500 group-hover:text-blue-600 shrink-0" />
                         )}
-                      </div>
-                      {isSelected ? (
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                      ) : (
-                        <Plus className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-primary shrink-0" />
-                      )}
-                    </button>
-                  );
-                })}
+                      </button>
+                    );
+                  })}
+                  {!bundlesLoading && availableBundles.length === 0 && (
+                    <p className="text-sm text-slate-500 text-center py-3">Aucune offre disponible</p>
+                  )}
+                  </div>
               </div>
             )}
 
@@ -678,7 +776,7 @@ function UnifiedTestsContent() {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span
-                              className="inline-block h-2.5 w-2.5 rounded-full shrink-0 ring-1 ring-white/10"
+                              className="inline-block h-2.5 w-2.5 rounded-full shrink-0 ring-1 ring-black/15"
                               style={{ backgroundColor: tube.color }}
                             />
                           </TooltipTrigger>
@@ -782,7 +880,19 @@ function UnifiedTestsContent() {
                 {tableData && (
                   <div className="-mx-3 sm:mx-0">
                     <ComparisonTable
-                      data={tableData}
+                      data={{
+                        ...tableData,
+                        bundleGroups: selectedBundles.map((b) => ({
+                          bundleId: b.id,
+                          bundleName: b.dealName,
+                          customRate: b.customRate,
+                          testIds: b.testMappingIds,
+                          componentNames: b.profileComponentNames ?? b.canonicalNames ?? [],
+                          profileTube: b.profileTube ?? null,
+                          profileTurnaround: b.profileTurnaround ?? null,
+                          profileNotes: b.profileNotes ?? null,
+                        })),
+                      }}
                       selections={selections}
                       customPrices={mergedCustomPrices}
                       onSelectLab={handleSelectLab}

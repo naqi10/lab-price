@@ -11,6 +11,7 @@ import {
 import { useDebounce } from "@/hooks/use-debounce";
 import { formatCurrency } from "@/lib/utils";
 import { parseTubeColor } from "@/lib/tube-colors";
+import { getProfileMeta } from "@/lib/data/profile-metadata";
 
 import MatchIndicator from "./match-indicator";
 
@@ -39,6 +40,14 @@ function normalizeSearchText(value: string | null | undefined) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]/g, "");
+}
+
+function isProfileResult(test: SearchResult): boolean {
+  const category = (test.category ?? "").toLowerCase();
+  if (category.includes("profil") || category.includes("profile")) return true;
+  if (/\bprofil\b/i.test(test.name) || /\bprofile\b/i.test(test.name)) return true;
+  if (test.code && getProfileMeta(test.code)) return true;
+  return false;
 }
 
 export default function TestSearch({
@@ -176,6 +185,7 @@ export default function TestSearch({
               const isMultiLab = group.testMappingId != null && uniqueLabs.length > 1;
               const primary = group.tests[0];
               const displayName = isMultiLab ? (group.canonicalName || primary.name) : primary.name;
+              const isProfile = isProfileResult(primary);
               const selectedMappingId = group.tests.find((t) => t.testMappingId && cartItemIds?.has(t.testMappingId))?.testMappingId
                 ?? group.testMappingId;
               const inCart = !!group.testMappingId && !!cartItemIds?.has(group.testMappingId);
@@ -192,10 +202,12 @@ export default function TestSearch({
                       {tube && (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span
-                              className="inline-block h-2.5 w-2.5 rounded-full shrink-0 ring-1 ring-white/10"
-                              style={{ backgroundColor: tube.color }}
-                            />
+                            <span className="inline-flex h-4 w-4 items-center justify-center shrink-0">
+                              <span
+                                className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-black/15"
+                                style={{ backgroundColor: tube.color }}
+                              />
+                            </span>
                           </TooltipTrigger>
                           <TooltipContent side="top">{tube.label}</TooltipContent>
                         </Tooltip>
@@ -204,9 +216,17 @@ export default function TestSearch({
                         <p className="text-base font-semibold leading-snug text-foreground whitespace-normal break-words">
                           {displayName}
                         </p>
-                        {primary.category && (
-                          <Badge variant="secondary" className="mt-1 text-sm">{primary.category}</Badge>
-                        )}
+                        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                          <Badge
+                            variant={isProfile ? "info" : "secondary"}
+                            className="text-xs"
+                          >
+                            {isProfile ? "Profil" : "Individuel"}
+                          </Badge>
+                          {primary.category && !/^(profil|profile|individuel|individual)$/i.test(primary.category) && (
+                            <Badge variant="secondary" className="text-xs">{primary.category}</Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -286,8 +306,8 @@ export default function TestSearch({
 
       {!isLoading && query.length >= 2 && limited.length === 0 && (
         <div className="rounded-lg border border-dashed border-border/40 p-6 text-center">
-          <p className="text-sm text-muted-foreground">Aucun test individuel trouvé pour &quot;{query}&quot;</p>
-          <p className="text-xs text-muted-foreground/70 mt-1">Les profils groupés sont disponibles dans la section Offres groupées.</p>
+          <p className="text-sm text-muted-foreground">Aucun test trouvé pour &quot;{query}&quot;</p>
+          <p className="text-xs text-muted-foreground/70 mt-1">Vérifiez l&apos;orthographe ou essayez un autre terme.</p>
         </div>
       )}
     </div>
