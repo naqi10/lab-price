@@ -8,6 +8,10 @@ export interface Bundle {
   icon: string;
   popular?: boolean;
   testMappingIds?: string[];
+  profileCode?: string | null;
+  profileTube?: string | null;
+  profileTurnaround?: string | null;
+  profileNotes?: string | null;
 }
 
 /** Category → Tailwind color tokens used by the card UI. */
