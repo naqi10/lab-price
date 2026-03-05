@@ -44,15 +44,20 @@ const DialogContent = React.forwardRef<
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
+        translate="no"
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 w-full max-w-lg max-h-[90vh] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-border/60 bg-card p-6 shadow-2xl",
+          "fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border/60 bg-card shadow-2xl notranslate",
           className
         )}
         {...props}
       >
-        {children}
+        {/* Inner scroll wrapper — keeps overflow away from the portal root node
+            so React 19 can safely add/remove children without removeChild errors */}
+        <div className="max-h-[90vh] overflow-y-auto p-6">
+          {children}
+        </div>
         <DialogClose
-          className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-md opacity-60 hover:opacity-100 hover:bg-accent transition-all"
+          className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-md opacity-60 hover:opacity-100 hover:bg-accent transition-all z-10"
           aria-label="Fermer"
         >
           <X className="h-4 w-4" />

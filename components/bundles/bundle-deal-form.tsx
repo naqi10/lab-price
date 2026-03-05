@@ -97,7 +97,7 @@ export default function BundleDealForm({ open, onClose, onSubmit, editData }: Bu
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
+      <DialogContent className="max-w-2xl notranslate" aria-describedby={undefined} translate="no">
         <DialogHeader>
           <DialogTitle>{editData ? "Modifier l'offre groupée" : "Nouvelle offre groupée"}</DialogTitle>
         </DialogHeader>
