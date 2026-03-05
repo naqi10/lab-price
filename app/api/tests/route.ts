@@ -22,10 +22,11 @@ export async function GET(request: NextRequest) {
       const mapped   = searchParams.get("mapped") || ""; // "yes" | "no" | ""
       const offset   = (page - 1) * limit;
 
-      // Build WHERE clauses
+      // Build WHERE clauses — always exclude profile tests from browse mode
       const conditions: string[] = [
         `pl."is_active" = true`,
         `l."deleted_at" IS NULL`,
+        `(t.category IS NULL OR t.category != 'Profil')`,
       ];
       const bindings: (string | number)[] = [];
       let idx = 1;

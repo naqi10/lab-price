@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getActiveBundleDeals } from "@/lib/services/bundle-deal.service";
+import { getProfileMeta } from "@/lib/data/profile-metadata";
 import prisma from "@/lib/db";
 import logger from "@/lib/logger";
 
@@ -22,12 +23,22 @@ export async function GET() {
 
     const idToName = new Map(mappings.map((m) => [m.id, m.canonicalName]));
 
-    const enriched = deals.map((deal) => ({
-      ...deal,
-      canonicalNames: deal.testMappingIds
+    const enriched = deals.map((deal) => {
+      const canonicalNames = deal.testMappingIds
         .map((id) => idToName.get(id))
-        .filter((n): n is string => !!n),
-    }));
+        .filter((n): n is string => !!n);
+
+      // Enrich with profile metadata (tube type, turnaround, notes)
+      const meta = getProfileMeta(deal.profileCode);
+
+      return {
+        ...deal,
+        canonicalNames,
+        profileTube: meta?.tube ?? null,
+        profileTurnaround: meta?.turnaroundDays ?? null,
+        profileNotes: meta?.notes ?? null,
+      };
+    });
 
     return NextResponse.json({ success: true, data: enriched });
   } catch (error) {

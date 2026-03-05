@@ -495,6 +495,11 @@ function UnifiedTestsContent() {
   }, [clearCart, clearBundles, resetComparison]);
 
   const hasAnySelection = items.length > 0 || selectedBundles.length > 0;
+  const [showBundles, setShowBundles] = useState(false);
+
+  function cleanBundleName(name: string): string {
+    return name.replace(/,\s*PROFIL(E)?$/i, "").replace(/\s+PROFIL(E)?$/i, "").trim();
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const bestLab = labs.find((l: any) => l.id === bestLabId);
@@ -506,7 +511,7 @@ function UnifiedTestsContent() {
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <DOMSafetyBoundary>
-    <div className="w-full mt-2">
+    <div className="w-full mt-4 sm:mt-6">
       {/* ── 3-column grid — always visible ─────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[340px_minmax(0,1fr)_280px] gap-4">
 
@@ -515,8 +520,8 @@ function UnifiedTestsContent() {
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
             <div>
-              <h2 className="text-sm font-semibold">Recherche de tests</h2>
-              <p className="text-[11px] text-muted-foreground/60">{"Recherchez et ajoutez des analyses"}</p>
+              <h2 className="text-base font-semibold">Recherche de tests</h2>
+              <p className="text-xs text-muted-foreground/70">{"Recherchez et ajoutez des analyses"}</p>
             </div>
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <Search className="h-4 w-4 text-primary" />
@@ -541,58 +546,89 @@ function UnifiedTestsContent() {
           </div>
 
           {/* Bundle deals */}
-          <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2">
-            <p className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-widest mt-2">
-              Offres groupées
-            </p>
-            {bundlesLoading && (
-              <div className="space-y-2">
-                <Skeleton className="h-12 rounded-lg" />
-                <Skeleton className="h-12 rounded-lg" />
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+            {/* See more / collapse toggle */}
+            {!showBundles ? (
+              <button
+                onClick={() => setShowBundles(true)}
+                className="w-full mt-3 py-3 flex items-center justify-center gap-2 text-foreground font-semibold text-base hover:text-foreground/70 transition-colors border border-border rounded-xl hover:border-border/80 hover:bg-muted/50"
+              >
+                <Package className="h-4 w-4" />
+                Voir les offres groupées
+                {!bundlesLoading && availableBundles.length > 0 && (
+                  <span className="text-sm text-muted-foreground">({availableBundles.length})</span>
+                )}
+              </button>
+            ) : (
+              <div className="space-y-2 mt-2">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                    Offres groupées
+                  </p>
+                  <button
+                    onClick={() => setShowBundles(false)}
+                    className="text-xs text-muted-foreground/60 hover:text-foreground/80 transition-colors"
+                  >
+                    Réduire
+                  </button>
+                </div>
+                {bundlesLoading && (
+                  <div className="space-y-2">
+                    <Skeleton className="h-12 rounded-lg" />
+                    <Skeleton className="h-12 rounded-lg" />
+                  </div>
+                )}
+                {availableBundles.map((bundle) => {
+                  const isSelected = selectedBundleIds.has(bundle.id);
+                  return (
+                    <button
+                      key={bundle.id}
+                      onClick={() => toggleBundle(bundle)}
+                      className={`w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all group ${
+                        isSelected
+                          ? "border-primary/40 bg-primary/8"
+                          : "border-border/30 hover:border-primary/30 hover:bg-muted/30"
+                      }`}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm sm:text-base font-semibold truncate text-foreground">
+                          {cleanBundleName(bundle.dealName)}
+                        </p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          {formatCurrency(bundle.customRate)}
+                        </p>
+                        {bundle.canonicalNames.length > 0 && (
+                          <p className="text-xs text-muted-foreground/60 truncate mt-0.5">
+                            {bundle.canonicalNames.slice(0, 3).join(" · ")}
+                            {bundle.canonicalNames.length > 3 && "…"}
+                          </p>
+                        )}
+                      </div>
+                      {isSelected ? (
+                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                      ) : (
+                        <Plus className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-primary shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             )}
-            {availableBundles.map((bundle) => {
-              const isSelected = selectedBundleIds.has(bundle.id);
-              return (
-                <button
-                  key={bundle.id}
-                  onClick={() => toggleBundle(bundle)}
-                  className={`w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all group ${
-                    isSelected
-                      ? "border-primary/40 bg-primary/8"
-                      : "border-border/30 hover:border-primary/30 hover:bg-muted/30"
-                  }`}
-                >
-                  <span className="text-lg shrink-0">{bundle.icon}</span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-medium truncate">{bundle.dealName}</p>
-                    <p className="text-[10px] text-muted-foreground/60">
-                      {`${bundle.testMappingIds.length} tests · ${formatCurrency(bundle.customRate)}`}
-                    </p>
-                  </div>
-                  {isSelected ? (
-                    <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                  ) : (
-                    <Plus className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-primary shrink-0" />
-                  )}
-                </button>
-              );
-            })}
 
             {/* Nav links */}
-            <div className="pt-3 mt-2 border-t border-border/30 space-y-1.5">
+            <div className="pt-3 mt-2 border-t border-border/30 space-y-1">
               <button
                 onClick={() => router.push("/tests/deals")}
-                className="w-full flex items-center gap-2 text-[11px] text-muted-foreground/60 hover:text-foreground/80 transition-colors px-1 py-1"
+                className="w-full flex items-center gap-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-2.5 rounded-lg hover:bg-muted/30"
               >
-                <Package className="h-3 w-3" />
+                <Package className="h-4 w-4 shrink-0" />
                 <span>Gérer les offres groupées</span>
               </button>
               <button
                 onClick={() => router.push("/tests/mappings")}
-                className="w-full flex items-center gap-2 text-[11px] text-muted-foreground/60 hover:text-foreground/80 transition-colors px-1 py-1"
+                className="w-full flex items-center gap-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-2.5 rounded-lg hover:bg-muted/30"
               >
-                <GitCompare className="h-3 w-3" />
+                <GitCompare className="h-4 w-4 shrink-0" />
                 <span>Gérer les correspondances</span>
               </button>
             </div>
@@ -612,8 +648,8 @@ function UnifiedTestsContent() {
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
             <div>
-              <h2 className="text-sm font-semibold">Comparaison</h2>
-              <p className="text-[11px] text-muted-foreground/60">
+              <h2 className="text-base font-semibold">Comparaison</h2>
+              <p className="text-xs text-muted-foreground/70">
                 {allTestMappingIds.length > 0
                   ? `${allTestMappingIds.length} test${allTestMappingIds.length > 1 ? "s" : ""} sélectionné${allTestMappingIds.length > 1 ? "s" : ""}`
                   : "Sélectionnez des tests pour comparer"}
@@ -626,11 +662,11 @@ function UnifiedTestsContent() {
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto">
-            {/* Selected items list */}
-            {(items.length > 0 || selectedBundles.length > 0) && (
-              <TooltipProvider>
-              <div className="px-5 pt-4 pb-3 border-b border-border/30">
-                {items.map((item) => {
+            {/* Selected items list — always rendered to avoid React 19 portal
+                insertBefore bugs when transitioning from 0→1 items */}
+            <TooltipProvider>
+            <div className="px-5 pt-4 pb-3 border-b border-border/30 empty:hidden">
+              {items.map((item) => {
                   const tube = parseTubeColor(item.tubeType);
                   return (
                   <div
@@ -669,7 +705,7 @@ function UnifiedTestsContent() {
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <Package className="h-3 w-3 text-primary/50 shrink-0" />
-                      <span className="text-xs text-foreground/70 truncate">{bundle.icon} {bundle.dealName}</span>
+                      <span className="text-xs text-foreground/70 truncate">{bundle.dealName}</span>
                       <Badge variant="secondary" className="text-[9px] px-1.5 py-0 shrink-0">
                         {`${bundle.testMappingIds.length} tests`}
                       </Badge>
@@ -682,9 +718,8 @@ function UnifiedTestsContent() {
                     </button>
                   </div>
                 ))}
-              </div>
-              </TooltipProvider>
-            )}
+            </div>
+            </TooltipProvider>
 
             {/* Empty state */}
             {allTestMappingIds.length === 0 && (
@@ -773,8 +808,8 @@ function UnifiedTestsContent() {
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
               <div>
-                <h2 className="text-sm font-semibold">Résumé</h2>
-                <p className="text-[11px] text-muted-foreground/60">Total de la commande</p>
+                <h2 className="text-base font-semibold">Résumé</h2>
+                <p className="text-xs text-muted-foreground/70">Total de la commande</p>
               </div>
               <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
                 <DollarSign className="h-4 w-4 text-emerald-500" />

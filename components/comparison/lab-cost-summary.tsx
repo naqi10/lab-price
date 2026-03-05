@@ -70,7 +70,7 @@ export default function LabCostSummary({
           </div>
           <div className="text-right shrink-0">
             <p className="text-2xl font-bold text-primary tabular-nums">{formatCurrency(selectionTotal)}</p>
-            <p className={`text-xs text-emerald-400 mt-0.5${!(bestLab && selectionTotal < bestLab.total) ? " hidden" : ""}`}>
+            <p className={`text-xs text-emerald-600 mt-0.5${!(bestLab && selectionTotal < bestLab.total) ? " hidden" : ""}`}>
               {`-${formatCurrency(bestLab ? bestLab.total - selectionTotal : 0)} vs ${bestLab?.name ?? ""}`}
             </p>
           </div>
@@ -140,7 +140,7 @@ export default function LabCostSummary({
                       style={{ backgroundColor: color?.dot }}
                     />
                     <span
-                      className="text-sm font-semibold leading-tight"
+                      className="text-base font-semibold leading-tight"
                       style={color ? { color: color.text } : undefined}
                     >
                       {lab.name}
@@ -148,7 +148,7 @@ export default function LabCostSummary({
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
                     <AlertTriangle className={`h-3.5 w-3.5 text-amber-500/70${lab.isComplete ? " hidden" : ""}`} />
-                    <span className="text-[11px] font-bold text-muted-foreground/50 tabular-nums">
+                    <span className="text-xs font-bold text-muted-foreground/70 tabular-nums">
                       #{idx + 1}
                     </span>
                   </div>
@@ -163,15 +163,15 @@ export default function LabCostSummary({
                 </p>
 
                 {/* Diff vs best / best label — always rendered, hidden via CSS */}
-                <p className={`text-xs text-muted-foreground/70 mt-0.5${!(!isBest && bestLab && diff > 0) ? " hidden" : ""}`}>
+                <p className={`text-xs text-muted-foreground mt-0.5${!(!isBest && bestLab && diff > 0) ? " hidden" : ""}`}>
                   {`+${formatCurrency(diff)} (${pct}% de plus)`}
                 </p>
-                <p className={`text-xs text-amber-400/80 mt-0.5${!(isBest && !hasSelections) ? " hidden" : ""}`}>
+                <p className={`text-xs text-amber-600 mt-0.5${!(isBest && !hasSelections) ? " hidden" : ""}`}>
                   Meilleur prix global
                 </p>
 
                 {/* Missing tests warning — always rendered, hidden via CSS */}
-                <p className={`text-xs text-amber-500/80 mt-1${lab.missingTests <= 0 ? " hidden" : ""}`}>
+                <p className={`text-xs text-amber-500 mt-1${lab.missingTests <= 0 ? " hidden" : ""}`}>
                   {`${lab.missingTests} test${lab.missingTests > 1 ? "s" : ""} manquant${lab.missingTests > 1 ? "s" : ""}`}
                 </p>
 
@@ -182,9 +182,9 @@ export default function LabCostSummary({
                 >
                   {lab.turnaroundTimes.map(({ testName, tat }) => (
                     <div key={testName} className="flex items-start gap-1.5">
-                      <Clock className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground/50" />
-                      <span className="text-xs text-muted-foreground/70 leading-tight">
-                        <span className="text-foreground/60 font-medium">{testName}</span>
+                      <Clock className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground/70" />
+                      <span className="text-xs text-muted-foreground leading-tight">
+                        <span className="text-foreground/80 font-medium">{testName}</span>
                         {` — ${tat}`}
                       </span>
                     </div>

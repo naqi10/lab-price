@@ -76,8 +76,11 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
   // Merge both seed arrays: cdlSeedData + qcSeedData (cdlSeedData takes priority for duplicates)
   const seed1TubeByCode = new Map<string, string>();
   const seed1NameByCode = new Map<string, string>();
-  for (const t of [...qcSeedData, ...cdlSeedData]) {
-    if (t.tube) seed1TubeByCode.set(t.code, t.tube);
+  for (const t of [...qcSeedData, ...cdlSeedData.all]) {
+    if (t.tube) {
+      const tubeStr = Array.isArray(t.tube) ? t.tube.join(", ") : t.tube;
+      seed1TubeByCode.set(t.code, tubeStr);
+    }
     if (t.name) seed1NameByCode.set(t.code, t.name);
   }
 
@@ -150,8 +153,11 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
   // Build lookup for Dynacare tube types from qcSeedData (+ cdlSeedData fallback)
   // qcSeedData is specifically for Dynacare/QC specimen collection
   const dynTubeByCode = new Map<string, string>();
-  for (const t of [...cdlSeedData, ...qcSeedData]) {
-    if (t.tube) dynTubeByCode.set(t.code, t.tube);
+  for (const t of [...cdlSeedData.all, ...qcSeedData]) {
+    if (t.tube) {
+      const tubeStr = Array.isArray(t.tube) ? t.tube.join(", ") : t.tube;
+      dynTubeByCode.set(t.code, tubeStr);
+    }
   }
 
   // Default tube type for Dynacare tests with no seed1.ts match
@@ -194,6 +200,54 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
   }));
 
   return { cdlTests, dynacareTests };
+}
+
+// ── Bundle helpers ─────────────────────────────────────────────────────────
+
+function detectBundleCategory(name: string): string {
+  const n = name.toUpperCase();
+  if (/LIPI|CHOLEST|TRIGLYCÉ|BIOCHI|GÉNÉRA|SMA|HÉPATIQUE|RÉNAL|DIABÉTI|UROLITH|FER\b|FERRITIN|B12|FOLIQUE/.test(n))
+    return "Biochimie";
+  if (/THYROÏ|THYROID|HORMONO|FERTILI|FSH|PROLACT|TESTOS|ANDROG|CORTIS/.test(n))
+    return "Hormonologie";
+  if (/ANÉMIE|ANEM|HÉMATO|COAGUL|PRÉNATAL|PÉRINATAL|MONOTEST/.test(n))
+    return "Hématologie";
+  if (/HÉPATITE|HÉPATIT|VIH|GONO|CHLAMYD|ITSS|STD|SYPHIL|COELIAQUE|CELIAC|ALLERGI/.test(n))
+    return "Immunologie";
+  if (/CULTURE|MICROBI|URINE.*CULT|BACTÉRI/.test(n)) return "Microbiologie";
+  return "Mixte";
+}
+
+function bundleCategoryIcon(category: string): string {
+  const icons: Record<string, string> = {
+    Biochimie: "🧪",
+    Hormonologie: "🧬",
+    Hématologie: "🩸",
+    Immunologie: "🛡️",
+    Microbiologie: "🔬",
+    Mixte: "⚗️",
+  };
+  return icons[category] ?? "🧫";
+}
+
+function resolveToMappingId(
+  componentName: string,
+  nameToId: Map<string, string>
+): string | undefined {
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const target = norm(componentName);
+  // Exact match
+  for (const [canonical, id] of nameToId) {
+    if (norm(canonical) === target) return id;
+  }
+  // Prefix match (at least 4 chars)
+  if (target.length >= 4) {
+    for (const [canonical, id] of nameToId) {
+      const can = norm(canonical);
+      if (can.startsWith(target) || target.startsWith(can)) return id;
+    }
+  }
+  return undefined;
 }
 
 // ── Seed Function ─────────────────────────────────────────────────────────
@@ -378,7 +432,7 @@ async function main() {
 
     // Enrich aliases with seed1.ts French names for better searchability
     const enrichedAliases = [...def.aliases];
-    const allSeed1 = [...qcSeedData, ...cdlSeedData];
+    const allSeed1 = [...qcSeedData, ...cdlSeedData.all];
     const seed1Entry = allSeed1.find((s) => s.code === def.code);
     if (seed1Entry && !enrichedAliases.some((a) => a.toUpperCase() === seed1Entry.name.toUpperCase())) {
       enrichedAliases.push(seed1Entry.name);
@@ -430,75 +484,138 @@ async function main() {
   });
   const nameToId = new Map(allMappings.map((m) => [m.canonicalName, m.id]));
 
-  const bundleDefs = [
-    {
-      dealName: "Bilan Lipidique",
-      description: "Exploration complète du profil lipidique",
-      category: "Biochimie",
-      icon: "🩸",
-      popular: true,
-      sortOrder: 0,
-      canonicalNames: [
-        "Cholesterol Total",
-        "Cholesterol HDL",
-        "Cholesterol LDL",
-        "Triglycerides",
-      ],
-      customRate: 150,
-    },
-    {
-      dealName: "Bilan Hépatique",
-      description: "Évaluation de la fonction hépatique",
-      category: "Biochimie",
-      icon: "🫁",
-      popular: false,
-      sortOrder: 1,
-      canonicalNames: ["AST", "ALT", "GGT", "Bilirubine Totale (BILIT)"],
-      customRate: 130,
-    },
-    {
-      dealName: "Bilan Rénal",
-      description: "Exploration de la fonction rénale",
-      category: "Biochimie",
-      icon: "🫀",
-      popular: false,
-      sortOrder: 2,
-      canonicalNames: ["Creatinine (Sérum)", "Uree", "Acide Urique"],
-      customRate: 80,
-    },
-    {
-      dealName: "Bilan Thyroïdien",
-      description: "Exploration complète de la thyroïde",
-      category: "Hormonologie",
-      icon: "🧬",
-      popular: false,
-      sortOrder: 3,
-      canonicalNames: ["TSH Ultrasensible", "T3 Libre (T3F)", "T4 Libre (T4F)"],
-      customRate: 230,
-    },
-  ];
-
-  for (const def of bundleDefs) {
-    const testMappingIds = def.canonicalNames
-      .map((name) => nameToId.get(name))
-      .filter((id): id is string => !!id);
-
-    if (testMappingIds.length > 0) {
-      await prisma.bundleDeal.create({
-        data: {
-          dealName: def.dealName,
-          description: def.description,
-          category: def.category,
-          icon: def.icon,
-          popular: def.popular,
-          sortOrder: def.sortOrder,
-          customRate: def.customRate,
-          testMappingIds,
-        },
-      });
+  // Build code → testMappingId lookup from seeded tests
+  const seededTests = await prisma.test.findMany({
+    where: { code: { not: null } },
+    select: { code: true, testMappingEntryId: true },
+  });
+  const entryIds = seededTests.map((t) => t.testMappingEntryId).filter(Boolean) as string[];
+  const seededEntries = entryIds.length
+    ? await prisma.testMappingEntry.findMany({
+        where: { id: { in: entryIds } },
+        select: { id: true, testMappingId: true },
+      })
+    : [];
+  const entryToMappingId = new Map(seededEntries.map((e) => [e.id, e.testMappingId]));
+  const codeToMappingId = new Map<string, string>();
+  for (const test of seededTests) {
+    if (test.code && test.testMappingEntryId) {
+      const mappingId = entryToMappingId.get(test.testMappingEntryId);
+      if (mappingId) codeToMappingId.set(test.code.toUpperCase(), mappingId);
     }
   }
-  console.log(`  ${bundleDefs.length} bundle deals seeded`);
+
+  // Build lookup: CDL profile code → componentCodes from seed1.ts
+  const cdlProfileComponentMap = new Map<string, string[]>(
+    cdlSeedData.profiles
+      .filter((p) => p.componentCodes && p.componentCodes.length > 0)
+      .map((p) => [p.code, p.componentCodes!])
+  );
+
+  // Build lookup: QC profile code → componentCodes from seed1.ts
+  const qcComponentMap = new Map<string, string[]>(
+    qcSeedData
+      .filter((p) => p.componentCodes && p.componentCodes.length > 0)
+      .map((p) => [p.code, p.componentCodes!])
+  );
+
+  const cdlProfiles = cdlTests.filter((t) => t.type === "profile");
+  const qcProfiles = dynacareTests.filter((t) => t.type === "profile");
+  let bundleCount = 0;
+
+  function cleanProfileName(name: string): string {
+    return name.replace(/,\s*PROFIL(E)?$/i, "").replace(/\s+PROFIL(E)?$/i, "").trim();
+  }
+
+  function resolveComponentIds(componentCodes: string[]): string[] {
+    const ids = new Set<string>();
+    for (const code of componentCodes) {
+      const id = codeToMappingId.get(code.toUpperCase());
+      if (id) ids.add(id);
+    }
+    return Array.from(ids);
+  }
+
+  function resolveFromName(name: string): string[] {
+    // Try splitting compound names like "VITAMINE B12 ET ACIDE FOLIQUE"
+    const parts = name.split(/\s+ET\s+/gi).map((s) => s.trim()).filter(Boolean);
+    if (parts.length > 1) {
+      return parts
+        .map((n) => resolveToMappingId(n, nameToId))
+        .filter((id): id is string => !!id);
+    }
+    return [];
+  }
+
+  for (let i = 0; i < cdlProfiles.length; i++) {
+    const p = cdlProfiles[i];
+    const category = detectBundleCategory(p.name);
+
+    // Try: componentCodes from seed1 → else parse name
+    const compCodes = cdlProfileComponentMap.get(p.code);
+    const testMappingIds = compCodes
+      ? resolveComponentIds(compCodes)
+      : resolveFromName(p.name);
+
+    await prisma.bundleDeal.create({
+      data: {
+        dealName: cleanProfileName(p.name),
+        description: `Profil CDL — ${p.code}`,
+        category,
+        icon: bundleCategoryIcon(category),
+        popular: false,
+        sortOrder: i,
+        customRate: p.price,
+        testMappingIds,
+        sourceLabCode: "CDL",
+        profileCode: p.code,
+        profilePrice: p.price,
+        isAutoGenerated: true,
+      },
+    });
+    bundleCount++;
+  }
+
+  for (let i = 0; i < qcProfiles.length; i++) {
+    const p = qcProfiles[i];
+    const category = detectBundleCategory(p.name);
+
+    // Try: componentCodes from seed1 → else parse parenthesized name
+    const compCodes = qcComponentMap.get(p.code);
+    let testMappingIds: string[];
+    if (compCodes) {
+      testMappingIds = resolveComponentIds(compCodes);
+    } else {
+      const fullName = qcSeedData.find((s) => s.code === p.code)?.name ?? p.name;
+      const parenMatch = fullName.match(/\(([^)]+)\)/);
+      const componentNames = parenMatch
+        ? parenMatch[1].split(",").map((s) => s.trim()).filter(Boolean)
+        : [];
+      testMappingIds = componentNames
+        .map((n) => resolveToMappingId(n, nameToId))
+        .filter((id): id is string => !!id);
+    }
+
+    await prisma.bundleDeal.create({
+      data: {
+        dealName: cleanProfileName(p.name),
+        description: `Profil Dynacare — ${p.code}`,
+        category,
+        icon: bundleCategoryIcon(category),
+        popular: false,
+        sortOrder: cdlProfiles.length + i,
+        customRate: p.price,
+        testMappingIds,
+        sourceLabCode: "QC",
+        profileCode: p.code,
+        profilePrice: p.price,
+        isAutoGenerated: true,
+      },
+    });
+    bundleCount++;
+  }
+
+  console.log(`  ${bundleCount} bundle deals seeded (${cdlProfiles.length} CDL + ${qcProfiles.length} QC)`);
 
   // ── 7. Default email template ─────────────────────────────────────────
   await prisma.emailTemplate.deleteMany();

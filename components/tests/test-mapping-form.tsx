@@ -13,6 +13,8 @@ interface MappingEntry {
   laboratoryName: string;
   testName: string;
   price: string;
+  code: string;
+  duration: string;
 }
 
 interface TestMappingFormProps {
@@ -26,10 +28,8 @@ interface TestMappingFormProps {
     code?: string;
     category?: string;
     description?: string;
-    unit?: string;
-    turnaroundTime?: string;
     tubeType?: string;
-    entries?: { laboratoryId: string; localTestName: string; price?: number | null; laboratory?: { id: string; name: string } }[];
+    entries?: { laboratoryId: string; localTestName: string; price?: number | null; code?: string | null; duration?: string | null; laboratory?: { id: string; name: string } }[];
   };
 }
 
@@ -44,8 +44,6 @@ export default function TestMappingForm({
   const [code, setCode] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
-  const [unit, setUnit] = useState("");
-  const [turnaroundTime, setTurnaroundTime] = useState("");
   const [tubeType, setTubeType] = useState("");
   const [entries, setEntries] = useState<MappingEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,8 +55,6 @@ export default function TestMappingForm({
       setCode(editData.code || "");
       setCategory(editData.category || "");
       setDescription(editData.description || "");
-      setUnit(editData.unit || "");
-      setTurnaroundTime(editData.turnaroundTime || "");
       setTubeType(editData.tubeType || "");
       setEntries(
         (editData.entries || []).map((e) => ({
@@ -66,6 +62,8 @@ export default function TestMappingForm({
           laboratoryName: e.laboratory?.name || "",
           testName: e.localTestName || "",
           price: e.price != null ? String(e.price) : "",
+          code: e.code || "",
+          duration: e.duration || "",
         }))
       );
     } else {
@@ -73,8 +71,6 @@ export default function TestMappingForm({
       setCode("");
       setCategory("");
       setDescription("");
-      setUnit("");
-      setTurnaroundTime("");
       setTubeType("");
       setEntries([]);
     }
@@ -85,18 +81,18 @@ export default function TestMappingForm({
     setIsLoading(true);
     try {
       await onSubmit({
-        canonicalName, code, category, description, unit, turnaroundTime, tubeType,
+        canonicalName, code, category, description, tubeType,
         entries: entries.map((e) => ({
           ...e,
           price: e.price !== "" ? parseFloat(e.price) : null,
+          code: e.code || null,
+          duration: e.duration || null,
         })),
       });
       setCanonicalName("");
       setCode("");
       setCategory("");
       setDescription("");
-      setUnit("");
-      setTurnaroundTime("");
       setTubeType("");
       setEntries([]);
     } finally {
@@ -104,9 +100,15 @@ export default function TestMappingForm({
     }
   };
 
+  const updateEntry = (i: number, field: keyof MappingEntry, value: string) => {
+    const updated = [...entries];
+    updated[i] = { ...updated[i], [field]: value };
+    setEntries(updated);
+  };
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
             {editData ? "Modifier la correspondance" : "Nouvelle correspondance de test"}
@@ -120,6 +122,7 @@ export default function TestMappingForm({
                 value={canonicalName}
                 onChange={(e) => setCanonicalName(e.target.value)}
                 placeholder="Nom standard du test"
+                autoComplete="off"
               />
             </div>
             <div className="space-y-2">
@@ -128,6 +131,7 @@ export default function TestMappingForm({
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="Code du test (ex: GLU, HBA1C...)"
+                autoComplete="off"
               />
             </div>
           </div>
@@ -139,25 +143,7 @@ export default function TestMappingForm({
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="Biochimie, Hématologie..."
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Unité</Label>
-              <Input
-                value={unit}
-                onChange={(e) => setUnit(e.target.value)}
-                placeholder="MAD, EUR..."
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Délai de résultat</Label>
-              <Input
-                value={turnaroundTime}
-                onChange={(e) => setTurnaroundTime(e.target.value)}
-                placeholder="Même jour, 1-3 jours..."
+                autoComplete="off"
               />
             </div>
             <div className="space-y-2">
@@ -191,40 +177,46 @@ export default function TestMappingForm({
           <div className="space-y-2">
             <Label>Correspondances par laboratoire *</Label>
             {entries.map((entry, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span className="text-sm font-medium min-w-[120px] truncate">
-                  {entry.laboratoryName}
-                </span>
-                <Input
-                  value={entry.testName}
-                  onChange={(e) => {
-                    const updated = [...entries];
-                    updated[i].testName = e.target.value;
-                    setEntries(updated);
-                  }}
-                  placeholder="Nom du test dans ce labo"
-                  className="flex-1"
-                />
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={entry.price}
-                  onChange={(e) => {
-                    const updated = [...entries];
-                    updated[i].price = e.target.value;
-                    setEntries(updated);
-                  }}
-                  placeholder="Prix"
-                  className="w-24"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setEntries(entries.filter((_, idx) => idx !== i))}
-                >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
+              <div key={i} className="flex flex-col gap-1.5 rounded-md border border-border/50 bg-muted/20 p-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium truncate">{entry.laboratoryName}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 shrink-0"
+                    onClick={() => setEntries(entries.filter((_, idx) => idx !== i))}
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    value={entry.testName}
+                    onChange={(e) => updateEntry(i, "testName", e.target.value)}
+                    placeholder="Nom du test dans ce labo"
+                    autoComplete="off"
+                  />
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={entry.price}
+                    onChange={(e) => updateEntry(i, "price", e.target.value)}
+                    placeholder="Prix ($)"
+                  />
+                  <Input
+                    value={entry.code}
+                    onChange={(e) => updateEntry(i, "code", e.target.value)}
+                    placeholder="Code labo (ex: CDL-GLU)"
+                    autoComplete="off"
+                  />
+                  <Input
+                    value={entry.duration}
+                    onChange={(e) => updateEntry(i, "duration", e.target.value)}
+                    placeholder="Délai (ex: Même jour, 24h)"
+                    autoComplete="off"
+                  />
+                </div>
               </div>
             ))}
             <div className="flex flex-wrap gap-2 mt-2">
@@ -238,7 +230,7 @@ export default function TestMappingForm({
                     onClick={() =>
                       setEntries([
                         ...entries,
-                        { laboratoryId: lab.id, laboratoryName: lab.name, testName: "", price: "" },
+                        { laboratoryId: lab.id, laboratoryName: lab.name, testName: "", price: "", code: "", duration: "" },
                       ])
                     }
                   >

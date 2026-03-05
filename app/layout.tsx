@@ -30,6 +30,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        {/* Dedicated portal root — all Radix/custom portals render here
+            instead of document.body, preventing React 19 removeChild errors */}
+        <div id="portal-root" />
       </body>
     </html>
   );

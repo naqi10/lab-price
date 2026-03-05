@@ -62,7 +62,7 @@ function TatBadge({ value }: { value: string }) {
     lower.includes("j0") ||
     lower.includes("urgent")
   ) {
-    colorClass = "text-emerald-400";
+    colorClass = "text-emerald-600";
   } else if (/\b[1-3]\s*(j|jour|day)/.test(lower)) {
     colorClass = "text-amber-400";
   }
@@ -448,7 +448,7 @@ export default function AllTestsTable({
                             minimumFractionDigits: 0,
                           })}
                           <span className="text-muted-foreground text-xs ml-1">
-                            {test.unit || "MAD"}
+                            {test.unit || "$"}
                           </span>
                         </TableCell>
 
@@ -467,8 +467,8 @@ export default function AllTestsTable({
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <div className="flex items-center gap-1.5 cursor-default">
-                                  <Link2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                                  <span className="text-xs text-emerald-400 truncate max-w-[130px]">
+                                  <Link2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                                  <span className="text-xs text-emerald-600 truncate max-w-[130px]">
                                     {test.canonicalName}
                                   </span>
                                 </div>
@@ -499,7 +499,7 @@ export default function AllTestsTable({
                                       test.testMappingId &&
                                       onRemoveFromCart?.(test.testMappingId)
                                     }
-                                    className="h-7 w-7 p-0 text-emerald-400 hover:text-destructive hover:bg-destructive/10"
+                                    className="h-7 w-7 p-0 text-emerald-600 hover:text-destructive hover:bg-destructive/10"
                                     aria-label="Retirer de la sélection"
                                   >
                                     <CheckCircle2 className="h-4 w-4" />

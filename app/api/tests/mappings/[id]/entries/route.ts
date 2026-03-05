@@ -60,6 +60,8 @@ export async function POST(
           matchType: "MANUAL",
           similarity: 1.0,
           price: body.price ?? existing.price,
+          code: body.code ?? existing.code,
+          duration: body.duration ?? existing.duration,
         },
         include: {
           laboratory: { select: { id: true, name: true } },
@@ -77,6 +79,8 @@ export async function POST(
         matchType: "MANUAL",
         similarity: 1.0,
         price: body.price ?? null,
+        code: body.code ?? null,
+        duration: body.duration ?? null,
       },
       include: {
         laboratory: { select: { id: true, name: true } },

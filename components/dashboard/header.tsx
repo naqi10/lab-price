@@ -15,7 +15,7 @@ export default function Header({ title }: { title: string }) {
   return (
     <header className="sticky top-0 z-20 border-b border-border/40 bg-card/80 backdrop-blur-md">
       <div className="flex items-center justify-between h-14">
-        <h1 className="text-base font-semibold text-foreground px-6 py-4 flex-1 min-w-0">{title}</h1>
+        <h1 className="text-base font-semibold text-foreground pl-14 pr-4 py-4 flex-1 min-w-0 md:pl-6">{title}</h1>
         <div className="px-6">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

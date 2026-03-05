@@ -210,17 +210,17 @@ export default function EmailComparisonDialog({
           <div className="py-6 text-center space-y-3">
             {result.success ? (
               <>
-                <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto" />
-                <p className="text-green-400 font-medium">{result.message}</p>
+                <CheckCircle2 className="h-12 w-12 text-green-600 mx-auto" />
+                <p className="text-green-700 font-medium">{result.message}</p>
                 {result.cheapestLab && (
-                  <div className={`${result.isMultiLab ? "bg-blue-900/20 border-blue-800" : "bg-green-900/20 border-green-800"} border rounded-lg p-4 mt-4 text-left`}>
-                    <p className={`text-sm ${result.isMultiLab ? "text-blue-300" : "text-green-300"}`}>
+                  <div className={`${result.isMultiLab ? "bg-blue-50 border-blue-200" : "bg-green-50 border-green-200"} border rounded-lg p-4 mt-4 text-left`}>
+                    <p className={`text-sm ${result.isMultiLab ? "text-blue-700" : "text-green-700"}`}>
                       <span className="font-semibold">
                         {result.isMultiLab ? "Laboratoires :" : "Laboratoire recommandé :"}
                       </span>{" "}
                       {result.cheapestLab}
                     </p>
-                    <p className={`text-sm mt-1 ${result.isMultiLab ? "text-blue-300" : "text-green-300"}`}>
+                    <p className={`text-sm mt-1 ${result.isMultiLab ? "text-blue-700" : "text-green-700"}`}>
                       <span className="font-semibold">Prix total :</span>{" "}
                       {result.totalPrice}
                     </p>
@@ -230,7 +230,7 @@ export default function EmailComparisonDialog({
             ) : (
               <>
                 <AlertTriangle className="h-12 w-12 text-red-500 mx-auto" />
-                <p className="text-red-400 font-medium">{result.message}</p>
+                <p className="text-red-600 font-medium">{result.message}</p>
               </>
             )}
           </div>

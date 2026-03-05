@@ -5,7 +5,6 @@ import { type Bundle } from "@/lib/data/bundles";
 import BundleDealCard from "./bundle-deal-card";
 import EmailComparisonDialog from "@/components/comparison/email-comparison-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Package } from "lucide-react";
 
 interface ActiveDeal {
   id: string;
@@ -17,6 +16,10 @@ interface ActiveDeal {
   popular: boolean;
   testMappingIds: string[];
   canonicalNames: string[];
+  profileTube?: string | null;
+  profileTurnaround?: string | null;
+  profileNotes?: string | null;
+  profileCode?: string | null;
 }
 
 interface ResolvedBundle {
@@ -97,6 +100,10 @@ export default function BundleDealsSection() {
               customRate: deal.customRate,
               icon: deal.icon,
               popular: deal.popular,
+              profileTube: deal.profileTube,
+              profileTurnaround: deal.profileTurnaround,
+              profileNotes: deal.profileNotes,
+              profileCode: deal.profileCode,
             };
 
             return {
@@ -144,16 +151,11 @@ export default function BundleDealsSection() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2.5">
-        <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10">
-          <Package className="h-4 w-4 text-primary" />
-        </div>
-        <div>
-          <h2 className="text-sm font-semibold">Offres groupées</h2>
-          <p className="text-xs text-muted-foreground">
-            Packs de tests pré-configurés à tarifs préférentiels
-          </p>
-        </div>
+      <div>
+        <h2 className="text-base sm:text-lg font-semibold text-foreground">Offres groupées</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Packs de tests pre-configures a tarifs preferentiels
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -163,13 +165,10 @@ export default function BundleDealsSection() {
                 {/* Accent strip */}
                 <Skeleton className="h-1 w-full rounded-none" />
                 <div className="p-4 space-y-3">
-                  {/* Header: icon + title */}
-                  <div className="flex items-start gap-3">
-                    <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
-                    <div className="flex-1 space-y-1.5">
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-3 w-1/2" />
-                    </div>
+                  {/* Header: title */}
+                  <div className="space-y-1.5">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
                   </div>
                   {/* Test pills */}
                   <div className="flex flex-wrap gap-1.5">

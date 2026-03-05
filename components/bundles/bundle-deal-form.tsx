@@ -33,6 +33,8 @@ export default function BundleDealForm({ open, onClose, onSubmit, editData }: Bu
   const [dealName, setDealName] = useState("");
   const [icon, setIcon] = useState("");
   const [category, setCategory] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [customRate, setCustomRate] = useState("");
   const [description, setDescription] = useState("");
   const [popular, setPopular] = useState(false);
@@ -46,6 +48,9 @@ export default function BundleDealForm({ open, onClose, onSubmit, editData }: Bu
       setDealName(editData.dealName);
       setIcon(editData.icon);
       setCategory(editData.category);
+      const custom = !CATEGORIES.includes(editData.category);
+      setIsCustomCategory(custom);
+      setCustomCategory(custom ? editData.category : "");
       setCustomRate(String(editData.customRate));
       setDescription(editData.description);
       setPopular(editData.popular);
@@ -56,6 +61,8 @@ export default function BundleDealForm({ open, onClose, onSubmit, editData }: Bu
       setDealName("");
       setIcon("");
       setCategory("");
+      setIsCustomCategory(false);
+      setCustomCategory("");
       setCustomRate("");
       setDescription("");
       setPopular(false);
@@ -90,39 +97,43 @@ export default function BundleDealForm({ open, onClose, onSubmit, editData }: Bu
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{editData ? "Modifier l'offre groupée" : "Nouvelle offre groupée"}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Row 1: Name + Icon */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Nom de l&apos;offre *</Label>
-              <Input
-                value={dealName}
-                onChange={(e) => setDealName(e.target.value)}
-                placeholder="Bilan Lipidique"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Icône (emoji)</Label>
-              <Input
-                value={icon}
-                onChange={(e) => setIcon(e.target.value)}
-                placeholder="🩸"
-              />
-            </div>
+          {/* Row 1: Name */}
+          <div className="space-y-2">
+            <Label htmlFor="bundle-dealName">Nom de l&apos;offre *</Label>
+            <Input
+              id="bundle-dealName"
+              name="dealName"
+              value={dealName}
+              onChange={(e) => setDealName(e.target.value)}
+              placeholder="Bilan Lipidique"
+              autoComplete="off"
+            />
           </div>
 
           {/* Row 2: Category + Rate */}
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Catégorie *</Label>
+              <Label htmlFor="bundle-category">Catégorie *</Label>
               <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                id="bundle-category"
+                name="category"
+                value={isCustomCategory ? "__custom" : category}
+                onChange={(e) => {
+                  const nextValue = e.target.value;
+                  if (nextValue === "__custom") {
+                    setIsCustomCategory(true);
+                    setCategory(customCategory.trim());
+                    return;
+                  }
+                  setIsCustomCategory(false);
+                  setCategory(nextValue);
+                }}
                 className="flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground transition-colors hover:border-border/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer"
               >
                 <option value="">Sélectionner une catégorie</option>
@@ -131,18 +142,26 @@ export default function BundleDealForm({ open, onClose, onSubmit, editData }: Bu
                 ))}
                 <option value="__custom">Autre...</option>
               </select>
-              {category === "__custom" && (
+              {isCustomCategory && (
                 <Input
-                  value=""
-                  onChange={(e) => setCategory(e.target.value)}
+                  id="bundle-customCategory"
+                  name="customCategory"
+                  value={customCategory}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setCustomCategory(value);
+                    setCategory(value.trim());
+                  }}
                   placeholder="Nom de la catégorie"
-                  autoFocus
+                  autoComplete="off"
                 />
               )}
             </div>
             <div className="space-y-2">
-              <Label>Tarif personnalisé (MAD) *</Label>
+              <Label htmlFor="bundle-customRate">Tarif personnalisé ($) *</Label>
               <Input
+                id="bundle-customRate"
+                name="customRate"
                 type="number"
                 value={customRate}
                 onChange={(e) => setCustomRate(e.target.value)}
@@ -155,8 +174,10 @@ export default function BundleDealForm({ open, onClose, onSubmit, editData }: Bu
 
           {/* Row 3: Description */}
           <div className="space-y-2">
-            <Label>Description</Label>
+            <Label htmlFor="bundle-description">Description</Label>
             <Textarea
+              id="bundle-description"
+              name="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Description de l'offre..."
@@ -168,6 +189,8 @@ export default function BundleDealForm({ open, onClose, onSubmit, editData }: Bu
           <div className="grid gap-4 md:grid-cols-3">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
+                id="bundle-popular"
+                name="popular"
                 type="checkbox"
                 checked={popular}
                 onChange={(e) => setPopular(e.target.checked)}
@@ -177,6 +200,8 @@ export default function BundleDealForm({ open, onClose, onSubmit, editData }: Bu
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
+                id="bundle-isActive"
+                name="isActive"
                 type="checkbox"
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
@@ -185,8 +210,10 @@ export default function BundleDealForm({ open, onClose, onSubmit, editData }: Bu
               <span className="text-sm">Actif</span>
             </label>
             <div className="space-y-1">
-              <Label className="text-xs">Ordre de tri</Label>
+              <Label htmlFor="bundle-sortOrder" className="text-xs">Ordre de tri</Label>
               <Input
+                id="bundle-sortOrder"
+                name="sortOrder"
                 type="number"
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value)}

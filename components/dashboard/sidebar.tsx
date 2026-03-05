@@ -35,7 +35,9 @@ export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
-  const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
+  const NavLinks = ({ onNavigate, showLabels }: { onNavigate?: () => void; showLabels?: boolean }) => {
+    const labels = showLabels ?? !collapsed;
+    return (
     <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
       {navItems.map((item) => {
         const isActive =
@@ -60,7 +62,7 @@ export default function Sidebar() {
                 isActive ? "text-primary" : ""
               )}
             />
-            {!collapsed && (
+            {labels && (
               <span className="truncate">{item.label}</span>
             )}
           </Link>
@@ -75,6 +77,7 @@ export default function Sidebar() {
       })}
     </nav>
   );
+  };
 
   return (
     <TooltipProvider delayDuration={120}>
@@ -118,13 +121,13 @@ export default function Sidebar() {
             <X className="h-4 w-4" />
           </button>
         </div>
-        <NavLinks onNavigate={() => setMobileOpen(false)} />
+        <NavLinks onNavigate={() => setMobileOpen(false)} showLabels={true} />
       </aside>
 
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden md:flex flex-col border-r border-border/60 bg-card transition-all duration-300 h-screen sticky top-0 shrink-0",
+          "hidden md:flex flex-col border-r border-border/60 bg-card shadow-sm transition-all duration-300 h-screen sticky top-0 shrink-0",
           collapsed ? "w-[60px]" : "w-60"
         )}
       >

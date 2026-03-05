@@ -57,6 +57,8 @@ export async function POST(request: NextRequest) {
         matchType: "MANUAL" as const,
         similarity: 1.0,
         price: e.price ?? null,
+        code: e.code || null,
+        duration: e.duration || null,
       })),
     });
 

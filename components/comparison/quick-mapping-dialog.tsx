@@ -118,7 +118,7 @@ export default function QuickMappingDialog({
               step="0.01"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder="Prix en MAD"
+              placeholder="Prix en $"
             />
           </div>
         </div>

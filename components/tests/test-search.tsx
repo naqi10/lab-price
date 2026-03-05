@@ -9,6 +9,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useDebounce } from "@/hooks/use-debounce";
+import { formatCurrency } from "@/lib/utils";
 import { parseTubeColor } from "@/lib/tube-colors";
 
 import MatchIndicator from "./match-indicator";
@@ -32,6 +33,14 @@ interface SearchResult {
   confidence?: number;
 }
 
+function normalizeSearchText(value: string | null | undefined) {
+  return (value ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+}
+
 export default function TestSearch({
   onAddToCart,
   onRemoveFromCart,
@@ -49,13 +58,46 @@ export default function TestSearch({
   useEffect(() => {
     if (debouncedQuery.length < 2) { setResults([]); return; }
     setIsLoading(true);
-    fetch(`/api/tests?q=${encodeURIComponent(debouncedQuery)}`)
+    fetch(`/api/tests?q=${encodeURIComponent(debouncedQuery)}&limit=50`)
       .then(r => r.json())
       .then(d => { if (d.success) setResults(d.data); })
       .finally(() => setIsLoading(false));
   }, [debouncedQuery]);
 
-  const limited = results.slice(0, 12);
+  const rankedResults = useMemo(() => {
+    const normalizedQuery = normalizeSearchText(debouncedQuery);
+    if (!normalizedQuery) return results;
+
+    const scored = results
+      .map((item) => {
+        const normalizedName = normalizeSearchText(item.name);
+        const normalizedCanonical = normalizeSearchText(item.canonicalName);
+        const normalizedCode = normalizeSearchText(item.code);
+
+        const exact =
+          normalizedName === normalizedQuery ||
+          normalizedCanonical === normalizedQuery ||
+          normalizedCode === normalizedQuery;
+
+        const prefix =
+          normalizedName.startsWith(normalizedQuery) ||
+          normalizedCanonical.startsWith(normalizedQuery) ||
+          normalizedCode.startsWith(normalizedQuery);
+
+        const baseScore = typeof item.similarity === "number" ? item.similarity : 0;
+        const score = exact ? 3 : prefix ? 2 : baseScore > 0.6 ? 1 : 0;
+
+        return { item, score, exact };
+      })
+      .sort((a, b) => b.score - a.score || (b.item.similarity ?? 0) - (a.item.similarity ?? 0));
+
+    const exactMatches = scored.filter((entry) => entry.exact).map((entry) => entry.item);
+    if (exactMatches.length > 0) return exactMatches;
+
+    return scored.map((entry) => entry.item);
+  }, [results, debouncedQuery]);
+
+  const limited = rankedResults.slice(0, 20);
 
   // Group ALL results by testMappingId so equivalent tests across labs merge
   const grouped = useMemo(() => {
@@ -120,9 +162,9 @@ export default function TestSearch({
       {!isLoading && grouped.length > 0 && (
         <div className="w-full rounded-lg border border-border/60 bg-card overflow-hidden">
           <div className="px-4 py-2.5 border-b border-border/40 bg-muted/30">
-            <p className="text-xs font-medium text-muted-foreground">
-              {results.length > 12
-                ? `Top suggestions sur ${results.length} résultats`
+            <p className="text-sm font-medium text-muted-foreground">
+              {rankedResults.length > 20
+                ? `Top suggestions sur ${rankedResults.length} resultats`
                 : `${grouped.length} suggestion${grouped.length > 1 ? "s" : ""}`}
             </p>
           </div>
@@ -159,17 +201,17 @@ export default function TestSearch({
                         </Tooltip>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="text-[13px] sm:text-sm font-semibold leading-snug text-foreground/90 whitespace-normal break-words">
+                        <p className="text-base font-semibold leading-snug text-foreground whitespace-normal break-words">
                           {displayName}
                         </p>
                         {primary.category && (
-                          <Badge variant="secondary" className="mt-1 text-[10px]">{primary.category}</Badge>
+                          <Badge variant="secondary" className="mt-1 text-sm">{primary.category}</Badge>
                         )}
                       </div>
                     </div>
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
                       {isMultiLab ? (
-                        <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground/80">
+                        <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
                           {uniqueLabs.map((lab) => (
                             <span key={lab.id}>
                               {lab.name}
@@ -178,19 +220,19 @@ export default function TestSearch({
                         </span>
                       ) : (
                         <>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-sm text-muted-foreground">
                             {primary.laboratoryName}
                           </span>
                           {primary.canonicalName && (
-                            <span className="text-[10px] text-emerald-400 whitespace-normal break-words">
+                            <span className="text-sm text-emerald-600 whitespace-normal break-words">
                               → {primary.canonicalName}
                             </span>
                           )}
                         </>
                       )}
                       {primary.turnaroundTime && (
-                        <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/60">
-                          <Clock className="h-2.5 w-2.5 shrink-0" />
+                        <span className="inline-flex items-center gap-1 text-sm text-muted-foreground/85">
+                          <Clock className="h-3.5 w-3.5 shrink-0" />
                           {primary.turnaroundTime}
                         </span>
                       )}
@@ -202,12 +244,12 @@ export default function TestSearch({
                       <MatchIndicator type={primary.matchType} confidence={primary.confidence} compact />
                     )}
                     {isMultiLab ? (
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className="text-xs">
                         {uniqueLabNames.length} labs
                       </Badge>
                     ) : (
-                      <span className="text-xs sm:text-sm font-semibold tabular-nums whitespace-nowrap min-w-[64px] sm:min-w-[72px] text-right">
-                        {primary.price} <span className="text-xs text-muted-foreground font-normal">{primary.unit || "MAD"}</span>
+                      <span className="text-base font-bold tabular-nums whitespace-nowrap min-w-[64px] sm:min-w-[72px] text-right">
+                        {formatCurrency(primary.price)}
                       </span>
                     )}
                     {onAddToCart && (
@@ -244,7 +286,8 @@ export default function TestSearch({
 
       {!isLoading && query.length >= 2 && limited.length === 0 && (
         <div className="rounded-lg border border-dashed border-border/40 p-6 text-center">
-          <p className="text-sm text-muted-foreground">Aucun test trouvé pour &quot;{query}&quot;</p>
+          <p className="text-sm text-muted-foreground">Aucun test individuel trouvé pour &quot;{query}&quot;</p>
+          <p className="text-xs text-muted-foreground/70 mt-1">Les profils groupés sont disponibles dans la section Offres groupées.</p>
         </div>
       )}
     </div>

@@ -1,1924 +1,7995 @@
 /**
  * CDL Laboratories Test Catalog Seed Data
  * Mapped from CDL Manual Catalog (2025-2026)
+ * Source: CDL Répertoire des Services 2026
+ * Prices effective January 27, 2026
  */
+
+export enum TubeType {
+  SST_GOLD = "Tube SST (or/gold)",
+  RED = "Tube rouge",
+  LAVENDER = "Tube lavande",
+  LIGHT_BLUE = "Tube bleu pâle",
+  ROYAL_BLUE = "Tube bleu foncé",
+  GREEN = "Tube vert",
+  GREEN_PEA = "Tube de préservation vert pois",
+  GRAY = "Tube gris",
+  YELLOW = "Tube de préservation jaune",
+  PINK = "Tube rose",
+  URINE_CONTAINER = "Contenant d'urine",
+  THINPREP = "Contenant ThinPrep",
+  SPECIAL_KIT = "Trousse spéciale",
+  STOOL_CONTAINER = "Contenant de selles",
+  SWAB = "Écouvillon",
+  SALIVA_KIT = "Tube salivaire / Salivette",
+  HAIR_SAMPLE = "Échantillon de cheveux",
+  STERILE_CONTAINER = "Contenant stérile",
+  PCR_TUBE = "Tube PCR",
+}
+
+export enum SpecimenType {
+  SERUM = "Sérum",
+  WHOLE_BLOOD = "Sang entier",
+  PLASMA = "Plasma",
+  URINE_24H = "Urine 24 heures",
+  URINE_MIDSTREAM = "Urine mi-jet",
+  URINE_RANDOM = "Urine aléatoire",
+  URINE_FIRST_VOID = "Urine premier jet",
+  STOOL = "Selles",
+  SALIVA = "Salive",
+  CERVICAL = "Prélèvement cervical",
+  HAIR = "Cheveux",
+  SWAB = "Écouvillon",
+  RED_BLOOD_CELLS = "Globules rouges",
+  BODY_FLUID = "Liquide biologique",
+  SPECIAL_KIT = "Trousse spéciale",
+}
+
+export enum TestCategory {
+  PROFILE = "Profil",
+  INDIVIDUAL = "Individuel",
+}
 
 export interface TestDefinition {
   code: string;
   name: string;
-  tube: string;
-  specimenType: string;
-  turnaroundTime: string; // Business days
+  tube: TubeType | TubeType[];
+  specimenType: SpecimenType | SpecimenType[];
+  turnaroundTime: string;
+  price: string;
   notes?: string;
+  componentCodes?: string[];
 }
 
-export const cdlSeedData: TestDefinition[] = [
-  // --- A ---
+// =============================================================================
+// SECTION 1: PROFILE TESTS (Profils)
+// =============================================================================
+
+export const cdlProfileTests: TestDefinition[] = [
+  {
+    code: "URC+",
+    name: "ANALYSE ET CULTURE D’URINE",
+    tube: [TubeType.GREEN_PEA, TubeType.YELLOW],
+    specimenType: SpecimenType.URINE_MIDSTREAM,
+    turnaroundTime: "2",
+    price: "90.00$",
+    notes: "Le contenant d’urine avec orifice de transfert n’est pas conçu pour le transport."
+  },
+  {
+    code: "FA12",
+    name: "VITAMINE B12 ET ACIDE FOLIQUE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "140.00$",
+    notes: "Les suppléments de vitamines peuvent affecter les résultats."
+  },
+  {
+    code: "IRN2",
+    name: "FER #2, PROFIL",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "125.00$"
+  },
+  {
+    code: "IRON",
+    name: "FER, PROFIL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "85.00$",
+    notes: "Éviter les suppléments de fer 24 heures avant le prélèvement."
+  },
+  {
+    code: "IRN6",
+    name: "FER #6, PROFIL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "145.00$",
+    notes: "Éviter les suppléments de fer 24 heures avant le prélèvement."
+  },
+  {
+    code: "IRN1",
+    name: "FER #1, PROFIL",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "165.00$"
+  },
+  {
+    code: "ANE1",
+    name: "ANÉMIE #1",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "155.00$",
+    componentCodes: ["CBC", "RTIC", "FE", "TRFN"]
+  },
+  {
+    code: "ANE4",
+    name: "ANÉMIE #4",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "210.00$"
+  },
+  {
+    code: "ANE3",
+    name: "ANÉMIE #3",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "260.00$",
+    notes: "Les suppléments de vitamines peuvent affecter les résultats."
+  },
+  {
+    code: "IRN3",
+    name: "FER #3, PROFIL",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "235.00$",
+    notes: "Les suppléments de vitamines peuvent affecter les résultats."
+  },
+  {
+    code: "B2GP",
+    name: "BETA 2 GLYCOPROTÉINE I ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "155.00$"
+  },
+  {
+    code: "DIAB",
+    name: "DIABÉTIQUE #1, PROFIL",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "105.00$"
+  },
+  {
+    code: "LIV1",
+    name: "HÉPATIQUE #1, PROFIL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "115.00$",
+    componentCodes: ["AST", "ALT", "GGT", "TBIL", "ALKP"]
+  },
+  {
+    code: "PANC",
+    name: "PANCRÉATIQUE, PROFIL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "90.00$"
+  },
+  {
+    code: "REN2",
+    name: "RÉNAL #2, PROFIL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "105.00$"
+  },
+  {
+    code: "BIO1",
+    name: "BIOCHIMIE #1A",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "115.00$"
+  },
+  {
+    code: "CHM1",
+    name: "BIOCHIMIE #1B",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "115.00$"
+  },
+  {
+    code: "CHM2",
+    name: "BIOCHIMIE #2",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "125.00$"
+  },
+  {
+    code: "CHM5",
+    name: "BIOCHIMIE #2 + ELECTROLYTES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "140.00$",
+    componentCodes: ["ACGL", "CREA", "UREA", "TP", "URIC", "AST", "ALT", "GGT", "ALB", "ALKP", "ELEC", "TBIL", "CA", "PO4"]
+  },
+  {
+    code: "CHL3",
+    name: "BIOCHIMIE #3, ELECTROLYTES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "160.00$"
+  },
+  {
+    code: "CHP3",
+    name: "PROFIL GÉNÉRAL #3",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "1",
+    price: "210.00$"
+  },
+  {
+    code: "BIO3",
+    name: "BIOCHIMIE #3, PROFIL COMPLET",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "155.00$"
+  },
+  {
+    code: "CHM4",
+    name: "BIOCHIMIE #4",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "155.00$"
+  },
+  {
+    code: "CHL4",
+    name: "BIOCHIMIE #4, ÉLECTROLYTES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "170.00$",
+    componentCodes: ["UREA", "CREA", "URIC", "ALT", "GGT", "ALB", "ALKP", "ELEC", "TBIL", "CHOL", "TRIG", "TP", "CA", "PO4", "HDL", "LDLD"]
+  },
+  {
+    code: "BIO4",
+    name: "BIOCHIMIE #4, PROFIL COMPLET",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "170.00$",
+    componentCodes: ["UREA", "CREA", "URIC", "ALT", "GGT", "ALB", "ALKP", "ELEC", "TBIL", "CHOL", "TRIG", "TP", "CA", "PO4", "HDL", "LDLD"]
+  },
+  {
+    code: "CH4U",
+    name: "PROFIL COMPLET, SANS URINE",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "215.00$"
+  },
+  {
+    code: "CHP4",
+    name: "PROFIL BIOCHIMIE COMPLET",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "1",
+    price: "230.00$",
+    componentCodes: ["UREA", "CA", "CREA", "ALT", "GGT", "ALB", "ALKP", "ELEC", "TBIL", "CHOL", "TP", "TRIG", "HDL", "LDLD", "NHDL", "URC", "CBC"]
+  },
+  {
+    code: "CHP4T",
+    name: "PROFIL BIOCHIMIE COMPLET GÉNÉRAL, TSH",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "1",
+    price: "300.00$"
+  },
+  {
+    code: "CHP4A",
+    name: "PROFIL BIOCHIMIE COMPLET, TSH, APS",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "1",
+    price: "320.00$"
+  },
+  {
+    code: "COAG",
+    name: "COAGULOGRAMME",
+    tube: TubeType.LAVENDER,
+    specimenType: [SpecimenType.WHOLE_BLOOD, SpecimenType.PLASMA],
+    turnaroundTime: "1",
+    price: "155.00$"
+  },
+  {
+    code: "PTPT",
+    name: "PT ET PTT",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "70.00$"
+  },
+  {
+    code: "PAPTHPV",
+    name: "TEST PAP THIN PREP + HPV DNA",
+    tube: TubeType.THINPREP,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "6",
+    price: "245.00$",
+    notes: "Ne pas laisser la brosse à l’intérieur du contenant. Utiliser la requête désignée (RR-10-RQ- 010)."
+  },
+  {
+    code: "PREN",
+    name: "PRÉNATAL #1",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER, TubeType.PINK],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "285.00$"
+  },
+  {
+    code: "PRENG",
+    name: "PRÉNATAL, GLUCOSE AC",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER, TubeType.PINK],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "300.00$"
+  },
+  {
+    code: "DAL2",
+    name: "PRÉNATAL #3",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER, TubeType.PINK],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "2",
+    price: "390.00$"
+  },
+  {
+    code: "DAL2G",
+    name: "PRÉNATAL #3, GLUCOSE",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER, TubeType.PINK],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "2",
+    price: "410.00$"
+  },
+  {
+    code: "PANO",
+    name: "PANORAMA®",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "610.00$",
+    notes: "Lire les instructions à l’intérieur de la trousse de prélèvement. Remplir et joindre le formulaire de consentement Panorama RR-05-FM-013."
+  },
+  {
+    code: "PANOE",
+    name: "PANORAMA® ET MICRODÉLÉTIONS",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "810.00$",
+    notes: "Lire les instructions à l’intérieur de la trousse de prélèvement. Remplir et joindre le formulaire de consentement Panorama RR-05-FM-013."
+  },
+  {
+    code: "HARMP",
+    name: "HARMONY®",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "555.00$",
+    notes: "Lire les instructions à l’intérieur de la trousse de prélèvement. Remplir et joindre le formulaire de consentement Harmony RR-15-RQ-004"
+  },
+  {
+    code: "DRUGH",
+    name: "CHEVEUX, DÉPISTAGE DE DROGUES DANS LES",
+    tube: TubeType.HAIR_SAMPLE,
+    specimenType: SpecimenType.HAIR,
+    turnaroundTime: "6",
+    price: "270.00$",
+    notes: "Offert au siège social CDL sur rendez-vous seulement, appelez le 514 344-8022, poste 265."
+  },
+  {
+    code: "DAU450",
+    name: "DROGUES 4 TESTS #1",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "195.00$"
+  },
+  {
+    code: "DAUP",
+    name: "DROGUES 5 TESTS #1",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "205.00$"
+  },
+  {
+    code: "DAUB50",
+    name: "DROGUES 5 TESTS #2",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "200.00$"
+  },
+  {
+    code: "ENDPE",
+    name: "ÉCHOGRAPHIE ENDOVAGINALE ET PELVIENNE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "190.00$"
+  },
+  {
+    code: "ENDV",
+    name: "ÉCHOGRAPHIE ENDOVAGINALE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "185.00$"
+  },
+  {
+    code: "1TRI",
+    name: "ÉCHOGRAPHIE OBSTÉTRICALE, 1ER TRIMESTRE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "175.00$"
+  },
+  {
+    code: "2TRI",
+    name: "ÉCHOGRAPHIE OBSTÉTRICALE, 2EME TRIMESTRE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "3",
+    price: "235.00$"
+  },
+  {
+    code: "3TRI",
+    name: "ÉCHOGRAPHIE OBSTÉTRICALE, 3EME TRIMESTRE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "3",
+    price: "235.00$"
+  },
+  {
+    code: "VIAB",
+    name: "ÉCHOGRAPHIE DE VIABILITÉ-DATATION",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "3",
+    price: "155.00$"
+  },
+  {
+    code: "FERT",
+    name: "FERTILITÉ #1",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "150.00$"
+  },
+  {
+    code: "MEN1",
+    name: "MÉNOPAUSE #1",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "205.00$",
+    componentCodes: ["FSH", "LH", "ESTR"]
+  },
+  {
+    code: "MEN3",
+    name: "MÉNOPAUSE #3",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "240.00$"
+  },
+  {
+    code: "MEN2",
+    name: "MÉNOPAUSE #2",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "300.00$"
+  },
+  {
+    code: "MEN4",
+    name: "MÉNOPAUSE #4",
+    tube: [TubeType.SST_GOLD, TubeType.RED],
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "400.00$",
+    notes: "Pour les femmes : ce test doit être effectué 7 jours avant ou après les menstruations."
+  },
+  {
+    code: "THY1R",
+    name: "THYROÏDE #1, CASCADE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "145.00$"
+  },
+  {
+    code: "THY2R",
+    name: "THYROÏDE #3, CASCADE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "140.00$"
+  },
+  {
+    code: "THY1",
+    name: "THYROÏDE #1",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "150.00$",
+    componentCodes: ["TSH"]
+  },
+  {
+    code: "THY3",
+    name: "THYROÏDE #3",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "210.00$"
+  },
+  {
+    code: "THY4",
+    name: "THYROÏDE #4",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "250.00$"
+  },
+  {
+    code: "CH3U",
+    name: "PROFIL GÉNÉRAL #3, SANS URINE",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "180.00$"
+  },
+  {
+    code: "CHP1",
+    name: "PROFIL GÉNÉRAL #1",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "1",
+    price: "185.00$"
+  },
+  {
+    code: "FIN1",
+    name: "PROFIL GÉNÉRAL #1, CRP",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "1",
+    price: "215.00$"
+  },
+  {
+    code: "CHP2",
+    name: "PROFIL GÉNÉRAL #2",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "1",
+    price: "205.00$"
+  },
+  {
+    code: "CH4SC",
+    name: "PROFIL COMPLET, CRP ULTRASENSIBLE",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "1",
+    price: "245.00$"
+  },
+  {
+    code: "GN5",
+    name: "PROFIL GÉNÉRAL #5",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "1",
+    price: "235.00$"
+  },
+  {
+    code: "PNL6",
+    name: "PROFIL GÉNÉRAL #6",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD, SpecimenType.URINE_MIDSTREAM],
+    turnaroundTime: "1",
+    price: "220.00$"
+  },
+  {
+    code: "CBCS",
+    name: "FORMULE SANGUINE COMPLÈTE ET SÉDIMENTATION",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "98.00$"
+  },
+  {
+    code: "MON+",
+    name: "MONOTEST #1",
+    tube: [TubeType.SST_GOLD, TubeType.LAVENDER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.WHOLE_BLOOD],
+    turnaroundTime: "1",
+    price: "120.00$"
+  },
+  {
+    code: "CELP",
+    name: "MALADIE CŒLIAQUE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "365.00$",
+    notes: "Le patient ne doit pas suivre une diète sans gluten."
+  },
+  {
+    code: "CVRK",
+    name: "RISQUE CARDIOVASCULAIRE #1",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "95.00$",
+    componentCodes: ["CHOL", "TRIG", "HDL", "LDLD", "NHDL"]
+  },
+  {
+    code: "CVK2",
+    name: "RISQUE CARDIOVASCULAIRE #2 PLUS APOB",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "155.00$"
+  },
+  {
+    code: "CCL4",
+    name: "CCL4",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "150.00$"
+  },
+  {
+    code: "HPBA",
+    name: "HÉPATITE B AIGÜE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "225.00$",
+    notes: "Compléter et joindre le formulaire de consentement : RR-05-FM-001 Si le résultat de l’hépatite B antigène de surface est positif ou indéterminé, une confirmation est obligatoire (des frais additionnels s’appliquent)."
+  },
+  {
+    code: "STD2",
+    name: "MTS #2, FEMME",
+    tube: [TubeType.SWAB, TubeType.PCR_TUBE],
+    specimenType: [SpecimenType.URINE_FIRST_VOID, SpecimenType.SWAB],
+    turnaroundTime: "4",
+    price: "210.00$"
+  },
+  {
+    code: "STDMH",
+    name: "MTS #1, VIH - HOMME",
+    tube: [TubeType.SST_GOLD, TubeType.PCR_TUBE],
+    specimenType: [SpecimenType.SERUM, SpecimenType.URINE_FIRST_VOID],
+    turnaroundTime: "2",
+    price: "255.00$",
+    notes: "Compléter et joindre le formulaire de consentement : RR-05-FM-001",
+    componentCodes: ["CMPCR", "GONOU", "SYPEIA", "HIV"]
+  },
+];
+
+// =============================================================================
+// SECTION 2: INDIVIDUAL TESTS (Tests Individuels)
+// =============================================================================
+
+export const cdlIndividualTests: TestDefinition[] = [
   {
     code: "HIAA",
-    name: "5-HIAA (5-Hydroxyindoleacetic Acid)",
-    tube: "24h Urine Container",
-    specimenType: "Urine (24h) with preservative (HCl 6N)",
-    turnaroundTime: "5-9"
+    name: "5’HIAA",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "5-9",
+    price: "110.00$",
+    notes: "Éviter certains aliments"
   },
   {
     code: "ACBA",
-    name: "Acetylcholine, Anticorps Bloquants",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "7"
+    name: "ACÉTYLCHOLINE, ANTICORPS BLOQUANTS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "225.00$",
+    notes: "Prélever un second tube SST si d’autres analyses sont demandées. Rejet : hémolyse, lipémie."
   },
   {
     code: "ACRA",
-    name: "Acetylcholine, Anticorps Liant",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
+    name: "ACÉTYLCHOLINE, ANTICORPS LIANT",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "200.00$",
+    notes: "Prélever un second tube SST si d’autres analyses sont demandées. Rejet : hémolyse, lipémie."
+  },
+  {
+    code: "ACMA",
+    name: "ACÉTYLCHOLINE, MODULATEURS D’ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "270.00$",
+    notes: "Prélever un second tube SST si d’autres analyses sont demandées. Rejet : hémolyse, lipémie."
   },
   {
     code: "FOLC",
-    name: "Acide Folique (Folate)",
-    tube: "Gold",
-    specimenType: "Serum (SST) - Protect from light",
-    turnaroundTime: "1"
+    name: "ACIDE FOLIQUE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "82.00$",
+    notes: "Les échantillons destinés au dosage des folates doivent être prélevés sur des patients à jeun."
   },
   {
     code: "MMAS",
-    name: "Acide Méthylmalonique",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "6"
+    name: "ACIDE MÉTHYLMALONIQUE, SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "250.00$"
   },
   {
     code: "URIC",
-    name: "Acide Urique",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "ACIDE URIQUE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
     code: "UA/U",
-    name: "Acide Urique (Urine 24h)",
-    tube: "24h Urine Container",
-    specimenType: "Urine (24h) with preservative (NaOH)",
-    turnaroundTime: "1"
+    name: "ACIDE URIQUE, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "52.00$",
+    notes: "Ne pas réfrigérer, garder à température ambiante."
   },
   {
     code: "VALP",
-    name: "Acide Valproïque (Depakene/Epival)",
-    tube: "Red",
-    specimenType: "Serum (No Gel)",
-    turnaroundTime: "1"
+    name: "ACIDE VALPROÏQUE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "78.00$"
   },
   {
     code: "ADUL",
-    name: "Adalimumab",
-    tube: "Red",
-    specimenType: "Serum (No Gel)",
-    turnaroundTime: "10"
+    name: "ADALIMUMAB",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "500.00$",
+    notes: "Le patient doit s’abstenir de prendre des suppléments ou des vitamines contenants de la biotines 24-48 heurs avant le prélèvement. Rejet : hémolyse ou tube SST"
+  },
+  {
+    code: "ADPTN",
+    name: "ADIPONECTINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "400.00$"
   },
   {
     code: "ALB",
-    name: "Albumine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "ALBUMINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
+  },
+  {
+    code: "AGR",
+    name: "ALBUMINE / GLOBULINES RATIO",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "70.00$",
+    notes: "Cette analyse inclus protéines totales et albumine."
+  },
+  {
+    code: "ADLASE",
+    name: "ALDOLASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "102.00$"
   },
   {
     code: "ALDO",
-    name: "Aldostérone",
-    tube: "Red or Lavender",
-    specimenType: "Serum (No Gel) or Plasma (Lavender) - NO SST",
-    turnaroundTime: "10"
+    name: "ALDOSTÉRONE",
+    tube: TubeType.SST_GOLD,
+    specimenType: [SpecimenType.SERUM, SpecimenType.PLASMA],
+    turnaroundTime: "10",
+    price: "115.00$"
   },
   {
     code: "A1AT",
-    name: "Alpha-1 Antitrypsine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "5"
+    name: "ALPHA 1 ANTITRYPSINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "100.00$"
   },
   {
     code: "AFP",
-    name: "Alpha-Foetoprotéine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "ALPHAFÉTOPROTÉINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "85.00$"
   },
   {
     code: "ALT",
-    name: "ALT (SGPT)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "ALT (GPT, SGPT)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
     code: "AL",
-    name: "Aluminium",
-    tube: "Royal Blue",
-    specimenType: "Whole Blood (Royal Blue) or Lavender",
-    turnaroundTime: "4"
+    name: "ALUMINIUM, SANG ENTIER",
+    tube: [TubeType.LAVENDER, TubeType.ROYAL_BLUE],
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "93.00$",
+    notes: "Éviter de consommer des fruits, du jus et du thé 24 heures avant le prélèvement. Éviter hémolyse."
   },
   {
     code: "AMPH",
-    name: "Amphétamine (Dépistage)",
-    tube: "Sterile Container",
-    specimenType: "Urine",
-    turnaroundTime: "1"
+    name: "AMPHÉTAMINE (1000 ng/mL)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "75.00$"
   },
   {
     code: "AMYL",
-    name: "Amylase",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "AMYLASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
+  },
+  {
+    code: "AMMO",
+    name: "AMMONIAQUE",
+    tube: TubeType.GREEN,
+    specimenType: SpecimenType.PLASMA,
+    turnaroundTime: "1",
+    price: "51.00$",
+    notes: "Mettre le tube sur glace immédiatement après le prélèvement."
   },
   {
     code: "ANDR",
-    name: "Androsténédione",
-    tube: "Red",
-    specimenType: "Serum (No Gel)",
-    turnaroundTime: "7"
+    name: "ANDROSTÉNÉDIONE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "125.00$",
+    notes: "Un échantillon du matin est préférable."
+  },
+  {
+    code: "CENP",
+    name: "ANTI-CENP",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "215.00$"
+  },
+  {
+    code: "APA",
+    name: "ANTI-CELLULES PARIÉTALES, ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "107.00$"
+  },
+  {
+    code: "ADNAB",
+    name: "ANTICORPS SURRÉNALES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "195.00$",
+    notes: "Rejet : hémolyse, lipémie, ictérie"
+  },
+  {
+    code: "ANCAP",
+    name: "ANTICYTOPLASME DES NEUTROPHILES, ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "320.00$",
+    notes: "Prélever un tube supplémentaire si d’autres analyses sont demandées."
+  },
+  {
+    code: "BDNA",
+    name: "ANTI-DNASE B",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "210.00$"
+  },
+  {
+    code: "DNA",
+    name: "ANTI-ADNdb",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "160.00$"
+  },
+  {
+    code: "AEML",
+    name: "ANTI-ENDOMYSIAUX, ANTICORPS (IgA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "150.00$"
+  },
+  {
+    code: "GAD",
+    name: "ANTI-GAD AUTO-ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "200.00$"
+  },
+  {
+    code: "GLIA",
+    name: "ANTI-GLIADINE IGA",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "95.00$",
+    notes: "Le patient ne doit pas suivre une diète sans gluten."
+  },
+  {
+    code: "GLIG",
+    name: "ANTI-GLIADINE IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "113.00$",
+    notes: "Le patient ne doit pas suivre une diète sans gluten."
+  },
+  {
+    code: "ALKM",
+    name: "ANTI-LKM, ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "115.00$"
+  },
+  {
+    code: "AMA",
+    name: "ANTI-MITOCHONDRIES, ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "105.00$"
+  },
+  {
+    code: "ASA",
+    name: "ANTI-MUSCLE LISSE, ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "105.00$"
   },
   {
     code: "ANA",
-    name: "Anti-Nucléaire Anticorps (ANA)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "6"
+    name: "ANTI-NUCLÉAIRE, ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "95.00$",
+    notes: "Rejet : Hémolyse, lipémie"
   },
   {
     code: "ENA",
-    name: "Anti-Nucléaires Extractables (ENA)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "9"
+    name: "ANTI-NUCLÉAIRES EXTRACTABLES (DÉPISTAGE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "235.00$",
+    notes: "Prélever un tube supplémentaire si d’autres analyses sont demandées."
+  },
+  {
+    code: "PHOA",
+    name: "ANTIPHOSPHOLIPINE IGA",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "125.00$"
+  },
+  {
+    code: "PHOG",
+    name: "ANTIPHOSPHOLIPINE IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "110.00$"
+  },
+  {
+    code: "PHOM",
+    name: "ANTIPHOSPHOLIPINE IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "110.00$"
+  },
+  {
+    code: "PHOS",
+    name: "ANTIPHOSPHOLIPINE IGM, IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "130.00$"
+  },
+  {
+    code: "PHOP",
+    name: "ANTIPHOSPHOLIPINE IGM, IGG, IGA,",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "175.00$"
   },
   {
     code: "ASOT",
-    name: "Antistreptolysine O (ASO)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "ANTISTREPTOLYSINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "60.00$"
+  },
+  {
+    code: "AT3A",
+    name: "ANTITHROMBINE III, ANTIGÈNE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "6",
+    price: "100.00$"
+  },
+  {
+    code: "AT3F",
+    name: "ANTITHROMBINE III, FONCTIONNELLE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "6",
+    price: "113.00$"
+  },
+  {
+    code: "TPO",
+    name: "ANTI TPO",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "90.00$",
+    notes: "Pour les patients recevant des traitements de biotine élevé, les échantillons devraient être prélevés 8 heures après le dernier traitement."
+  },
+  {
+    code: "TRSG",
+    name: "ANTI-TRANSGLUTAMINASE IGA",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "200.00$",
+    notes: "Rejet : hémolyse, lipémie."
+  },
+  {
+    code: "GTTG",
+    name: "ANTI-TRANSGLUTAMINASE IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "150.00$"
   },
   {
     code: "APOA",
-    name: "Apolipoprotéine A-1",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "APOLIPOPROTÉINE A-1",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "95.00$",
+    notes: "Ce test est souvent commandé avec d’autre tests qui requierent un jeûn (ex : lipides), un jeun peut être requis."
   },
   {
     code: "APOB",
-    name: "Apolipoprotéine B",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "APOLIPOPROTÉINE B",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "87.00$",
+    notes: "Ce test est souvent commandé avec d’autre tests qui requierent un jeûn (ex : lipides), un jeun peut être requis."
   },
   {
     code: "APOE",
-    name: "Apolipoprotéine E (Genotyping)",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA) - Do Not Centrifuge",
-    turnaroundTime: "8"
+    name: "APOLIPOPROTÉINE E",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "8",
+    price: "345.00$"
   },
   {
     code: "BARS",
-    name: "Arsenic",
-    tube: "Royal Blue",
-    specimenType: "Whole Blood (Royal Blue)",
-    turnaroundTime: "7"
+    name: "ARSENIC, SANG ENTIER",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "7",
+    price: "108.00$"
   },
   {
     code: "AST",
-    name: "AST (SGOT)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "AST (GOT, SGOT)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
-
-  // --- B ---
   {
     code: "CTTBP",
-    name: "Bacille de Koch (Tuberculose) Culture",
-    tube: "Sterile Container",
-    specimenType: "Sputum (3 samples over 3 days)",
-    turnaroundTime: "60"
+    name: "BACILLE DE KOCH, CULTURE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "60",
+    price: "200.00$",
+    notes: "Facturer chaque échantillon individuellement."
   },
   {
     code: "UBAR",
-    name: "Barbituriques (Dépistage)",
-    tube: "Sterile Container",
-    specimenType: "Urine",
-    turnaroundTime: "1"
+    name: "BARBITURIQUE (200 ng/ml)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: [SpecimenType.URINE_RANDOM, SpecimenType.SPECIAL_KIT],
+    turnaroundTime: "1",
+    price: "75.00$",
+    notes: "Remplir et envoyer la requête de chaîne de possession drogues illicites RR-45-RQ-001. Si le résultat est positif ou indéterminé, une confirmation peut être demandée (des frais supplémentaires s’appliquent)."
   },
   {
     code: "BENZ",
-    name: "Benzodiazépines (Dépistage)",
-    tube: "Sterile Container",
-    specimenType: "Urine",
-    turnaroundTime: "1"
+    name: "BENZODIAZÉPINE (200 ng/ml)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "72.00$",
+    notes: "Remplir et envoyer la requête de chaîne de possession drogues illicites RR-45-RQ-001. Si le résultat est positif ou indéterminé, une confirmation peut être demandée (des frais supplémentaires s’appliquent)."
   },
   {
     code: "B2MG",
-    name: "Bêta-2 Microglobuline",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "BÉTA-2 MICROGLOBULINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "83.00$"
   },
   {
     code: "BHCG",
-    name: "Bêta-HCG Quantitative (Grossesse)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "BÉTA-HCG INTACTE (QUANTITATIF)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "83.00$"
   },
   {
     code: "PREG",
-    name: "Bêta-HCG Qualitative",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "BÉTA-HCG QUALITATIF, SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "80.00$"
   },
   {
     code: "CO2P",
-    name: "Bicarbonate (CO2 Total)",
-    tube: "Green",
-    specimenType: "Whole Blood (Sodium Heparin) - Do Not Centrifuge",
-    turnaroundTime: "1"
+    name: "BICARBONATE ET CO2 TOTAL",
+    tube: TubeType.GREEN,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "62.00$",
+    notes: "Garder le tube fermé jusqu’à l’analyse."
   },
   {
     code: "DBIL",
-    name: "Bilirubine Directe",
-    tube: "Gold",
-    specimenType: "Serum (SST) - Protect from light",
-    turnaroundTime: "1"
+    name: "BILIRUBINE, DIRECTE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$",
+    notes: "Cette analyse normalement est effectuée lorsque le total est anormal."
+  },
+  {
+    code: "IBIL",
+    name: "BILIRUBINE, INDIRECTE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "58.00$",
+    notes: "Ce test inclut les analyses de la bilirubine totale et bilirubine directe."
   },
   {
     code: "TBIL",
-    name: "Bilirubine Totale",
-    tube: "Gold",
-    specimenType: "Serum (SST) - Protect from light",
-    turnaroundTime: "1"
+    name: "BILIRUBINE, TOTALE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
     code: "BIOP",
-    name: "Biopsie",
-    tube: "Formalin Container",
-    specimenType: "Tissue",
-    turnaroundTime: "6"
+    name: "BIOPSIE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "6",
+    price: "220.00$",
+    notes: "Indiquer la/les source(s) d’échantillon(s) et information clinique sur la requête (RR-60- RQ-001) et le contenant de biopsie."
   },
   {
     code: "BORP",
-    name: "Bordetella Pertussis (Coqueluche)",
-    tube: "UTM Swab",
-    specimenType: "Nasopharyngeal Swab",
-    turnaroundTime: "1"
+    name: "BORDETELLA PERTUSSIS ET PARAPERTUSSIS",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "12",
+    price: "180.00$",
+    notes: "Joindre le formulaire de consentement."
   },
-
-  // --- C ---
   {
-    code: "C125",
-    name: "CA 125",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "C1EI",
+    name: "C1 INHIBITEUR ESTÉRASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "115.00$"
   },
   {
     code: "C153",
     name: "CA 15-3",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "6"
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "120.00$"
   },
   {
     code: "C199",
     name: "CA 19-9",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "7"
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "150.00$"
+  },
+  {
+    code: "C125",
+    name: "CA-125",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "110.00$"
   },
   {
     code: "CD",
-    name: "Cadmium",
-    tube: "Royal Blue",
-    specimenType: "Whole Blood (Royal Blue)",
-    turnaroundTime: "6"
+    name: "CADMIUM, SANG ENTIER",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "6",
+    price: "185.00$",
+    notes: "Éviter la collection sur le lieu de travail."
+  },
+  {
+    code: "CLTN",
+    name: "CALCITONINE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "125.00$"
   },
   {
     code: "CA",
-    name: "Calcium",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "CALCIUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
+  },
+  {
+    code: "CACR",
+    name: "CALCIUM / CRÉATININE RATIO",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "4",
+    price: "60.00$",
+    notes: "Ce test inclut les analyses calcium et créatinine dans l’urine."
   },
   {
     code: "CAIP",
-    name: "Calcium Ionisé",
-    tube: "Green",
-    specimenType: "Whole Blood (Green - Full)",
-    turnaroundTime: "1"
+    name: "CALCIUM IONISÉ",
+    tube: TubeType.GREEN,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "83.00$"
   },
   {
-    code: "CN50",
-    name: "Cannabis (THC) Dépistage",
-    tube: "Sterile Container",
-    specimenType: "Urine",
-    turnaroundTime: "1"
+    code: "CA/U",
+    name: "CALCIUM, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "55.00$"
   },
   {
-    code: "CARM",
-    name: "Carbamazépine (Tegretol)",
-    tube: "Red",
-    specimenType: "Serum (No Gel)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CEA",
-    name: "Carcino-Embryonic Antigen (CEA)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "CALU",
+    name: "CALCUL, ANALYSE DE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "4",
+    price: "150.00$",
+    notes: "Indiquer le type de calcul sur la requête. Les calculs dont la source d’origine n’est pas reliée au rein devrait être seché à l’air et ensuite placé dans un tube de plastique ou un contenant d’urine."
   },
   {
     code: "CLPTN",
-    name: "Calprotectine",
-    tube: "Sterile Container",
-    specimenType: "Stool (Blue cap)",
-    turnaroundTime: "6"
+    name: "CALPROTECTINE",
+    tube: TubeType.STOOL_CONTAINER,
+    specimenType: SpecimenType.STOOL,
+    turnaroundTime: "1",
+    price: "80.00$",
+    notes: "Remplir et envoyer la requête de chaîne de possession drogues illicites RR-45-RQ-001. Si le résultat est positif ou indéterminé, une confirmation peut être demandée (des frais supplémentaires s’appliquent)."
+  },
+  {
+    code: "CARM",
+    name: "CARBAMAZÉPINE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "83.00$",
+    notes: "Indiquer la date et l’heure de la dernière dose sur la requête."
+  },
+  {
+    code: "CEA",
+    name: "CARCINO-EMBRYONIQUE ANTIGÈNE (CEA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "103.00$"
   },
   {
     code: "UCAT",
-    name: "Catécholamines (Urine)",
-    tube: "24h Urine Container",
-    specimenType: "Urine (24h) with preservative (HCl 6N)",
-    turnaroundTime: "7"
+    name: "CATÉCHOLAMINES URINAIRE, 24H",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "7",
+    price: "200.00$"
   },
   {
     code: "CATS",
-    name: "Catécholamines (Plasma)",
-    tube: "Lavender",
-    specimenType: "Plasma (EDTA)",
-    turnaroundTime: "7"
+    name: "CATÉCHOLAMINES, PLASMA",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "5",
+    price: "295.00$",
+    notes: "Inclut FSC. Envoyer du lundi au jeudi seulement avant 15h00, dans un sac STAT rouge. Éviter d’envoyer la veille d’un jour férié."
   },
   {
     code: "CUBP",
-    name: "Céruloplasmine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "7"
+    name: "CÉRULOPLASMINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "85.00$"
+  },
+  {
+    code: "KLCF",
+    name: "CHAÎNES LÉGÈRES KAPPA LIBRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "190.00$"
+  },
+  {
+    code: "LLCF",
+    name: "CHAÎNES LÉGÈRES LAMBDA LIBRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "100.00$"
+  },
+  {
+    code: "FKLP",
+    name: "CHAÎNES LÉGÈRES KAPPAET LAMBDA LIBRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "200.00$"
   },
   {
     code: "CMPC",
-    name: "Chlamydia (PCR Cervical/Endocervical)",
-    tube: "PCR Kit",
-    specimenType: "Swab",
-    turnaroundTime: "2"
+    name: "GORGE",
+    tube: TubeType.PCR_TUBE,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "2",
+    price: "125.00$",
+    notes: "Rejet : aucun ou deux écouvillons dans le tube, échantillon brun ou traces de sang"
+  },
+  {
+    code: "CMPCR",
+    name: "CHLAMYDIA PAR PCR, RECTAL (INCLUANT LGV)",
+    tube: TubeType.PCR_TUBE,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "2",
+    price: "130.00$",
+    notes: "Rejet : aucun ou deux écouvillons dans le tube, échantillon brun ou traces de sang"
   },
   {
     code: "CMPCU",
-    name: "Chlamydia (Urine)",
-    tube: "Sterile Container",
-    specimenType: "Urine (First catch)",
-    turnaroundTime: "2"
+    name: "CHLAMYDIA URINE",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_FIRST_VOID,
+    turnaroundTime: "2",
+    price: "125.00$",
+    notes: "Si une culture d’urine est demandée avec ce test, prélever un échantillon d’urine mi- jet et identifier le jet sur chaque contenant."
   },
   {
     code: "CL",
-    name: "Chlorure",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "CHLORURE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
-    code: "CHOL",
-    name: "Cholestérol Total",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "UCL",
+    name: "CHLORURE, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "47.00$"
+  },
+  {
+    code: "SCHL",
+    name: "CHOLÉRA, TEST (SELLES)",
+    tube: TubeType.STOOL_CONTAINER,
+    specimenType: SpecimenType.STOOL,
+    turnaroundTime: "6",
+    price: "165.00$",
+    notes: "Envoyer le même jour avant 15h00, dans un sac STAT rouge."
   },
   {
     code: "HDL",
-    name: "Cholestérol HDL",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "CHOLESTÉROL HDL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
     code: "LDLD",
-    name: "Cholestérol LDL",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "CHOLESTÉROL LDL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "55.00$"
   },
   {
-    code: "CK",
-    name: "Créatine Kinase (CK)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "NHDL",
+    name: "CHOLESTÉROL NON HDL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$",
+    notes: "Il sagit d’un calcul (CHOL – HDL)"
+  },
+  {
+    code: "CHOL",
+    name: "CHOLESTÉROL, TOTAL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
+  },
+  {
+    code: "CR",
+    name: "CHROME, SANG ENTIER",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4-5",
+    price: "135.00$"
+  },
+  {
+    code: "CGA",
+    name: "CHROMOGRANINE A",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "8",
+    price: "290.00$"
+  },
+  {
+    code: "CHYL",
+    name: "CHYLOMICRONS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "2",
+    price: "55.00$",
+    notes: "Prélever un tube supplémentaire si d’autres analyses sont demandées."
+  },
+  {
+    code: "CI/U",
+    name: "CITRATE, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "7",
+    price: "120.00$",
+    notes: "Critère rejeté : Urine acidifiée."
   },
   {
     code: "CKMB",
     name: "CK-MB",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "95.00$"
   },
   {
-    code: "CREA",
-    name: "Créatinine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "CTCL",
+    name: "CLAIRANCE DE LA CRÉATININE",
+    tube: [TubeType.SST_GOLD, TubeType.URINE_CONTAINER],
+    specimenType: [SpecimenType.SERUM, SpecimenType.URINE_24H],
+    turnaroundTime: "1",
+    price: "79.00$"
   },
   {
-    code: "COKE",
-    name: "Cocaïne (Dépistage)",
-    tube: "Sterile Container",
-    specimenType: "Urine",
-    turnaroundTime: "1"
+    code: "CDIF",
+    name: "CLOSTRIDIUM DIFFICILE, GÈNE DE LA TOXINE",
+    tube: TubeType.STOOL_CONTAINER,
+    specimenType: SpecimenType.STOOL,
+    turnaroundTime: "2",
+    price: "140.00$",
+    notes: "Les patients avec un résultat positif pour la toxine C. Difficile doivent attendre 6 semaines avant de répéter ce test."
+  },
+  {
+    code: "CO",
+    name: "COBALT, SANG ENTIER",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "80.00$",
+    notes: "Remplir et envoyer la requête de chaîne de possession drogues illicites RR-45-RQ-001. Si le résultat est positif ou indéterminé, une confirmation peut être demandée (des frais supplémentaires s’appliquent)."
+  },
+  {
+    code: "C1Q",
+    name: "COMPLÉMENT C1Q",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "165.00$"
+  },
+  {
+    code: "C3",
+    name: "COMPLÉMENT C3",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "75.00$"
+  },
+  {
+    code: "C4",
+    name: "COMPLÉMENT C4",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "75.00$"
+  },
+  {
+    code: "CH50",
+    name: "COMPLÉMENT HÉMOLYTIQUE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "115.00$"
+  },
+  {
+    code: "DCOM",
+    name: "COOMBS, DIRECT",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
     code: "SCORT",
-    name: "Cortisol (AM/PM)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "CORTISOL AM/PM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "83.00$",
+    notes: "Pour les patients recevant des traitements de biotine élevé, les échantillons devraient être prélevés 8 heures après le dernier traitement."
   },
   {
-    code: "CRP",
-    name: "Protéine C-Réactive (CRP)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "CORU",
+    name: "CORTISOL, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "10",
+    price: "100.00$"
   },
   {
-    code: "CRPHS",
-    name: "CRP Haute Sensibilité (Cardio)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "CPEP",
+    name: "C-PEPTIDE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "72.00$",
+    notes: "Rejet : hémolyse, plasma"
   },
   {
-    code: "CULU",
-    name: "Urine (Culture)",
-    tube: "Sterile Container / Pea Green Tube",
-    specimenType: "Urine",
-    turnaroundTime: "2"
+    code: "CK",
+    name: "CRÉATINE KINASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "70.00$"
   },
-
-  // --- D ---
+  {
+    code: "CREA",
+    name: "CRÉATININE, SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "55.00$"
+  },
+  {
+    code: "CRYO",
+    name: "CRYOGOBULINE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "12",
+    price: "160.00$",
+    notes: "Test offert du lundi au jeudi avant 14h00."
+  },
+  {
+    code: "CTPP",
+    name: "C-TÉLOPEPTIDES",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "8",
+    price: "150.00$"
+  },
+  {
+    code: "CURBC",
+    name: "CUIVRE, GLOBULES ROUGES",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.RED_BLOOD_CELLS,
+    turnaroundTime: "2-7",
+    price: "120.00$"
+  },
+  {
+    code: "CU",
+    name: "CUIVRE, PLASMA OU SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: [SpecimenType.SERUM, SpecimenType.PLASMA],
+    turnaroundTime: "6",
+    price: "97.00$"
+  },
+  {
+    code: "CU/U",
+    name: "CUIVRE, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "2-6",
+    price: "93.00$",
+    notes: "Critère de rejet : urine acidifiée."
+  },
+  {
+    code: "CULC",
+    name: "CULTURE CERVICALE",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "2",
+    price: "68.00$"
+  },
+  {
+    code: "CCHMD",
+    name: "CULTURE, CHLAMYDIA",
+    tube: [TubeType.RED, TubeType.PINK, TubeType.SWAB],
+    specimenType: [SpecimenType.SWAB, SpecimenType.BODY_FLUID],
+    turnaroundTime: "6",
+    price: "155.00$",
+    notes: "Sources acceptées: endocerviale, endouréthral, œil, nasopharyngé, mucose rectale, vaginale pour les enfants en bas de 13 ans. Envoyer du lundi au jeudi avant 15h00, dans un sac STAT rouge."
+  },
+  {
+    code: "SPUT",
+    name: "CULTURE CRACHAT",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "3",
+    price: "65.00$"
+  },
+  {
+    code: "CFLU",
+    name: "CULTURE DE FLUIDE CORPOREL",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "3",
+    price: "76.00$",
+    notes: "Pour des raisons de sécurité, la seringue ne sera pas acceptée."
+  },
+  {
+    code: "CULF",
+    name: "(peau, cheveux, ongles)",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "31",
+    price: "110.00$",
+    notes: "Cette analyse concerne les échantillons de peau, cheveux et ongles. Pour les autres sources, utiliser CULTURE FONGIQUE (CULFS)."
+  },
+  {
+    code: "CULFS",
+    name: "(autres)",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "31",
+    price: "115.00$",
+    notes: "ENVOYER DU LUNDI AU JEUD SEULEMENT avant 15h00, dans un sac STAT rouge. Éviter d’envoyer avant un jour férié."
+  },
+  {
+    code: "MYPS",
+    name: "CULTURE MYCOPLASMA",
+    tube: TubeType.SWAB,
+    specimenType: [SpecimenType.URINE_MIDSTREAM, SpecimenType.SWAB],
+    turnaroundTime: "7",
+    price: "115.00$"
+  },
+  {
+    code: "CULN",
+    name: "CULTURE NEZ",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "3",
+    price: "60.00$"
+  },
+  {
+    code: "CULW",
+    name: "Voir CULZ pour culture de pus / plaie profonde",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "3",
+    price: "76.00$"
+  },
+  {
+    code: "CULZ",
+    name: "Voir CULW pour culture de plaie superficielle",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "3",
+    price: "68.00$",
+    notes: "Cette analyse est pour plaie profonde OU pus."
+  },
+  {
+    code: "CULS",
+    name: "CULTURE SELLES (CULTURE TRADITIONNELLE)",
+    tube: TubeType.STOOL_CONTAINER,
+    specimenType: SpecimenType.STOOL,
+    turnaroundTime: "5",
+    price: "88.00$"
+  },
+  {
+    code: "STOOLPCR",
+    name: "CULTURE SELLES (MÉTHODE PCR)",
+    tube: TubeType.STOOL_CONTAINER,
+    specimenType: SpecimenType.STOOL,
+    turnaroundTime: "1",
+    price: "110.00$"
+  },
+  {
+    code: "UPCU",
+    name: "CULTURE URÉAPLASMA ET MYCOPLASMA",
+    tube: TubeType.SWAB,
+    specimenType: [SpecimenType.URINE_MIDSTREAM, SpecimenType.SWAB],
+    turnaroundTime: "7",
+    price: "120.00$"
+  },
+  {
+    code: "CULP",
+    name: "CULTURE URÉTHRALE",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "3",
+    price: "70.00$"
+  },
+  {
+    code: "CULV",
+    name: "CULTURE VAGINALE (CULTURE TRADITIONNELLE)",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "2",
+    price: "90.00$"
+  },
+  {
+    code: "PCRCULV",
+    name: "CULTURE VAGINALE (MÉTHODE PCR)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "2",
+    price: "115.00$",
+    notes: "L’écouvillon prélevé est stable jusqu’à 2 heures en dehors du tube à solution tampon."
+  },
+  {
+    code: "CYSC",
+    name: "CYSTATIN C",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "65.00$"
+  },
+  {
+    code: "UCYT",
+    name: "CYTOLOGIE, URINE",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: [SpecimenType.URINE_MIDSTREAM, SpecimenType.BODY_FLUID],
+    turnaroundTime: "7",
+    price: "120.00$",
+    notes: "Utiliser la requête de cytologie urinaire: RR-10-RQ-125"
+  },
+  {
+    code: "CMV",
+    name: "CYTOMÉGALOVIRUS IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "115.00$"
+  },
+  {
+    code: "CMVP",
+    name: "CYTOMÉGALOVIRUS IgG, IgM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "210.00$"
+  },
+  {
+    code: "CMVM",
+    name: "CYTOMÉGALOVIRUS IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "125.00$"
+  },
   {
     code: "DDIM",
-    name: "D-Dimère",
-    tube: "Light Blue",
-    specimenType: "Whole Blood/Plasma (Citrate) - Full Tube",
-    turnaroundTime: "1"
+    name: "D-DIMÈRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "110.00$"
+  },
+  {
+    code: "DIGX",
+    name: "DIGOXIN",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "100.00$",
+    notes: "Indiquer l’heure de la dernière dose sur la requête."
+  },
+  {
+    code: "DHT",
+    name: "DIHYDROTESTOSTÉRONE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "120.00$"
   },
   {
     code: "DH-S",
     name: "DHEA-S",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "110.00$"
   },
   {
-    code: "DIGX",
-    name: "Digoxin (Lanoxin)",
-    tube: "Red",
-    specimenType: "Serum (No Gel)",
-    turnaroundTime: "5"
+    code: "ECG",
+    name: "ÉLECTROCARDIOGRAMME AU REPOS (ECG)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "2",
+    price: "95.00$"
   },
   {
-    code: "DHT",
-    name: "Dihydrotestostérone",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "17"
+    code: "ECGW",
+    name: "ÉLECTROCARDIOGRAMME SANS INTERPRÉTATION",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "75.00$"
   },
-
-  // --- E ---
   {
     code: "ELEC",
-    name: "Électrolytes (Na, K, Cl)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "ÉLECTROLYTES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "85.00$",
+    notes: "Inclut sodium, potassium et chlorure."
+  },
+  {
+    code: "UELE",
+    name: "ÉLECTROLYTES, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "63.00$",
+    notes: "Inclut sodium, potassium et chlorure."
+  },
+  {
+    code: "HBEL",
+    name: "ÉLECTROPHORÈSE DE L’HÉMOGLOBINE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "6-8",
+    price: "110.00$",
+    notes: "Ce test inclut une FSC."
   },
   {
     code: "SPEP",
-    name: "Électrophorèse des protéines (Sérum)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
+    name: "ÉLECTROPHORÈSE DES PROTÉINES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "120.00$",
+    notes: "Ce test inclut les analyses de protéines totales et albumine."
+  },
+  {
+    code: "UELP",
+    name: "ÉLECTROPHORÈSE DES PROTÉINES, URINE",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "7",
+    price: "110.00$",
+    notes: "Pour l’urine aléatoire : Soumettre une première urine du matin"
+  },
+  {
+    code: "ACE",
+    name: "ENZYME DE CONVERSION ANGIOTENSINE (ACE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "120.00$",
+    notes: "Rejet : hémolyse, lipémie."
+  },
+  {
+    code: "EBVP",
+    name: "EPSTEIN-BARR, PROFIL (EBAR+EBVNA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "165.00$"
+  },
+  {
+    code: "EBVNA",
+    name: "EPSTEIN-BARR EBNA IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "130.00$"
+  },
+  {
+    code: "EBVG",
+    name: "EPSTEIN-BARR VCA IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "125.00$"
+  },
+  {
+    code: "EBAR",
+    name: "EPSTEIN-BARR VCA IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "130.00$"
+  },
+  {
+    code: "EPO",
+    name: "ÉRYTHROPOÏÉTINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "125.00$",
+    notes: "Prélèvement de l’échantillon est recommandé entre 7h30 et 12h00."
   },
   {
     code: "ESTR",
-    name: "Estradiol",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "ESTRADIOL (E2)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "85.00$"
+  },
+  {
+    code: "ESTRUS",
+    name: "ESTRADIOL (E2), HAUTE SENSIBILITÉ",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "170.00$"
+  },
+  {
+    code: "ESTN",
+    name: "ESTRONE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "103.00$"
+  },
+  {
+    code: "UETH",
+    name: "ÉTHANOL, URINE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "85.00$"
   },
   {
     code: "SETH",
-    name: "Éthanol (Sérum)",
-    tube: "Gold",
-    specimenType: "Serum (SST) - Do not use alcohol swab",
-    turnaroundTime: "1"
+    name: "ÉTHANOL, SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "80.00$",
+    notes: "Garder le tube fermé jusqu’à l’analyse. Remplir et envoyer la requête de chaîne de possession drogues illicites RR-45-RQ-001. Si le résultat est positif ou indéterminé, une confirmation peut être demandée (des frais supplémentaires s’appliquent)."
   },
-
-  // --- F ---
+  {
+    code: "FIIM",
+    name: "FACTEUR II MUTATION",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "6",
+    price: "275.00$"
+  },
+  {
+    code: "FVL",
+    name: "FACTEUR V LEIDEN",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "8",
+    price: "255.00$"
+  },
+  {
+    code: "FAC8",
+    name: "FACTEUR VIII FONCTIONNEL",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "6",
+    price: "205.00$"
+  },
+  {
+    code: "IFAB",
+    name: "FACTEUR INTRINSÈQUE ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "125.00$",
+    notes: "Le patient ne doit pas avoir reçu un traitement par injection de vitamine B12 dans la semaine avant le prélèvement."
+  },
+  {
+    code: "RA",
+    name: "FACTEUR RHUMATOÏDE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "72.00$"
+  },
   {
     code: "FE",
-    name: "Fer Total",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "FER, TOTAL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "73.00$",
+    notes: "Un jeune de 12 heures est recommandé. Eau permise. Éviter les suppléments de fer 24 heures avant l’analyse."
   },
   {
     code: "FERR",
-    name: "Ferritine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "FERRITINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "92.00$"
   },
   {
     code: "FIB",
-    name: "Fibrinogène",
-    tube: "Light Blue",
-    specimenType: "Whole Blood (Citrate) - Full Tube",
-    turnaroundTime: "2"
+    name: "FIBRINOGÈNE",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "2",
+    price: "90.00$"
+  },
+  {
+    code: "CFC",
+    name: "FIBROSE KYSTIQUE, DÉPISTAGE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "20",
+    price: "520.00$",
+    notes: "Spécifier l’ethnicité et l’historique familial."
   },
   {
     code: "CBC",
-    name: "Formule Sanguine Complète (FSC)",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "FSH",
-    name: "FSH (Hormone Folliculo-stimulante)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-
-  // --- G ---
-  {
-    code: "GGT",
-    name: "GGT",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "ACGL",
-    name: "Glucose (À Jeun/AC)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "GLU",
-    name: "Glucose (Aléatoire)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "2HGTT",
-    name: "Glucose Tolerance Test (2h)",
-    tube: "Gold",
-    specimenType: "Serum (SST) x 3-4",
-    turnaroundTime: "1"
-  },
-  {
-    code: "GLHBP",
-    name: "HbA1c (Hémoglobine Glyquée)",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "GONO",
-    name: "Gonorrhée (PCR Cervical/Endocervical)",
-    tube: "PCR Kit",
-    specimenType: "Swab",
-    turnaroundTime: "2"
-  },
-  {
-    code: "GONOU",
-    name: "Gonorrhée (Urine)",
-    tube: "Sterile Container",
-    specimenType: "Urine (First catch)",
-    turnaroundTime: "2"
-  },
-  {
-    code: "BLDT",
-    name: "Groupe Sanguin & Rh",
-    tube: "Pink",
-    specimenType: "Whole Blood (Pink)",
-    turnaroundTime: "1"
-  },
-
-  // --- H ---
-  {
-    code: "HEPC",
-    name: "Hépatite C (Anticorps)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "HCVL",
-    name: "Hépatite C Charge Virale",
-    tube: "Lavender",
-    specimenType: "Plasma (EDTA)",
-    turnaroundTime: "4"
-  },
-  {
-    code: "HSAG",
-    name: "Hépatite B (Ag de surface - HBsAg)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "HIV",
-    name: "HIV (VIH) Dépistage",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "HIVL",
-    name: "HIV Charge Virale",
-    tube: "Lavender",
-    specimenType: "Plasma (EDTA)",
-    turnaroundTime: "5"
-  },
-  {
-    code: "HCYS",
-    name: "Homocystéine",
-    tube: "Lavender",
-    specimenType: "Plasma (EDTA) - Ice, process immediately",
-    turnaroundTime: "2"
-  },
-  {
-    code: "HPBT",
-    name: "H. Pylori Breath Test",
-    tube: "Breath Test Kit",
-    specimenType: "Breath",
-    turnaroundTime: "2"
-  },
-
-  // --- I ---
-  {
-    code: "IGA",
-    name: "Immunoglobuline A (IgA)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "IGG",
-    name: "Immunoglobuline G (IgG)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "IGM",
-    name: "Immunoglobuline M (IgM)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "IGE",
-    name: "Immunoglobuline E (IgE)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "ISLN",
-    name: "Insuline",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "PT",
-    name: "INR / PT",
-    tube: "Light Blue",
-    specimenType: "Whole Blood (Citrate) - Full Tube",
-    turnaroundTime: "1"
-  },
-
-  // --- L ---
-  {
-    code: "LD",
-    name: "Lactate Déshydrogénase (LDH)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "LITH",
-    name: "Lithium",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "LASE",
-    name: "Lipase",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "LH",
-    name: "LH (Hormone Lutéinisante)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-
-  // --- M ---
-  {
-    code: "MG",
-    name: "Magnésium",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "MONO",
-    name: "Monotest (Mononucléose)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-
-  // --- O ---
-  {
-    code: "PARA",
-    name: "Ova and Parasites (Oeufs et Parasites) - Selles",
-    tube: "Stool Container (x3)",
-    specimenType: "Stool with formalin",
-    turnaroundTime: "3"
-  },
-
-  // --- P ---
-  {
-    code: "PTH",
-    name: "Parathormone (PTH)",
-    tube: "Lavender",
-    specimenType: "Whole Blood or Plasma",
-    turnaroundTime: "6"
-  },
-  {
-    code: "PO4",
-    name: "Phosphore (Phosphate)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "PLT",
-    name: "Plaquettes",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "PB",
-    name: "Plomb (Sang)",
-    tube: "Royal Blue",
-    specimenType: "Whole Blood (Royal Blue)",
-    turnaroundTime: "6"
-  },
-  {
-    code: "K",
-    name: "Potassium",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "PROG",
-    name: "Progestérone",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "PRLA",
-    name: "Prolactine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "TP",
-    name: "Protéines Totales",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "PSA",
-    name: "PSA (APS) Total",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "FPSA",
-    name: "PSA (APS) Libre",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "PTT",
-    name: "PTT (TCA)",
-    tube: "Light Blue",
-    specimenType: "Whole Blood (Citrate) - Full Tube",
-    turnaroundTime: "1"
-  },
-
-  // --- R ---
-  {
-    code: "RTIC",
-    name: "Réticulocytes",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "RUBE",
-    name: "Rubéole IgG",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-
-  // --- S ---
-  {
-    code: "SEDI",
-    name: "Sédimentation (Vitesse de)",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "NA",
-    name: "Sodium",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "SYPEIA",
-    name: "Syphilis (VDRL/RPR)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-
-  // --- T ---
-  {
-    code: "FT3",
-    name: "T3 Libre",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "FT4",
-    name: "T4 Libre",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "TEST",
-    name: "Testostérone Totale",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "TESBC",
-    name: "Testostérone Biodisponible",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "TESFC",
-    name: "Testostérone Libre",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "THYG",
-    name: "Thyroglobuline",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "5"
-  },
-  {
-    code: "TRFN",
-    name: "Transferrine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "TRIG",
-    name: "Triglycérides",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "TSH",
-    name: "TSH",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-
-  // --- U ---
-  {
-    code: "UREA",
-    name: "Urée",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "URC",
-    name: "Urine (Analyse)",
-    tube: "Sterile Container",
-    specimenType: "Urine",
-    turnaroundTime: "1"
-  },
-
-  // --- V ---
-  {
-    code: "VARG",
-    name: "Varicelle IgG",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "6"
-  },
-  {
-    code: "VB12",
-    name: "Vitamine B12",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "25D",
-    name: "Vitamine D (25-OH)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-
-  // --- Z ---
-  {
-    code: "ZN",
-    name: "Zinc (Plasma)",
-    tube: "Royal Blue",
-    specimenType: "Plasma (Royal Blue)",
-    turnaroundTime: "7"
-  }
-];
-
-
-
-/**
- * Dynacare QC Specimen Collection Manual 2023
- * Seed Data for Test Codes, Tube Colors, and Specimen Types
- */
-
-export interface TestDefinition {
-  code: string;
-  name: string;
-  tube: string;
-  specimenType: string;
-  turnaroundTime: string; // In business days
-  price?: string;
-}
-
-export const qcSeedData: TestDefinition[] = [
-  // --- A ---
-  {
-    code: "APH ACETONE",
-    name: "Acetaminophène & Acétone",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
-  },
-  {
-    code: "VAL",
-    name: "Acide Valproïque (Depakene)",
-    tube: "Red",
-    specimenType: "Serum (No Gel)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "ALB",
-    name: "Albumine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "ALCO",
-    name: "Alcool (Ethanol) - Sang",
-    tube: "Gold",
-    specimenType: "Serum (SST) - Do not use alcohol swab",
-    turnaroundTime: "1"
-  },
-  {
-    code: "DOST",
-    name: "Aldostérone",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "11"
-  },
-  {
-    code: "TRYP",
-    name: "Alpha-1 Antitrypsine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
-  },
-  {
-    code: "AFP",
-    name: "Alpha-Foetoprotéine (AFP)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "ALT",
-    name: "ALT (SGPT)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "AMIK",
-    name: "Amikacine (Au hasard/Pré/Post)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "AMITRIP",
-    name: "Amitriptyline",
-    tube: "Red",
-    specimenType: "Serum (No Gel)",
-    turnaroundTime: "11"
-  },
-  {
-    code: "AMMO",
-    name: "Ammoniaque",
-    tube: "Lavender",
-    specimenType: "Plasma (EDTA) - On Ice",
-    turnaroundTime: "9"
-  },
-  {
-    code: "AMYL",
-    name: "Amylase",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "ANDRO",
-    name: "Androstènedione",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "11"
-  },
-  {
-    code: "ANA",
-    name: "Anticorps Antinucléaires (ANA)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "DNA",
-    name: "Anticorps Anti-ADN (Double Brin)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
-  },
-  {
-    code: "ASOT",
-    name: "Antistreptolysine O (ASO)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "APOA",
-    name: "Apolipoprotéine A-1",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
-  },
-  {
-    code: "APOB",
-    name: "Apolipoprotéine B",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "ARSENIWB",
-    name: "Arsenic (Sang Total)",
-    tube: "Royal Blue",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "9"
-  },
-  {
-    code: "AST",
-    name: "AST (SGOT)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-
-  // --- B ---
-  {
-    code: "B2MICRO",
-    name: "Beta-2 Microglobuline",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "15"
-  },
-  {
-    code: "BSQUANT",
-    name: "Beta-HCG Quantitative",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "BILIT",
-    name: "Bilirubine Totale",
-    tube: "Gold",
-    specimenType: "Serum (SST) - Protect from Light",
-    turnaroundTime: "1"
-  },
-  {
-    code: "BILITD",
-    name: "Bilirubine Directe",
-    tube: "Gold",
-    specimenType: "Serum (SST) - Protect from Light",
-    turnaroundTime: "1"
-  },
-  {
-    code: "BNP",
-    name: "BNP (NT-pro-BNP)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
-  },
-
-  // --- C ---
-  {
-    code: "C3",
-    name: "Complément C3",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
-  },
-  {
-    code: "C4",
-    name: "Complément C4",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
-  },
-  {
-    code: "CA125",
-    name: "CA 125",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CA153",
-    name: "CA 15-3",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "CA19",
-    name: "CA 19-9",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "CA",
-    name: "Calcium",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CAI",
-    name: "Calcium Ionisé",
-    tube: "Gold",
-    specimenType: "Serum (SST) - Do not open tube",
-    turnaroundTime: "4"
-  },
-  {
-    code: "TEG",
-    name: "Carbamazépine (Tegretol)",
-    tube: "Red",
-    specimenType: "Serum (No Gel)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CEA",
-    name: "Carcino-Embryonic Antigen (CEA)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CERU",
-    name: "Céruloplasmine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
-  },
-  {
-    code: "CHOL",
-    name: "Cholestérol Total",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CK",
-    name: "Créatine Kinase (CK)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CKMB",
-    name: "CK-MB",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CL",
-    name: "Chlorure",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CO2",
-    name: "CO2 Total (Bicarbonate)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "COD",
-    name: "Coombs Direct",
-    tube: "Pink",
-    specimenType: "Whole Blood (Pink)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "AMAT",
-    name: "Coombs Indirect",
-    tube: "Pink",
-    specimenType: "Whole Blood (Pink) x 2",
-    turnaroundTime: "3"
-  },
-  {
-    code: "CORTIAM",
-    name: "Cortisol (AM)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CORTIPM",
-    name: "Cortisol (PM)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CREA",
-    name: "Créatinine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CRP",
-    name: "Protéine C-Réactive (CRP)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "CRPHS",
-    name: "CRP Haute Sensibilité",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "COPPERWB",
-    name: "Cuivre (Sang Total)",
-    tube: "Royal Blue",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "5"
-  },
-
-  // --- D ---
-  {
-    code: "DHEA",
-    name: "DHEA",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "21"
-  },
-  {
-    code: "DHEAS",
-    name: "DHEA-Sulfate",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "DIG",
-    name: "Digoxine",
-    tube: "Red",
-    specimenType: "Serum (No Gel)",
-    turnaroundTime: "3"
-  },
-  {
-    code: "DHT",
-    name: "Dihydrotestostérone",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "17"
-  },
-  {
-    code: "DIL",
-    name: "Dilantin (Phénytoïne)",
-    tube: "Red",
-    specimenType: "Serum (No Gel)",
-    turnaroundTime: "1"
-  },
-
-  // --- E ---
-  {
-    code: "LYTES",
-    name: "Électrolytes (Na, K, Cl)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "ELEPRO",
-    name: "Électrophorèse des protéines (Sérum)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
-  },
-  {
-    code: "ESTRA",
-    name: "Estradiol",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "ESTRON",
-    name: "Estrone",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "9"
-  },
-
-  // --- F ---
-  {
-    code: "FE",
-    name: "Fer",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "FERI",
-    name: "Ferritine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "FIBR",
-    name: "Fibrinogène",
-    tube: "Light Blue",
-    specimenType: "Whole Blood (Citrate)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "FOL",
-    name: "Folate (Sérique)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-  {
-    code: "FOLRBC",
-    name: "Folates Érythrocytaires",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "4"
-  },
-  {
-    code: "CBC",
-    name: "Formule Sanguine Complète (FSC)",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "1"
+    name: "FORMULE SANGUINE COMPLÈTE (FSC)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "75.00$"
+  },
+  {
+    code: "FRUC",
+    name: "FRUCTOSAMINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "99.00$"
   },
   {
     code: "FSH",
     name: "FSH",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "85.00$"
   },
-
-  // --- G ---
+  {
+    code: "GAST",
+    name: "GASTRINE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "6",
+    price: "105.00$"
+  },
   {
     code: "GGT",
     name: "GGT",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
-    code: "AC",
-    name: "Glucose (À Jeun/AC)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "GLOB",
+    name: "GLOBULINES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
-    code: "ACP",
-    name: "Glucose (Aléatoire)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "GLGN",
+    name: "GLUCAGON",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "15",
+    price: "130.00$"
   },
   {
-    code: "GLU75",
-    name: "Glucose 75g (2h) - Non Gestationnel",
-    tube: "Gold",
-    specimenType: "Serum (SST) x 2 (Fasting + 2h)",
-    turnaroundTime: "1"
+    code: "G6PDQ",
+    name: "GLUCOSE-6-PO4-DH QUANTITATIF, SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "5",
+    price: "120.00$"
   },
   {
-    code: "PREG50",
-    name: "Glucose 50g (1h) - Gestationnel",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "GLU",
+    name: "GLUCOSE, ALÉATOIRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
-    code: "PREG75",
-    name: "Glucose 75g (2h) - Gestationnel",
-    tube: "Gold",
-    specimenType: "Serum (SST) x 3 (Fasting, 1h, 2h)",
-    turnaroundTime: "1"
+    code: "ACGL",
+    name: "GLUCOSE AC",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "76.00$",
+    notes: "Indiquer la charge de glucose et les heures de prélèvement sur la requête et l’étiquette des tubes."
   },
   {
-    code: "BLOOD",
-    name: "Groupe Sanguin & Rh",
-    tube: "Pink",
-    specimenType: "Whole Blood (Pink)",
-    turnaroundTime: "3"
-  },
-
-  // --- H ---
-  {
-    code: "HBA1C",
-    name: "HbA1c",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "1"
+    code: "PCGL",
+    name: "GLUCOSE PC",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
-    code: "HBS",
-    name: "Hépatite B (HBsAg)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "2HGTT",
+    name: "GLUCOSE TEST DE TOLÉRANCE, 2 HEURES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "95.00$",
+    notes: "Indiquer la charge de glucose et les heures de prélèvement sur la requête et l’étiquette des tubes."
   },
   {
-    code: "ANHBS",
-    name: "Hépatite B (Anti-HBs)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "GONOT",
+    name: "GONOR",
+    tube: TubeType.PCR_TUBE,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "2",
+    price: "125.00$"
   },
   {
-    code: "HEPBC",
-    name: "Hépatite B (Anti-HBc Total)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "GONOU",
+    name: "GONORRHÉE PAR PCR (URINE)",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_FIRST_VOID,
+    turnaroundTime: "2",
+    price: "125.00$",
+    notes: "Si une culture d’urine est commandée avec cette analyse, prélever un échantillon d’urine mi-jet et identifier le jet sur chaque contenant."
   },
   {
-    code: "HEPC",
-    name: "Hépatite C (Anticorps)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "BLDT",
+    name: "GROUPE SANGUIN & RH",
+    tube: TubeType.PINK,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "60.00$"
   },
   {
-    code: "HEPCQUANT",
-    name: "Hépatite C (Charge Virale Quant.)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "16"
+    code: "HPGN",
+    name: "HAPTOGLOBINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "72.00$",
+    notes: "Un jeun durant la nuit est recommandé."
   },
   {
-    code: "HIV",
-    name: "HIV (Dépistage)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "HELAG",
+    name: "H. PYLORI, SELLES",
+    tube: TubeType.STOOL_CONTAINER,
+    specimenType: SpecimenType.STOOL,
+    turnaroundTime: "2",
+    price: "140.00$"
   },
   {
-    code: "HIVCV",
-    name: "HIV Charge Virale",
-    tube: "Lavender",
-    specimenType: "Plasma (EDTA) x 2",
-    turnaroundTime: "16"
+    code: "HPBT",
+    name: "H. PYLORI, TEST RESPIRATOIRE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "2",
+    price: "195.00$",
+    notes: "Joindre le formulaire de consentement pour le test respiratoire RR-05-FM-007."
   },
   {
-    code: "LHOMO",
-    name: "Homocystéine",
-    tube: "Lavender",
-    specimenType: "Plasma (EDTA) - On Ice, Sep <1h",
-    turnaroundTime: "3"
+    code: "GLHBP",
+    name: "HÉMOGLOBINE GLYQUÉE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "90.00$"
   },
   {
-    code: "HGH",
-    name: "Hormone de Croissance (GH)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "9"
+    code: "HAVG",
+    name: "HÉPATITE A IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "135.00$",
+    notes: "Pour savoir si le patient est immunisé contre l'hépatite A (post-infection / post-vaccin)."
   },
-
-  // --- I ---
+  {
+    code: "HAVM",
+    name: "HÉPATITE A IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "105.00$",
+    notes: "Pour savoir si le patient est présentement infecté."
+  },
+  {
+    code: "HAVT",
+    name: "HÉPATITE A TOTAL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "105.00$"
+  },
+  {
+    code: "CABM",
+    name: "HÉPATITE B ANTICORPS (CORE IGM)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "92.00$"
+  },
+  {
+    code: "HBAB",
+    name: "HÉPATITE B ANTICORPS DE SURFACE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "88.00$",
+    notes: "Analyse effectuée afin de déterminer si le patient est immunisé à l’hépatite B."
+  },
+  {
+    code: "HBCS",
+    name: "HÉPATITE B ANTICORPS (CORE TOTAL)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "90.00$",
+    notes: "Pour savoir si le patient a déjà été infecté par le virus de l'hépatite B."
+  },
+  {
+    code: "HSAG",
+    name: "HÉPATITE B ANTIGÈNE DE SURFACE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "100.00$",
+    notes: "Analyse effectuée afin de vérifier si le patient est porteur et est à risque de développer le virus. Remplir et joindre le Formulaire de consentement d’analyses à déclaration obligatoire RR-05-FM-001. Si le résultat est positif ou indéterminé, une confirmation (HBCN) est obligatoire (des frais supplémentaires s’appliquent)."
+  },
+  {
+    code: "HBCN",
+    name: "HÉPATITE B ANTIGÈNE DE SURFACE CONFIRMATION",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "76.00$",
+    notes: "Le résultat du test HBsAg doit être indéterminé ou positif avant de faire ce test."
+  },
+  {
+    code: "HEPBL",
+    name: "HÉPATITE B CHARGE VIRALE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "400.00$"
+  },
+  {
+    code: "HEAG",
+    name: "HÉPATITE B E ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "90.00$",
+    notes: "Analyse effectuée afin de déterminer si le patient est immunisé à l’hépatite B (post- infection / post-vaccin)."
+  },
+  {
+    code: "HBEG",
+    name: "HÉPATITE B E ANTIGÈNE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "90.00$"
+  },
+  {
+    code: "HCV",
+    name: "HÉPATITE C ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "120.00$",
+    notes: "Analyse effectuée afin de vérifier si le patient est atteint du virus. Remplir et joindre le Formulaire de consentement d’analyses à déclaration obligatoire RR-05-FM-001. Si le résultat est positif ou indéterminé, une confirmation est obligatoire (des frais supplémentaires s’appliquent)."
+  },
+  {
+    code: "HCVL",
+    name: "HÉPATITE C CHARGE VIRALE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.PLASMA,
+    turnaroundTime: "4",
+    price: "390.00$",
+    notes: "Analyse effectuée afin de vérifier la charge virale de l’hépatite C."
+  },
+  {
+    code: "HSVPCR",
+    name: "HÈRPES SIMPLEX VIRUS 1 ET 2 ADN, PCR",
+    tube: [TubeType.RED, TubeType.PINK, TubeType.SWAB],
+    specimenType: [SpecimenType.SWAB, SpecimenType.BODY_FLUID],
+    turnaroundTime: "3",
+    price: "210.00$"
+  },
+  {
+    code: "SEH1",
+    name: "HÈRPES SIMPLEX VIRUS 1 IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "150.00$"
+  },
+  {
+    code: "SEH2",
+    name: "HÈRPES SIMPLEX VIRUS 2 IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "145.00$"
+  },
+  {
+    code: "HSSP",
+    name: "HÈRPES SIMPLEX VIRUS 1 ET 2 IgG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "205.00$"
+  },
+  {
+    code: "HFE",
+    name: "HFE GÉNOTYPE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "225.00$"
+  },
+  {
+    code: "HB27",
+    name: "HLA B27",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "6",
+    price: "185.00$"
+  },
+  {
+    code: "HLACELIAC",
+    name: "HLA CELIAC",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "10",
+    price: "530.00$"
+  },
+  {
+    code: "HLTR",
+    name: "HOLTER 24 HEURES",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "295.00$",
+    notes: "Sur rendez-vous seulement à CDL Cardiologie. (514) 341-1777 poste 408."
+  },
+  {
+    code: "HLTR48",
+    name: "HOLTER 48 HEURES",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "325.00$",
+    notes: "Sur rendez-vous seulement à CDL Cardiologie. (514) 341-1777 poste 408."
+  },
+  {
+    code: "HCYS",
+    name: "HOMOCYSTÉINE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.PLASMA,
+    turnaroundTime: "2",
+    price: "150.00$",
+    notes: "Prélever un tube supplémentaire si d’autres analyses sont demandées."
+  },
+  {
+    code: "ACTH",
+    name: "HORMONE ADRÉNOCORTICOÏDE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.PLASMA,
+    turnaroundTime: "6",
+    price: "110.00$",
+    notes: "Lorsque prélevé en dehors du temps indiqué, les valeurs de références ne s’appliquent pas."
+  },
+  {
+    code: "AMH",
+    name: "HORMONE ANTI-MÜLÉRIENNE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "195.00$"
+  },
+  {
+    code: "GH",
+    name: "HORMONE DE CROISSANCE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "90.00$"
+  },
+  {
+    code: "PTH",
+    name: "HORMONE PARATHYROÏDIENNE",
+    tube: TubeType.LAVENDER,
+    specimenType: [SpecimenType.WHOLE_BLOOD, SpecimenType.PLASMA],
+    turnaroundTime: "6",
+    price: "145.00$"
+  },
+  {
+    code: "TSH",
+    name: "HORMONE DE STIMULATION THYROÏDIENNE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "105.00$",
+    notes: "Indiquer la date et l’heure de la dernière dose sur la requête si le patient est sur traitement pour la thyroïde."
+  },
+  {
+    code: "HTLV",
+    name: "HTLV I & II",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "165.00$"
+  },
+  {
+    code: "IGF1",
+    name: "IGF-1",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "120.00$"
+  },
+  {
+    code: "IGGSUB",
+    name: "IGG SOUS CLASSE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "220.00$"
+  },
+  {
+    code: "IL6",
+    name: "INTERLEUKINE 6",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "270.00$",
+    notes: "Le patient doit s’abstenir de prendre des suppléments de biotine 48 heures avant le prélèvement."
+  },
+  {
+    code: "ICAB",
+    name: "ÎLOTS DE LANGERHANS, ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "115.00$"
+  },
+  {
+    code: "IEP",
+    name: "IMMUNOÉLECTROPHORÈSE, SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "180.00$"
+  },
+  {
+    code: "IEUR",
+    name: "IMMUNOÉLECTROPHORÈSE, URINE",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "4",
+    price: "145.00$"
+  },
+  {
+    code: "IEU",
+    name: "IMMUNOÉLECTROPHORÈSE, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "6",
+    price: "285.00$"
+  },
+  {
+    code: "IMM",
+    name: "IMMUNOGLOBULINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "145.00$"
+  },
+  {
+    code: "IGA",
+    name: "IMMUNOGLOBULINE IGA",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "80.00$"
+  },
   {
     code: "IGE",
-    name: "IgE Totale",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
+    name: "IMMUNOGLOBULINE IGE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "115.00$"
   },
   {
-    code: "IMQUANT",
-    name: "Immunoglobulines (IgG, IgA, IgM)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
+    code: "IGG",
+    name: "IMMUNOGLOBULINE IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "80.00$"
   },
   {
-    code: "PT",
-    name: "INR (Rapport International Normalisé)",
-    tube: "Light Blue",
-    specimenType: "Whole Blood (Citrate)",
-    turnaroundTime: "1"
+    code: "IGM",
+    name: "IMMUNOGLOBULINE IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "80.00$"
   },
   {
-    code: "INSUL",
-    name: "Insuline",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "FLUABPCR",
+    name: "FLUBPCR",
+    tube: [TubeType.RED, TubeType.PINK, TubeType.SWAB],
+    specimenType: [SpecimenType.SWAB, SpecimenType.BODY_FLUID],
+    turnaroundTime: "1",
+    price: "160.00$"
   },
-
-  // --- L ---
+  {
+    code: "ISLN",
+    name: "INSULINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "85.00$"
+  },
+  {
+    code: "IODL",
+    name: "IODINE PLASMA",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.PLASMA,
+    turnaroundTime: "10",
+    price: "195.00$"
+  },
+  {
+    code: "KART",
+    name: "KARYOTYPE",
+    tube: TubeType.GREEN,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "45",
+    price: "590.00$",
+    notes: "Envoyer du lundi au jeudi seulement avant 15h00, dans un sac STAT rouge. Éviter d’envoyer la veille d’un jour férié."
+  },
   {
     code: "LD",
-    name: "Lactate Déshydrogénase (LDH)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "LACTATE DÉHYDROGÉNASE (LDH)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "69.00$"
   },
   {
     code: "LH",
-    name: "LH",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "HORMONE LUTÉINISANTE (LH)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "85.00$"
   },
   {
-    code: "LIP",
-    name: "Lipase",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "OLTT",
+    name: "LACTOSE TEST DE TOLÉRANCE, SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "160.00$",
+    notes: "Un test de tolérance au glucose devrait être fait avant celui au lactose."
   },
   {
-    code: "LI",
-    name: "Lithium",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "LAMT",
+    name: "LAMOTRIGINE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "150.00$",
+    notes: "Indiquer la date et l’heure de la dernière dose sur la requête. Centrifuger et séparer le sérum dans un tube de transport."
   },
-
-  // --- M ---
+  {
+    code: "LASE",
+    name: "LIPASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "60.00$"
+  },
+  {
+    code: "LITH",
+    name: "LITHIUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "78.00$",
+    notes: "Indiquer la date et l’heure de la dernière dose sur la requête."
+  },
+  {
+    code: "LPA",
+    name: "LP (A)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "140.00$"
+  },
+  {
+    code: "LAGT",
+    name: "LUPUS ANTICOAGULANT",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "325.00$",
+    notes: "Les anticorps de la maladie de lyme prennent 4 à 6 semaines à développer après le contact. Les anticorps de la maladie de lyme prennent 4 à 6 semaines à développer après le contact."
+  },
+  {
+    code: "LYMSP1",
+    name: "LYMPHOCYTES",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "5",
+    price: "305.00$"
+  },
+  {
+    code: "LYSZ",
+    name: "LYSOZYMES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3-4",
+    price: "205.00$"
+  },
+  {
+    code: "MNPRLA",
+    name: "MACROPROLACTINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "250.00$"
+  },
   {
     code: "MG",
-    name: "Magnésium",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
+    name: "MAGNÉSIUM, SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "60.00$"
+  },
+  {
+    code: "MG/U",
+    name: "MAGNÉSIUM, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "58.00$"
+  },
+  {
+    code: "MALR",
+    name: "MALARIA, FROTTIS",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "2",
+    price: "72.00$"
+  },
+  {
+    code: "MN",
+    name: "MANGANESE, SANG ENTIER",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "180.00$"
+  },
+  {
+    code: "HG",
+    name: "MERCURE, SANG ENTIER",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "7",
+    price: "115.00$"
+  },
+  {
+    code: "METS",
+    name: "MÉTANÉPHRINES, PLASMA",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "7",
+    price: "355.00$"
+  },
+  {
+    code: "UMET",
+    name: "MÉTANÉPHRINES, URINAIRE (24 HEURES)",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "9",
+    price: "180.00$"
+  },
+  {
+    code: "UMDN",
+    name: "MÉTHADONE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "5",
+    price: "125.00$"
+  },
+  {
+    code: "METHAM",
+    name: "MÉTHAMPHÉTAMINE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "3",
+    price: "230.00$"
+  },
+  {
+    code: "LUDE",
+    name: "MÉTHAQUALONE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "11",
+    price: "105.00$"
+  },
+  {
+    code: "A/CU",
+    name: "MICROALBUMINURIE (ALÉATOIRE)",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "95.00$"
+  },
+  {
+    code: "MALB",
+    name: "MICROALBUMINURIE, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "72.00$"
+  },
+  {
+    code: "YXMD",
+    name: "MICRODÉLÉTION DU CHROMOSOME Y",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "10",
+    price: "595.00$"
+  },
+  {
+    code: "UMICP",
+    name: "MICROSCOPIE URINAIRE",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "36.00$"
   },
   {
     code: "MONO",
-    name: "Mononucléose (Monotest)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-
-  // --- O ---
-  {
-    code: "OSM",
-    name: "Osmolalité (Sérum)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "4"
-  },
-
-  // --- P ---
-  {
-    code: "PTH",
-    name: "Parathormone (PTH)",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "1"
+    name: "MONOTEST",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "60.00$"
   },
   {
-    code: "PHOS",
-    name: "Phosphore",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "MTHFR",
+    name: "MUTATION DU GÈNE MTHFR",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "6",
+    price: "205.00$"
   },
   {
-    code: "PbO",
-    name: "Plomb (Sang)",
-    tube: "Royal Blue",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "5"
+    code: "MPO",
+    name: "MYELOPEROXIDASE ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "170.00$"
+  },
+  {
+    code: "MYOSIT",
+    name: "MYOSITE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "655.00$"
+  },
+  {
+    code: "NIB",
+    name: "NICKEL, SANG ENTIER",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "145.00$"
+  },
+  {
+    code: "PARA",
+    name: "OEUFS & PARASITES, SELLES (SANS PRÉSERVATIF)",
+    tube: TubeType.STOOL_CONTAINER,
+    specimenType: SpecimenType.STOOL,
+    turnaroundTime: "3",
+    price: "105.00$",
+    notes: "Certaines restrictions alimentaires s’appliquent."
+  },
+  {
+    code: "PARAPCR",
+    name: "OEUFS & PARASITES, SELLES (AVEC PRÉSERVATIF)",
+    tube: TubeType.STOOL_CONTAINER,
+    specimenType: SpecimenType.STOOL,
+    turnaroundTime: "3",
+    price: "120.00$"
+  },
+  {
+    code: "BILH",
+    name: "OEUFS & PARASITES, URINE",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "3",
+    price: "95.00$"
+  },
+  {
+    code: "OPIT",
+    name: "OPIACÉS",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "75.00$"
+  },
+  {
+    code: "MUMG",
+    name: "OREILLONS IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "105.00$"
+  },
+  {
+    code: "MUMM",
+    name: "OREILLONS IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "108.00$"
+  },
+  {
+    code: "OSMS",
+    name: "OSMOLALITÉ, SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "80.00$"
+  },
+  {
+    code: "OSMU",
+    name: "OSMOLALITÉ, URINE",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "6",
+    price: "80.00$"
+  },
+  {
+    code: "OSTO",
+    name: "OSTÉOCALCINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "155.00$"
+  },
+  {
+    code: "OXAL",
+    name: "OXALATE, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "6",
+    price: "175.00$",
+    notes: "Le patient ne devrait pas consommer des aliments riches en oxalate 48 h avant le prélèvement."
+  },
+  {
+    code: "PINW",
+    name: "OXYURES",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "2",
+    price: "58.00$",
+    notes: "Facturer chaque échantillon individuellement."
+  },
+  {
+    code: "PAPS",
+    name: "PAP, FROTTIS (TRADITIONNEL)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "5",
+    price: "100.00$",
+    notes: "Utiliser la requête désignée (RR-10-RQ-010). L’historique clinique du patient est requis afin d’obtenir un diagnostique optimal."
+  },
+  {
+    code: "PAPT",
+    name: "PAP THINPREP™, TEST",
+    tube: TubeType.THINPREP,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "5",
+    price: "120.00$",
+    notes: "Ne pas laisser la brosse à l’intérieur du contenant. Utiliser la requête désignée (RR-10-RQ-010)."
+  },
+  {
+    code: "TPPV",
+    name: "PAP THINPREP™ VPH EN CASCADE",
+    tube: TubeType.THINPREP,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "6",
+    price: "170.00$",
+    notes: "Le VPH est effectué si le résultat ThinPrep™ est ASCUS. Ne pas laisser la brosse à l’intérieur du contenant. Utiliser la requête désignée (RR-10-RQ-010)."
+  },
+  {
+    code: "PARV",
+    name: "PARVOVIRUS IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "140.00$"
+  },
+  {
+    code: "PARM",
+    name: "PARVOVIRUS IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "130.00$"
+  },
+  {
+    code: "PARP",
+    name: "PARVOVIRUS IgG, IgM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "195.00$"
+  },
+  {
+    code: "PATT",
+    name: "PATERNITÉ, TEST DE (ADN)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "7",
+    price: "830.00$"
+  },
+  {
+    code: "CCPG",
+    name: "PEPTIDE CYCLIQUE CITRULLINÉ IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "270.00$",
+    notes: "Pour les patients recevant des traitements de biotine élevé, les échantillons devraient être prélevés 8 heures après le dernier traitement."
+  },
+  {
+    code: "PCP",
+    name: "PHENCYCLIDINE (PCP)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "75.00$"
+  },
+  {
+    code: "PHTN",
+    name: "PHÉNYTOINE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "78.00$",
+    notes: "Indiquer la date et l’heure de la dernière dose sur la requête."
+  },
+  {
+    code: "ALKP",
+    name: "PHOSPHATASE ALCALINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
+  },
+  {
+    code: "ALKPI",
+    name: "PHOSPHATASE ALCALINE ISOENZYMES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "210.00$"
+  },
+  {
+    code: "PO4",
+    name: "PHOSPHATE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
+  },
+  {
+    code: "PO/U",
+    name: "PHOSPHATE, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "55.00$"
+  },
+  {
+    code: "PLT",
+    name: "PLAQUETTES",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "59.00$"
+  },
+  {
+    code: "PLTB",
+    name: "PLAQUETTES (tube bleu)",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "65.00$"
+  },
+  {
+    code: "PB",
+    name: "PLOMB, SANG ENTIER",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "6",
+    price: "120.00$"
   },
   {
     code: "K",
-    name: "Potassium",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "POTASSIUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
+  },
+  {
+    code: "PALB",
+    name: "PRÉALBUMINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "85.00$"
+  },
+  {
+    code: "17PGLN",
+    name: "PRÉGNENOLONE 17-OH",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "335.00$"
+  },
+  {
+    code: "NTPROBNP",
+    name: "PRO-BNP",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "200.00$",
+    notes: "Prélever un tube supplémentaire si d’autres analyses sont demandées."
   },
   {
     code: "PROG",
-    name: "Progestérone",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "PROGESTÉRONE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "85.00$"
   },
   {
-    code: "PROL",
-    name: "Prolactine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "17PR",
+    name: "PROGESTÉRONE 17-OH",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "125.00$",
+    notes: "Prélever un tube supplémentaire si d’autres analyses sont demandées."
+  },
+  {
+    code: "PRLA",
+    name: "PROLACTINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "88.00$",
+    notes: "Un jeun peut être requis (consulter le médecin). Le test doit être effectué 3-4 heures après le réveil, ou à la discrétion du médecin."
+  },
+  {
+    code: "PRTASE",
+    name: "PROTEINASE-3 ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "159.00$"
+  },
+  {
+    code: "PRCA",
+    name: "PROTÉINE C, ANTIGÈNE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "6",
+    price: "110.00$"
+  },
+  {
+    code: "PRCF",
+    name: "PROTÉINE C, FONCTIONNELLE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "108.00$"
+  },
+  {
+    code: "CRP",
+    name: "PROTÉINE C-RÉACTIVE (CRP)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "78.00$"
+  },
+  {
+    code: "CRPHS",
+    name: "PROTÉINE C-RÉACTIVE HAUTE SENSIBILITÉ (CRPHS)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "84.00$"
+  },
+  {
+    code: "P/CU",
+    name: "PROTÉINE CRÉATININE RATIO",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "85.00$"
+  },
+  {
+    code: "PRSA",
+    name: "PROTÉINE S, ANTIGÈNE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "6",
+    price: "110.00$"
+  },
+  {
+    code: "PRSF",
+    name: "PROTÉINE S, FONCTIONNELLE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "118.00$"
+  },
+  {
+    code: "TP",
+    name: "PROTÉINES TOTALES, SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
+  },
+  {
+    code: "PR/U",
+    name: "PROTÉINES, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
     code: "PSA",
-    name: "PSA Total",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "PROSTATE, ANTIGÈNE PROSTATIQUE SPÉCIFIQUE TOTAL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "87.00$"
   },
   {
     code: "FPSA",
-    name: "PSA Libre (avec Total)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "PROSTATE, ANTIGÈNE PROSTATIQUE SPÉCIFIQUE LIBRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "140.00$",
+    notes: "Ce test inclut APS total et le ratio, seul le APS et le ratio apparaîtront sur le rapport."
   },
   {
-    code: "PROT",
-    name: "Protéines Totales",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "CLRYDX",
+    name: "PROSTATE, APS FACTEURS DE RISQUE CLARITYDX",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "300.00$",
+    notes: "Utiliser la requête désignée (RR-90-RQ-007)"
+  },
+  {
+    code: "PT",
+    name: "PT INR (TEMPS DE QUICK)",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "55.00$",
+    notes: "Rejet de l’échantillon: un tube mal remplis ou présence d'un caillot. Ne pas réfrigérer."
   },
   {
     code: "PTT",
     name: "PTT (TCA)",
-    tube: "Light Blue",
-    specimenType: "Whole Blood (Citrate)",
-    turnaroundTime: "1"
-  },
-
-  // --- Q ---
-  {
-    code: "QTB",
-    name: "QuantiFERON-TB Gold",
-    tube: "TB Kit",
-    specimenType: "Whole Blood (4 tubes: Gray, Green, Yellow, Purple)",
-    turnaroundTime: "14"
-  },
-
-  // --- R ---
-  {
-    code: "RETICP",
-    name: "Réticulocytes",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "1"
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "58.00$"
   },
   {
-    code: "RF",
-    name: "Rhumatoïde (Facteur)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "QFINT",
+    name: "QUANTIFÉRON-TB GOLD",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "6",
+    price: "285.00$",
+    notes: "Envoyer du lundi au jeudi seulement avant 15h00, dans un sac STAT rouge. Éviter d’envoyer avant un jour férié."
   },
   {
-    code: "RUB",
-    name: "Rubéole IgG",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "RABIES",
+    name: "RAGE, ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "30",
+    price: "185.00$"
   },
-
-  // --- S ---
   {
-    code: "SED",
-    name: "Sédimentation (Vitesse)",
-    tube: "Lavender",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "1"
+    code: "ABSN",
+    name: "RECHERCHE D’ANTICORPS",
+    tube: TubeType.PINK,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "87.00$"
+  },
+  {
+    code: "RENN",
+    name: "RÉNINE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.PLASMA,
+    turnaroundTime: "7",
+    price: "105.00$"
+  },
+  {
+    code: "RPC",
+    name: "RÉSISTANCE PROTÉINE C ACTIVÉE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "110.00$"
+  },
+  {
+    code: "RTIC",
+    name: "RÉTICULOCYTES",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "52.00$"
+  },
+  {
+    code: "RMES",
+    name: "ROUGEOLE IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "100.00$"
+  },
+  {
+    code: "RMEM",
+    name: "ROUGEOLE IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "108.00$"
+  },
+  {
+    code: "RUBE",
+    name: "RUBÉOLE IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "95.00$",
+    notes: "Les anticorps IgG sont associés à une infection passée ou à une vaccination."
+  },
+  {
+    code: "RUBM",
+    name: "RUBÉOLE IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "108.00$",
+    notes: "Les anticorps IgM sont associés à la présence d’une infection ou un infection récente."
+  },
+  {
+    code: "QIFOB",
+    name: "SANG DANS LES SELLES IMMUNOLOGIQUE, QUANTITATIF",
+    tube: TubeType.STOOL_CONTAINER,
+    specimenType: SpecimenType.STOOL,
+    turnaroundTime: "1",
+    price: "110.00$"
+  },
+  {
+    code: "SEDI",
+    name: "SÉDIMENTATION, VITESSE DE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "62.00$"
+  },
+  {
+    code: "SE",
+    name: "SÉLÉNIUM, SANG ENTIER",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "8",
+    price: "145.00$",
+    notes: "**NE PAS CENTRIFUGER**"
+  },
+  {
+    code: "SHBG",
+    name: "SHBG (GLOBULINE RELIÉE À L’HORMONE DU SEXE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "110.00$"
   },
   {
     code: "NA",
-    name: "Sodium",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "SODIUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
-    code: "SYPH",
-    name: "Syphilis (Dépistage)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
-  },
-
-  // --- T ---
-  {
-    code: "T3F",
-    name: "T3 Libre",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "UNA",
+    name: "SODIUM, URINE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "52.00$",
+    notes: "Aucun préservatif"
   },
   {
-    code: "T4F",
-    name: "T4 Libre",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "NACR",
+    name: "SODIUM / CRÉATININE RATIO",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "57.00$",
+    notes: "Envoyer du lundi au jeudi seulement avant 12 h00, dans un sac STAT rouge. Éviter d’envoyer avant un jour férié."
+  },
+  {
+    code: "SPGMF",
+    name: "SPERMOGRAMME FERTILITÉ",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "125.00$",
+    notes: "Sur rendez-vous seulement à CDL."
+  },
+  {
+    code: "SPGMPV",
+    name: "SPERMOGRAMME POST-VASECTOMIE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "",
+    price: "115.00$",
+    notes: "Il est recommander d’effectuer cette analyse 3 mois après la procédure chirurgicale. Sur rendez-vous seulement à CDL."
+  },
+  {
+    code: "STPT",
+    name: "STREP A, CANDIDA",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "1-2",
+    price: "110.00$",
+    notes: "Spécifier la bactérie suspectée sur la requête."
+  },
+  {
+    code: "STPCR",
+    name: "STREP A, C, G (PCR)",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "1",
+    price: "78.00$"
+  },
+  {
+    code: "CULT",
+    name: "STREP A, C, G (PCR), CANDIDA",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "1-2",
+    price: "110.00$",
+    notes: "Spécifier la bactérie suspectée sur la requête. Le patient doit éviter de prendre des antibiotiques avant le prélèvement."
+  },
+  {
+    code: "STRP",
+    name: "STREP A, RAPIDE",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "2",
+    price: "68.00$"
+  },
+  {
+    code: "VAGS",
+    name: "STREP GROUPE B PCR, VAGINAL",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "2",
+    price: "70.00$"
+  },
+  {
+    code: "FRGX",
+    name: "SYNDRÔME FRAGILE X",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "12",
+    price: "580.00$"
+  },
+  {
+    code: "SYPEIA",
+    name: "SYPHILIS (EIA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "80.00$",
+    notes: "Remplir le formulaire de consentement (RR-05-FM-001). Analyse effectuée afin de déterminer la présence d’anticorps contre les bactéries causant la syphilis. Si le résultat est indéterminé ou positif, une analyse de confirmation est obligatoire (des frais supplémentaires s’appliquent)."
+  },
+  {
+    code: "FT3",
+    name: "T3 LIBRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "88.00$",
+    notes: "Indiquer date et heure de la dernière dose sur la requête si le patient suit un traitement pour la thyroïde."
+  },
+  {
+    code: "RT3",
+    name: "T3 REVERSE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "155.00$"
+  },
+  {
+    code: "TT3",
+    name: "T3 TOTALE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "84.00$"
+  },
+  {
+    code: "FT4",
+    name: "T4 LIBRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "90.00$"
+  },
+  {
+    code: "TT4",
+    name: "T4 TOTAL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "84.00$"
+  },
+  {
+    code: "TCLM",
+    name: "TACROLIMUS (FK506, Prograf)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "3",
+    price: "125.00$"
+  },
+  {
+    code: "TAYS",
+    name: "TAY SACHS, PLAQUETTES",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "20",
+    price: "340.00$",
+    notes: "Remplir et joindre le formulaire de consentement RR-05-FM-003."
+  },
+  {
+    code: "TERI",
+    name: "TERIFLUNOMIDE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "450.00$"
+  },
+  {
+    code: "TESBC",
+    name: "TESTOSTÉRONE Biodisponible",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "120.00$"
   },
   {
     code: "TEST",
-    name: "Testostérone Totale",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "TESTOSTÉRONE Total",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "100.00$"
   },
   {
-    code: "TESBIO",
-    name: "Testostérone Biodisponible",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "2"
+    code: "TESFC",
+    name: "TESTOSTÉRONE Libre",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "115.00$"
   },
   {
-    code: "TESLI",
-    name: "Testostérone Libre",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "HBTDXP",
+    name: "TESTS RESPIRATOIRES D-XYLOSE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "360.00$"
   },
   {
-    code: "THYRO",
-    name: "Thyroglobuline",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "3"
+    code: "ATHAL",
+    name: "THALASSEMIE ALPHA",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "12",
+    price: "645.00$"
   },
   {
-    code: "TRANS",
-    name: "Transferrine",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "THYG",
+    name: "THYROGLOBULINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "105.00$"
+  },
+  {
+    code: "TGAB",
+    name: "THYROGLOBULINE, ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "68.00$"
+  },
+  {
+    code: "THAB",
+    name: "THYROÏDIENS, ANTICORPS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "120.00$",
+    notes: "Inclut TPO et TGAB."
+  },
+  {
+    code: "TOXG",
+    name: "TOXOPLASMOSE IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "125.00$"
+  },
+  {
+    code: "TOXM",
+    name: "TOXOPLASMOSE IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "115.00$"
+  },
+  {
+    code: "TOXP",
+    name: "TOXOPLASMOSE IgG, IgM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "205.00$"
+  },
+  {
+    code: "TRFN",
+    name: "TRANSFERRINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "88.00$"
+  },
+  {
+    code: "CDT",
+    name: "TRANSFERRINE CARBOXY DÉFICIENTE",
+    tube: [TubeType.SST_GOLD, TubeType.RED],
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "250.00$"
+  },
+  {
+    code: "TRIPCR",
+    name: "TRICHOMONAS VAGINALIS PCR",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "2",
+    price: "89.00$"
+  },
+  {
+    code: "UTRIPCR",
+    name: "TRICHOMONAS PCR (URINE)",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_FIRST_VOID,
+    turnaroundTime: "2",
+    price: "89.00$",
+    notes: "Un volume trop élevé peut diluer l’échantillon."
   },
   {
     code: "TRIG",
-    name: "Triglycérides",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "TRIGLYCÉRIDES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
-    code: "TSH",
-    name: "TSH",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "TROPHS",
+    name: "TROPONINE T",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "108.00$"
   },
-
-  // --- U ---
+  {
+    code: "TRYP",
+    name: "TRYPTASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3-6",
+    price: "270.00$"
+  },
+  {
+    code: "TBII",
+    name: "TSH, ANTICORPS ANTI-RÉCEPTEUR",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "155.00$",
+    notes: "La barrière de gel peut interferer avec les résultats."
+  },
+  {
+    code: "UREAP",
+    name: "URÉALYTICUM (PCR)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "7",
+    price: "335.00$"
+  },
   {
     code: "UREA",
-    name: "Urée",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "URÉE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "52.00$"
   },
   {
-    code: "URIC",
-    name: "Acide Urique",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "UCR",
+    name: "URÉE / CRÉATININE, RATIO",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "40.00$",
+    notes: "Ajouter UREA et CREA sur la requête."
   },
+  {
+    code: "UR/U",
+    name: "URÉE, URINE 24 HEURES (BUN)",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "45.00$"
+  },
+  {
+    code: "URC",
+    name: "URINE, ANALYSE",
+    tube: TubeType.YELLOW,
+    specimenType: SpecimenType.URINE_MIDSTREAM,
+    turnaroundTime: "1",
+    price: "57.00$",
+    notes: "Le contenant d’urine avec orifice de transfert n’est pas conçu pour le transport."
+  },
+  {
+    code: "CULU",
+    name: "URINE, CULTURE",
+    tube: TubeType.GREEN_PEA,
+    specimenType: SpecimenType.URINE_MIDSTREAM,
+    turnaroundTime: "2",
+    price: "77.00$"
+  },
+  {
+    code: "VARG",
+    name: "VARICELLE IGG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "88.00$"
+  },
+  {
+    code: "VARM",
+    name: "VARICELLE IGM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "105.00$"
+  },
+  {
+    code: "HIV",
+    name: "VIH (VIRUS DE L’IMMUNODÉFICIENCE HUMAINE)",
+    tube: TubeType.LAVENDER,
+    specimenType: [SpecimenType.WHOLE_BLOOD, SpecimenType.PLASMA],
+    turnaroundTime: "5",
+    price: "340.00$",
+    notes: "Remplir et joindre le formulaire de consentement (RR-05-FM-001). Si le résultat est indéterminé ou positif, une confirmation est obligatoire (des frais supplémentaires s’appliquent). Prélever un tube supplémentaire si d’autres analyses sont demandées."
+  },
+  {
+    code: "VITA",
+    name: "VITAMINE A (RETINOL)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "140.00$"
+  },
+  {
+    code: "VB12",
+    name: "VITAMINE B12",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "82.00$",
+    notes: "Les suppléments de vitamines peuvent affecter les résultats."
+  },
+  {
+    code: "VITB6",
+    name: "VITAMINE B6",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.PLASMA,
+    turnaroundTime: "6",
+    price: "270.00$",
+    notes: "L’échantillon ne sera pas accepté si il n’est pas reçu dans une tube ambré."
+  },
+  {
+    code: "125D",
+    name: "VITAMINE D 1,25 OH",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "195.00$",
+    notes: "Envoyer le tube avec l’étiquette appropriée."
+  },
+  {
+    code: "25D",
+    name: "VITAMINE D 25 OH",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "150.00$",
+    notes: "Prélever un tube supplémentaire si d’autres analyses sont demandées."
+  },
+  {
+    code: "VWF",
+    name: "VON WILLEBRAND, ANTIGÈNE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "11",
+    price: "115.00$"
+  },
+  {
+    code: "HPV",
+    name: "VPH (VIRUS DU PAPILLOME HUMAIN)",
+    tube: TubeType.THINPREP,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "6",
+    price: "155.00$",
+    notes: "Ne pas laisser la brosse à l’intérieur du contenant. Utiliser la requête désignée (RR-10-RQ-010)."
+  },
+  {
+    code: "PVTP",
+    name: "VPH AVEC THINPREP EN CASCADE",
+    tube: TubeType.THINPREP,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "6",
+    price: "185.00$",
+    notes: "Le ThinPrep™ est effectué si le résultat HPV est positif. Ne pas laisser la brosse à l’intérieur du contenant. Utiliser la requête désignée (RR-10-RQ-010)."
+  },
+  {
+    code: "GENHPV",
+    name: "VPH GENOTYPAGE (homme et femme)",
+    tube: TubeType.THINPREP,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "7",
+    price: "395.00$"
+  },
+  {
+    code: "ZN",
+    name: "ZINC, PLASMA",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.PLASMA,
+    turnaroundTime: "7",
+    price: "88.00$"
+  },
+  {
+    code: "ZNRBC",
+    name: "ZINC, GLOBULES ROUGES",
+    tube: TubeType.ROYAL_BLUE,
+    specimenType: SpecimenType.RED_BLOOD_CELLS,
+    turnaroundTime: "6",
+    price: "88.00$"
+  },
+];
 
-  // --- V ---
+// =============================================================================
+// COMBINED DATA
+// =============================================================================
+
+export const cdlSeedData = {
+  profiles: cdlProfileTests,
+  individuals: cdlIndividualTests,
+  all: [...cdlProfileTests, ...cdlIndividualTests],
+};
+
+// =============================================================================
+// SECTION 3: DYNACARE QC TESTS (Analyses Individuelles + Regroupements)
+// Source: QC Specimen Collection Manual-FR 2023 (Dynacare)
+// Prices effective January 1, 2023
+// =============================================================================
+
+export const qcSeedData: TestDefinition[] = [
   {
-    code: "B12",
-    name: "Vitamine B12",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    code: "CDT",
+    name: "% CDT",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "63.00$",
+  },
+  {
+    code: "VITD125",
+    name: "1.25-DIHYDROXY- VITAMINE D",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "104.00$",
+  },
+  {
+    code: "17HYPROG",
+    name: "17 - HYDROXY- PROGESTÉRONE (17- OH-PROGESTÉRONE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "109.00$",
   },
   {
     code: "VITD",
-    name: "Vitamine D (25-OH)",
-    tube: "Gold",
-    specimenType: "Serum (SST)",
-    turnaroundTime: "1"
+    name: "25-HYDROXY VITAMINE D (CHOLÉCALCIFEROL)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "53.00$",
   },
-
-  // --- Z ---
+  {
+    code: "24U5HIAA",
+    name: "5-HIAA (MÉTABOLITE DE LA SÉROTONINE) – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "11",
+    price: "95.00$",
+  },
+  {
+    code: "APH",
+    name: "ACÉTAMINOPHÈNE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "90.00$",
+  },
+  {
+    code: "ACETONE",
+    name: "ACÉTONE (ANALYSE QUANTITATIVE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "50.00$",
+  },
+  {
+    code: "VITC",
+    name: "ACIDE ASCORBIQUE (VITAMINE C)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "105.00$",
+  },
+  {
+    code: "FOL",
+    name: "ACIDE FOLIQUE (FOLATE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "45.00$",
+  },
+  {
+    code: "B12FOL",
+    name: "ACIDE FOLIQUE ET VITAMINE B12",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "108.00$",
+  },
+  {
+    code: "LAC",
+    name: "ACIDE LACTIQUE",
+    tube: TubeType.GRAY,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "76.00$",
+  },
+  {
+    code: "METMALAU",
+    name: "ACIDE MÉTHYLMALONIQUE (ANALYSE QUANTITATIVE) – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "37",
+    price: "149.00$",
+  },
+  {
+    code: "METMALA",
+    name: "ACIDE MÉTHYLMALONIQUE – SANG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "37",
+    price: "149.00$",
+  },
+  {
+    code: "URIC",
+    name: "ACIDE URIQUE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "URICURAN",
+    name: "ACIDE URIQUE – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "36.00$",
+  },
+  {
+    code: "24UURIC",
+    name: "ACIDE URIQUE – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "VAL",
+    name: "ACIDE VALPROÏQUE (DEPAKENE)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "66.00$",
+  },
+  {
+    code: "VMA",
+    name: "ACIDE VANYLMANDÉLIQUE (VMA) – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "11",
+    price: "96.00$",
+  },
+  {
+    code: "FFA",
+    name: "ACIDES GRAS LIBRES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "55.00$",
+  },
+  {
+    code: "PROCACT",
+    name: "ACTIVITÉ DE LA PROTÉINE C",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "17",
+    price: "96.00$",
+  },
+  {
+    code: "AGG",
+    name: "AGGLUTININES FROIDES",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "37.00$",
+  },
+  {
+    code: "ALB",
+    name: "ALBUMINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "ALCO",
+    name: "ALCOOL (ÉTHANOL) – SANG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "51.00$",
+  },
+  {
+    code: "ETOH",
+    name: "ALCOOL (ÉTHANOL) – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "58.00$",
+  },
+  {
+    code: "DOST",
+    name: "ALDOSTÉRONE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "100.00$",
+  },
+  {
+    code: "DOSTU",
+    name: "ALDOSTÉRONE – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "11",
+    price: "95.00$",
+  },
+  {
+    code: "Voir réquisiton",
+    name: "ALLERGÈNES INDIVIDUELS, MIXES OU EN PROFIL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "52.00$",
+  },
+  {
+    code: "TRYP",
+    name: "ALPHA 1- ANTITRYPSINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "91.00$",
+  },
+  {
+    code: "ALPHA2",
+    name: "ALPHA 2 MACROGLOBULINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "28.00$",
+  },
+  {
+    code: "AFP",
+    name: "ALPHA- FŒTOPROTÉINE (AFP)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "80.00$",
+  },
+  {
+    code: "ALT",
+    name: "ALT",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "AMIK",
+    name: "AMIKACINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "114.00$",
+  },
+  {
+    code: "AMITRIP",
+    name: "AMITRIPTYLINE (ANTIDÉPRESSEUR TRICYCLIQUE)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "105.00$",
+  },
+  {
+    code: "AMMO",
+    name: "AMMONIAQUE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "51.00$",
+  },
+  {
+    code: "AMYL",
+    name: "AMYLASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "URI",
+    name: "ANALYSE D’URINE",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "31.00$",
+  },
+  {
+    code: "KIDNEY",
+    name: "ANALYSE DES CALCULS RÉNAUX",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "6",
+    price: "76.00$",
+  },
+  {
+    code: "ANDRO",
+    name: "ANDROSTÈNE-DIONE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "93.00$",
+  },
+  {
+    code: "LUPUS",
+    name: "ANTICOAGULANT LUPIQUE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "137.00$",
+  },
+  {
+    code: "DEGLIAG",
+    name: "ANTICORPS ANTI-GLIADINE DE TYPE IgG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "53.00$",
+  },
+  {
+    code: "DIPH",
+    name: "ANTICORPS ANTI-DIPHTÉRIE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "21",
+    price: "39.00$",
+  },
+  {
+    code: "DEGLIAA",
+    name: "ANTICORPS ANTI-GLIADINE DE TYPE IgA",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "53.00$",
+  },
+  {
+    code: "DNA",
+    name: "ANTICORPS ANTI-ADN (ANTI-ADN double brin)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "134.00$",
+  },
+  {
+    code: "IFA",
+    name: "ANTICORPS ANTI-FACTEUR INTRINSÈQUE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "37",
+    price: "120.00$",
+  },
+  {
+    code: "HISTAB",
+    name: "ANTICORPS ANTI-HISTONE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "17",
+    price: "72.00$",
+  },
+  {
+    code: "GBM",
+    name: "ANTICORPS ANTI-MEMBRANE BASALE GLOMÉRULAIRE (ANTI-GBM)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "57.00$",
+  },
+  {
+    code: "HEPC",
+    name: "ANTICORPS ANTI-HÉPATITE C (ANTI-VHC)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "76.00$",
+  },
+  {
+    code: "PARVO",
+    name: "ANTICORPS ANTI-PARVOVIRUS DE TYPES IgG ET IgM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "173.00$",
+  },
+  {
+    code: "ENA",
+    name: "ANTICORPS ANTI-ANTIGÈNES NUCLÉAIRES SOLUBES (ANTI-ENA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "108.00$",
+  },
+  {
+    code: "MITOM2",
+    name: "ANTICORPS ANTI- MITOCHONDRIES DE TYPE M2",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "114.00$",
+  },
+  {
+    code: "MYOCAR",
+    name: "ANTICORPS ANTI-MYOCARDE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "13",
+    price: "70.00$",
+  },
+  {
+    code: "TAPRO",
+    name: "ANTICORPS ANTI-MICROSOMES THYROÏDIENS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "106.00$",
+  },
+  {
+    code: "ACCP",
+    name: "ANTICORPS ANTI CYCLIQUE CITRULLINÉ (ANTICORPS ANTI-CCP OU ANTICORPS PEPTIDE CITRULLINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "83.00$",
+  },
+  {
+    code: "ASPP",
+    name: "ANTICORPS ANTI-ASPERGILLUS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "20",
+    price: "114.00$",
+  },
+  {
+    code: "B2GPIGA",
+    name: "ANTICORPS ANTI-BÊTA 2-GLYCOPROTÉINE I DE TYPE IgA",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "90.00$",
+  },
+  {
+    code: "B2GP",
+    name: "ANTICORPS ANTI-BÊTA 2-GLYCOPROTÉINE I DE TYPE IgG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "90.00$",
+  },
+  {
+    code: "B2GPIGM",
+    name: "ANTICORPS ANTI-BÊTA 2-GLYCOPROTÉINE I DE TYPE IgM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "90.00$",
+  },
+  {
+    code: "ANTICAR",
+    name: "ANTICORPS ANTI-CARDIOLIPINES (ANTI- PHOSPHOLIPIDES) (APA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "70.00$",
+  },
+  {
+    code: "APC",
+    name: "ANTICORPS ANTI-CELLULES PARIÉTALES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "106.00$",
+  },
+  {
+    code: "CMVG",
+    name: "ANTICORPS ANTI- CYTOMÉGALOVIRUS DE TYPE IgG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "93.00$",
+  },
+  {
+    code: "CMVM",
+    name: "ANTICORPS ANTI- CYTOMÉGALOVIRUS DE TYPE IgM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "93.00$",
+  },
+  {
+    code: "ANCA",
+    name: "ANTICORPS ANTI-CYTOPLASME DES NEUTROPHILES (ANCA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "142.00$",
+  },
+  {
+    code: "ACENDOM",
+    name: "ANTICORPS ANTI-ENDOMYSIUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "129.00$",
+  },
+  {
+    code: "AGAD",
+    name: "ANTICORPS ANTI-GLUTAMATE DÉCARBOXYLASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "17",
+    price: "55.00$",
+  },
+  {
+    code: "HEPAM",
+    name: "ANTICORPS ANTI-HÉPATITE A DE TYPE IgM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "89.00$",
+  },
+  {
+    code: "ACDELTA",
+    name: "ANTICORPS ANTI-HÉPATITE D (ANTI-DELTA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "40",
+    price: "103.00$",
+  },
+  {
+    code: "AMITO",
+    name: "ANTICORPS ANTI-MITOCHONDRIES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "93.00$",
+  },
+  {
+    code: "AML",
+    name: "ANTICORPS ANTI-MUSCLE LISSE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "92.00$",
+  },
+  {
+    code: "ANA",
+    name: "ANTICORPS ANTINUCLÉAIRES (ANA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "79.00$",
+  },
+  {
+    code: "ANTISKIN",
+    name: "ANTICORPS ANTI-PEAU",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "58.00$",
+  },
+  {
+    code: "RABI",
+    name: "ANTICORPS ANTI-RABIQUES (RAGE)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "30",
+    price: "73.00$",
+  },
+  {
+    code: "ARA",
+    name: "ANTICORPS ANTI-RÉCEPTEUR DE L’ACÉTYLCHOLINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "32",
+    price: "455.00$",
+  },
+  {
+    code: "ANTHY",
+    name: "ANTICORPS ANTI-RÉCEPTEURS DE LA THYRÉOSTIMULINE (TBII)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "171.00$",
+  },
+  {
+    code: "ANTISPERM",
+    name: "ANTICORPS ANTI- SPERMATOZOÏDES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "23",
+    price: "58.00$",
+  },
+  {
+    code: "ASO",
+    name: "ANTICORPS ANTI- STREPTOLYSINE O",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "28.00$",
+  },
+  {
+    code: "ACSUR",
+    name: "ANTICORPS ANTI-SURRÉNALES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "23",
+    price: "85.00$",
+  },
+  {
+    code: "TETA",
+    name: "ANTICORPS ANTITÉTANIQUES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "30",
+    price: "65.00$",
+  },
+  {
+    code: "TRANSGLUT",
+    name: "ANTICORPS ANTI- TRANSGLUTAMINASE DE TYPE IgA",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "89.00$",
+  },
+  {
+    code: "EBVIGG",
+    name: "ANTICORPS ANTI-VIRUS EPSTEIN-BARR DE TYPE IgG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "103.00$",
+  },
+  {
+    code: "EBVIGM",
+    name: "ANTICORPS ANTI-VIRUS EPSTEIN-BARR DE TYPE IgM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "103.00$",
+  },
+  {
+    code: "VARIG",
+    name: "ANTICORPS DE TYPE IgG DIRIGÉS CONTRE LE VIRUS DE LA VARICELLE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "76.00$",
+  },
+  {
+    code: "MUMPIGG",
+    name: "ANTICORPS DE TYPE IgG DIRIGÉS CONTRE LE VIRUS DES OREILLONS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "95.00$",
+  },
+  {
+    code: "ROUGG",
+    name: "ANTICORPS DE TYPE IgG DIRIGÉS CONTRE LE VIRUS DE LA ROUGEOLE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "68.00$",
+  },
+  {
+    code: "RUB",
+    name: "ANTICORPS DE TYPE IgG DIRIGÉS CONTRE LE VIRUS DE LA RUBÉOLE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "54.00$",
+  },
+  {
+    code: "HEPBCM",
+    name: "ANTICORPS DE TYPE IgM DIRIGÉS CONTRE L’ANTIGÈNE CAPSIDIQUE DE L’HÉPATITE B (ANTI-HBc IgM)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "110.00$",
+  },
+  {
+    code: "VARIM",
+    name: "ANTICORPS DE TYPE IgM DIRIGÉS CONTRE LE VIRUS DE LA VARICELLE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "84.00$",
+  },
+  {
+    code: "MUMPIGM",
+    name: "ANTICORPS DE TYPE IgM DIRIGÉS CONTRE LE VIRUS DES OREILLONS",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "79.00$",
+  },
+  {
+    code: "ROUGM",
+    name: "ANTICORPS DE TYPE IgM DIRIGÉS CONTRE LE VIRUS DE LA ROUGEOLE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "84.00$",
+  },
+  {
+    code: "RUBIGM",
+    name: "ANTICORPS DE TYPE IgM DIRIGÉS CONTRE LE VIRUS DE LA RUBÉOLE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "93.00$",
+  },
+  {
+    code: "HEPBC",
+    name: "ANTICORPS DIRIGÉS CONTRE L’ANTIGÈNE CAPSIDIQUE DE L’HÉPATITE B (ANTI-HBc)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "89.00$",
+  },
+  {
+    code: "HEPBE",
+    name: "ANTICORPS DIRIGÉS CONTRE L’ANTIGÈNE e DE L’HÉPATITE B (ANTI-HBe)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "73.00$",
+  },
+  {
+    code: "HEPAG",
+    name: "ANTICORPS TOTAUX ANTI-HÉPATITE A DE TYPE IgG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "84.00$",
+  },
+  {
+    code: "CEA",
+    name: "ANTIGÈNE CARCINO- EMBRYONNAIRE (ACE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "79.00$",
+  },
+  {
+    code: "HBS",
+    name: "ANTIGÈNE DE SURFACE DE L’HÉPATITE B (HBsAg)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "64.00$",
+  },
+  {
+    code: "HBEAG",
+    name: "ANTIGÈNE HÉPATITE Be (HBeAg)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "73.00$",
+  },
+  {
+    code: "HLAB",
+    name: "ANTIGÈNE HLA-B27",
+    tube: TubeType.YELLOW,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10-30",
+    price: "184.00$",
+  },
+  {
+    code: "PSA",
+    name: "ANTIGÈNE PROSTATIQUE SPÉCIFIQUE (APS)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "69.00$",
+  },
+  {
+    code: "PROCAG",
+    name: "ANTIGENE PROTÉINE C",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "19",
+    price: "108.00$",
+  },
+  {
+    code: "ANHBS",
+    name: "ANTI-HBs",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "69.00$",
+  },
+  {
+    code: "MOINE",
+    name: "ANTIMOINE – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "11",
+    price: "93.00$",
+  },
+  {
+    code: "ANTITH",
+    name: "ANTITHROMBINE III (ACTIVITÉ)",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "16",
+    price: "84.00$",
+  },
+  {
+    code: "APOA",
+    name: "APOLIPOPROTÉINE A1",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "69.00$",
+  },
+  {
+    code: "APOB",
+    name: "APOLIPOPROTÉINE B",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "60.00$",
+  },
+  {
+    code: "FPSA",
+    name: "APS LIBRE (APS TOTAL ET RATIO APS LIBRE/APS TOTAL)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "115.00$",
+  },
+  {
+    code: "ARSENIWB",
+    name: "ARSENIC - SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "59.00$",
+  },
+  {
+    code: "ARSENIRU",
+    name: "ARSENIC – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "9",
+    price: "59.00$",
+  },
+  {
+    code: "AST",
+    name: "AST",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "BERY",
+    name: "BÉRYLLIUM - SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "12",
+    price: "166.00$",
+  },
+  {
+    code: "B2MICRO",
+    name: "BÊTA-2- MICROGLOBULINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "76.00$",
+  },
+  {
+    code: "CD4",
+    name: "BILAN D'IMMUNODÉFICIENCE (CD4, CD8, CD3)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "20",
+    price: "253.00$",
+  },
+  {
+    code: "BILITD",
+    name: "BILIRUBINE DIRECTE/CONJUGUÉE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "45.00$",
+  },
+  {
+    code: "BILINDP",
+    name: "BILIRUBINE INDIRECTE / NON CONJUGUÉE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "54.00$",
+  },
+  {
+    code: "BILIT",
+    name: "BILIRUBINE TOTALE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "BRUC",
+    name: "BRUCELLA / BRUCELLOSE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "30",
+    price: "33.00$",
+  },
+  {
+    code: "CA19",
+    name: "CA 19-9 (ANTIGÈNE CARBOHYDRATE 19-9)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "79.00$",
+  },
+  {
+    code: "CA125",
+    name: "CA 125 (OVAIRE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "82.00$",
+  },
+  {
+    code: "CA153",
+    name: "CA 15-3 (SEIN)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "79.00$",
+  },
+  {
+    code: "CADMIWB",
+    name: "CADMIUM – SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "58.00$",
+  },
+  {
+    code: "CAF",
+    name: "CAFÉINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "48.00$",
+  },
+  {
+    code: "CALCI",
+    name: "CALCITONINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "136.00$",
+  },
+  {
+    code: "CA",
+    name: "CALCIUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "CAI",
+    name: "CALCIUM – IONISÉ (CALCIUM LIBRE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "47.00$",
+  },
+  {
+    code: "CAURAN",
+    name: "CALCIUM – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "24UCA",
+    name: "CALCIUM – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "FECAL",
+    name: "CALPROTECTINE, FÉCALE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "12",
+    price: "133.00$",
+  },
+  {
+    code: "TEG",
+    name: "CARBAMAZÉPINE (TEGRETOL)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "54.00$",
+  },
+  {
+    code: "CARNIT",
+    name: "CARNITINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "53.00$",
+  },
+  {
+    code: "CATEMETA",
+    name: "CATÉCHOLAMINES et MÉTANÉPHRINE – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "11",
+    price: "150.00$",
+  },
+  {
+    code: "NATKC",
+    name: "CD16/CD56 (CELLULES NK)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "158.00$",
+  },
+  {
+    code: "CERU",
+    name: "CÉRULOPLASMINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "76.00$",
+  },
+  {
+    code: "CH50",
+    name: "CH50, COMPLÉMENT TOTAL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "74.00$",
+  },
+  {
+    code: "FLC",
+    name: "CHAÎNES LÉGÈRES LIBRES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "53.00$",
+  },
+  {
+    code: "HIVCV",
+    name: "CHARGE VIRALE (VIH)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "16",
+    price: "93.00$",
+  },
+  {
+    code: "CHIKUN",
+    name: "CHIKUNGUNYA - VIRUS (IgM par EIA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "120.00$",
+  },
+  {
+    code: "PCRCHSD",
+    name: "CHLAMYDIA URINE - DÉPISTAGE PAR TAAN",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "83.00$",
+  },
+  {
+    code: "TGCD",
+    name: "CHLAMYDIA NEISSERIA GONORRHEA TRICHOMONAS VAGINALIS URINE - DÉPISTAGE PAR TAAN",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "6",
+    price: "142.00$",
+  },
+  {
+    code: "NGPCRD",
+    name: "CHLAMYDIA NEISSERIA GONORRHOEAE ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "1",
+    price: "113.00$",
+  },
+  {
+    code: "CL",
+    name: "CHLORURES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "24UCL",
+    name: "CHLORURES – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "CLURAN",
+    name: "CHLORURES– URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "CHOL",
+    name: "CHOLESTÉROL TOTAL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "CRBC",
+    name: "CHOLINESTÉRASE DES GLOBULES ROUGES",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "55.00$",
+  },
+  {
+    code: "CSE",
+    name: "CHOLINESTÉRASE TOTALE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "59.00$",
+  },
+  {
+    code: "CHROS",
+    name: "CHROME - PLASMA",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "8",
+    price: "58.00$",
+  },
+  {
+    code: "CHROMERU",
+    name: "CHROME – URINE ALEATOIRE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "9",
+    price: "58.00$",
+  },
+  {
+    code: "CHROMEWB",
+    name: "CHROME SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "15",
+    price: "79.00$",
+  },
+  {
+    code: "CHROMA",
+    name: "CHROMOGRANINE A",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "17",
+    price: "93.00$",
+  },
+  {
+    code: "CITU",
+    name: "CITRATE – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "11",
+    price: "122.00$",
+  },
+  {
+    code: "CK",
+    name: "CK (CRÉATINE KINASE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "CKMB",
+    name: "CK-MB",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "CLOBAZAM",
+    name: "CLOBAZAM (FRISIUM)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "152.00$",
+  },
+  {
+    code: "CLOMI",
+    name: "CLOMIPRAMINE (ANAFRIL)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "104.00$",
+  },
+  {
+    code: "CLOS",
+    name: "CLOSTRIDIUM DIFFICILE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "Min. 2",
+    price: "100.00$",
+  },
+  {
+    code: "CLOZA",
+    name: "CLOZAPINE (CLOZARIL)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "142.00$",
+  },
+  {
+    code: "CO2",
+    name: "CO2 TOTAL (BICARBONATE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "COBALTWB",
+    name: "COBALT - SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "58.00$",
+  },
+  {
+    code: "COBALTU",
+    name: "COBALT – URINE ALÉATOIRE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "9",
+    price: "59.00$",
+  },
+  {
+    code: "COENZQ10",
+    name: "COENZYME Q10",
+    tube: TubeType.GREEN,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "110.00$",
+  },
+  {
+    code: "HIV",
+    name: "COMBO VIH (ANTICORPS ANTI- VIH-1 ET ANTI-VIH- 2 + ANTIGÈNE P24)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "69.00$",
+  },
+  {
+    code: "C3",
+    name: "COMPLÉMENT C3",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "70.00$",
+  },
+  {
+    code: "C4",
+    name: "COMPLÉMENT C4",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "70.00$",
+  },
+  {
+    code: "C3C4",
+    name: "COMPLÉMENTS C3 et C4",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "104.00$",
+  },
+  {
+    code: "CORTIPM",
+    name: "CORTISOL (APRÈS-MIDI)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "63.00$",
+  },
+  {
+    code: "CORTISOLAMPM",
+    name: "CORTISOL (MATIN ET APRÈS-MIDI)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "91.00$",
+  },
+  {
+    code: "CORTIAM",
+    name: "CORTISOL (MATIN)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "63.00$",
+  },
+  {
+    code: "CORTIRAN",
+    name: "CORTISOL ALÉATOIRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "63.00$",
+  },
+  {
+    code: "24CORTU",
+    name: "CORTISOL LIBRE – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "11",
+    price: "93.00$",
+  },
+  {
+    code: "CREA",
+    name: "CRÉATININE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "27.00$",
+  },
+  {
+    code: "CREACL",
+    name: "CRÉATININE – CLAIRANCE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "63.00$",
+  },
+  {
+    code: "CREAURAN",
+    name: "CRÉATININE – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "24UCREA",
+    name: "CRÉATININE – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "CRYOF",
+    name: "CRYOFIBRINOGÈNE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "5",
+    price: "32.00$",
+  },
+  {
+    code: "CRYO",
+    name: "CRYOGLOBULINE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "38.00$",
+  },
+  {
+    code: "COPPERWB",
+    name: "CUIVRE - SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "5",
+    price: "58.00$",
+  },
+  {
+    code: "COPPERRU",
+    name: "CUIVRE – URINE ALEATOIRE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "9",
+    price: "59.00$",
+  },
+  {
+    code: "CUL",
+    name: "CULTURE ET SENSIBILITÉ : AUTRE",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "Min. 3",
+    price: "56.00$",
+  },
+  {
+    code: "FU",
+    name: "CULTURE : CHAMPIGNONS",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "23",
+    price: "149.00$",
+  },
+  {
+    code: "CSC",
+    name: "CULTURE : COL UTÉRIN",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "Min. 3",
+    price: "51.00$",
+  },
+  {
+    code: "VRE",
+    name: "CULTURE : ENTÉROCOQUE RÉSISTANT À LA VANCOMYCINE (ERV)",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "6",
+    price: "82.00$",
+  },
+  {
+    code: "CS",
+    name: "CULTURE : EXPECTORATIONS",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "51.00$",
+  },
+  {
+    code: "CST",
+    name: "CULTURE : GORGE",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "Min. 2",
+    price: "60.00$",
+  },
+  {
+    code: "CSN",
+    name: "CULTURE : NEZ",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "Min. 3",
+    price: "56.00$",
+  },
+  {
+    code: "CSS",
+    name: "CULTURE : SELLES",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "Min. 3",
+    price: "65.00$",
+  },
+  {
+    code: "MRSA",
+    name: "CULTURE : Staphylococcus aureus résistant à la méthicilline (SARM)",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "Min. 3",
+    price: "56.00$",
+  },
+  {
+    code: "STREP",
+    name: "CULTURE DE LA GORGE + TEST RAPIDE DE DÉPISTAGE DU STREPTOCOQUE DU GROUPE A",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "Min. 2",
+    price: "33.00$",
+  },
+  {
+    code: "STREPB",
+    name: "CULTURE : STREPTOCOQUE DU GROUPE B",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "Min. 3",
+    price: "42.00$",
+  },
+  {
+    code: "CSV",
+    name: "CULTURE : URÈTRE",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "Min. 3",
+    price: "54.00$",
+  },
+  {
+    code: "CSU",
+    name: "CULTURE : URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "Min. 3",
+    price: "64.00$",
+  },
+  {
+    code: "CVA",
+    name: "CULTURE : VAGIN",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "Min. 3",
+    price: "56.00$",
+  },
+  {
+    code: "UC",
+    name: "CULTURE D’URINE + ANALYSE D’URINE",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "Min. 3",
+    price: "69.00$",
+  },
+  {
+    code: "CSTGC",
+    name: "CULTURE: GORGE ET CULTURE GONORRHOEAE GORGE",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "Min. 2",
+    price: "60.00$",
+  },
+  {
+    code: "VIBCSS1",
+    name: "CULTURE: SELLES ET VIBRIO CHOLÉRA X 1",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "Min. 3",
+    price: "69.00$",
+  },
+  {
+    code: "CYCLO",
+    name: "CYCLOSPORINE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "104.00$",
+  },
+  {
+    code: "CYSTC",
+    name: "CYSTATINE C",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "18.00$",
+  },
+  {
+    code: "CYSTRU",
+    name: "CYSTINE – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "22",
+    price: "132.00$",
+  },
+  {
+    code: "BRCYTO",
+    name: "CYTOLOGIE : ÉCHANTILLON DE TISSU MAMMAIRE OBTENU PAR ASPIRATION",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "4",
+    price: "110.00$",
+  },
+  {
+    code: "PAPSM",
+    name: "CYTOLOGIE : TEST DE PAPANICOLAOU (SUR LAME)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "32.00$",
+  },
+  {
+    code: "LPAP",
+    name: "CYTOLOGIE : TEST DE PAPANICOLAOU ThinPrep (PAP TEST LIQUIDE)",
+    tube: TubeType.THINPREP,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "5",
+    price: "85.00$",
+  },
+  {
+    code: "THINCASC",
+    name: "CYTOLOGIE : TEST ThinPrep ET DÉPISTAGE DU VPH EN COMBO (2 TESTS)",
+    tube: TubeType.THINPREP,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "10",
+    price: "186.00$",
+  },
+  {
+    code: "UCYTO",
+    name: "CYTOLOGIE : URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "4",
+    price: "70.00$",
+  },
+  {
+    code: "LPAPRAS",
+    name: "CYTOLOGIE: TEST ThinPrep ET DÉPISTAGE DU VPH SEULEMENT SI PRÉSENCE DE ASCUS",
+    tube: TubeType.THINPREP,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "10",
+    price: "140.00$",
+  },
+  {
+    code: "ALA",
+    name: "D-AMINOLÉVULINATE (ACIDE AMINOLÉVULINIQUE) – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "10",
+    price: "137.00$",
+  },
+  {
+    code: "AMIO",
+    name: "DÉSÉTHYLAMIODARONE (AMIODARONE)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "17",
+    price: "78.00$",
+  },
+  {
+    code: "DESI",
+    name: "DESIPRAMINE (ANTIDÉPRESSEUR TRICYCLIQUE)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "104.00$",
+  },
+  {
+    code: "DHEA",
+    name: "DHEA",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "21",
+    price: "114.00$",
+  },
+  {
+    code: "DHEAS",
+    name: "DHEAS (sulfate de déshydroépiandrostérone)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "89.00$",
+  },
+  {
+    code: "DIG",
+    name: "DIGOXIN",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "58.00$",
+  },
+  {
+    code: "DHT",
+    name: "DIHYDROTESTOSTÉRONE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "17",
+    price: "131.00$",
+  },
+  {
+    code: "DIL",
+    name: "DILANTIN (PHÉNYTOÏNE)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "56.00$",
+  },
+  {
+    code: "DOX",
+    name: "DOXÉPINE (SINEQUAN)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "104.00$",
+  },
+  {
+    code: "RBCSICK",
+    name: "DRÉPANOCYTOSE – TEST DE DÉPISTAGE (RECHERCHE DES CELLULES FALCIFORMES)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "3",
+    price: "73.00$",
+  },
+  {
+    code: "AMPH",
+    name: "DROGUE : AMPHÉTAMINES – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "58.00$",
+  },
+  {
+    code: "BARB",
+    name: "DROGUE : BARBITURIQUES – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "58.00$",
+  },
+  {
+    code: "BENZO",
+    name: "DROGUE : BENZODIAZÉPINES – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "58.00$",
+  },
+  {
+    code: "CAN",
+    name: "DROGUE : CANNABINOÏDES – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "51.00$",
+  },
+  {
+    code: "COCAINE",
+    name: "DROGUE : COCAÏNE – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "58.00$",
+  },
+  {
+    code: "OPI",
+    name: "DROGUE : OPIACÉS – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "51.00$",
+  },
+  {
+    code: "PCP",
+    name: "DROGUE : PHENCYCLIDINE – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "51.00$",
+  },
+  {
+    code: "ECHIN",
+    name: "ECHINOCOCCUS",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "39.00$",
+  },
+  {
+    code: "ECG",
+    name: "ÉLECTROCARDIOGRAMME ET INTERPRÉTATION",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "3",
+    price: "68.00$",
+  },
+  {
+    code: "LYTES",
+    name: "ÉLECTROLYTES (Na, K, Cl)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "37.00$",
+  },
+  {
+    code: "UELER",
+    name: "ÉLECTROLYTES – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "34.00$",
+  },
+  {
+    code: "24ELER",
+    name: "ÉLECTROLYTES – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "44.00$",
+  },
+  {
+    code: "HBEL",
+    name: "ÉLECTROPHORÈSE DE L’HÉMOGLOBINE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "6",
+    price: "96.00$",
+  },
+  {
+    code: "PEU",
+    name: "ÉLECTROPHORÈSE DES PROTÉINES – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "7",
+    price: "93.00$",
+  },
+  {
+    code: "24PE",
+    name: "ÉLECTROPHORÈSE DES PROTÉINES – URINE DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "7",
+    price: "93.00$",
+  },
+  {
+    code: "ELEPRO",
+    name: "ELECTROPHORÈSE DES PROTÉINES (SÉRIQUE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "97.00$",
+  },
+  {
+    code: "ENTAMO",
+    name: "ENTAMOEBA HISTOLYTICA - SELLES",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "12",
+    price: "300.00$",
+  },
+  {
+    code: "ACE",
+    name: "ENZYME DE CONVERSION DE L’ANGIOTENSINE (ECA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "76.00$",
+  },
+  {
+    code: "EPOX",
+    name: "ÉPOXYDE DE CARBAMAZÉPINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "83.00$",
+  },
+  {
+    code: "C1EF",
+    name: "ÉPREUVE FONCTIONNELLE C1 ESTÉRASE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "32",
+    price: "90.00$",
+  },
+  {
+    code: "EPO",
+    name: "ÉRYTHROPOÏÉTINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "164.00$",
+  },
+  {
+    code: "ESTRA",
+    name: "ESTRADIOL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "66.00$",
+  },
+  {
+    code: "ETHO",
+    name: "ÉTHOSUXIMIDE (ZARONTIN)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "45.00$",
+  },
+  {
+    code: "RF",
+    name: "FACTEUR RHUMATOÏDE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "32.00$",
+  },
+  {
+    code: "FACII",
+    name: "FACTEUR II",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "62.00$",
+  },
+  {
+    code: "FACTIX",
+    name: "FACTEUR IX",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "55.00$",
+  },
+  {
+    code: "FALE",
+    name: "FACTEUR V DE LEIDEN (MUTATION)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "12",
+    price: "171.00$",
+  },
+  {
+    code: "FACTVIII",
+    name: "FACTEUR VIII",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "55.00$",
+  },
+  {
+    code: "FACTX",
+    name: "FACTEUR X",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "55.00$",
+  },
+  {
+    code: "FACTXI",
+    name: "FACTEUR XI",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "55.00$",
+  },
+  {
+    code: "FE",
+    name: "FER",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "FERI",
+    name: "FERRITINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "69.00$",
+  },
+  {
+    code: "FIBR",
+    name: "FIBRINOGÈNE",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "63.00$",
+  },
+  {
+    code: "FIT",
+    name: "FIT (TEST IMMUNOCHIMIQUE FÉCAL)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "62.00$",
+  },
+  {
+    code: "FLUVO",
+    name: "FLUVOXAMINE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "17",
+    price: "88.00$",
+  },
+  {
+    code: "FOLRBC",
+    name: "FOLATES ÉRYTHROCYTAIRES",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "95.00$",
+  },
+  {
+    code: "CBC",
+    name: "FORMULE SANGUINE COMPLÈTE (FSC)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "53.00$",
+  },
+  {
+    code: "FRU",
+    name: "FRUCTOSAMINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "63.00$",
+  },
+  {
+    code: "CBCINT",
+    name: "FSC AVEC INTERPRÉTATION",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "3",
+    price: "65.00$",
+  },
+  {
+    code: "CBCS",
+    name: "FSC AVEC VITESSE DE SÉDIMENTATION",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "60.00$",
+  },
+  {
+    code: "FSH",
+    name: "FSH (HORMONE FOLLICULOSTIMULANTE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "63.00$",
+  },
+  {
+    code: "G6PD",
+    name: "G6PD (GLUCOSE-6- PHOSPHATE DÉSHYDROGÉNASE)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "11",
+    price: "72.00$",
+  },
+  {
+    code: "GAST",
+    name: "GASTRINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "269.00$",
+  },
+  {
+    code: "SHOXGENE",
+    name: "GÈNE SHOX – ANALYSE DU",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "20",
+    price: "650.00$",
+  },
+  {
+    code: "GENECEPT",
+    name: "GENECEPT ASSAY",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "495.00$",
+  },
+  {
+    code: "HEPCGENO",
+    name: "GÉNOTYPE DU VIRUS DE L’HÉPATITE C – DÉTERMINATION PAR PCR",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "16",
+    price: "93.00$",
+  },
+  {
+    code: "PREGEN",
+    name: "GENTAMICINE PRÉ-DOSE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "68.00$",
+  },
+  {
+    code: "POSTGEN",
+    name: "GENTAMICINE POST-DOSE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "68.00$",
+  },
+  {
+    code: "GGT",
+    name: "GGT (GAMMA GLUTAMYLTRANSFÉRASE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "TBG",
+    name: "GLOBULINE FIXANT LA THYROXINE (TBG)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "51.00$",
+  },
+  {
+    code: "GLU75",
+    name: "GLUCOSE - HYPERGLYCÉMIE ORALE 75g NON-GESTATIONNEL (2 HEURES)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "58.00$",
+  },
+  {
+    code: "AC",
+    name: "GLUCOSE AC",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "ACP ou GLURan",
+    name: "GLUCOSE AU HASARD",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "PREG75",
+    name: "GLUCOSE PC (2HR – 75g)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "60.00$",
+  },
+  {
+    code: "PREG50",
+    name: "GLUCOSE PC (1HR – 50g)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "GOLM",
+    name: "GOLIMUMAB",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "305.00$",
+  },
+  {
+    code: "BLOOD",
+    name: "GROUPE SANGUIN ET FACTEUR Rh",
+    tube: TubeType.PINK,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "31.00$",
+  },
+  {
+    code: "HAPT",
+    name: "HAPTOGLOBINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "47.00$",
+  },
+  {
+    code: "HARMO",
+    name: "HARMONY",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "12",
+    price: "495.00$",
+  },
+  {
+    code: "H22Q11.2",
+    name: "HARMONY OPTION DU TEST 22q11.2",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "175.00$",
+  },
+  {
+    code: "PREG",
+    name: "hCG (ANALYSE QUALITATIVE) – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "39.00$",
+  },
+  {
+    code: "BSQUANT",
+    name: "hCG (ANALYSE QUANTITATIVE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "63.00$",
+  },
+  {
+    code: "HBA1C",
+    name: "HÉMOGLOBINE A1C",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "53.00$",
+  },
+  {
+    code: "HBVDNA",
+    name: "HÉPATITE B – ADN VIRAL DE L’HÉPATITE B",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "10",
+    price: "438.00$",
+  },
+  {
+    code: "HEPCQUAL",
+    name: "HÉPATITE C (ANALYSE QUALITATIVE) – PCR",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "148.00$",
+  },
+  {
+    code: "HEPCQUANT",
+    name: "HÉPATITE C (ANALYSE QUANTITATIVE) – PCR",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "16",
+    price: "93.00$",
+  },
+  {
+    code: "HERPPCR",
+    name: "HERPÈS – DÉTECTION PAR PCR (ÉCOUVILLON)",
+    tube: TubeType.PCR_TUBE,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "189.00$",
+  },
+  {
+    code: "HERPBLOT",
+    name: "HERPÈS SIMPLEX – IMMUNOTRANSFERT",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "261.00$",
+  },
+  {
+    code: "HERPG",
+    name: "HERPÈS SIMPLEX DE TYPE IgG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "137.00$",
+  },
+  {
+    code: "HISTA",
+    name: "HISTAMINE (PLASMA)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "16",
+    price: "128.00$",
+  },
+  {
+    code: "HOLTER",
+    name: "HOLTER (24 HRS) - ECG EN CONTINU",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "206.00$",
+  },
+  {
+    code: "HOLTER48",
+    name: "HOLTER (48 HRS) - ECG EN CONTINU",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "311.00$",
+  },
+  {
+    code: "HOLTER72",
+    name: "HOLTER (72 HRS) - ECG EN CONTINU",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "10",
+    price: "425.00$",
+  },
+  {
+    code: "LHOMO",
+    name: "HOMOCYSTÉINE (L-HOMOCYSTÉINE)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "3",
+    price: "108.00$",
+  },
+  {
+    code: "ACTH",
+    name: "HORMONE ADRÉNOCORTICOTROPE (ACTH)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "5",
+    price: "95.00$",
+  },
+  {
+    code: "ADH",
+    name: "HORMONE ANTI-DIURÉTIQUE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "17",
+    price: "84.00$",
+  },
+  {
+    code: "AMH",
+    name: "HORMONE ANTI- MULLÉRIENNE (AMH)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "88.00$",
+  },
+  {
+    code: "HGH",
+    name: "HORMONE DE CROISSANCE (GH)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "76.00$",
+  },
+  {
+    code: "LH",
+    name: "HORMONE LUTÉINISANTE (LH)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "66.00$",
+  },
+  {
+    code: "HTLV1",
+    name: "HTLV I et II",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "155.00$",
+  },
+  {
+    code: "IGE",
+    name: "IgE TOTALE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "63.00$",
+  },
+  {
+    code: "SOMA",
+    name: "IGF-1 (SOMATOMÉDINE C)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "73.00$",
+  },
+  {
+    code: "IMIP",
+    name: "IMIPRAMINE (ANTIDÉPRESSEUR TRICYCLIQUE)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "110.00$",
+  },
+  {
+    code: "IMMUELE",
+    name: "IMMUNOÉLECTROPHORÈSE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "101.00$",
+  },
+  {
+    code: "24UIEP",
+    name: "IMMUNOÉLECTROPHORÈSE - URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "7",
+    price: "104.00$",
+  },
+  {
+    code: "IMQUANT",
+    name: "IMMUNOGLOBULINES (ANALYSE QUANTITATIVE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "63.00$",
+  },
+  {
+    code: "INFLEC",
+    name: "INFLECTRA - ANALYSE QUANTITATIVE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "295.00$",
+  },
+  {
+    code: "INFLIX",
+    name: "INFLIXIMAB ET ANTI-INFLEXIMAB (REMICADE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "311.00$",
+  },
+  {
+    code: "CIE1",
+    name: "INHIBITEUR DE LA C1 ESTÉRASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "109.00$",
+  },
+  {
+    code: "INSUL",
+    name: "INSULINE (À JEUN)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "70.00$",
+  },
+  {
+    code: "CKISO",
+    name: "ISOENZYMES DE LA CK",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "93.00$",
+  },
+  {
+    code: "ISOLDH",
+    name: "ISOENZYMES DE LA LDH",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "14",
+    price: "18.00$",
+  },
+  {
+    code: "ISOALK",
+    name: "ISOENZYMES DE LA PHOSPHATASE ALCALINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "88.00$",
+  },
+  {
+    code: "ISOPRO",
+    name: "ISOPROPANOL",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "45.00$",
+  },
+  {
+    code: "JAK2EX12",
+    name: "JAK2 MUTATIONS DE L'EXON 12 SANG",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "12",
+    price: "163.00$",
+  },
+  {
+    code: "J2VQ",
+    name: "JAK2 QUALITATIF MUTATION V617F SANG",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "12",
+    price: "311.00$",
+  },
+  {
+    code: "JAKQ",
+    name: "JAK2 QUANTITATIF MUTATION V617F SANG",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "12",
+    price: "311.00$",
+  },
+  {
+    code: "LD",
+    name: "LACTATE DÉSHYDROGÉNASE (LDH)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "LTT",
+    name: "LACTOSE (TEST DE TOLÉRANCE AU)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "56.00$",
+  },
+  {
+    code: "LAMO",
+    name: "LAMOTRIGINE (LAMICTAL)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "135.00$",
+  },
+  {
+    code: "LEPTO",
+    name: "LEPTOSPIROSE (ÉPREUVE DE SÉRO-GGLUTINATION)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "30",
+    price: "85.00$",
+  },
+  {
+    code: "LGV",
+    name: "LGV (LYMPHOGRANULOME VÉNÉRIEN)",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "30",
+    price: "100.00$",
+  },
+  {
+    code: "LIP",
+    name: "LIPASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "LIPOA",
+    name: "LIPOPROTÉINE A – Lp(a)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "95.00$",
+  },
+  {
+    code: "NCYTO",
+    name: "LIQUIDE BIOLOGIQUE PRÉLEVÉ PAR ASPIRATION ou EXPECTORATION (CYTOLOGIE)",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "55.00$",
+  },
+  {
+    code: "SYNOVIAL",
+    name: "LIQUIDE SYNOVIAL : DÉNOMBREMENT CELLULAIRE ET RECHERCHE DE CRISTAUX",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "90.00$",
+  },
+  {
+    code: "LI",
+    name: "LITHIUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "58.00$",
+  },
+  {
+    code: "BCELLS",
+    name: "LYMPHOCYTE B",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "114.00$",
+  },
+  {
+    code: "MACROPRO",
+    name: "MACROPROLACTINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "49.00$",
+  },
+  {
+    code: "MG",
+    name: "MAGNÉSIUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "38.00$",
+  },
+  {
+    code: "MGRBC",
+    name: "MAGNÉSIUM ÉRYTHROCYTAIRE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "35.00$",
+  },
+  {
+    code: "24UMG",
+    name: "MAGNÉSIUM – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "LY",
+    name: "MALADIE DE LYME (ANTICORPS ANTI- BORRELIA BURGDORFERI)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "30",
+    price: "80.00$",
+  },
+  {
+    code: "MAL",
+    name: "MALARIA (DÉPISTAGE) – FROTTIS",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "2",
+    price: "153.00$",
+  },
+  {
+    code: "MANGANWB",
+    name: "MANGANÈSE – SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "59.00$",
+  },
+  {
+    code: "MANGU",
+    name: "MANGANÈSE – URINE ALÉATOIRE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "9",
+    price: "88.00$",
+  },
+  {
+    code: "MERCA",
+    name: "MERCAPTOPURINE (THIOGUANINE ÉRYTHROCYTAIRE)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "20",
+    price: "53.00$",
+  },
+  {
+    code: "MERCWB",
+    name: "MERCURE – SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "59.00$",
+  },
+  {
+    code: "MERCU",
+    name: "MERCURE – URINE ALÉATOIRE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "9",
+    price: "59.00$",
+  },
+  {
+    code: "METHAP",
+    name: "MÉTANÉPHRINES, PLASMA",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "17",
+    price: "270.00$",
+  },
+  {
+    code: "MHATP",
+    name: "MHA-TP (TEST D’AGGLUTINATION POUR T. PALLIDUM)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "173.00$",
+  },
+  {
+    code: "MIALBP",
+    name: "MICROALBUMINE : RATIO ALBUMINE / CRÉATININE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "63.00$",
+  },
+  {
+    code: "24MIALBP",
+    name: "MICROALBUMINE – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "63.00$",
+  },
+  {
+    code: "MONO",
+    name: "MONONUCLÉOSE – TEST DE DÉPISTAGE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "30.00$",
+  },
+  {
+    code: "MUCOPOLY",
+    name: "MUCOPOLYSACCHARIDE – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "37",
+    price: "53.00$",
+  },
+  {
+    code: "FAMU",
+    name: "MUTATION DU FACTEUR II (VARIANT GÉNIQUE DE LA PROTHROMBINE)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "17",
+    price: "116.00$",
+  },
+  {
+    code: "HEMOCHRO",
+    name: "MUTATION GÉNIQUE LIÉE À L’HÉMOCHROMATOSE (C282Y + H63D)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "17",
+    price: "366.00$",
+  },
+  {
+    code: "MYOGLO",
+    name: "MYOGLOBINE – SANG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "10",
+    price: "70.00$",
+  },
+  {
+    code: "MYOGLOU",
+    name: "MYOGLOBINE – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "79.00$",
+  },
+  {
+    code: "NGONOTAA",
+    name: "NEISSERIA GONORRHOEAE DÉPISTAGE PAR TAAN - ÉCOUVILLONNAGE",
+    tube: TubeType.SWAB,
+    specimenType: SpecimenType.SWAB,
+    turnaroundTime: "1",
+    price: "83.00$",
+  },
+  {
+    code: "NICKELWB",
+    name: "NICKEL – SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "58.00$",
+  },
+  {
+    code: "PF96",
+    name: "NOISETTE - Profil composants de Noisette (rCor a1, rCor a8, rCor a9, rCor a14)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "169.00$",
+  },
+  {
+    code: "NORTRI",
+    name: "NORTRIPTYLINE (AVENTYL) (ANTIDÉPRESSEUR TRICYCLIQUE)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "99.00$",
+  },
+  {
+    code: "BNP",
+    name: "NT-pro-BNP",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "88.00$",
+  },
+  {
+    code: "ESOL",
+    name: "ŒSTRIOL (ESTRIOL)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "76.00$",
+  },
+  {
+    code: "ESTRON",
+    name: "ŒSTRONE (ESTRONE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "230.00$",
+  },
+  {
+    code: "OP1P",
+    name: "ŒUFS ET PARASITES – SELLES",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "8",
+    price: "98.00$",
+  },
+  {
+    code: "OPU",
+    name: "ŒUFS ET PARASITES – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "8",
+    price: "79.00$",
+  },
+  {
+    code: "OMG3",
+    name: "OMÉGA-3 (ACIDES GRAS TOTAUX)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "22",
+    price: "97.00$",
+  },
+  {
+    code: "OSS",
+    name: "OSMOLALITÉ – SÉRUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "57.00$",
+  },
+  {
+    code: "OSU",
+    name: "OSMOLALITÉ – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "4",
+    price: "57.00$",
+  },
+  {
+    code: "OSU24HR",
+    name: "OSMOLALITÉ – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "4",
+    price: "57.00$",
+  },
+  {
+    code: "OSTEO",
+    name: "OSTÉOCALCINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "20",
+    price: "152.00$",
+  },
+  {
+    code: "OXAUR",
+    name: "OXALATES – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "11",
+    price: "110.00$",
+  },
+  {
+    code: "TAPE",
+    name: "OXYURES (SPATULE ADHÉSIVE)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "Min. 1",
+    price: "31.00$",
+  },
+  {
+    code: "PATHO",
+    name: "PATHOLOGIE / HISTOLOGIE – ÉCHANTILLON POUR ÉVALUATION",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "Min. 9",
+    price: "106.00$",
+  },
+  {
+    code: "PEPC",
+    name: "PEPTIDE C À JEUN",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "73.00$",
+  },
+  {
+    code: "PHEN",
+    name: "PHÉNOBARBITAL",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "66.00$",
+  },
+  {
+    code: "ALK",
+    name: "PHOSPHATASE ALCALINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "PHOS",
+    name: "PHOSPHORE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "PHOSURAN",
+    name: "PHOSPHORE – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "24UPHOS",
+    name: "PHOSPHORE – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "PLASMINO",
+    name: "PLASMINOGÈNE",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "19",
+    price: "31.00$",
+  },
+  {
+    code: "PbO",
+    name: "PLOMB (Pb) – SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "5",
+    price: "101.00$",
+  },
+  {
+    code: "PBU",
+    name: "PLOMB (Pb) – URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "100.00$",
+  },
+  {
+    code: "PORPHO",
+    name: "PORPHOBILINOGÈNE (ANALYSE QUANTITATIVE) – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "20",
+    price: "92.00$",
+  },
+  {
+    code: "PORSG",
+    name: "PORPHYRINES ÉRYTHROCYTAIRES LIBRES",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "14",
+    price: "80.00$",
+  },
+  {
+    code: "24PORP",
+    name: "PORPHYRINES – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "15",
+    price: "90.00$",
+  },
+  {
+    code: "K",
+    name: "POTASSIUM (K)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "KURAN",
+    name: "POTASSIUM (K) – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "24UK",
+    name: "POTASSIUM (K) – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "27.00$",
+  },
+  {
+    code: "PREA",
+    name: "PRÉALBUMINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "8",
+    price: "447.00$",
+  },
+  {
+    code: "PREGNOL",
+    name: "PREGNÉNOLONE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "13",
+    price: "104.00$",
+  },
+  {
+    code: "TT1",
+    name: "PRENATEST (1ER TRIMESTRE)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "3",
+    price: "265.00$",
+  },
+  {
+    code: "MYSO",
+    name: "PRIMIDONE (MYSOLINE)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "71.00$",
+  },
+  {
+    code: "CELISCRE",
+    name: "PROFIL DÉPISTAGE MALADIE COELIAQUE (IgA TOTALES, ANTICORPS ANTI- TRANSGLUTAMINASE DE TYPE IgA, ANTICORPS ANTI- GLIADINE DE TYPE IgG)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "104.00$",
+  },
+  {
+    code: "LIPID",
+    name: "PROFIL LIPIDIQUE (CHOLESTÉROL, TRIGLYCÉRIDES, HDL, LDL ET RISQUE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "72.00$",
+  },
+  {
+    code: "CELIAC",
+    name: "PROFILE MALADIE COELIAQUE (IgA TOTALES, ANTICORPS ANTI- TRANSGLUTAMINASE DE TYPE IgA, ANTICORPS ANTI- GLIADINE DE TYPE IgG and TYPE IgA)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "6",
+    price: "146.00$",
+  },
+  {
+    code: "PROG",
+    name: "PROGESTÉRONE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "66.00$",
+  },
+  {
+    code: "PROL",
+    name: "PROLACTINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "71.00$",
+  },
+  {
+    code: "IGFBP3",
+    name: "PROTÉINE DE LIAISON DES FACTEURS DE TYPE INSULINE 3 (IGFBP3)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "59.00$",
+  },
+  {
+    code: "SHBG",
+    name: "PROTÉINE PORTEUSE DES STÉROÏDES SEXUELS (SHBG)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "101.00$",
+  },
+  {
+    code: "CRP",
+    name: "PROTÉINE C-RÉACTIVE – INFLAMMATION",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "49.00$",
+  },
+  {
+    code: "CRPHS",
+    name: "PROTÉINE C-RÉACTIVE – HAUTE SENSIBILITÉ",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "49.00$",
+  },
+  {
+    code: "PROTSACT",
+    name: "PROTÉINE S ACTIVITÉ",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "78.00$",
+  },
+  {
+    code: "PROTSF",
+    name: "PROTÉINE S LIBRE (ANTIGÈNE DE LA PROTÉINE S LIBRE)",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "17",
+    price: "197.00$",
+  },
+  {
+    code: "PROTST",
+    name: "PROTÉINE S TOTAL",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "17",
+    price: "127.00$",
+  },
+  {
+    code: "PROT",
+    name: "PROTÉINES TOTALES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "PROTURP",
+    name: "PROTÉINES – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "44.00$",
+  },
+  {
+    code: "24UPROT",
+    name: "PROTÉINES – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "PTH",
+    name: "PTH (PARATHORMONE)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "129.00$",
+  },
+  {
+    code: "PTT",
+    name: "PTT (TEMPS DE CÉPHALINE ACTIVÉE)",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "QTB",
+    name: "QuantiFERON-TB (Q-TB GOLD)",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "14",
+    price: "100.00$",
+  },
+  {
+    code: "QUI",
+    name: "QUINIDINE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "44.00$",
+  },
+  {
+    code: "PT",
+    name: "RAPPORT INTERNATIONAL NORMALISÉ (INR)",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "37.00$",
+  },
+  {
+    code: "PTPTT",
+    name: "RAPPORT INTERNATIONAL NORMALISÉ (INR) – TEMPS DE CÉPHALINE ACTIVÉE (PTT)",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "58.00$",
+  },
+  {
+    code: "AMAT ou CODI",
+    name: "RECHERCHE D’ANTICORPS (TEST DE COOMBS INDIRECT)",
+    tube: TubeType.PINK,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "65.00$",
+  },
+  {
+    code: "HDLP",
+    name: "REGROUPEMENT D’ANALYSES – CHOLESTÉROL HDL (HDL / LDL / RISQUE DE CORONAROPATHIE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "64.00$",
+  },
+  {
+    code: "TIBCP",
+    name: "REGROUPEMENT D’ANALYSES LIÉES À LA CAPACITÉ TOTALE DE FIXATION DU FER (FER, UIBC, TIBC)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "53.00$",
+  },
+  {
+    code: "REN",
+    name: "RÉNINE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "11",
+    price: "106.00$",
+  },
+  {
+    code: "APCR",
+    name: "RÉSISTANCE À LA PROTÉINE C ACTIVÉE",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "12",
+    price: "145.00$",
+  },
+  {
+    code: "RETICP",
+    name: "RÉTICULOCYTES (NUMÉRATION)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "42.00$",
+  },
+  {
+    code: "ROTAVIRUS",
+    name: "ROTAVIRUS Ag, EIA",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "12",
+    price: "141.00$",
+  },
+  {
+    code: "SAL",
+    name: "SALICYLATES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "48.00$",
+  },
+  {
+    code: "COV2AB",
+    name: "SARS-COV2 NP Ac",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "84.00$",
+  },
+  {
+    code: "SELENWB",
+    name: "SÉLÉNIUM – SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "116.00$",
+  },
+  {
+    code: "SELENIUM",
+    name: "SÉLÉNIUM – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "17",
+    price: "110.00$",
+  },
+  {
+    code: "SER",
+    name: "SÉROTONINE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "25",
+    price: "57.00$",
+  },
+  {
+    code: "NA",
+    name: "SODIUM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "NAURAN",
+    name: "SODIUM – URINE AU HASARD",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "24UNA",
+    name: "SODIUM – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "IGGP",
+    name: "SOUS-CLASSES D’IMMUNOGLOBULINE IgG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "148.00$",
+  },
+  {
+    code: "SPER",
+    name: "SPERMOGRAMME – FERTILITÉ",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "4",
+    price: "72.00$",
+  },
+  {
+    code: "SPECO",
+    name: "SPERMOGRAMME – POST-VASECTOMIE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "1",
+    price: "66.00$",
+  },
+  {
+    code: "REDSUB",
+    name: "SUBSTANCE RÉDUCTRICE DANS LES SELLES",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "11",
+    price: "33.00$",
+  },
+  {
+    code: "SYPH",
+    name: "SYPHILIS – CMIA (DÉPISTAGE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "31.00$",
+  },
+  {
+    code: "RPR",
+    name: "SYPHILIS (RPR) (SUIVI DE TRAITEMENT)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "31.00$",
+  },
+  {
+    code: "T3F",
+    name: "T3 LIBRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "47.00$",
+  },
+  {
+    code: "T3",
+    name: "T3 TOTALE (TRIIODOTHYRONINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "37.00$",
+  },
+  {
+    code: "T4F",
+    name: "T4 LIBRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "63.00$",
+  },
+  {
+    code: "TAC",
+    name: "TACROLIMUS",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "4",
+    price: "116.00$",
+  },
+  {
+    code: "CTX",
+    name: "TÉLOPEPTIDE-C",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "6",
+    price: "139.00$",
+  },
+  {
+    code: "TT",
+    name: "TEMPS DE THROMBINE",
+    tube: TubeType.LIGHT_BLUE,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "2",
+    price: "34.00$",
+  },
+  {
+    code: "COD",
+    name: "TEST DE COOMBS DIRECT",
+    tube: TubeType.PINK,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "38.00$",
+  },
+  {
+    code: "DIA13HELI",
+    name: "TEST RESPIRATOIRE POUR DÉTECTER LA PRÉSENCE D’HELICOBACTER PYLORI",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "5",
+    price: "158.00$",
+  },
+  {
+    code: "TESBIO",
+    name: "TESTOSTÉRONE BIODISPONIBLE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "2",
+    price: "113.00$",
+  },
+  {
+    code: "TESLI",
+    name: "TESTOSTÉRONE LIBRE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "100.00$",
+  },
+  {
+    code: "TEST",
+    name: "TESTOSTÉRONE TOTALE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "80.00$",
+  },
+  {
+    code: "THEO",
+    name: "THÉOPHYLLINE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "59.00$",
+  },
+  {
+    code: "TMPT",
+    name: "THIOPURINE S - MÉTHYLTRANSFÉRASE (TPMT) GÉNOTYPE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "40",
+    price: "179.00$",
+  },
+  {
+    code: "THYRO",
+    name: "THYROGLOBULINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "82.00$",
+  },
+  {
+    code: "TOPIRAMA",
+    name: "TOPIRAMATE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "69.00$",
+  },
+  {
+    code: "TOXO",
+    name: "TOXOPLASMOSE – ANTICORPS DE TYPE IgG",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "5",
+    price: "43.00$",
+  },
+  {
+    code: "TOXOM",
+    name: "TOXOPLASMOSE – ANTICORPS DE TYPE IgM",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "7",
+    price: "100.00$",
+  },
+  {
+    code: "TRANS",
+    name: "TRANSFERRINE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "51.00$",
+  },
+  {
+    code: "TRICHI",
+    name: "TRICHINELLA",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "11",
+    price: "42.00$",
+  },
+  {
+    code: "TRICHAA",
+    name: "TRICHOMONAS VAGINALIS URINE - DÉPISTAGE PAR TAAN",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "6",
+    price: "83.00$",
+  },
+  {
+    code: "TRIG",
+    name: "TRIGLYCÉRIDES",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "TRIMI",
+    name: "TRIMIPRAMINE (SURMONTIL)",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "17",
+    price: "109.00$",
+  },
+  {
+    code: "Y907",
+    name: "TRYPTASE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "4",
+    price: "64.00$",
+  },
+  {
+    code: "TSH",
+    name: "TSH ULTRASENSIBLE, (DOSAGE DE LA THYRÉOSTIMULINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "69.00$",
+  },
+  {
+    code: "TUBP",
+    name: "TUBERCULOSE – PCR",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "63",
+    price: "110.00$",
+  },
+  {
+    code: "HLATYPE",
+    name: "TYPAGE HLA DQ2/DQ8",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "14",
+    price: "528.00$",
+  },
+  {
+    code: "91UD",
+    name: "UREAPLASMA & MYCOPLASMA - URINE",
+    tube: TubeType.STERILE_CONTAINER,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "9",
+    price: "53.00$",
+  },
+  {
+    code: "UM",
+    name: "UREAPLASMA et MYCOPLASMA",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
+    turnaroundTime: "9",
+    price: "93.00$",
+  },
+  {
+    code: "UREA",
+    name: "URÉE (AZOTE URÉIQUE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "24HRUREA",
+    name: "URÉE – URINES DE 24 HEURES",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "38.00$",
+  },
+  {
+    code: "VANPRE",
+    name: "VANCOMYCINE PRÉ-DOSE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "96.00$",
+  },
+  {
+    code: "VANPOST",
+    name: "VANCOMYCINE POST-DOSE",
+    tube: TubeType.RED,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "3",
+    price: "91.00$",
+  },
+  {
+    code: "MTHFR",
+    name: "VARIANT DE LA MÉTHYLÈNE TÉTRAHYDROFOLATE RÉDUCTASE (MTHFR)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "12",
+    price: "116.00$",
+  },
+  {
+    code: "HIVINT",
+    name: "VIH (GÉNOPTYPAGE DE L'INTÉGRASE)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "16",
+    price: "200.00$",
+  },
+  {
+    code: "HIVDNA",
+    name: "VIH ADN PROVIRAL (GENOTYPAGE DU TROPISME VIH)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "16",
+    price: "314.00$",
+  },
+  {
+    code: "HIVRNA",
+    name: "VIH ARN PROVIRAL (GENOTYPAGE DU TROPISME VIH)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "16",
+    price: "314.00$",
+  },
+  {
+    code: "HIVGENO",
+    name: "VIH GENOTYPE",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "16",
+    price: "259.00$",
+  },
+  {
+    code: "DENGUE",
+    name: "VIRUS DE LA DENGUE",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "158.00$",
+  },
+  {
+    code: "VNO",
+    name: "VIRUS DU NIL OCCIDENTAL (Détection des anticorps)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "15",
+    price: "196.00$",
+  },
+  {
+    code: "HPV",
+    name: "VIRUS DU PAPILLOME HUMAIN (VPH) / ANALYSE DE L’ADN (VPH)",
+    tube: TubeType.THINPREP,
+    specimenType: SpecimenType.CERVICAL,
+    turnaroundTime: "7",
+    price: "115.00$",
+  },
+  {
+    code: "ZIKAIGM",
+    name: "VIRUS ZIKA, DETECTION DES ANTICORPS (IgM)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "14",
+    price: "74.00$",
+  },
+  {
+    code: "ZIKAPCR",
+    name: "VIRUS ZIKA, DÉTECTION PAR PCR",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "14",
+    price: "95.00$",
+  },
+  {
+    code: "VITB1",
+    name: "VITAMINE B1 (THIAMINE)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "17",
+    price: "180.00$",
+  },
+  {
+    code: "B12",
+    name: "VITAMINE B12 (CYANOCOBALAMINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "56.00$",
+  },
+  {
+    code: "VITA",
+    name: "VITAMINE A (RÉTINOL)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "127.00$",
+  },
+  {
+    code: "VITB6",
+    name: "VITAMINE B6 (PYRIDOXINE)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "174.00$",
+  },
+  {
+    code: "VITE",
+    name: "VITAMINE E (TOCOPHÉROL)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "9",
+    price: "111.00$",
+  },
+  {
+    code: "VITK1",
+    name: "VITAMINE K1",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "14",
+    price: "202.00$",
+  },
+  {
+    code: "SED",
+    name: "VITESSE DE SÉDIMENTATION",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "42.00$",
+  },
   {
     code: "ZINCWB",
-    name: "Zinc (Sang Total)",
-    tube: "Royal Blue",
-    specimenType: "Whole Blood (EDTA)",
-    turnaroundTime: "9"
-  }
+    name: "ZINC-SANG ENTIER",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "9",
+    price: "95.00$",
+  },
+  {
+    code: "ANEM1",
+    name: "Profil ANÉMIE No 1 (HÉMOGRAMME, VITESSE DE SÉDIMENTATION, TIBCP, VITAMIN B12, FOLATES)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "161.00$",
+  },
+  {
+    code: "ANEM11",
+    name: "Profil ANÉMIE No 11 (VITESSE DE SÉDIMENTATION, HÉMOGRAMME, FERRITINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "121.00$",
+  },
+  {
+    code: "ANEM8",
+    name: "Profil ANÉMIE No 8 (VITESSE DE SÉDIMENTATION, HÉMOGRAMME, FERRITINE, TIBCP)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "173.00$",
+  },
+  {
+    code: "SMA12",
+    name: "Profil BIO-12 (GLUCOSE AC, ALBUMINE, PHOSPHATASE ALCALINE, AST, BILIRUBINE TOTALE, CALCIUM, CHOLESTÉROL, CRÉATININE, LDH, PROTÉINES, URÉE, ACIDE URIQUE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "60.00$",
+  },
+  {
+    code: "SMA12LYT",
+    name: "Profil BIO-12 AVEC ÉLECTROLYTES (GLUCOSE AC, ALBUMINE, PHOSPHATASE ALCALINE, AST, BILIRUBINE TOTALE, CALCIUM, CHOLESTÉROL, CRÉATININE, ÉLECTROLYTES)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "69.00$",
+  },
+  {
+    code: "SMAC",
+    name: "Profil BIO-C (GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CRÉATININE, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTÉINES, ALBUMINE, CHOLESTÉROL, TRIGLYCÉRIDES)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "71.00$",
+  },
+  {
+    code: "SMACLYT",
+    name: "Profil BIO-C AVEC ÉLECTROLYTES (GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CRÉATININE, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTÉINES, ALBUMINE, CHOLESTÉROL, TRIGLYCÉRIDES, ÉLECTROLYTES)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "91.00$",
+  },
+  {
+    code: "CBCCOAG",
+    name: "Profil COAGULATION/ HÉMOGRAMME (HÉMOGRAMME, INR, PTT)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "123.00$",
+  },
+  {
+    code: "COAG",
+    name: "Profil COAGULOGRAMME (CBC, INR, PTT, FIBRINOGEN)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "117.00$",
+  },
+  {
+    code: "STDMU",
+    name: "Profil CULTURE GENITAL et CHLAMYDIA et NEISSERIA GONORRHOEAE TAAN",
+    tube: TubeType.URINE_CONTAINER,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "120.00$",
+  },
+  {
+    code: "HEPAB",
+    name: "Profil DÉPISTAGE HÉPATITE A et B (ANTICORPS ANTI-HBs, ANTICORPS ANTI-HBc, ANTIGÈNE HBs, ANTICORPS ANTI- HÉPATITE A DE TYPE IgM)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "273.00$",
+  },
+  {
+    code: "HEPABC",
+    name: "Profil DÉPISTAGE HÉPATITE A, B et C (ANTICORPS ANTI-HBs, ANTICORPS ANTI-HBc, ANTIGÈNE HBs, ANTICORPS ANTI- HÉPATITE A DE TYPE IgM, ANTICORPS ANTI- HÉPATITE C)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "273.00$",
+  },
+  {
+    code: "HEPB",
+    name: "Profil DÉPISTAGE HÉPATITE B (ANTICORPS ANTI-HBs, ANTICORPS ANTI-HBc, ANTIGÈNE HBs)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "188.00$",
+  },
+  {
+    code: "DIAB",
+    name: "Profil DIABÉTIQUE No 1 (GLUCOSE AC, URÉE, CRÉATININE, ÉLECTROLYTES, HbA1c, ANALYSE D’URINE, MICROALBUMINURIE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "140.00$",
+  },
+  {
+    code: "DIAB6",
+    name: "Profil DIABETIQUE No 6 (GLUCOSE AC, HBAIC)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "72.00$",
+  },
+  {
+    code: "FERT1",
+    name: "Profil FERTILITÉ No 1 (FSH, LH)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "114.00$",
+  },
+  {
+    code: "FERT2",
+    name: "Profil FERTILITÉ No 2 (FSH, LH, PROLACTINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "180.00$",
+  },
+  {
+    code: "GP1",
+    name: "Profil GÉNÉRAL No 1 (HÉMOGRAMME, GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CRÉATININE, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTÉINES, ALBUMINE, CHOLESTÉROL, TRIGLYCÉRIDES, ANALYSE D’URINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "140.00$",
+  },
+  {
+    code: "GP2",
+    name: "Profil GÉNÉRAL No 2 (HÉMOGRAMME, GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CRÉATININE, DFG, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTÉINES, ALBUMINE, CHOLESTÉROL, TRIGLYCÉRIDES, ÉLECTROLYTES, ANALYSE D’URINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "158.00$",
+  },
+  {
+    code: "GP3",
+    name: "Profil GÉNÉRAL No 3 (GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CRÉATININE, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTÉINES, ALBUMINE, CHOLESTÉROL, TRIGLYCÉRIDES, HÉMOGRAMME, ANALYSE D’URINE, HDL, LDL)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "166.00$",
+  },
+  {
+    code: "GP4",
+    name: "Profil GÉNÉRAL No 4 (HÉMOGRAMME, GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CRÉATININE, DFG, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTÉINES, ALBUMINE, CHOLESTÉROL, TRIGLYCÉRIDES, HDL, LDL, ÉLECTROLYTES, ANALYSE D’URINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "183.00$",
+  },
+  {
+    code: "ITSS",
+    name: "Profil GONO-CHLAM (ANTIGÈNE HBs, VIH, SYPHILIS, GONO- CHLAMYDIA TAAN spécifier la source)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "2",
+    price: "212.00$",
+  },
+  {
+    code: "LFT",
+    name: "Profil HÉPATIQUE (ALT, AST, BILIRUBINE TOTALE, GGT, LDH, PHOSPHATASE ALCALINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "71.00$",
+  },
+  {
+    code: "LIPID18",
+    name: "Profil LIPIDIQUE CARDIOVASCULAIRE No 18 (CHOLESTÉROL, TRIGLYCÉRIDES, HDL, LDL, APOLIPOPROTÉINE B, CRP-hs)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "109.00$",
+  },
+  {
+    code: "LIPID6",
+    name: "Profil LIPIDIQUE CARDIOVASCULAIRE N o 6 (CHOLESTÉROL, TRIGLYCÉRIDES, HDL, LDL, APOLIPOPROTÉINE B)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "137.00$",
+  },
+  {
+    code: "MONOP",
+    name: "Profil MONOTEST (FSC, MONOTEST)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "1",
+    price: "65.00$",
+  },
+  {
+    code: "OSTEOP",
+    name: "Profil OSTEOPOROSIS (PTH, ÉLECTROPHOÈSE DES PROTÉINES, CALCIUM INONISÉ, ALBUMINE, PHOSPHATASE ALKALINE, CALCIUM, CREATININE, PHOSPHORE, PROTEINE, CALCIUM-URINE RANDOM, CREATITINE- URINE RANDOM, PHOSPHORE- URINE RANDOM, RATIO CAL/CREAT URINE RANDOM)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.URINE_RANDOM,
+    turnaroundTime: "1",
+    price: "314.00$",
+  },
+  {
+    code: "PREN1",
+    name: "Profil PRÉNATAL No 1 (FSC INTERPRETATION + ANTICORPS MATERNEL, GROUPE SANGUIN)",
+    tube: TubeType.LAVENDER,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "3",
+    price: "134.00$",
+  },
+  {
+    code: "PREN2",
+    name: "Profil PRÉNATAL No 2 (FSC INTERPRETATION + ANTICORPS MATERNEL, GROUPE SANGUIN, RUBELLA IGG)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "3",
+    price: "164.00$",
+  },
+  {
+    code: "PREN3",
+    name: "Profil PRÉNATAL No 3 (FSC INTERPRETATION + ANTICORPS MATERNEL, GROUPE SANGUIN, RUBELLA IGG, TOXOPLASMOSE IGG, GLUCOSE AC, GLUCOSE PC)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "5",
+    price: "187.00$",
+  },
+  {
+    code: "SMA16",
+    name: "Profil SMA-16 (GLUCOSE AC, ALBUMINE, PHOSPHATASE ALCALINE, AST, BILIRUBINE TOTALE, CALCIUM, CHOLESTÉROL, CRÉATININE, ÉLECTROLYTES, CO2 TOTALE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "74.00$",
+  },
+  {
+    code: "SMA5",
+    name: "Profil SMA-5 (GLUCOSE AC, CRÉATININE, ÉLECTROLYTES)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "74.00$",
+  },
+  {
+    code: "SMA6",
+    name: "Profil SMA-6 (GLUCOSE AC, URÉE, CRÉATININE, ÉLECTROLYTES)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "69.00$",
+  },
+  {
+    code: "SMA7",
+    name: "Profil SMA-7 (GLUCOSE AC, URÉE, CRÉATININE, ÉLECTROLYTES, CO2 TOTALE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "71.00$",
+  },
+  {
+    code: "TH2",
+    name: "Profil THYROÏDIEN No 2 (TSH, T4 LIBRE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "120.00$",
+  },
+  {
+    code: "TH6",
+    name: "Profil THYROÏDIEN No 6 (TSH, T4 LIBRE, ANTICORPS ANTI- MICROSOMES THYROÏDIENS)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "202.00$",
+  },
+  {
+    code: "STONE",
+    name: "Profil UROLITHIASE (CALCIUM, PHOSPHORE, ÉLECTROLYTES, ACIDE URIQUE, CALCIUM – URINES DE 24 h, PHOSPHORE – URINES DE 24 h, CRÉATININE – URINES DE 24 h, ACIDE URIQUE – URINES DE 24 h, OXALATES – URINES DE 24 h, ANALYSE D’URINE)",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.URINE_24H,
+    turnaroundTime: "1",
+    price: "170.00$",
+  },
 ];

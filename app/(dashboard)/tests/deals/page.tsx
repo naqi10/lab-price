@@ -25,6 +25,7 @@ export default function BundleDealsPage() {
   const debouncedSearch = useDebounce(search, 400);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ page: 1, limit: PAGE_SIZE, total: 0, pages: 0 });
+  const isFormOpen = showForm || !!editingDeal;
 
   const fetchDeals = useCallback(async () => {
     setIsLoading(true);
@@ -173,8 +174,12 @@ export default function BundleDealsPage() {
         </div>
       )}
 
+      {/* Always mounted — never conditionally unmount while Dialog may be open.
+          Unmounting an open Radix Dialog portal while React is also cleaning up
+          the component causes a double removeChild → crash loop. */}
       <BundleDealForm
-        open={showForm || !!editingDeal}
+        key={editingDeal?.id ?? "new"}
+        open={isFormOpen}
         onSubmit={editingDeal ? handleUpdate : handleCreate}
         onClose={() => {
           setShowForm(false);

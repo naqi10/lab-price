@@ -70,57 +70,44 @@ export async function searchTests(
   const normalizedQueryExpr = "regexp_replace(LOWER($1), '[^a-z0-9]+', '', 'g')";
   const normalizedCanonicalExpr = `regexp_replace(LOWER(tm."canonical_name"), '[^a-z0-9]+', '', 'g')`;
 
-  // Synonym expansion: generate extra search terms for known aliases
   const synonyms = expandSearchSynonyms(query);
 
-  // Build parameterized query — base params: $1=query, $2=threshold, $3=limit
-  // Synonym params start at $4 (or $5 if labId is present)
-  const baseSqlParts = [
-    "SELECT",
-    "  t.id,",
-    "  t.name,",
-    "  t.code,",
-    "  t.category,",
-    "  t.price,",
-    "  t.unit,",
-    '  t."price_list_id" AS "priceListId",',
-    '  l.id AS "laboratoryId",',
-    '  l.name AS "laboratoryName",',
-    '  l.code AS "laboratoryCode",',
-    "  GREATEST(",
-    `    similarity(${normalizedNameExpr}, ${normalizedQueryExpr}),`,
-    "    CASE WHEN t.name ILIKE $1 THEN 1.0",             // exact (case-insensitive)
-    "         WHEN t.name ILIKE $1 || '%' THEN 0.95",     // prefix
-    "         WHEN t.code ILIKE $1 THEN 0.9",             // exact code match
-    `         WHEN tm."canonical_name" ILIKE '%' || $1 || '%' THEN 0.88`, // canonical name match
-    "         WHEN t.name ILIKE '%' || $1 || '%' THEN 0.85", // substring
-    "         WHEN t.code ILIKE $1 || '%' THEN 0.87",     // code prefix match
-    `         WHEN array_to_string(tm.aliases, ' ') ILIKE '%' || $1 || '%' THEN 0.83`, // alias match
-    "         ELSE 0 END",
-    "  ) AS similarity,",
-    '  t."turnaround_time" AS "turnaroundTime",',
-    '  t."tube_type" AS "tubeType",',
-    '  tme."test_mapping_id" AS "testMappingId",',
-    '  tm."canonical_name" AS "canonicalName"',
-    'FROM "tests" t',
-    'INNER JOIN "price_lists" pl ON t."price_list_id" = pl.id',
-    'INNER JOIN "laboratories" l ON pl."laboratory_id" = l.id',
-    'LEFT JOIN "test_mapping_entries" tme ON tme.id = t."test_mapping_entry_id"',
-    'LEFT JOIN "test_mappings" tm ON tm.id = tme."test_mapping_id"',
-    'WHERE pl."is_active" = true',
-    '  AND l."deleted_at" IS NULL',
-  ];
-
+  // Base params: $1=query, $2=threshold, $3=limit
   const params: (string | number)[] = [query, threshold, limit];
 
-  // Lab filter
+  // Build lab filter clause
+  let labFilter = "";
   if (laboratoryId) {
-    baseSqlParts.push(`  AND pl."laboratory_id" = $${params.length + 1}`);
+    labFilter = `AND pl."laboratory_id" = $${params.length + 1}`;
     params.push(laboratoryId);
   }
 
-  // WHERE match conditions — primary query
-  const matchConditions = [
+  // Build synonym ILIKE clauses
+  const synClauses: string[] = [];
+  for (const syn of synonyms) {
+    const idx = params.length + 1;
+    synClauses.push(`    OR t.name ILIKE '%' || $${idx} || '%'`);
+    synClauses.push(`    OR tm."canonical_name" ILIKE '%' || $${idx} || '%'`);
+    params.push(syn);
+  }
+
+  const scoreExpr = `GREATEST(
+      similarity(${normalizedNameExpr}, ${normalizedQueryExpr}),
+      CASE WHEN t.name ILIKE $1                            THEN 1.0
+           WHEN t.name ILIKE $1 || '%'                    THEN 0.95
+           WHEN t.code ILIKE $1                           THEN 0.92
+           WHEN t.code ILIKE $1 || '%'                    THEN 0.90
+           WHEN tm."canonical_name" ILIKE $1              THEN 0.93
+           WHEN tm."canonical_name" ILIKE $1 || '%'       THEN 0.91
+           WHEN ${normalizedCanonicalExpr} = ${normalizedQueryExpr} THEN 0.90
+           WHEN t.name ILIKE '%' || $1 || '%'             THEN 0.85
+           WHEN tm."canonical_name" ILIKE '%' || $1 || '%' THEN 0.83
+           WHEN t.code ILIKE '%' || $1 || '%'             THEN 0.80
+           WHEN array_to_string(tm.aliases, ' ') ILIKE '%' || $1 || '%' THEN 0.78
+           ELSE 0 END
+    )`;
+
+  const matchWhere = [
     "    t.name ILIKE '%' || $1 || '%'",
     "    OR t.code ILIKE $1",
     "    OR t.code ILIKE $1 || '%'",
@@ -128,21 +115,55 @@ export async function searchTests(
     `    OR array_to_string(tm.aliases, ' ') ILIKE '%' || $1 || '%'`,
     `    OR similarity(${normalizedNameExpr}, ${normalizedQueryExpr}) >= $2`,
     `    OR ${normalizedCanonicalExpr} = ${normalizedQueryExpr}`,
-  ];
+    ...synClauses,
+  ].join("\n");
 
-  // Add synonym expansion — each synonym gets an ILIKE condition
-  for (const syn of synonyms) {
-    const idx = params.length + 1;
-    matchConditions.push(`    OR t.name ILIKE '%' || $${idx} || '%'`);
-    matchConditions.push(`    OR tm."canonical_name" ILIKE '%' || $${idx} || '%'`);
-    params.push(syn);
-  }
-
-  baseSqlParts.push("  AND (", ...matchConditions, "  )");
-  baseSqlParts.push("ORDER BY similarity DESC, t.name ASC");
-  baseSqlParts.push(`LIMIT $3`);
-
-  const sql = baseSqlParts.join("\n");
+  // CTE: compute all candidates + their score, then apply dynamic threshold:
+  // If best score >= 0.90 (exact/prefix match exists) → only keep score >= 0.75
+  // If best score >= 0.75 → only keep score >= 0.50
+  // Otherwise show all candidates (fuzzy-only results)
+  const sql = `
+    WITH candidates AS (
+      SELECT
+        t.id,
+        t.name,
+        t.code,
+        t.category,
+        t.price,
+        t.unit,
+        t."price_list_id" AS "priceListId",
+        l.id AS "laboratoryId",
+        l.name AS "laboratoryName",
+        l.code AS "laboratoryCode",
+        ${scoreExpr} AS similarity,
+        t."turnaround_time" AS "turnaroundTime",
+        t."tube_type" AS "tubeType",
+        tme."test_mapping_id" AS "testMappingId",
+        tm."canonical_name" AS "canonicalName"
+      FROM "tests" t
+      INNER JOIN "price_lists" pl ON t."price_list_id" = pl.id
+      INNER JOIN "laboratories" l ON pl."laboratory_id" = l.id
+      LEFT JOIN "test_mapping_entries" tme ON tme.id = t."test_mapping_entry_id"
+      LEFT JOIN "test_mappings" tm ON tm.id = tme."test_mapping_id"
+      WHERE pl."is_active" = true
+        AND l."deleted_at" IS NULL
+        AND (t.category IS NULL OR t.category != 'Profil')
+        ${labFilter}
+        AND (
+${matchWhere}
+        )
+    ),
+    best AS (SELECT MAX(similarity) AS max_score FROM candidates)
+    SELECT c.*
+    FROM candidates c, best b
+    WHERE c.similarity >= CASE
+      WHEN b.max_score >= 0.90 THEN 0.75
+      WHEN b.max_score >= 0.75 THEN 0.50
+      ELSE 0
+    END
+    ORDER BY c.similarity DESC, c.name ASC
+    LIMIT $3
+  `;
 
   return prisma.$queryRawUnsafe<
     Array<{
@@ -186,6 +207,8 @@ export async function createTestMapping(data: {
     matchType?: "EXACT" | "FUZZY" | "MANUAL" | "NONE";
     similarity?: number;
     price?: number | null;
+    code?: string | null;
+    duration?: string | null;
   }>;
 }) {
   return prisma.testMapping.create({
@@ -205,6 +228,8 @@ export async function createTestMapping(data: {
             matchType: e.matchType ?? "MANUAL",
             similarity: e.similarity ?? 1.0,
             price: e.price ?? null,
+            code: e.code ?? null,
+            duration: e.duration ?? null,
           })),
         },
       },
@@ -277,6 +302,8 @@ export async function updateTestMapping(
       matchType?: "EXACT" | "FUZZY" | "MANUAL" | "NONE";
       similarity?: number;
       price?: number | null;
+      code?: string | null;
+      duration?: string | null;
     }>;
   }
 ) {
@@ -291,6 +318,8 @@ export async function updateTestMapping(
           matchType: e.matchType ?? "MANUAL",
           similarity: e.similarity ?? 1.0,
           price: e.price ?? null,
+          code: e.code ?? null,
+          duration: e.duration ?? null,
         })),
       });
     }

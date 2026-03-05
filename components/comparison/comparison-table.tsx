@@ -208,7 +208,7 @@ export default function ComparisonTable({
         {/* ── Optimisation toolbar ──────────────────────────────────────── */}
         {onSelectLab && (
           <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border/40 bg-muted/20 px-3 sm:px-4 py-2.5">
-            <span className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest mr-1">
+            <span className="text-xs font-semibold text-muted-foreground/90 uppercase tracking-widest mr-1">
               Optimiser
             </span>
             <Button
@@ -260,7 +260,7 @@ export default function ComparisonTable({
               <thead>
                 <tr className="border-b border-border/50">
                   {/* Sticky test name column */}
-                  <th className="sticky left-0 z-20 bg-card px-3 sm:px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70 w-40 min-w-[150px] sm:w-48 sm:min-w-[180px]">
+                  <th className="sticky left-0 z-20 bg-card px-3 sm:px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-muted-foreground w-40 min-w-[150px] sm:w-48 sm:min-w-[180px]">
                     Analyse
                   </th>
                   {visibleLabs.map((lab) => {
@@ -271,24 +271,24 @@ export default function ComparisonTable({
                         key={lab.id}
                         className={cn(
                           "px-3 sm:px-5 py-3 text-left min-w-[130px] sm:min-w-[150px]",
-                          isCheapest && "bg-emerald-500/[0.04]"
+                          isCheapest && "bg-muted/50"
                         )}
                       >
                         <div className="space-y-1.5">
-                          <span className="text-xs font-semibold text-foreground/90 whitespace-nowrap">
+                          <span className="text-sm font-semibold text-foreground whitespace-nowrap">
                             {lab.name}
                           </span>
                           {(isCheapest || isQuickest) && (
                             <div className="flex gap-1.5">
                               {isCheapest && (
-                                <span className="inline-flex items-center gap-1 text-[9px] font-medium text-emerald-400/90">
-                                  <DollarSign className="h-2.5 w-2.5" />
+                                <span className="inline-flex items-center gap-1 text-xs font-medium text-foreground/70">
+                                  <DollarSign className="h-3 w-3" />
                                   Moins cher
                                 </span>
                               )}
                               {isQuickest && (
-                                <span className="inline-flex items-center gap-1 text-[9px] font-medium text-blue-400/90">
-                                  <Clock className="h-2.5 w-2.5" />
+                                <span className="inline-flex items-center gap-1 text-xs font-medium text-blue-400">
+                                  <Clock className="h-3 w-3" />
                                   Plus rapide
                                 </span>
                               )}
@@ -353,13 +353,13 @@ export default function ComparisonTable({
                             </button>
                           )}
                           <div className="min-w-0 space-y-1">
-                            <span className="block text-[13px] font-medium text-foreground/85 leading-snug">
+                            <span className="block text-base font-semibold text-foreground leading-snug">
                               {test.canonicalName}
                             </span>
                             {primaryTube && (
-                              <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground/80">
                                 <span
-                                  className="inline-block h-2 w-2 rounded-full ring-1 ring-white/10"
+                                  className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-white/10"
                                   style={{ backgroundColor: primaryTube.color }}
                                 />
                                 {primaryTube.label}
@@ -433,8 +433,8 @@ export default function ComparisonTable({
                                           className={cn(
                                             "tabular-nums cursor-pointer transition-colors",
                                             isCheapest
-                                              ? "text-emerald-400 font-bold text-[13px]"
-                                              : "text-foreground/80 font-semibold text-[13px]",
+                                              ? "text-foreground font-bold text-base"
+                                              : "text-foreground font-semibold text-base",
                                             isCustomPrice && "text-blue-400 hover:text-blue-300",
                                             !isCustomPrice && "hover:text-blue-400",
                                           )}
@@ -446,7 +446,7 @@ export default function ComparisonTable({
                                       <TooltipContent>
                                         {isCustomPrice ? (
                                           <>
-                                            <p className="text-xs text-blue-300">Prix personnalisé</p>
+                                            <p className="text-xs text-blue-500">Prix personnalisé</p>
                                             <p className="text-xs mt-1 text-muted-foreground">Double-cliquez pour modifier</p>
                                           </>
                                         ) : (
@@ -461,7 +461,7 @@ export default function ComparisonTable({
                                     (() => {
                                       const pct = minPrice > 0 ? Math.round(((effectivePrice - minPrice) / minPrice) * 100) : 0;
                                       return (
-                                        <span className="text-[10px] text-muted-foreground/40 tabular-nums">
+                                        <span className="text-xs text-muted-foreground/60 tabular-nums">
                                           +{pct}%
                                         </span>
                                       );
@@ -473,14 +473,14 @@ export default function ComparisonTable({
                                 {((isCheapest && effectivePrice != null && visibleLabs.length > 1) || isFastestInRow) && (
                                   <div className="flex flex-wrap gap-1">
                                     {isCheapest && effectivePrice != null && visibleLabs.length > 1 && (
-                                      <span className="inline-flex items-center gap-0.5 text-[9px] font-medium text-emerald-400/80 bg-emerald-500/[0.08] rounded px-1 py-0.5">
-                                        <DollarSign className="h-2 w-2" />
+                                      <span className="inline-flex items-center gap-0.5 text-xs font-medium text-foreground/70 bg-muted rounded px-1.5 py-0.5">
+                                        <DollarSign className="h-2.5 w-2.5" />
                                         Moins cher
                                       </span>
                                     )}
                                     {isFastestInRow && (
-                                      <span className="inline-flex items-center gap-0.5 text-[9px] font-medium text-blue-400/80 bg-blue-500/[0.08] rounded px-1 py-0.5">
-                                        <Clock className="h-2 w-2" />
+                                      <span className="inline-flex items-center gap-0.5 text-xs font-medium text-blue-400 bg-blue-500/[0.10] rounded px-1.5 py-0.5">
+                                        <Clock className="h-2.5 w-2.5" />
                                         Plus rapide
                                       </span>
                                     )}
@@ -489,8 +489,8 @@ export default function ComparisonTable({
 
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
                                   {tat && (
-                                    <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/60">
-                                      <Clock className="h-2.5 w-2.5 shrink-0" />
+                                    <span className="inline-flex items-center gap-1 text-sm text-muted-foreground/80">
+                                      <Clock className="h-3.5 w-3.5 shrink-0" />
                                       {tat}
                                     </span>
                                   )}
@@ -499,10 +499,10 @@ export default function ComparisonTable({
                                       <TooltipTrigger asChild>
                                         <span className="inline-flex items-center gap-1">
                                           <span
-                                            className="inline-block h-2 w-2 rounded-full ring-1 ring-white/10"
+                                            className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-white/10"
                                             style={{ backgroundColor: tube.color }}
                                           />
-                                          <span className="text-[10px] text-muted-foreground/50">{tube.label}</span>
+                                          <span className="text-sm text-muted-foreground/70">{tube.label}</span>
                                         </span>
                                       </TooltipTrigger>
                                       <TooltipContent side="top">{tube.label}</TooltipContent>
@@ -539,7 +539,7 @@ export default function ComparisonTable({
                             ) : (
                               /* ── No price available ── */
                               <div className="flex items-center gap-1.5">
-                                <span className="text-[13px] text-muted-foreground/25">—</span>
+                                <span className="text-sm text-muted-foreground/50">—</span>
                                 {data.onCreateMapping && (
                                   <Tooltip>
                                     <TooltipTrigger asChild>
@@ -564,7 +564,7 @@ export default function ComparisonTable({
               {/* ── Footer totals ── */}
               <tfoot>
                 <tr className="border-t-2 border-border/40 bg-muted/[0.06]">
-                  <td className="sticky left-0 z-10 bg-card px-3 sm:px-4 py-3.5 text-xs font-bold uppercase tracking-wider text-muted-foreground/60">
+                  <td className="sticky left-0 z-10 bg-card px-3 sm:px-4 py-3.5 text-sm font-bold uppercase tracking-wider text-muted-foreground">
                     Total
                   </td>
                   {visibleLabs.map((lab) => {
@@ -578,27 +578,27 @@ export default function ComparisonTable({
                         key={lab.id}
                         className={cn(
                           "px-3 sm:px-5 py-3.5",
-                          isBest && "bg-emerald-500/[0.06]"
+                          isBest && "bg-muted/50"
                         )}
                       >
                         {total != null ? (
                           <div className="flex items-baseline gap-2">
                             <span
                               className={cn(
-                                "text-sm font-bold tabular-nums",
-                                isBest ? "text-emerald-400" : "text-foreground/80"
+                                "text-base font-bold tabular-nums",
+                                isBest ? "text-foreground" : "text-foreground"
                               )}
                             >
                               {formatCurrency(total)}
                             </span>
                             {!isBest && total > bestTotal && (
-                              <span className="text-[10px] text-muted-foreground/35 tabular-nums">
+                              <span className="text-xs text-muted-foreground/60 tabular-nums">
                                 +{pct}%
                               </span>
                             )}
                           </div>
                         ) : (
-                          <span className="text-muted-foreground/25">—</span>
+                          <span className="text-muted-foreground/50">—</span>
                         )}
                       </td>
                     );

@@ -26,6 +26,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         matchType: e.matchType || "MANUAL",
         similarity: e.similarity ?? 1.0,
         price: e.price ?? null,
+        code: e.code || null,
+        duration: e.duration || null,
       })),
     });
 

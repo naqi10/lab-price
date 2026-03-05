@@ -44,7 +44,6 @@ export default function BundleDealTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[40px]"></TableHead>
             <TableHead>Nom</TableHead>
             <TableHead>Catégorie</TableHead>
             <TableHead className="text-center">Tests</TableHead>
@@ -58,9 +57,6 @@ export default function BundleDealTable({
             const colors = CATEGORY_COLORS[d.category] ?? DEFAULT_CATEGORY_COLOR;
             return (
               <TableRow key={d.id}>
-                <TableCell>
-                  <span className="text-lg" role="img">{d.icon}</span>
-                </TableCell>
                 <TableCell>
                   <div>
                     <p className="font-medium text-sm">{d.dealName}</p>
