@@ -1,5 +1,6 @@
 import prisma from "@/lib/db";
 import { formatCurrency } from "@/lib/utils";
+import logger from "@/lib/logger";
 import { sendEmail, getEmailConfig } from "@/lib/email/config";
 import {
   renderTemplate,
@@ -219,9 +220,30 @@ export async function getComparisonDetails(testMappingIds: string[]) {
     }
   }
 
+  // ── Debug: log price matrix for all tests (server-side only) ──
+  if (process.env.DEBUG_COMPARISON === "1") {
+    for (const mapping of testMappings) {
+      for (const lab of laboratories) {
+        const price = priceMatrix[mapping.id][lab.id];
+        const match = matchMatrix[mapping.id][lab.id];
+        logger.debug({
+          testName: mapping.canonicalName,
+          labName: lab.name,
+          labCode: lab.code,
+          price,
+          matchType: match?.matchType ?? null,
+          localTestName: match?.localTestName ?? null,
+          source: "TestMappingEntry",
+        }, "[comparison] price matrix entry");
+      }
+    }
+  }
+
   // ── Fallback: fill null prices via direct name-match in each lab's catalog ──
   // When a lab is missing a TestMappingEntry for a test, try to find a matching
   // Test record by normalized name (word overlap ≥ 0.6).
+  // Only searches UNMAPPED tests (testMappingEntryId = null) to avoid borrowing
+  // a price from a test already assigned to a different canonical.
   const labsWithGaps = laboratories.filter((lab) =>
     testMappings.some((m) => priceMatrix[m.id][lab.id] == null)
   );
@@ -229,10 +251,16 @@ export async function getComparisonDetails(testMappingIds: string[]) {
   if (labsWithGaps.length > 0) {
     const gapLabIds = labsWithGaps.map((l) => l.id);
 
-    // Batch-fetch all active tests for labs that have gaps
+    // Batch-fetch only UNMAPPED active tests for labs that have gaps.
+    // Excluding tests that already have a testMappingEntryId prevents the fallback
+    // from borrowing prices from a Dynacare test that is already correctly assigned
+    // to a DIFFERENT canonical (e.g. "FER" being matched to FER 1/2/3/6, or
+    // "APOLIPOPROTÉINE A1" being matched to "Apolipoproteine E" at 100% word overlap
+    // because single-char suffixes are stripped by the word-length filter).
     const directTests = await prisma.test.findMany({
       where: {
         isActive: true,
+        testMappingEntryId: null,
         priceList: { isActive: true, laboratoryId: { in: gapLabIds } },
       },
       select: {
@@ -279,6 +307,14 @@ export async function getComparisonDetails(testMappingIds: string[]) {
             similarity: bestScore,
             localTestName: bestMatch.name,
           };
+          logger.debug({
+            testName: mapping.canonicalName,
+            labName: lab.name,
+            matchedTestName: bestMatch.name,
+            price: bestMatch.price,
+            score: bestScore,
+            source: "FUZZY_FALLBACK",
+          }, "[comparison] fuzzy fallback match applied");
         }
       }
     }
