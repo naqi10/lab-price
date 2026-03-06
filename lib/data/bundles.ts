@@ -3,6 +3,7 @@ export interface ComponentTest {
   name: string;
   code: string | null;
   tubeType: string | null;
+  turnaroundTime: string | null;
 }
 
 export interface Bundle {

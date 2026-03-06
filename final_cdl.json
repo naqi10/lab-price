@@ -811,6 +811,15 @@
   },
   {
     "lab": "CDL",
+    "raw_name": "ADIPONECTINE",
+    "code": "ADPTN",
+    "category": "individual",
+    "type": "individual",
+    "components": [],
+    "price": 400
+  },
+  {
+    "lab": "CDL",
     "raw_name": "ALBUMINE",
     "code": "ALB",
     "category": "individual",

@@ -287,6 +287,14 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
+    canonicalName: "Adiponectine",
+    code: "ADPTN",
+    category: "Individuel",
+    aliases: [
+      "ADIPONECTINE",
+    ],
+  },
+  {
     canonicalName: "Agglutinines Froides",
     code: "AGG",
     category: "Individuel",

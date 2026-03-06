@@ -104,6 +104,7 @@ export async function GET() {
         select: {
           code: true,
           tubeType: true,
+          turnaroundTime: true,
           testMappingEntry: { select: { testMappingId: true } },
         },
       }),
@@ -114,7 +115,9 @@ export async function GET() {
 
     const codeToMappingId = new Map<string, string>();
     const mappingIdToTubeType = new Map<string, string>();
+    const mappingIdToTat = new Map<string, string>();
     const codeToTubeType = new Map<string, string>();
+    const codeToTat = new Map<string, string>();
     for (const t of testsWithMapping) {
       if (!t.code || !t.testMappingEntry?.testMappingId) continue;
       const mappingId = t.testMappingEntry.testMappingId;
@@ -125,6 +128,12 @@ export async function GET() {
       if (t.tubeType && !mappingIdToTubeType.has(mappingId)) {
         mappingIdToTubeType.set(mappingId, t.tubeType);
       }
+      if (t.turnaroundTime && !codeToTat.has(t.code.toUpperCase())) {
+        codeToTat.set(t.code.toUpperCase(), t.turnaroundTime);
+      }
+      if (t.turnaroundTime && !mappingIdToTat.has(mappingId)) {
+        mappingIdToTat.set(mappingId, t.turnaroundTime);
+      }
     }
 
     for (const test of cdlSeedData.all) {
@@ -133,12 +142,18 @@ export async function GET() {
       if (code && tube && !codeToTubeType.has(code)) {
         codeToTubeType.set(code, tube);
       }
+      if (code && test.turnaroundTime && !codeToTat.has(code)) {
+        codeToTat.set(code, `${test.turnaroundTime} jour(s)`);
+      }
     }
     for (const test of qcSeedData) {
       const code = test.code?.toUpperCase();
       const tube = firstTubeValue(test.tube);
       if (code && tube && !codeToTubeType.has(code)) {
         codeToTubeType.set(code, tube);
+      }
+      if (code && test.turnaroundTime && !codeToTat.has(code)) {
+        codeToTat.set(code, `${test.turnaroundTime} jour(s)`);
       }
     }
 
@@ -267,7 +282,7 @@ export async function GET() {
     const enriched = allDeals.map((deal) => {
       const seen = new Set<string>();
       const canonicalNames: string[] = [];
-      const componentTests: { id: string; name: string; code: string | null; tubeType: string | null }[] = [];
+      const componentTests: { id: string; name: string; code: string | null; tubeType: string | null; turnaroundTime: string | null }[] = [];
       for (const id of deal.testMappingIds) {
         if (seen.has(id)) continue;
         seen.add(id);
@@ -276,11 +291,13 @@ export async function GET() {
         canonicalNames.push(name);
         const code = idToCode.get(id) ?? null;
         const fallbackTubeByCode = code ? codeToTubeType.get(code.toUpperCase()) ?? null : null;
+        const fallbackTatByCode = code ? codeToTat.get(code.toUpperCase()) ?? null : null;
         componentTests.push({
           id,
           name,
           code,
           tubeType: mappingIdToTubeType.get(id) ?? fallbackTubeByCode,
+          turnaroundTime: mappingIdToTat.get(id) ?? fallbackTatByCode,
         });
       }
 

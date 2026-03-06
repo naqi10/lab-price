@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Pipette } from "lucide-react";
+import { Clock, Pipette, Timer } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import {
   type Bundle,
@@ -40,7 +40,7 @@ function TubeColorDot({ tubeType }: { tubeType: string | null }) {
   );
 }
 
-/** Deduplicated component test list — one row per test with tube dot, name, code. */
+/** Deduplicated component test list — one row per test with tube dot, name, code, TAT. */
 function BundleTestList({ tests }: { tests: ComponentTest[] }) {
   if (tests.length === 0) return null;
   return (
@@ -55,6 +55,12 @@ function BundleTestList({ tests }: { tests: ComponentTest[] }) {
             <span className="text-[11px] text-foreground/80 leading-tight truncate flex-1 min-w-0">
               {test.name}
             </span>
+            {test.turnaroundTime && (
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground shrink-0">
+                <Timer className="h-2.5 w-2.5" />
+                {test.turnaroundTime}
+              </span>
+            )}
             {test.code && (
               <span className="text-[10px] font-mono text-muted-foreground bg-muted/60 px-1 rounded shrink-0">
                 {test.code}

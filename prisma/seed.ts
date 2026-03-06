@@ -77,12 +77,16 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
   // Merge both seed arrays: cdlSeedData + qcSeedData (cdlSeedData takes priority for duplicates)
   const seed1TubeByCode = new Map<string, string>();
   const seed1NameByCode = new Map<string, string>();
+  const seed1TatByCode = new Map<string, string>(); // CDL TAT from seed1 catalog
   for (const t of [...qcSeedData, ...cdlSeedData.all]) {
     if (t.tube) {
       const tubeStr = Array.isArray(t.tube) ? t.tube.join(", ") : t.tube;
       seed1TubeByCode.set(t.code, tubeStr);
     }
     if (t.name) seed1NameByCode.set(t.code, t.name);
+  }
+  for (const t of cdlSeedData.all) {
+    if (t.turnaroundTime) seed1TatByCode.set(t.code, String(t.turnaroundTime));
   }
 
   // Deduplicate CDL: prefer non-null category entries,
@@ -110,7 +114,11 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
         description: t.raw_name,
         specimen: typeof tubeType === "string" ? tubeType : "",
         price: t.price,
-        turnaroundTime: spec?.turnaroundTime ? `${spec.turnaroundTime} jour(s)` : "",
+        turnaroundTime: spec?.turnaroundTime
+          ? `${spec.turnaroundTime} jour(s)`
+          : seed1TatByCode.has(t.code)
+            ? `${seed1TatByCode.get(t.code)} jour(s)`
+            : "",
         type: t.type === "profile" ? "profile" : "individual",
       });
     } else {
@@ -144,7 +152,11 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
           description: t.raw_name,
           specimen: typeof tubeType === "string" ? tubeType : "",
           price: t.price,
-          turnaroundTime: spec?.turnaroundTime ? `${spec.turnaroundTime} jour(s)` : "",
+          turnaroundTime: spec?.turnaroundTime
+          ? `${spec.turnaroundTime} jour(s)`
+          : seed1TatByCode.has(t.code)
+            ? `${seed1TatByCode.get(t.code)} jour(s)`
+            : "",
           type: t.type === "profile" ? "profile" : "individual",
         });
       }

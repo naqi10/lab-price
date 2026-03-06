@@ -16,7 +16,7 @@ interface ActiveDeal {
   popular: boolean;
   testMappingIds: string[];
   canonicalNames: string[];
-  componentTests?: { id: string; name: string; code: string | null; tubeType: string | null }[];
+  componentTests?: { id: string; name: string; code: string | null; tubeType: string | null; turnaroundTime: string | null }[];
   profileTube?: string | null;
   profileTurnaround?: string | null;
   profileNotes?: string | null;
