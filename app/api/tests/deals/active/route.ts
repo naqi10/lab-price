@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getActiveBundleDeals } from "@/lib/services/bundle-deal.service";
 import { getProfileMeta } from "@/lib/data/profile-metadata";
+import { getProfileDescription, getProfileComponents } from "@/lib/data/profile-descriptions";
 import { cdlSeedData, qcSeedData } from "@/prisma/seed1";
 import prisma from "@/lib/db";
 import logger from "@/lib/logger";
@@ -132,6 +133,7 @@ export async function GET() {
       if (!profileCode) return [];
       const components = profileCodeToComponents.get(profileCode.toUpperCase()) ?? [];
       const componentNames = profileCodeToComponentNames.get(profileCode.toUpperCase()) ?? [];
+      const explicitCodes = getProfileComponents(profileCode);
       const ids = new Set<string>();
       for (const code of components) {
         const id = codeToMappingId.get(code.toUpperCase());
@@ -139,6 +141,10 @@ export async function GET() {
       }
       for (const componentName of componentNames) {
         const id = resolveByCanonicalName(componentName);
+        if (id) ids.add(id);
+      }
+      for (const code of explicitCodes) {
+        const id = codeToMappingId.get(code.toUpperCase());
         if (id) ids.add(id);
       }
       return Array.from(ids);
@@ -157,7 +163,7 @@ export async function GET() {
       .map((t, idx) => ({
         id: `auto-${t.priceList!.laboratory.code}-${t.code}`,
         dealName: cleanProfileName(t.name),
-        description: `Profil ${t.priceList!.laboratory.code} — ${t.code}`,
+        description: getProfileDescription(t.code) ?? `Profil ${t.priceList!.laboratory.code} — ${t.code}`,
         category: "Profil",
         icon: "🧪",
         popular: false,
@@ -217,8 +223,18 @@ export async function GET() {
             ? fallbackParsed
             : canonicalNames;
 
+      // Enrich description: prefer map lookup over old generic stored value
+      const descriptionFromMap = getProfileDescription(deal.profileCode);
+      const description =
+        descriptionFromMap ??
+        (deal.description && !/^Profil (CDL|Dynacare|QC) — /.test(deal.description)
+          ? deal.description
+          : null) ??
+        deal.description;
+
       return {
         ...deal,
+        description,
         canonicalNames,
         profileComponentNames,
         profileTube: meta?.tube ?? profileFromSeed?.tubeType ?? null,

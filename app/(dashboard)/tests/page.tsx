@@ -888,6 +888,7 @@ function UnifiedTestsContent() {
                           customRate: b.customRate,
                           testIds: b.testMappingIds,
                           componentNames: b.profileComponentNames ?? b.canonicalNames ?? [],
+                          description: b.description ?? null,
                           profileTube: b.profileTube ?? null,
                           profileTurnaround: b.profileTurnaround ?? null,
                           profileNotes: b.profileNotes ?? null,

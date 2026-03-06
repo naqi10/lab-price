@@ -10,6 +10,7 @@ import {
   normalizeForLookup,
 } from "../lib/data/canonical-test-registry.js";
 import { cdlSeedData, qcSeedData } from "./seed1.js";
+import { CDL_PROFILE_DESCRIPTIONS, QC_PROFILE_DESCRIPTIONS } from "../lib/data/profile-descriptions.js";
 
 const connectionString = process.env.DATABASE_URL!;
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
@@ -565,7 +566,7 @@ async function main() {
     await prisma.bundleDeal.create({
       data: {
         dealName: cleanProfileName(p.name),
-        description: `Profil CDL — ${p.code}`,
+        description: CDL_PROFILE_DESCRIPTIONS[p.code.toUpperCase()] ?? `Profil CDL — ${p.code}`,
         category,
         icon: bundleCategoryIcon(category),
         popular: false,
@@ -604,7 +605,7 @@ async function main() {
     await prisma.bundleDeal.create({
       data: {
         dealName: cleanProfileName(p.name),
-        description: `Profil Dynacare — ${p.code}`,
+        description: QC_PROFILE_DESCRIPTIONS[p.code.toUpperCase()] ?? `Profil Dynacare — ${p.code}`,
         category,
         icon: bundleCategoryIcon(category),
         popular: false,

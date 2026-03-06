@@ -19,6 +19,7 @@ interface BundleGroup {
   customRate: number;
   testIds: string[];
   componentNames?: string[];
+  description?: string | null;
   profileTube?: string | null;
   profileTurnaround?: string | null;
   profileNotes?: string | null;
@@ -400,6 +401,11 @@ export default function ComparisonTable({
                                   </p>
                                 );
                               })()}
+                              {bundle.description && (
+                                <p className="text-[11px] text-primary/70 mt-1 leading-snug italic">
+                                  {bundle.description}
+                                </p>
+                              )}
                               {(bundle.profileTube || bundle.profileTurnaround || bundle.profileNotes) && (
                                 <p className="text-[11px] text-muted-foreground/70 mt-0.5 leading-snug">
                                   {bundle.profileTube ? `Tube: ${bundle.profileTube}` : ""}

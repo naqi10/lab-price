@@ -123,6 +123,12 @@ export default function BundleDealCard({
           </div>
         )}
 
+        {bundle.description && (
+          <p className="text-[11px] text-muted-foreground leading-snug line-clamp-3 border-l-2 border-primary/30 pl-2">
+            {bundle.description}
+          </p>
+        )}
+
         {bundle.profileNotes && (
           <p className="text-[10px] text-muted-foreground/80 italic leading-snug line-clamp-2 border-l-2 border-border/60 pl-2">
             {bundle.profileNotes}
