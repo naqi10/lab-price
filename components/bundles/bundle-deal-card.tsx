@@ -6,6 +6,7 @@ import { Clock, Pipette } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import {
   type Bundle,
+  type ComponentTest,
   CATEGORY_COLORS,
   DEFAULT_CATEGORY_COLOR,
 } from "@/lib/data/bundles";
@@ -27,6 +28,45 @@ function parseTubes(tubeLabel: string): string[] {
   return tubeLabel.split("+").map((t) => t.trim()).filter(Boolean);
 }
 
+/** Fixed-size tube color dot — always perfectly circular, never stretches. */
+function TubeColorDot({ tubeType }: { tubeType: string | null }) {
+  const colorClass = tubeType ? getTubeColor(tubeType) : "bg-slate-300";
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("rounded-full shrink-0", colorClass)}
+      style={{ width: 10, height: 10, minWidth: 10, minHeight: 10, display: "inline-block" }}
+    />
+  );
+}
+
+/** Deduplicated component test list — one row per test with tube dot, name, code. */
+function BundleTestList({ tests }: { tests: ComponentTest[] }) {
+  if (tests.length === 0) return null;
+  return (
+    <div className="space-y-1.5">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        Tests inclus ({tests.length})
+      </p>
+      <ul className="space-y-0.5 list-none p-0 m-0">
+        {tests.map((test) => (
+          <li key={test.id} className="flex items-center gap-2 min-w-0">
+            <TubeColorDot tubeType={test.tubeType} />
+            <span className="text-[11px] text-foreground/80 leading-tight truncate flex-1 min-w-0">
+              {test.name}
+            </span>
+            {test.code && (
+              <span className="text-[10px] font-mono text-muted-foreground bg-muted/60 px-1 rounded shrink-0">
+                {test.code}
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function BundleDealCard({
   bundle,
   loading,
@@ -36,7 +76,7 @@ export default function BundleDealCard({
 
   const colors = CATEGORY_COLORS[bundle.category] ?? DEFAULT_CATEGORY_COLOR;
   const tubes = bundle.profileTube ? parseTubes(bundle.profileTube) : [];
-  const hasTests = bundle.canonicalNames && bundle.canonicalNames.length > 0;
+  const componentTests = bundle.componentTests ?? [];
 
   return (
     <div
@@ -79,23 +119,7 @@ export default function BundleDealCard({
           </div>
         </div>
 
-        {hasTests && (
-          <div className="space-y-1.5">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-              Tests inclus ({bundle.canonicalNames!.length})
-            </p>
-            <div className="flex flex-wrap gap-1">
-              {bundle.canonicalNames!.map((name) => (
-                <span
-                  key={name}
-                  className="text-[10px] bg-muted/60 border border-border/40 rounded px-1.5 py-0.5 text-foreground/80 leading-tight"
-                >
-                  {name}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+        <BundleTestList tests={componentTests} />
 
         {(tubes.length > 0 || bundle.profileTurnaround) && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
@@ -104,7 +128,7 @@ export default function BundleDealCard({
                 <Pipette className="h-3 w-3 shrink-0" />
                 {tubes.map((tube) => (
                   <span key={tube} className="flex items-center gap-1">
-                    <span className={cn("inline-block h-2.5 w-2.5 rounded-full shrink-0", getTubeColor(tube))} />
+                    <TubeColorDot tubeType={tube} />
                     <span className="text-[11px]">{tube}</span>
                   </span>
                 ))}

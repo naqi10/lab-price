@@ -139,7 +139,8 @@ export async function searchTests(
         t."turnaround_time" AS "turnaroundTime",
         t."tube_type" AS "tubeType",
         tme."test_mapping_id" AS "testMappingId",
-        tm."canonical_name" AS "canonicalName"
+        tm."canonical_name" AS "canonicalName",
+        tm."tube_type" AS "canonicalTubeType"
       FROM "tests" t
       INNER JOIN "price_lists" pl ON t."price_list_id" = pl.id
       INNER JOIN "laboratories" l ON pl."laboratory_id" = l.id
@@ -181,6 +182,7 @@ ${matchWhere}
       tubeType: string | null;
       testMappingId: string | null;
       canonicalName: string | null;
+      canonicalTubeType: string | null;
     }>
   >(sql, ...params);
 }

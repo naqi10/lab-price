@@ -9,19 +9,6 @@ const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
 const DialogClose = DialogPrimitive.Close;
 
-/**
- * Returns the #portal-root container synchronously (useState lazy initializer runs
- * during render, before any effects) — prevents the React 19 two-phase portal move
- * that causes "removeChild: node is not a child" crashes.
- */
-function usePortalContainer() {
-  const [container] = React.useState<HTMLElement | undefined>(() => {
-    if (typeof document === "undefined") return undefined;
-    return document.getElementById("portal-root") ?? document.body;
-  });
-  return container;
-}
-
 const DialogOverlay = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
@@ -38,9 +25,8 @@ const DialogContent = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => {
-  const container = usePortalContainer();
   return (
-    <DialogPrimitive.Portal container={container}>
+    <>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
@@ -51,8 +37,7 @@ const DialogContent = React.forwardRef<
         )}
         {...props}
       >
-        {/* Inner scroll wrapper — keeps overflow away from the portal root node
-            so React 19 can safely add/remove children without removeChild errors */}
+        {/* Keep scroll constrained inside content to avoid layout shifts */}
         <div className="max-h-[90vh] overflow-y-auto p-6">
           {children}
         </div>
@@ -63,7 +48,7 @@ const DialogContent = React.forwardRef<
           <X className="h-4 w-4" />
         </DialogClose>
       </DialogPrimitive.Content>
-    </DialogPrimitive.Portal>
+    </>
   );
 });
 DialogContent.displayName = DialogPrimitive.Content.displayName;

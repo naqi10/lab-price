@@ -28,6 +28,36 @@ function extractComponentsFromName(name: string): string[] {
     .filter(Boolean);
 }
 
+function firstTubeValue(value: unknown): string | null {
+  if (Array.isArray(value)) {
+    const first = value.find((v) => typeof v === "string" && v.trim().length > 0);
+    return typeof first === "string" ? first : null;
+  }
+  return typeof value === "string" && value.trim().length > 0 ? value : null;
+}
+
+function resolveProfileTubeValue(params: {
+  metaTube: string | null;
+  seedTube: string | null;
+  componentTests: Array<{ tubeType: string | null }>;
+}): string | null {
+  if (params.metaTube) return params.metaTube;
+  if (params.seedTube) return params.seedTube;
+
+  const unique = Array.from(
+    new Set(
+      params.componentTests
+        .map((t) => (t.tubeType ?? "").trim())
+        .filter(Boolean)
+    )
+  );
+
+  if (unique.length === 0) return null;
+  if (unique.length === 1) return unique[0];
+  // Avoid misleading single-color dot for multi-tube profiles.
+  return "Tubes multiples";
+}
+
 export async function GET() {
   try {
     const session = await auth();
@@ -43,7 +73,6 @@ export async function GET() {
             { category: { equals: "Profile", mode: "insensitive" } },
           ],
           code: { not: null },
-          testMappingEntryId: { not: null },
         },
         select: {
           id: true,
@@ -74,18 +103,43 @@ export async function GET() {
         },
         select: {
           code: true,
+          tubeType: true,
           testMappingEntry: { select: { testMappingId: true } },
         },
       }),
       prisma.testMapping.findMany({
-        select: { id: true, canonicalName: true },
+        select: { id: true, canonicalName: true, code: true },
       }),
     ]);
 
     const codeToMappingId = new Map<string, string>();
+    const mappingIdToTubeType = new Map<string, string>();
+    const codeToTubeType = new Map<string, string>();
     for (const t of testsWithMapping) {
       if (!t.code || !t.testMappingEntry?.testMappingId) continue;
-      codeToMappingId.set(t.code.toUpperCase(), t.testMappingEntry.testMappingId);
+      const mappingId = t.testMappingEntry.testMappingId;
+      codeToMappingId.set(t.code.toUpperCase(), mappingId);
+      if (t.tubeType && !codeToTubeType.has(t.code.toUpperCase())) {
+        codeToTubeType.set(t.code.toUpperCase(), t.tubeType);
+      }
+      if (t.tubeType && !mappingIdToTubeType.has(mappingId)) {
+        mappingIdToTubeType.set(mappingId, t.tubeType);
+      }
+    }
+
+    for (const test of cdlSeedData.all) {
+      const code = test.code?.toUpperCase();
+      const tube = firstTubeValue(test.tube);
+      if (code && tube && !codeToTubeType.has(code)) {
+        codeToTubeType.set(code, tube);
+      }
+    }
+    for (const test of qcSeedData) {
+      const code = test.code?.toUpperCase();
+      const tube = firstTubeValue(test.tube);
+      if (code && tube && !codeToTubeType.has(code)) {
+        codeToTubeType.set(code, tube);
+      }
     }
 
     const profileCodeToComponents = new Map<string, string[]>();
@@ -180,29 +234,55 @@ export async function GET() {
         isActive: true,
       }));
 
-    const allDeals = [...deals, ...fallbackDeals].map((deal) => {
-      const resolved = resolveProfileComponents(deal.profileCode);
-      // If we can resolve richer component mappings for a profile, prefer them.
-      if (resolved.length > 0) {
-        return { ...deal, testMappingIds: resolved };
-      }
-      return deal;
-    });
-
-    // Resolve canonical names from already-loaded mappings.
-    const allIds = [...new Set(allDeals.flatMap((d) => d.testMappingIds))];
-    const idToName = new Map(allMappings.filter((m) => allIds.includes(m.id)).map((m) => [m.id, m.canonicalName]));
-
     const profileByLabAndCode = new Map(
       activeProfileTests
         .filter((t) => t.code && t.priceList?.laboratory?.code)
         .map((t) => [`${t.priceList!.laboratory.code}:${t.code!}`, t] as const)
     );
 
+    const allDeals = [...deals, ...fallbackDeals].map((deal) => {
+      const resolved = resolveProfileComponents(deal.profileCode);
+      // If we can resolve richer component mappings for a profile, prefer them.
+      if (resolved.length > 0) {
+        return { ...deal, testMappingIds: resolved };
+      }
+      // Fallback: if the BundleDeal was seeded with empty testMappingIds and we couldn't
+      // resolve components, use the test's own TestMapping as a single-test bundle.
+      if (deal.testMappingIds.length === 0 && deal.profileCode && deal.sourceLabCode) {
+        const seedTest = profileByLabAndCode.get(`${deal.sourceLabCode}:${deal.profileCode}`);
+        if (seedTest?.testMappingEntry?.testMappingId) {
+          logger.warn({ profileCode: deal.profileCode, labCode: deal.sourceLabCode }, "[deals/active] bundle has no resolved components, using self-mapping");
+          return { ...deal, testMappingIds: [seedTest.testMappingEntry.testMappingId] };
+        }
+      }
+      return deal;
+    });
+
+    // Resolve canonical names and codes from already-loaded mappings.
+    const allIds = [...new Set(allDeals.flatMap((d) => d.testMappingIds))];
+    const filteredMappings = allMappings.filter((m) => allIds.includes(m.id));
+    const idToName = new Map(filteredMappings.map((m) => [m.id, m.canonicalName]));
+    const idToCode = new Map(filteredMappings.map((m) => [m.id, m.code]));
+
     const enriched = allDeals.map((deal) => {
-      const canonicalNames = deal.testMappingIds
-        .map((id) => idToName.get(id))
-        .filter((n): n is string => !!n);
+      const seen = new Set<string>();
+      const canonicalNames: string[] = [];
+      const componentTests: { id: string; name: string; code: string | null; tubeType: string | null }[] = [];
+      for (const id of deal.testMappingIds) {
+        if (seen.has(id)) continue;
+        seen.add(id);
+        const name = idToName.get(id);
+        if (!name) continue;
+        canonicalNames.push(name);
+        const code = idToCode.get(id) ?? null;
+        const fallbackTubeByCode = code ? codeToTubeType.get(code.toUpperCase()) ?? null : null;
+        componentTests.push({
+          id,
+          name,
+          code,
+          tubeType: mappingIdToTubeType.get(id) ?? fallbackTubeByCode,
+        });
+      }
 
       // Enrich with profile metadata (tube type, turnaround, notes).
       // Fallback to active seeded profile test data when metadata is absent.
@@ -236,8 +316,13 @@ export async function GET() {
         ...deal,
         description,
         canonicalNames,
+        componentTests,
         profileComponentNames,
-        profileTube: meta?.tube ?? profileFromSeed?.tubeType ?? null,
+        profileTube: resolveProfileTubeValue({
+          metaTube: meta?.tube ?? null,
+          seedTube: profileFromSeed?.tubeType ?? null,
+          componentTests,
+        }),
         profileTurnaround: meta?.turnaroundDays ?? profileFromSeed?.turnaroundTime ?? null,
         profileNotes: meta?.notes ?? null,
       };

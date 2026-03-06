@@ -12,6 +12,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { formatCurrency } from "@/lib/utils";
 import { parseTubeColor } from "@/lib/tube-colors";
 import { getProfileMeta } from "@/lib/data/profile-metadata";
+import { TubeDot } from "@/components/ui/tube-dot";
 
 import MatchIndicator from "./match-indicator";
 
@@ -29,9 +30,25 @@ interface SearchResult {
   laboratoryCode: string;
   testMappingId: string | null;
   canonicalName: string | null;
+  canonicalTubeType?: string | null;
   similarity?: number;
   matchType?: string;
   confidence?: number;
+}
+
+function resolveGroupTubeType(groupTests: SearchResult[]): string | null {
+  if (groupTests.length === 0) return null;
+  const canonical = groupTests.find((t) => t.canonicalTubeType)?.canonicalTubeType;
+  if (canonical) return canonical;
+
+  const counts = new Map<string, number>();
+  for (const t of groupTests) {
+    const key = t.tubeType?.trim();
+    if (!key) continue;
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  if (counts.size === 0) return null;
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
 }
 
 function normalizeSearchText(value: string | null | undefined) {
@@ -189,7 +206,8 @@ export default function TestSearch({
               const selectedMappingId = group.tests.find((t) => t.testMappingId && cartItemIds?.has(t.testMappingId))?.testMappingId
                 ?? group.testMappingId;
               const inCart = !!group.testMappingId && !!cartItemIds?.has(group.testMappingId);
-              const tube = parseTubeColor(primary.tubeType);
+              const displayTubeType = resolveGroupTubeType(group.tests);
+              const tube = parseTubeColor(displayTubeType);
 
               return (
                 <li
@@ -199,19 +217,7 @@ export default function TestSearch({
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start gap-2">
-                      {tube && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="inline-flex h-4 w-4 items-center justify-center shrink-0">
-                              <span
-                                className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-black/15"
-                                style={{ backgroundColor: tube.color }}
-                              />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top">{tube.label}</TooltipContent>
-                        </Tooltip>
-                      )}
+                      <TubeDot tubeType={displayTubeType} withTooltip />
                       <div className="min-w-0 flex-1">
                         <p className="text-base font-semibold leading-snug text-foreground whitespace-normal break-words">
                           {displayName}

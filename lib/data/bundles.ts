@@ -1,9 +1,17 @@
+export interface ComponentTest {
+  id: string;
+  name: string;
+  code: string | null;
+  tubeType: string | null;
+}
+
 export interface Bundle {
   id: string;
   dealName: string;
   description: string;
   category: string;
   canonicalNames: string[];
+  componentTests?: ComponentTest[];
   customRate: number;
   icon: string;
   popular?: boolean;

@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link2, Check, Zap, DollarSign, RotateCcw, Clock, X, Package } from "lucide-react";
 import { parseTubeColor } from "@/lib/tube-colors";
+import { TubeDot } from "@/components/ui/tube-dot";
 
 
 interface BundleGroup {
@@ -440,15 +441,13 @@ export default function ComparisonTable({
                             <span className="block text-base font-semibold text-foreground leading-snug">
                               {test.canonicalName}
                             </span>
-                            {primaryTube && (
-                              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground/80">
-                                <span
-                                  className="inline-block h-2.5 w-2.5 min-h-[10px] min-w-[10px] shrink-0 rounded-full ring-1 ring-black/15"
-                                  style={{ backgroundColor: primaryTube.color }}
-                                />
-                                {primaryTube.label}
-                              </span>
-                            )}
+                            <span className="inline-flex items-center gap-1 text-sm text-muted-foreground/80">
+                              <TubeDot
+                                tubeType={visibleLabs.map((lab) => test.tubeTypes?.[lab.id]).find(Boolean) ?? null}
+                                withTooltip
+                              />
+                              <span>{primaryTube?.label ?? "Tube non renseigné"}</span>
+                            </span>
                           </div>
                         </div>
                       </td>
@@ -578,20 +577,12 @@ export default function ComparisonTable({
                                       {tat}
                                     </span>
                                   )}
-                                  {tube && (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <span className="inline-flex items-center gap-1 max-w-[120px]">
-                                          <span
-                                            className="inline-block h-2.5 w-2.5 min-h-[10px] min-w-[10px] rounded-full ring-1 ring-black/15 shrink-0"
-                                            style={{ backgroundColor: tube.color }}
-                                          />
-                                          <span className="text-sm text-muted-foreground/70 truncate">{tube.label}</span>
-                                        </span>
-                                      </TooltipTrigger>
-                                      <TooltipContent side="top">{tube.label}</TooltipContent>
-                                    </Tooltip>
-                                  )}
+                                  <span className="inline-flex items-center gap-1 max-w-[120px]">
+                                    <TubeDot tubeType={tubeType} withTooltip />
+                                    <span className="text-sm text-muted-foreground/70 truncate">
+                                      {tube?.label ?? "Tube non renseigné"}
+                                    </span>
+                                  </span>
                                   {match && (
                                     <div className="flex items-center gap-1">
                                       <Tooltip>

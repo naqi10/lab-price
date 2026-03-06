@@ -16,6 +16,7 @@ interface ActiveDeal {
   popular: boolean;
   testMappingIds: string[];
   canonicalNames: string[];
+  componentTests?: { id: string; name: string; code: string | null; tubeType: string | null }[];
   profileTube?: string | null;
   profileTurnaround?: string | null;
   profileNotes?: string | null;
@@ -101,6 +102,7 @@ export default function BundleDealsSection() {
               description: deal.description,
               category: deal.category,
               canonicalNames: deal.canonicalNames,
+              componentTests: deal.componentTests,
               customRate: deal.customRate,
               icon: deal.icon,
               popular: deal.popular,

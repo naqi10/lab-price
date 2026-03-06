@@ -310,6 +310,30 @@ export const CDL_PROFILE_COMPONENTS: Record<string, string[]> = {
   "HPBA":   ["HBS", "HBAB", "HBCS"],
   "STD2":   ["CMPCR", "GONOU"],
   "STDMH":  ["CMPCR", "GONOU", "SYPEIA", "HIV"],
+
+  // CYTOLOGIE / PAP (atomic tests — self-referential single mapping)
+  "PAPTHPV": ["PAPTHPV"],
+  "PVTP":    ["PVTP"],
+  "TPPV":    ["TPPV"],
+
+  // DÉPISTAGE PRÉNATAL NON-INVASIF (atomic — self-referential)
+  "PANO":   ["PANO"],
+  "PANOE":  ["PANOE"],
+  "HARMP":  ["HARMP"],
+
+  // DROGUES D'ABUS (atomic panels — self-referential)
+  "DRUGH":  ["DRUGH"],
+  "DAU450": ["DAU450"],
+  "DAUP":   ["DAUP"],
+  "DAUB50": ["DAUB50"],
+
+  // ÉCHOGRAPHIES (atomic procedures — self-referential)
+  "ENDPE":  ["ENDPE"],
+  "ENDV":   ["ENDV"],
+  "1TRI":   ["1TRI"],
+  "2TRI":   ["2TRI"],
+  "3TRI":   ["3TRI"],
+  "VIAB":   ["VIAB"],
 };
 
 export const QC_PROFILE_COMPONENTS: Record<string, string[]> = {
@@ -370,7 +394,8 @@ export const QC_PROFILE_COMPONENTS: Record<string, string[]> = {
   "LIPID6":   ["CHOL", "TRIG", "HDL", "LDLD", "APOB"],
 
   // MARQUEURS PROSTATIQUES
-  "FPSA":     ["FPSA", "PSA"],
+  "FPSA":      ["FPSA", "PSA"],
+  "FPSA_PROF": ["FPSA", "PSA"],
 
   // MONOTEST
   "MONOP":    ["CBC", "MONO"],

@@ -10,6 +10,7 @@ import {
 import { formatCurrency } from "@/lib/utils";
 import { parseTubeColor } from "@/lib/tube-colors";
 import type { LabColor } from "@/hooks/use-lab-colors";
+import { TubeDot } from "@/components/ui/tube-dot";
 
 interface CartItem {
   id: string;
@@ -109,17 +110,7 @@ export default function TestCart({
             className="flex items-center justify-between gap-3 px-4 py-2 group hover:bg-muted/20 transition-colors"
           >
             <div className="flex items-center gap-2 min-w-0">
-              {tube && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span
-                      className="inline-block h-2 w-2 rounded-full shrink-0 ring-1 ring-black/15"
-                      style={{ backgroundColor: tube.color }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent side="top">{tube.label}</TooltipContent>
-                </Tooltip>
-              )}
+              <TubeDot tubeType={item.tubeType} withTooltip />
               <span className="text-xs text-foreground/75 leading-snug truncate">{item.canonicalName}</span>
             </div>
             <button

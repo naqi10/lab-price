@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { parseTubeColor } from "@/lib/tube-colors";
+import { TubeDot } from "@/components/ui/tube-dot";
 
 interface Test {
   id: string;
@@ -375,19 +376,7 @@ export default function AllTestsTable({
                       >
                         <TableCell className="font-medium max-w-[220px]">
                           <div className="flex items-center gap-1.5">
-                            {tube && (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <span
-                                    className="inline-block h-2.5 w-2.5 rounded-full shrink-0 ring-1 ring-black/15"
-                                    style={{ backgroundColor: tube.color }}
-                                  />
-                                </TooltipTrigger>
-                                <TooltipContent side="top">
-                                  {tube.label}
-                                </TooltipContent>
-                              </Tooltip>
-                            )}
+                            <TubeDot tubeType={test.tubeType} withTooltip />
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <span className="block truncate cursor-default">

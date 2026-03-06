@@ -23,6 +23,7 @@ import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { TubeDot } from "@/components/ui/tube-dot";
 import { formatCurrency } from "@/lib/utils";
 import { parseTubeColor } from "@/lib/tube-colors";
 import {
@@ -59,6 +60,7 @@ interface ActiveDeal {
   popular: boolean;
   testMappingIds: string[];
   canonicalNames: string[];
+  componentTests?: { id: string; name: string; code: string | null; tubeType: string | null }[];
   profileComponentNames?: string[];
   profileTube?: string | null;
   profileTurnaround?: string | null;
@@ -647,7 +649,6 @@ function UnifiedTestsContent() {
                   )}
                   {availableBundles.map((bundle) => {
                     const isSelected = selectedBundleIds.has(bundle.id);
-                    const tube = parseTubeColor(bundle.profileTube);
                     return (
                       <button
                         key={bundle.id}
@@ -677,26 +678,31 @@ function UnifiedTestsContent() {
                           <p className="text-sm sm:text-base text-slate-700 font-medium">
                             {formatCurrency(bundle.customRate)}
                           </p>
-                          {(tube || bundle.profileTurnaround) && (
+                          {(bundle.profileTube || bundle.profileTurnaround) && (
                             <p className="text-xs sm:text-sm text-slate-600 mt-0.5 flex items-center gap-2">
-                              {tube && (
+                              {bundle.profileTube && (
                                 <span className="inline-flex items-center gap-1">
-                                  <span
-                                    className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-black/10"
-                                    style={{ backgroundColor: tube.color }}
-                                  />
-                                  <span>{tube.label}</span>
+                                  <TubeDot tubeType={bundle.profileTube} withTooltip />
+                                  <span>{parseTubeColor(bundle.profileTube)?.label ?? "Tube non renseigné"}</span>
                                 </span>
                               )}
-                              {bundle.profileTurnaround && <span>· {bundle.profileTurnaround}</span>}
+                              {bundle.profileTurnaround && <span>- {bundle.profileTurnaround}</span>}
                             </p>
                           )}
-                          {bundle.canonicalNames.length > 0 && (
+                          {bundle.componentTests && bundle.componentTests.length > 0 ? (
+                            <p className="text-sm text-slate-600 truncate mt-0.5">
+                              {bundle.componentTests
+                                .slice(0, 3)
+                                .map((test) => test.name)
+                                .join(" · ")}
+                              {bundle.componentTests.length > 3 && "…"}
+                            </p>
+                          ) : bundle.canonicalNames.length > 0 ? (
                             <p className="text-sm text-slate-600 truncate mt-0.5">
                               {bundle.canonicalNames.slice(0, 3).join(" · ")}
                               {bundle.canonicalNames.length > 3 && "…"}
                             </p>
-                          )}
+                          ) : null}
                         </div>
                         {isSelected ? (
                           <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0" />
