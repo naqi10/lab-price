@@ -20,6 +20,7 @@ interface LabCostSummaryProps {
   testMappingIds?: string[];
   laboratories?: { id: string; name: string }[];
   labColorMap?: Record<string, LabColor>;
+  selectedLabScopeId?: string | null;
 }
 
 export default function LabCostSummary({
@@ -31,6 +32,7 @@ export default function LabCostSummary({
   testMappingIds = [],
   laboratories = [],
   labColorMap = {},
+  selectedLabScopeId = null,
 }: LabCostSummaryProps) {
   const bestLab     = labs.find((l) => l.id === bestLabId);
   const sorted      = [...labs].sort((a, b) => {
@@ -80,15 +82,22 @@ export default function LabCostSummary({
         <div className="mt-4 space-y-1.5">
           {testMappingIds.map((tmId, i) => {
             const labId   = selections?.[tmId];
-            const labName = labId ? labNameMap.get(labId) ?? "—" : "—";
+            const isUnavailableInScopedLab = !labId && !!selectedLabScopeId;
+            const labName = isUnavailableInScopedLab
+              ? "Non disponible dans ce labo"
+              : labId
+                ? labNameMap.get(labId) ?? "—"
+                : "—";
             const color   = labId ? labColorMap[labId] : undefined;
             return (
               <div key={tmId} className="flex items-center justify-between text-xs gap-3">
                 <span className="text-muted-foreground truncate">{testNames[i] ?? tmId}</span>
                 <span
-                  className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-medium border"
+                  className={`shrink-0 px-2 py-0.5 rounded-full text-[11px] font-medium border${isUnavailableInScopedLab ? " text-amber-800 bg-amber-100 border-amber-200" : ""}`}
                   style={
-                    color
+                    isUnavailableInScopedLab
+                      ? undefined
+                      : color
                       ? { color: color.text, backgroundColor: color.bg, borderColor: color.border }
                       : { color: "hsl(var(--muted-foreground))", backgroundColor: "hsl(var(--muted)/0.3)", borderColor: "hsl(var(--border))" }
                   }

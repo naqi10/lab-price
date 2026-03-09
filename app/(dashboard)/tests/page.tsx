@@ -377,7 +377,6 @@ function UnifiedTestsContent() {
 
   const handlePresetCheapest = useCallback(() => {
     if (!tableData) return;
-    const totalTests = tableData.tests.length;
     // Find best lab: prefer most coverage, then lowest total among equal-coverage labs
     let bestLabId: string | null = null;
     let bestCoverage = -1;
@@ -400,26 +399,13 @@ function UnifiedTestsContent() {
       const price = mergedCustomPrices[`${test.id}-${bestLabId}`] ?? test.prices[bestLabId];
       if (price != null) next[test.id] = bestLabId;
     }
-    // If selected lab doesn't cover all tests, also assign cheapest available for missing ones
-    if (bestCoverage < totalTests) {
-      for (const test of tableData.tests) {
-        if (next[test.id]) continue;
-        let fallbackLabId: string | null = null;
-        let fallbackPrice = Infinity;
-        for (const lab of tableData.laboratories) {
-          const price = mergedCustomPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
-          if (price != null && price < fallbackPrice) { fallbackPrice = price; fallbackLabId = lab.id; }
-        }
-        if (fallbackLabId) next[test.id] = fallbackLabId;
-      }
-    }
+    // Strict lab mode: never auto-assign missing tests from another lab.
     setSelections(next);
     setSelectionMode("CHEAPEST");
   }, [tableData, mergedCustomPrices]);
 
   const handlePresetQuickest = useCallback(() => {
     if (!tableData) return;
-    const totalTests = tableData.tests.length;
     // Find best lab: prefer most coverage, then best average TAT among equal-coverage labs
     let bestLabId: string | null = null;
     let bestCoverage = -1;
@@ -448,24 +434,7 @@ function UnifiedTestsContent() {
       const price = mergedCustomPrices[`${test.id}-${bestLabId}`] ?? test.prices[bestLabId];
       if (price != null) next[test.id] = bestLabId;
     }
-    // If selected lab doesn't cover all tests, fill missing ones with fastest available
-    if (bestCoverage < totalTests) {
-      for (const test of tableData.tests) {
-        if (next[test.id]) continue;
-        let fallbackLabId: string | null = null;
-        let fallbackHours = Infinity;
-        let fallbackPrice = Infinity;
-        for (const lab of tableData.laboratories) {
-          const price = mergedCustomPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
-          if (price == null) continue;
-          const hours = parseTatToHours(test.turnaroundTimes?.[lab.id]);
-          if (hours < fallbackHours || (hours === fallbackHours && price < fallbackPrice)) {
-            fallbackHours = hours; fallbackPrice = price; fallbackLabId = lab.id;
-          }
-        }
-        if (fallbackLabId) next[test.id] = fallbackLabId;
-      }
-    }
+    // Strict lab mode: never auto-assign missing tests from another lab.
     setSelections(next);
     setSelectionMode("FASTEST");
   }, [tableData, mergedCustomPrices]);
@@ -563,6 +532,10 @@ function UnifiedTestsContent() {
 
   const hasAnySelection = items.length > 0 || selectedBundles.length > 0;
   const [showBundles, setShowBundles] = useState(false);
+  const selectedLabScopeId = useMemo(() => {
+    const ids = Array.from(new Set(Object.values(selections)));
+    return ids.length === 1 ? ids[0] : null;
+  }, [selections]);
 
   function cleanBundleName(name: string): string {
     return name.replace(/,\s*PROFIL(E)?$/i, "").replace(/\s+PROFIL(E)?$/i, "").trim();
@@ -880,6 +853,7 @@ function UnifiedTestsContent() {
                   testNames={testNames}
                   testMappingIds={allTestMappingIds}
                   laboratories={tableData?.laboratories}
+                  selectedLabScopeId={selectedLabScopeId}
                 />
 
                 {/* Comparison table */}
