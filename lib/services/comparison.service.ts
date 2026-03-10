@@ -97,8 +97,10 @@ export async function compareLabPrices(
     },
   });
 
+  // During reseed windows or when stale client IDs are sent, mappings may be temporarily absent.
+  // Return an empty comparison instead of throwing a 500.
   if (testMappings.length === 0) {
-    throw new Error("Aucun test mapping trouvé");
+    return [];
   }
 
   // Collect all entry IDs to fetch turnaround times and tube types in one query
@@ -178,6 +180,25 @@ function wordOverlap(a: string, b: string): number {
   if (wa.size === 0 || wb.size === 0) return 0;
   const intersection = [...wa].filter((w) => wb.has(w)).length;
   return intersection / Math.max(wa.size, wb.size);
+}
+
+/**
+ * Domain-aware boost for known equivalent analytes across labs.
+ * Example: CDL "ÉLECTROLYTES" and Dynacare "ÉLECTROLYTES (Na, K, Cl)".
+ */
+function semanticLabScore(normalizedCanonical: string, normalizedEntry: string): number {
+  const base = wordOverlap(normalizedCanonical, normalizedEntry);
+  const hasElectrolytesCanonical = normalizedCanonical.includes("electrolytes");
+  const hasElectrolytesEntry = normalizedEntry.includes("electrolytes");
+  if (hasElectrolytesCanonical && hasElectrolytesEntry) {
+    const canonicalUrine = normalizedCanonical.includes("urine");
+    const entryUrine = normalizedEntry.includes("urine");
+    // Keep urine electrolytes separate from serum electrolytes.
+    if (canonicalUrine === entryUrine) {
+      return Math.max(base, 0.98);
+    }
+  }
+  return base;
 }
 
 export async function getComparisonDetails(testMappingIds: string[]) {
@@ -295,7 +316,7 @@ export async function getComparisonDetails(testMappingIds: string[]) {
         let bestScore = 0;
         let bestMatch: (typeof catalog)[number] | null = null;
         for (const entry of catalog) {
-          const score = wordOverlap(normCanonical, entry.normName);
+          const score = semanticLabScore(normCanonical, entry.normName);
           if (score > bestScore) { bestScore = score; bestMatch = entry; }
         }
         if (bestMatch && bestScore >= 0.6) {

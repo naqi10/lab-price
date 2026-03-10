@@ -514,6 +514,15 @@
   },
   {
     "lab": "CDL",
+    "raw_name": "THYROÏDE #2, CASCADE",
+    "code": "THY2R",
+    "category": "profile",
+    "type": "profile",
+    "components": [],
+    "price": 140
+  },
+  {
+    "lab": "CDL",
     "raw_name": "THYROÏDE #3, CASCADE",
     "code": "THY3R",
     "category": "profile",

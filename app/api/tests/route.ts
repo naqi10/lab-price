@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       const conditions: string[] = [
         `pl."is_active" = true`,
         `l."deleted_at" IS NULL`,
-        `(t.category IS NULL OR t.category != 'Profil')`,
+        `(t.category IS NULL OR LOWER(t.category) NOT IN ('profil', 'profile'))`,
       ];
       const bindings: (string | number)[] = [];
       let idx = 1;

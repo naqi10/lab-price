@@ -2084,6 +2084,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "CYSTATIN C",
+      "CYSTATINE C",
     ],
   },
   {
@@ -2315,7 +2316,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     ],
   },
   {
-    canonicalName: "Electrolytes NA K CL",
+    canonicalName: "Electrolytes",
     code: "LYTES",
     category: "Individuel",
     aliases: [
@@ -4488,6 +4489,14 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Profil",
     aliases: [
       "THYROÏDE #1, CASCADE",
+    ],
+  },
+  {
+    canonicalName: "Thyroide 2 Cascade",
+    code: "THY2R",
+    category: "Profil",
+    aliases: [
+      "THYROÏDE #2, CASCADE",
     ],
   },
   {

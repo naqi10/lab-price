@@ -26,6 +26,33 @@ type RawTest = {
   type: "profile" | "individual";
 };
 
+type UnmatchedCandidate = {
+  labId: string;
+  labCode: string;
+  rawTest: RawTest;
+  dbTestId: string;
+};
+
+function inferProfileType(raw: {
+  raw_name: string;
+  category: string | null;
+  type: string;
+}): "profile" | "individual" {
+  const rawType = (raw.type || "").toLowerCase();
+  if (rawType === "profile") return "profile";
+  const category = (raw.category || "").toLowerCase();
+  if (category === "profile" || category === "profil") return "profile";
+  if (/^\s*profil\b/i.test(raw.raw_name)) return "profile";
+  return "individual";
+}
+
+function parsePriceValue(value: string | number): number {
+  if (typeof value === "number") return value;
+  const normalized = value.replace(/[^0-9.,-]/g, "").replace(",", ".");
+  const parsed = Number.parseFloat(normalized);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 // ── Load data from JSON files ─────────────────────────────────────────────
 function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
   const rootDir = path.resolve(__dirname, "..");
@@ -119,7 +146,7 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
           : seed1TatByCode.has(t.code)
             ? `${seed1TatByCode.get(t.code)} jour(s)`
             : "",
-        type: t.type === "profile" ? "profile" : "individual",
+        type: inferProfileType(t),
       });
     } else {
       // Multiple entries sharing same code — check if genuinely different tests
@@ -157,7 +184,7 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
           : seed1TatByCode.has(t.code)
             ? `${seed1TatByCode.get(t.code)} jour(s)`
             : "",
-          type: t.type === "profile" ? "profile" : "individual",
+          type: inferProfileType(t),
         });
       }
     }
@@ -207,15 +234,36 @@ function loadData(): { cdlTests: RawTest[]; dynacareTests: RawTest[] } {
   };
 
   // Convert Dynacare to RawTest format — now with tube type from seed1.ts or inferred
-  const dynacareTests: RawTest[] = dynRaw.map((t) => ({
+  const dynacareTestsFromCatalog: RawTest[] = dynRaw.map((t) => ({
     code: t.code,
     name: t.raw_name,
     description: t.raw_name,
     specimen: dynTubeByCode.get(t.code) || inferDynacareTube(t.code, t.raw_name),
     price: t.price,
     turnaroundTime: dynTatByCode.has(t.code) ? `${dynTatByCode.get(t.code)} jour(s)` : "",
-    type: t.type === "profile" ? "profile" : "individual",
+    type: inferProfileType(t),
   }));
+
+  // Backfill missing Dynacare tests from qcSeedData when extraction JSON is incomplete.
+  // This keeps catalog parity with the QC specimen manual (e.g. CYSTC/CYSTATINE C).
+  const dynacareCodes = new Set(dynacareTestsFromCatalog.map((t) => t.code.toUpperCase()));
+  const dynacareBackfill: RawTest[] = qcSeedData
+    .filter((t) => !dynacareCodes.has(t.code.toUpperCase()))
+    .map((t) => {
+      const tube = Array.isArray(t.tube) ? t.tube.join(", ") : t.tube;
+      const isProfile = !!t.componentCodes?.length || /^\s*profil\b/i.test(t.name);
+      return {
+        code: t.code,
+        name: t.name,
+        description: t.name,
+        specimen: tube ?? inferDynacareTube(t.code, t.name),
+        price: parsePriceValue(t.price),
+        turnaroundTime: t.turnaroundTime ? `${t.turnaroundTime} jour(s)` : "",
+        type: isProfile ? "profile" : "individual",
+      };
+    });
+
+  const dynacareTests: RawTest[] = [...dynacareTestsFromCatalog, ...dynacareBackfill];
 
   return { cdlTests, dynacareTests };
 }
@@ -382,12 +430,14 @@ async function main() {
 
   const allLabTests: {
     labId: string;
+    labCode: string;
     rawTests: RawTest[];
     dbTests: { id: string; name: string; code: string | null }[];
   }[] = [
-    { labId: cdlLab.id, rawTests: cdlTests, dbTests: cdlPriceList.tests },
+    { labId: cdlLab.id, labCode: "CDL", rawTests: cdlTests, dbTests: cdlPriceList.tests },
     {
       labId: dynacareLab.id,
+      labCode: "DYNACARE",
       rawTests: dynacareTests,
       dbTests: dynacarePriceList.tests,
     },
@@ -395,8 +445,9 @@ async function main() {
 
   let resolvedCount = 0;
   let unmatchedCount = 0;
+  const unmatchedCandidates: UnmatchedCandidate[] = [];
 
-  for (const { labId, rawTests, dbTests } of allLabTests) {
+  for (const { labId, labCode, rawTests, dbTests } of allLabTests) {
     const dbTestByName = new Map(dbTests.map((t) => [t.name, t]));
 
     for (const raw of rawTests) {
@@ -409,6 +460,15 @@ async function main() {
       const nameDef = byAlias.get(normalizedName);
       const def = (nameDef && nameDef !== codeDef) ? nameDef : (codeDef ?? nameDef);
       if (!def) {
+        const dbTest = dbTestByName.get(raw.name);
+        if (dbTest) {
+          unmatchedCandidates.push({
+            labId,
+            labCode,
+            rawTest: raw,
+            dbTestId: dbTest.id,
+          });
+        }
         console.warn(
           `  ⚠ UNMATCHED: [${raw.code}] "${raw.name}" — add to canonical registry`
         );
@@ -432,6 +492,55 @@ async function main() {
   console.log(`  ${resolvedCount} tests resolved via canonical registry`);
   if (unmatchedCount > 0)
     console.warn(`  ⚠ ${unmatchedCount} tests UNMATCHED (update registry!)`);
+
+  // ── 6b. Safe auto-mapping for unmatched tests ─────────────────────────
+  // Group by code + normalized local name to avoid fake cross-lab matches.
+  // This keeps unmatched tests selectable in search/comparison while preserving
+  // strict matching behavior.
+  const unmatchedGroups = new Map<string, UnmatchedCandidate[]>();
+  for (const candidate of unmatchedCandidates) {
+    const key = `${candidate.rawTest.code.toUpperCase()}::${normalizeForLookup(candidate.rawTest.description || candidate.rawTest.name)}`;
+    if (!unmatchedGroups.has(key)) unmatchedGroups.set(key, []);
+    unmatchedGroups.get(key)!.push(candidate);
+  }
+
+  let autoMappedUnmatchedCount = 0;
+  for (const group of unmatchedGroups.values()) {
+    if (group.length === 0) continue;
+    const sample = group[0];
+    const mapping = await prisma.testMapping.create({
+      data: {
+        canonicalName: sample.rawTest.name,
+        code: sample.rawTest.code,
+        category: sample.rawTest.type === "profile" ? "Profil" : "Individuel",
+        aliases: [sample.rawTest.description || sample.rawTest.name],
+        entries: {
+          create: group.map((g) => ({
+            laboratoryId: g.labId,
+            localTestName: g.rawTest.name,
+            matchType: "MANUAL" as const,
+            similarity: 1.0,
+            price: g.rawTest.price,
+          })),
+        },
+      },
+      include: { entries: true },
+    });
+
+    for (const entry of mapping.entries) {
+      const labTests = group.filter((g) => g.labId === entry.laboratoryId);
+      for (const lt of labTests) {
+        await prisma.test.update({
+          where: { id: lt.dbTestId },
+          data: { testMappingEntryId: entry.id },
+        });
+      }
+    }
+    autoMappedUnmatchedCount++;
+  }
+  if (autoMappedUnmatchedCount > 0) {
+    console.log(`  ${autoMappedUnmatchedCount} unmatched canonical mappings auto-created`);
+  }
 
   // Create TestMapping + TestMappingEntry records, then link Tests via FK
   let crossLabCount = 0;

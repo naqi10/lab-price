@@ -527,7 +527,7 @@ export const cdlProfileTests: TestDefinition[] = [
   },
   {
     code: "THY2R",
-    name: "THYROÏDE #3, CASCADE",
+    name: "THYROÏDE #2, CASCADE",
     tube: TubeType.SST_GOLD,
     specimenType: SpecimenType.SERUM,
     turnaroundTime: "1",
@@ -1423,7 +1423,7 @@ export const cdlIndividualTests: TestDefinition[] = [
   },
   {
     code: "CMPC",
-    name: "GORGE",
+    name: "CHLAMYDIA PAR PCR",
     tube: TubeType.PCR_TUBE,
     specimenType: SpecimenType.SWAB,
     turnaroundTime: "2",
@@ -1570,9 +1570,18 @@ export const cdlIndividualTests: TestDefinition[] = [
     name: "COBALT, SANG ENTIER",
     tube: TubeType.ROYAL_BLUE,
     specimenType: SpecimenType.WHOLE_BLOOD,
+    turnaroundTime: "3-6",
+    price: "150.00$",
+    notes: "Éviter de prendre des suppléments de vitamine B12 ou un complexe de vitamine B, 3 jours avant le prélèvement."
+  },
+  {
+    code: "COKE",
+    name: "COCAÏNE",
+    tube: TubeType.SPECIAL_KIT,
+    specimenType: SpecimenType.SPECIAL_KIT,
     turnaroundTime: "1",
-    price: "80.00$",
-    notes: "Remplir et envoyer la requête de chaîne de possession drogues illicites RR-45-RQ-001. Si le résultat est positif ou indéterminé, une confirmation peut être demandée (des frais supplémentaires s’appliquent)."
+    price: "75.00$",
+    notes: "Remplir et envoyer la requête de chaîne de possession drogues illicites RR-45-RQ-001."
   },
   {
     code: "C1Q",
@@ -2223,6 +2232,24 @@ export const cdlIndividualTests: TestDefinition[] = [
     price: "52.00$"
   },
   {
+    code: "ACPC1H",
+    name: "GLUCOSE AC & PC 1H",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "76.00$",
+    notes: "Indiquer la charge de glucose et les heures de prélèvement sur la requête et l’étiquette des tubes."
+  },
+  {
+    code: "ACPC2H",
+    name: "GLUCOSE AC & PC 2H",
+    tube: TubeType.SST_GOLD,
+    specimenType: SpecimenType.SERUM,
+    turnaroundTime: "1",
+    price: "76.00$",
+    notes: "Indiquer la charge de glucose et les heures de prélèvement sur la requête et l’étiquette des tubes."
+  },
+  {
     code: "2HGTT",
     name: "GLUCOSE TEST DE TOLÉRANCE, 2 HEURES",
     tube: TubeType.SST_GOLD,
@@ -2232,12 +2259,12 @@ export const cdlIndividualTests: TestDefinition[] = [
     notes: "Indiquer la charge de glucose et les heures de prélèvement sur la requête et l’étiquette des tubes."
   },
   {
-    code: "GONOT",
-    name: "GONOR",
-    tube: TubeType.PCR_TUBE,
+    code: "GONT",
+    name: "CULTURE GONORRHÉE (GORGE / RECTAL)",
+    tube: TubeType.SWAB,
     specimenType: SpecimenType.SWAB,
-    turnaroundTime: "2",
-    price: "125.00$"
+    turnaroundTime: "3",
+    price: "65.00$"
   },
   {
     code: "GONOU",

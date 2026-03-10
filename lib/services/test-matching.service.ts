@@ -23,6 +23,8 @@ const SYNONYM_MAP: [RegExp, string[]][] = [
   [/\bdig\b/i, ["digoxine"]],
   [/\bdil\b/i, ["dilantin", "phenytoine"]],
   [/\blytes\b/i, ["electrolytes"]],
+  [/\belectrolytes?\b/i, ["lytes"]],
+  [/électrolytes?/i, ["electrolytes", "lytes"]],
   [/\binsul\b/i, ["insuline"]],
   [/\blip\b/i, ["lipase"]],
   [/\bosm\b/i, ["osmolalite"]],
@@ -148,6 +150,7 @@ export async function searchTests(
       LEFT JOIN "test_mappings" tm ON tm.id = tme."test_mapping_id"
       WHERE pl."is_active" = true
         AND l."deleted_at" IS NULL
+        AND (t.category IS NULL OR LOWER(t.category) NOT IN ('profil', 'profile'))
         ${labFilter}
         AND (
 ${matchWhere}
