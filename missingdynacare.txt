@@ -1,0 +1,4666 @@
+{
+  "labTests": {
+    "IndividualTests": [
+      {
+        "code": "CDT",
+        "name": "% CDT",
+        "tube": "1 tube gel",
+        "specimenType": "Serum/Blood",
+        "turnaroundTime": "4",
+        "price": "63.00 $"
+      },
+      {
+        "code": "VITD125",
+        "name": "1.25-DIHYDROXY- VITAMINE D",
+        "tube": "1 tube gel",
+        "specimenType": "Serum/Blood",
+        "turnaroundTime": "11",
+        "price": "104.00 $"
+      },
+      {
+        "code": "17HYPROG",
+        "name": "17- HYDROXY- PROGESTERONE (17- OH-PROGESTERONE)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum/Blood",
+        "turnaroundTime": "9",
+        "price": "109.00 $"
+      },
+      {
+        "code": "24U5HIAA",
+        "name": "5-HIAA (MÉTABOLITE DE LA SEROTONINE) URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures avec 25mL de 6N HCL",
+        "specimenType": "Urine",
+        "turnaroundTime": "11",
+        "price": "95.00 $"
+      },
+      {
+        "code": "APH",
+        "name": "ACETAMINOPHÈNE",
+        "tube": "1 tube gel",
+        "specimenType": "Serum/Blood",
+        "turnaroundTime": "4",
+        "price": "90.00 $"
+      },
+      {
+        "code": "ACETONE",
+        "name": "ACÉTONE (ANALYSE QUANTITATIVE)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum/Blood",
+        "turnaroundTime": "5",
+        "price": "50.00 $"
+      },
+      {
+        "code": "VITC",
+        "name": "ACIDE ASCORBIQUE (VITAMINE C)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum/Blood",
+        "turnaroundTime": "11",
+        "price": "105.00 $"
+      },
+      {
+        "code": "LAC",
+        "name": "ACIDE LACTIQUE",
+        "tube": "1 tube à bouchon gris",
+        "specimenType": "Plasma/Blood",
+        "turnaroundTime": "5",
+        "price": "76.00 $"
+      },
+      {
+        "code": "URIC",
+        "name": "ACIDE URIQUE",
+        "tube": "1 tube gel",
+        "specimenType": "Serum/Blood",
+        "turnaroundTime": "1",
+        "price": "38.00 $"
+      },
+      {
+        "code": "QTB",
+        "name": "QuantiFERON-TB (Q-TB GOLD)",
+        "tube": "Trousse (Special Kit)",
+        "specimenType": "Special Kit",
+        "turnaroundTime": "14",
+        "price": "100.00 $"
+      },
+      {
+        "code": "FIT",
+        "name": "FIT (TEST IMMUNOCHIMIQUE FÉCAL)",
+        "tube": "Trousse FIT",
+        "specimenType": "Stool",
+        "turnaroundTime": "1",
+        "price": "62.00 $"
+      },
+      {
+        "code": "HBA1C",
+        "name": "HÉMOGLOBINE A1C",
+        "tube": "1 tube lavande",
+        "specimenType": "Whole Blood",
+        "turnaroundTime": "1",
+        "price": "53.00 $"
+      },
+      {
+        "code": "GLU75",
+        "name": "GLUCOSE - HYPERGLYCÉMIE ORALE 75g NON-GESTATIONNEL (2 HEURES)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum/Blood",
+        "turnaroundTime": "1",
+        "price": "58.00 $"
+      },
+      {
+        "code": "TSH",
+        "name": "TSH ULTRASENSIBLE, (DOSAGE DE LA THYRÉOSTIMULINE)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum/Blood",
+        "turnaroundTime": "1",
+        "price": "69.00 $"
+      }
+    ],
+    "ProfileTests": [
+      {
+        "code": "TGCD",
+        "name": "CHLAMYDIA NEISSERIA GONORRHEA TRICHOMONAS VAGINALIS URINE - DÉPISTAGE PAR TAAN",
+        "description": "CHLAMYDIA NEISSERIA GONORRHEA TRICHOMONAS VAGINALIS URINE - DÉPISTAGE PAR TAAN",
+        "tube": "2 contenant urine Aptima",
+        "specimenType": "Urine",
+        "turnaroundTime": "6",
+        "price": "142.00 $"
+      },
+      {
+        "code": "TGCD",
+        "name": "CHLAMYDIA NEISSERIA GONORRHEA TRICHOMONAS VAGINALIS ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+        "description": "CHLAMYDIA NEISSERIA GONORRHEA TRICHOMONAS VAGINALIS ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+        "tube": "2 écouvillon Aptima",
+        "specimenType": "Swab",
+        "turnaroundTime": "6",
+        "price": "142.00 $"
+      },
+      {
+        "code": "NGPCRD",
+        "name": "CHLAMYDIA NEISSERIA GONORRHOEAE ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+        "description": "CHLAMYDIA NEISSERIA GONORRHOEAE ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+        "tube": "Écouvillon Aptima",
+        "specimenType": "Swab",
+        "turnaroundTime": "1",
+        "price": "113.00 $"
+      },
+      {
+        "code": "NGPCRD",
+        "name": "CHLAMYDIA NEISSERIA GONORRHOEAE URINE - DÉPISTAGE PAR TAAN",
+        "description": "CHLAMYDIA NEISSERIA GONORRHOEAE URINE - DÉPISTAGE PAR TAAN",
+        "tube": "Contenant urine Aptima",
+        "specimenType": "Urine",
+        "turnaroundTime": "1",
+        "price": "113.00 $"
+      },
+      {
+        "code": "ANEM1",
+        "name": "Profil ANÉMIE No 1",
+        "description": "(HÉMOGRAMME, VITESSE DE SÉDIMENTATION, TIBCP, VITAMIN B12, FOLATES)",
+        "tube": "1 tube lavande, 1 tube gel",
+        "specimenType": "Blood",
+        "turnaroundTime": "1",
+        "price": "161.00 $"
+      },
+      {
+        "code": "ANEM11",
+        "name": "Profil ANÉMIE No 11",
+        "description": "(VITESSE DE SEDIMENTATION, HÉMOGRAMME, FERRITINE)",
+        "tube": "1 tube lavande, 1 tube gel",
+        "specimenType": "Blood",
+        "turnaroundTime": "1",
+        "price": "121.00 $"
+      },
+      {
+        "code": "ANEM8",
+        "name": "Profil ANÉMIE No 8",
+        "description": "(VITESSE DE SEDIMENTATION, HÉMOGRAMME, FERRITINE, TIBCP)",
+        "tube": "1 tube lavande, 1 tube gel",
+        "specimenType": "Blood",
+        "turnaroundTime": "1",
+        "price": "173.00 $"
+      },
+      {
+        "code": "SMA12",
+        "name": "Profil BIO-12",
+        "description": "(GLUCOSE AC, ALBUMINE, PHOSPHATASE ALCALINE, AST, BILIRUBINE TOTALE, CALCIUM, CHOLESTÉROL, CREATININE, LDH, PROTÉINES, URÉE, ACIDE URIQUE)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "60.00 $"
+      },
+      {
+        "code": "SMA12LYT",
+        "name": "Profil BIO-12 AVEC ÉLECTROLYTES",
+        "description": "(GLUCOSE AC, ALBUMINE, PHOSPHATASE ALCALINE, AST, BILIRUBINE TOTALE, CALCIUM, CHOLESTEROL, CRÉATININE, ÉLECTROLYTES)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "69.00 $"
+      },
+      {
+        "code": "SMAC",
+        "name": "Profil BIO-C",
+        "description": "(GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, UREE, CREATININE, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTÉINES, ALBUMINE, CHOLESTÉROL, TRIGLYCERIDES)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "71.00 $"
+      },
+      {
+        "code": "SMACLYT",
+        "name": "Profil BIO-C AVEC ÉLECTROLYTES",
+        "description": "(GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CRÉATININE, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTÉINES, ALBUMINE, CHOLESTEROL, TRIGLYCERIDES, ÉLECTROLYTES)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "91.00 $"
+      },
+      {
+        "code": "CBCCOAG",
+        "name": "Profil COAGULATION/ HÉMOGRAMME",
+        "description": "(HÉMOGRAMME, INR, PTT)",
+        "tube": "1 tube lavande, 1 tube bleu pale",
+        "specimenType": "Blood",
+        "turnaroundTime": "1",
+        "price": "123.00 $"
+      },
+      {
+        "code": "COAG",
+        "name": "Profil COAGULOGRAMME",
+        "description": "(CBC, INR, PTT, FIBRINOGEN)",
+        "tube": "1 tube lavande, 1 tube bleu pale",
+        "specimenType": "Blood",
+        "turnaroundTime": "1",
+        "price": "117.00 $"
+      },
+      {
+        "code": "STDMU",
+        "name": "Profil CULTURE GENITAL et CHLAMYDIA et NEISSERIA GONORRHOEAE TAAN",
+        "description": "Profil CULTURE GENITAL et CHLAMYDIA et NEISSERIA GONORRHOEAE TAAN",
+        "tube": "1 écouvillon Amies + écouvillon Aptima ou contenant Aptima urine",
+        "specimenType": "Swab/Urine",
+        "turnaroundTime": "1",
+        "price": "120.00 $"
+      },
+      {
+        "code": "HEPAB",
+        "name": "Profil DÉPISTAGE HÉPATITE A et B",
+        "description": "(ANTICORPS ANTI-HBS, ANTICORPS ANTI-HBC, ANTIGÈNE HBs, ANTICORPS ANTI- HÉPATITE A DE TYPE IgM)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "273.00 $"
+      },
+      {
+        "code": "HEPABC",
+        "name": "Profil DÉPISTAGE HÉPATITE A, B et C",
+        "description": "(ANTICORPS ANTI-HBS, ANTICORPS ANTI-HBC, ANTIGÈNE HBs, ANTICORPS ANTI- HÉPATITE A DE TYPE IgM, ANTICORPS ANTI- HÉPATITE C)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "273.00 $"
+      },
+      {
+        "code": "HEPB",
+        "name": "Profil DÉPISTAGE HÉPATITE B",
+        "description": "(ANTICORPS ANTI-HBS, ANTICORPS ANTI-HBC, ANTIGENE HBs)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "188.00 $"
+      },
+      {
+        "code": "CELISCRE",
+        "name": "Profil DÉPISTAGE MALADIE COELIAQUE",
+        "description": "(IgA TOTALES, ANTICORPS ANTI- TRANSGLUTAMINASE DE TYPE IgA, ANTICORPS ANTI-GLIADINE DE TYPE IgG)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "6",
+        "price": "104.00 $"
+      },
+      {
+        "code": "DIAB",
+        "name": "Profil DIABÉTIQUE No 1",
+        "description": "(GLUCOSE AC, URÉE, CREATININE, ÉLECTROLYTES, HbA1c, ANALYSE D'URINE, MICROALBUMINURIE)",
+        "tube": "1 tube lavande, 1 tube gel, 1 tube urine BD avec préservatif, 1 contenant sterile",
+        "specimenType": "Blood/Urine",
+        "turnaroundTime": "1",
+        "price": "140.00 $"
+      },
+      {
+        "code": "DIAB6",
+        "name": "Profil DIABETIQUE No 6",
+        "description": "(GLUCOSE AC, HBAIC)",
+        "tube": "1 tube lavande, 1 tube gel",
+        "specimenType": "Blood",
+        "turnaroundTime": "1",
+        "price": "72.00 $"
+      },
+      {
+        "code": "FERT1",
+        "name": "Profil FERTILITÉ No 1",
+        "description": "(FSH, LH)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "114.00 $"
+      },
+      {
+        "code": "FERT2",
+        "name": "Profil FERTILITÉ No 2",
+        "description": "(FSH, LH, PROLACTINE)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "180.00 $"
+      },
+      {
+        "code": "GP1",
+        "name": "Profil GÉNÉRAL No 1",
+        "description": "(HÉMOGRAMME, GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CREATININE, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTEINES, ALBUMINE, CHOLESTEROL, TRIGLYCERIDES, ANALYSE D'URINE)",
+        "tube": "1 tube lavande, 1 tube gel, 1 tube urine BD avec préservatif",
+        "specimenType": "Blood/Urine",
+        "turnaroundTime": "1",
+        "price": "140.00 $"
+      },
+      {
+        "code": "GP2",
+        "name": "Profil GÉNÉRAL No 2",
+        "description": "(HEMOGRAMME, GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CRÉATININE, DFG, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTEINES, ALBUMINE, CHOLESTEROL, TRIGLYCERIDES, ELECTROLYTES, ANALYSE D'URINE)",
+        "tube": "1 tube lavande, 1 tube gel, 1 tube urine BD avec préservatif",
+        "specimenType": "Blood/Urine",
+        "turnaroundTime": "1",
+        "price": "158.00 $"
+      },
+      {
+        "code": "GP3",
+        "name": "Profil GÉNÉRAL No 3",
+        "description": "(GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CRÉATININE, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTÉINES, ALBUMINE, CHOLESTEROL, TRIGLYCERIDES, HEMOGRAMME, ANALYSE D'URINE, HDL, LDL)",
+        "tube": "1 tube lavande, 1 tube gel, 1 tube urine BD avec préservatif",
+        "specimenType": "Blood/Urine",
+        "turnaroundTime": "1",
+        "price": "166.00 $"
+      },
+      {
+        "code": "GP4",
+        "name": "Profil GÉNÉRAL No 4",
+        "description": "(HEMOGRAMME, GLUCOSE AC, CALCIUM, PHOSPHORE, ACIDE URIQUE, URÉE, CRÉATININE, DFG, BILIRUBINE TOTALE, PHOSPHATASE ALCALINE, LDH, AST, ALT, GGT, PROTÉINES, ALBUMINE, CHOLESTEROL, TRIGLYCERIDES, HDL, LDL, ÉLECTROLYTES, ANALYSE D'URINE)",
+        "tube": "1 tube lavande, 1 tube gel, 1 tube urine BD avec préservatif",
+        "specimenType": "Blood/Urine",
+        "turnaroundTime": "1",
+        "price": "183.00 $"
+      },
+      {
+        "code": "ITSS",
+        "name": "Profil GONO-CHLAM",
+        "description": "(ANTIGÈNE HBs, VIH, SYPHILIS, GONO- CHLAMYDIA TAAN spécifier la source)",
+        "tube": "1 tube gel, 1 écouvillon Aptima ou 1 contenant urine Aptima",
+        "specimenType": "Serum/Swab/Urine",
+        "turnaroundTime": "2-Jan",
+        "price": "212.00 $"
+      },
+      {
+        "code": "LFT",
+        "name": "Profil HÉPATIQUE",
+        "description": "(ALT, AST, BILIRUBINE TOTALE, GGT, LDH, PHOSPHATASE ALCALINE)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "71.00 $"
+      },
+      {
+        "code": "LIPID",
+        "name": "Profil LIPIDIQUE CARDIOVASCULAIRE",
+        "description": "(CHOLESTEROL, TRIGLYCERIDES, HDL, LDL)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "72.00 $"
+      },
+      {
+        "code": "LIPID18",
+        "name": "Profil LIPIDIQUE CARDIOVASCULAIRE No 18",
+        "description": "(CHOLESTÉROL, TRIGLYCERIDES, HDL, LDL, APOLIPOPROTÉINE B, CRP-hs)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "109.00 $"
+      },
+      {
+        "code": "LIPID6",
+        "name": "Profil LIPIDIQUE CARDIOVASCULAIRE N 6",
+        "description": "(CHOLESTEROL, TRIGLYCERIDES, HDL, LDL, APOLIPOPROTÉINE B)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "137.00 $"
+      },
+      {
+        "code": "CELIAC",
+        "name": "Profil MALADIE COELIAQUE",
+        "description": "(IgA TOTALES, ANTICORPS ANTI- TRANSGLUTAMINASE DE TYPE IgA, ANTICORPS ANTI-GLIADINE DE TYPE IgG ET IgA)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "6",
+        "price": "146.00 $"
+      },
+      {
+        "code": "FPSA",
+        "name": "Profil MARQUEURS PROSTATIQUES",
+        "description": "(APS LIBRE, APS TOTALE)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "115.00 $"
+      },
+      {
+        "code": "MONOP",
+        "name": "Profil MONOTEST",
+        "description": "(FSC, MONOTEST)",
+        "tube": "1 tube lavande, 1 tube gel",
+        "specimenType": "Blood",
+        "turnaroundTime": "1",
+        "price": "65.00 $"
+      },
+      {
+        "code": "OSTEOP",
+        "name": "Profil OSTEOPOROSIS",
+        "description": "(PTH, ÉLECTROPHOÈSE DES PROTÉINES, CALCIUM INONISÉ, ALBUMINE, PHOSPHATASE ALKALINE, CALCIUM, CREATININE, PHOSPHORE, PROTEINE, CALCIUM-URINE RANDOM, CREATITINE- URINE RANDOM, PHOSPHORE- URINE RANDOM, RATIO CAL/CREAT URINE RANDOM)",
+        "tube": "1 tube lavande, 4 tube gel, 1 contenant d'urine stérile",
+        "specimenType": "Blood/Urine",
+        "turnaroundTime": "1",
+        "price": "314.00 $"
+      },
+      {
+        "code": "PREN1",
+        "name": "Profil PRÉNATAL No 1",
+        "description": "(FSC INTERPRETATION + ANTICORPS MATERNEL, GROUPE SANGUIN)",
+        "tube": "1 tube lavande, 1 tube rose",
+        "specimenType": "Blood",
+        "turnaroundTime": "3",
+        "price": "134.00 $"
+      },
+      {
+        "code": "PREN2",
+        "name": "Profil PRÉNATAL No 2",
+        "description": "(FSC INTERPRETATION + ANTICORPS MATERNEL, GROUPE SANGUIN, RUBELLA IGG)",
+        "tube": "2 tube lavande, 1 tube gel, 1 tube rose",
+        "specimenType": "Blood",
+        "turnaroundTime": "3",
+        "price": "164.00 $"
+      },
+      {
+        "code": "PREN3",
+        "name": "Profil PRÉNATAL No 3",
+        "description": "(FSC INTERPRETATION + ANTICORPS MATERNEL, GROUPE SANGUIN, RUBELLA IGG, TOXOPLASMOSE IGG, GLUCOSE AC, GLUCOSE PC)",
+        "tube": "1 tube lavande, 3+1 tubes gel, 1 tube rose",
+        "specimenType": "Blood",
+        "turnaroundTime": "5",
+        "price": "187.00 $"
+      },
+      {
+        "code": "SMA16",
+        "name": "Profil SMA-16",
+        "description": "(GLUCOSE AC, ALBUMINE, PHOSPHATASE ALCALINE, AST, BILIRUBINE TOTALE, CALCIUM, CHOLESTÉROL, CRÉATININE, ÉLECTROLYTES, CO2 TOTALE)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "74.00 $"
+      },
+      {
+        "code": "SMA5",
+        "name": "Profil SMA-5",
+        "description": "(GLUCOSE AC, CRÉATININE, ÉLECTROLYTES)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "74.00 $"
+      },
+      {
+        "code": "SMA6",
+        "name": "Profil SMA-6",
+        "description": "(GLUCOSE AC, URÉE, CRÉATININE, ÉLECTROLYTES)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "69.00 $"
+      },
+      {
+        "code": "SMA7",
+        "name": "Profil SMA-7",
+        "description": "(GLUCOSE AC, URÉE, CRÉATININE, ÉLECTROLYTES, CO2 TOTALE)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "71.00 $"
+      },
+      {
+        "code": "TH2",
+        "name": "Profil THYROÏDIEN No 2",
+        "description": "(TSH, T4 LIBRE)",
+        "tube": "1 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "120.00 $"
+      },
+      {
+        "code": "TH6",
+        "name": "Profil THYROÏDIEN No 6",
+        "description": "(TSH, T4 LIBRE, ANTICORPS ANTI- MICROSOMES THYROIDIENS)",
+        "tube": "2 tube gel",
+        "specimenType": "Serum",
+        "turnaroundTime": "1",
+        "price": "202.00 $"
+      },
+      {
+        "code": "STONE",
+        "name": "Profil UROLITHIASE",
+        "description": "(CALCIUM, PHOSPHORE, ELECTROLYTES, ACIDE URIQUE, CALCIUM - URINES DE 24 h, PHOSPHORE - URINES DE 24 h, CRÉATININE - URINES DE 24 h, ACIDE URIQUE URINES DE 24 h, OXALATES URINES DE 24 h, ANALYSE D'URINE)",
+        "tube": "1 tube gel, 1 contenant de 24 heures sans préservatif, 1 contenant pour collect des urines de 24 heures avec 25mL de 6N HCI, et 1 tube urine BD avec préservatif",
+        "specimenType": "Blood/Urine",
+        "turnaroundTime": "1",
+        "price": "170.00 $"
+      }
+    ]
+  }
+}
+
+
+{
+  "labTests": {
+    "IndividualTests": [
+      {
+        "code": "ALB",
+        "name": "ALBUMINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 235]"
+      },
+      {
+        "code": "ALCO",
+        "name": "ALCOOL (ETHANOL) - SANG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "51.00 $",
+        "_citation": "[cite: 235]"
+      },
+      {
+        "code": "ETOH",
+        "name": "ALCOOL (ETHANOL) URINE",
+        "tube": "Contenant stérile ou trousse de dépistage de drogue",
+        "specimenType": "Contenant stérile ou trousse de dépistage de drogue",
+        "turnaroundTime": "1",
+        "price": "58.00 $",
+        "_citation": "[cite: 235]"
+      },
+      {
+        "code": "DOST",
+        "name": "ALDOSTÉRONE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "11",
+        "price": "100.00 $",
+        "_citation": "[cite: 235]"
+      },
+      {
+        "code": "DOSTU",
+        "name": "ALDOSTÉRONE - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte des urines de 24 heures",
+        "turnaroundTime": "11",
+        "price": "95.00 $",
+        "_citation": "[cite: 235]"
+      },
+      {
+        "code": "Voir réquisiton",
+        "name": "ALLERGÈNES INDIVIDUELS, MIXES OU EN PROFIL",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "8",
+        "price": "52.00 $",
+        "_citation": "[cite: 235]"
+      },
+      {
+        "code": "TRYP",
+        "name": "ALPHA 1- ANTITRYPSINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "91.00 $",
+        "_citation": "[cite: 235]"
+      },
+      {
+        "code": "ALPHA2",
+        "name": "ALPHA 2 MACROGLOBULINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "28.00 $",
+        "_citation": "[cite: 235]"
+      },
+      {
+        "code": "AFP",
+        "name": "ALPHA- FŒTOPROTÉINE (AFP)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "80.00 $",
+        "_citation": "[cite: 235]"
+      },
+      {
+        "code": "ALT",
+        "name": "ALT",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 240]"
+      },
+      {
+        "code": "AMIK",
+        "name": "AMIKACINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "114.00 $",
+        "_citation": "[cite: 240]"
+      },
+      {
+        "code": "AMIK",
+        "name": "AMIKACINE PRÉ-DOSE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "114.00 $",
+        "_citation": "[cite: 240]"
+      },
+      {
+        "code": "AMIK",
+        "name": "AMIKACINE POST-DOSE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "114.00 $",
+        "_citation": "[cite: 240]"
+      },
+      {
+        "code": "AMITRIP",
+        "name": "AMITRIPTYLINE (ANTIDEPRESSEUR TRICYCLIQUE)",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge avec activateur de coagulation",
+        "turnaroundTime": "11",
+        "price": "105.00 $",
+        "_citation": "[cite: 240]"
+      },
+      {
+        "code": "AMMO",
+        "name": "AMMONIAQUE",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "9",
+        "price": "51.00 $",
+        "_citation": "[cite: 240]"
+      },
+      {
+        "code": "AMYL",
+        "name": "AMYLASE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "URI",
+        "name": "ANALYSE D'URINE",
+        "tube": "1 tube urine BD avec préservatif",
+        "specimenType": "1 tube urine BD avec préservatif",
+        "turnaroundTime": "1",
+        "price": "31.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "KIDNEY",
+        "name": "ANALYSE DES CALCULS RENAUX",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "6",
+        "price": "76.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "ANDRO",
+        "name": "ANDROSTENE-DIONE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "11",
+        "price": "93.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "LUPUS",
+        "name": "ANTICOAGULANT LUPIQUE",
+        "tube": "2 tubes à bouchon bleu clair + 1 tube gel",
+        "specimenType": "2 tubes à bouchon bleu clair + 1 tube gel",
+        "turnaroundTime": "12",
+        "price": "137.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "DEGLIAG",
+        "name": "ANTICORPS ANTI-GLIADINE DE TYPE IgG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "6",
+        "price": "53.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "DIPH",
+        "name": "ANTICORPS ANTI-DIPHTÉRIE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "21",
+        "price": "39.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "DEGLIAA",
+        "name": "ANTICORPS ANTI-GLIADINE DE TYPE IgA",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "6",
+        "price": "53.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "DNA",
+        "name": "ANTICORPS ANTI-ADN (ANTI-ADN double brin)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "134.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "IFA",
+        "name": "ANTICORPS ANTI-FACTEUR INTRINSÈQUE",
+        "tube": "2 tubes gel",
+        "specimenType": "2 tubes gel",
+        "turnaroundTime": "37",
+        "price": "120.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "HISTAB",
+        "name": "ANTICORPS ANTI-HISTONE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "17",
+        "price": "72.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "GBM",
+        "name": "ANTICORPS ANTI-MEMBRANE BASALE GLOMERULAIRE (ANTI-GBM)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "5",
+        "price": "57.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "HEPC",
+        "name": "ANTICORPS ANTI-HEPATITE C (ANTI-VHC)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "76.00 $",
+        "_citation": "[cite: 244]"
+      },
+      {
+        "code": "PARVO",
+        "name": "ANTICORPS ANTI-PARVOVIRUS DE TYPES IgG ET IgM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "9",
+        "price": "173.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "ENA",
+        "name": "ANTICORPS ANTI-ANTIGÈNES NUCLÉAIRES SOLUBES (ANTI-ΕΝΑ)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "108.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "MITOM2",
+        "name": "ANTICORPS ANTI- MITOCHONDRIES DE TYPE M2",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "114.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "MYOCAR",
+        "name": "ANTICORPS ANTI-MYOCARDE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "13",
+        "price": "70.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "TAPRO",
+        "name": "ANTICORPS ANTI-MICROSOMES THYROIDIENS",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "106.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "ACCP",
+        "name": "ANTICORPS ANTI CYCLIQUE CITRULLINĖ (ANTICORPS ANTI-CCP OU ANTICORPS PEPTIDE CITRULLINE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "83.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "ASPP",
+        "name": "ANTICORPS ANTI-ASPERGILLUS",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "20",
+        "price": "114.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "B2GPIGA",
+        "name": "ANTICORPS ANTI-BETA 2-GLYCOPROTÉINE I DE TYPE IgA",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "8",
+        "price": "90.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "B2GP",
+        "name": "ANTICORPS ANTI-BETA 2-GLYCOPROTÉINE I DE TYPE IgG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "8",
+        "price": "90.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "B2GPIGM",
+        "name": "ANTICORPS ANTI-BETA 2-GLYCOPROTÉINE I DE TYPE IgM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "8",
+        "price": "90.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "ANTICAR",
+        "name": "ANTICORPS ANTI-CARDIOLIPINES (ANTI- PHOSPHOLIPIDES) (APA)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "6",
+        "price": "70.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "APC",
+        "name": "ANTICORPS ANTI-CELLULES PARIÉTALES",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "6",
+        "price": "106.00 $",
+        "_citation": "[cite: 248]"
+      },
+      {
+        "code": "CMVG",
+        "name": "ANTICORPS ANTI-CYTOMEGALOVIRUS DE TYPE IgG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "93.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "CMVM",
+        "name": "ANTICORPS ANTI-CYTOMÉGALOVIRUS DE TYPE IgM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "93.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "ANCA",
+        "name": "ANTICORPS ANTI-CYTOPLASME DES NEUTROPHILES (ANCA)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "5",
+        "price": "142.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "ACENDOM",
+        "name": "ANTICORPS ANTI-ENDOMYSIUM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "5",
+        "price": "129.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "AGAD",
+        "name": "ANTICORPS ANTI-GLUTAMATE DÉCARBOXYLASE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "17",
+        "price": "55.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "HEPAM",
+        "name": "ANTICORPS ANTI-HEPATITE A DE TYPE IgM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "89.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "ACDELTA",
+        "name": "ANTICORPS ANTI-HEPATITE D (ANTI-DELTA)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "40",
+        "price": "103.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "AMITO",
+        "name": "ANTICORPS ANTI-MITOCHONDRIES",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "5",
+        "price": "93.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "AML",
+        "name": "ANTICORPS ANTI-MUSCLE LISSE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "5",
+        "price": "92.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "ANA",
+        "name": "ANTICORPS ANTINUCLÉAIRES (ANA)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "79.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "ANTISKIN",
+        "name": "ANTICORPS ANTI-PEAU",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "5",
+        "price": "58.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "RABI",
+        "name": "ANTICORPS ANTI-RABIQUES (RAGE)",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge avec activateur de coagulation",
+        "turnaroundTime": "30",
+        "price": "73.00 $",
+        "_citation": "[cite: 252]"
+      },
+      {
+        "code": "ARA",
+        "name": "ANTICORPS ANTI-RÉCEPTEUR DE L'ACETYLCHOLINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "32",
+        "price": "455.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "ANTHY",
+        "name": "ANTICORPS ANTI-RÉCEPTEURS DE LA THYRÉOSTIMULINE (TBII)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "15",
+        "price": "171.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "ANTISPERM",
+        "name": "ANTICORPS ANTI-SPERMATOZOÏDES",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "23",
+        "price": "58.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "ASO",
+        "name": "ANTICORPS ANTI-STREPTOLYSINE O",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "28.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "ACSUR",
+        "name": "ANTICORPS ANTI-SURRÉNALES",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "23",
+        "price": "85.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "TETA",
+        "name": "ANTICORPS ANTITÉTANIQUES",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "30",
+        "price": "65.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "TRANSGLUT",
+        "name": "ANTICORPS ANTI-TRANSGLUTAMINASE DE TYPE IgA",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "6",
+        "price": "89.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "EBVIGG",
+        "name": "ANTICORPS ANTI-VIRUS EPSTEIN-BARR DE TYPE IgG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "103.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "EBVIGM",
+        "name": "ANTICORPS ANTI-VIRUS EPSTEIN-BARR DE TYPE IgM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "103.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "VARIG",
+        "name": "ANTICORPS DE TYPE IgG DIRIGÉS CONTRE LE VIRUS DE LA VARICELLE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "76.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "MUMPIGG",
+        "name": "ANTICORPS DE TYPE IgG DIRIGÉS CONTRE LE VIRUS DES OREILLONS",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "95.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "ROUGG",
+        "name": "ANTICORPS DE TYPE IgG DIRIGÉS CONTRE LE VIRUS DE LA ROUGEOLE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "68.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "RUB",
+        "name": "ANTICORPS DE TYPE IgG DIRIGÉS CONTRE LE VIRUS DE LA RUBÉOLE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "54.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "HEPBCM",
+        "name": "ANTICORPS DE TYPE IgM DIRIGÉS CONTRE L'ANTIGÈNE CAPSIDIQUE DE L'HÉPATITE B (ANTI-HBc IgM)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "110.00 $",
+        "_citation": "[cite: 256]"
+      },
+      {
+        "code": "VARIM",
+        "name": "ANTICORPS DE TYPE IgM DIRIGÉS CONTRE LE VIRUS DE LA VARICELLE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "84.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "MUMPIGM",
+        "name": "ANTICORPS DE TYPE IgM DIRIGÉS CONTRE LE VIRUS DES OREILLONS",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "79.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "ROUGM",
+        "name": "ANTICORPS DE TYPE IgM DIRIGÉS CONTRE LE VIRUS DE LA ROUGEOLE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "84.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "RUBIGM",
+        "name": "ANTICORPS DE TYPE IgM DIRIGÉS CONTRE LE VIRUS DE LA RUBÉOLE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "93.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "HEPBC",
+        "name": "ANTICORPS DIRIGÉS CONTRE L'ANTIGÈNE CAPSIDIQUE DE L'HÉPATITE B (ANTI-HBC)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "89.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "HEPBE",
+        "name": "ANTICORPS DIRIGÉS CONTRE L'ANTIGÈNE e DE L'HEPATITE B (ANTI-HBe)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "73.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "HEPAG",
+        "name": "ANTICORPS TOTAUX ANTI-HEPATITE A DE TYPE IgG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "84.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "CEA",
+        "name": "ANTIGÈNE CARCINO-EMBRYONNAIRE (ACE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "79.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "HBS",
+        "name": "ANTIGÈNE DE SURFACE DE L'HÉPATITE B (HBsAg)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "64.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "HBEAG",
+        "name": "ANTIGÈNE HÉPATITE Be (HBeAg)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "73.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "HLAB",
+        "name": "ANTIGÈNE HLA-B27",
+        "tube": "1 tube à bouchon jaune clair",
+        "specimenType": "1 tube à bouchon jaune clair",
+        "turnaroundTime": "10-30",
+        "price": "184.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "PSA",
+        "name": "ANTIGÈNE PROSTATIQUE SPÉCIFIQUE (APS)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "69.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "PROCAG",
+        "name": "ANTIGENE PROTÉINE C",
+        "tube": "2 tubes à bouchon bleu clair",
+        "specimenType": "2 tubes à bouchon bleu clair",
+        "turnaroundTime": "19",
+        "price": "108.00 $",
+        "_citation": "[cite: 260]"
+      },
+      {
+        "code": "ANHBS",
+        "name": "ANTI-HBs",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "69.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "MOINE",
+        "name": "ΑΝΤΙΜΟINE - URINE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "11",
+        "price": "93.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "ANTITH",
+        "name": "ANTITHROMBINE III (ACTIVITÉ)",
+        "tube": "1 tube à bouchon bleu clair",
+        "specimenType": "1 tube à bouchon bleu clair",
+        "turnaroundTime": "16",
+        "price": "84.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "APOA",
+        "name": "APOLIPOPROTÉINE A1",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "69.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "APOB",
+        "name": "APOLIPOPROTÉINE B",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "60.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "FPSA",
+        "name": "APS LIBRE (APS TOTAL ET RATIO APS LIBRE/APS TOTAL)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "115.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "ARSENIWB",
+        "name": "ARSENIC SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé (K2EDTA)",
+        "turnaroundTime": "9",
+        "price": "59.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "ARSENIRU",
+        "name": "ARSENIC URINE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "9",
+        "price": "59.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "AST",
+        "name": "AST",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "BERY",
+        "name": "BÉRYLLIUM SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé (K2EDTA)",
+        "turnaroundTime": "12",
+        "price": "166.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "B2MICRO",
+        "name": "BETA-2-MICROGLOBULINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "15",
+        "price": "76.00 $",
+        "_citation": "[cite: 264]"
+      },
+      {
+        "code": "CD4",
+        "name": "BILAN D'IMMUNODÉFICIENCE (CD4, CD8, CD3)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "20",
+        "price": "253.00 $",
+        "_citation": "[cite: 267]"
+      },
+      {
+        "code": "BILITD",
+        "name": "BILIRUBINE DIRECTE/CONJUGUÉE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "45.00 $",
+        "_citation": "[cite: 267]"
+      },
+      {
+        "code": "BILINDP",
+        "name": "BILIRUBINE INDIRECTE / NON CONJUGUÉE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "54.00 $",
+        "_citation": "[cite: 267]"
+      },
+      {
+        "code": "BILIT",
+        "name": "BILIRUBINE TOTALE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 267]"
+      },
+      {
+        "code": "BRUC",
+        "name": "BRUCELLA/ BRUCELLOSE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "30",
+        "price": "33.00 $",
+        "_citation": "[cite: 267]"
+      },
+      {
+        "code": "CA19",
+        "name": "CA 19-9 (ANTIGENE CARBOHYDRATE 19-9)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "79.00 $",
+        "_citation": "[cite: 267]"
+      },
+      {
+        "code": "CA125",
+        "name": "CA 125 (OVAIRE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "82.00 $",
+        "_citation": "[cite: 267]"
+      },
+      {
+        "code": "CA153",
+        "name": "CA 15-3 (SEIN)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "79.00 $",
+        "_citation": "[cite: 267]"
+      },
+      {
+        "code": "CADMIWB",
+        "name": "CADMIUM SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé (K2EDTA)",
+        "turnaroundTime": "9",
+        "price": "58.00 $",
+        "_citation": "[cite: 267]"
+      },
+      {
+        "code": "CAF",
+        "name": "CAFÉINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "48.00 $",
+        "_citation": "[cite: 267]"
+      }
+    ]
+  }
+}
+
+
+
+
+{
+  "labTests": {
+    "IndividualTests": [
+      {
+        "code": "CALCI",
+        "name": "CALCITONINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "9",
+        "price": "136.00 $",
+        "_citation": "[cite: 272]"
+      },
+      {
+        "code": "CA",
+        "name": "CALCIUM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 272]"
+      },
+      {
+        "code": "CAI",
+        "name": "CALCIUM-IONISÉ (CALCIUM LIBRE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "47.00 $",
+        "_citation": "[cite: 272]"
+      },
+      {
+        "code": "CAURAN",
+        "name": "CALCIUM - URINE AU HASARD",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 272]"
+      },
+      {
+        "code": "24UCA",
+        "name": "CALCIUM URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte des urines de 24 heures",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 272]"
+      },
+      {
+        "code": "FECAL",
+        "name": "CALPROTECTINE, FÉCALE",
+        "tube": "Contenant Dynacare Génétique et services spécialisés (kit spécial)",
+        "specimenType": "Contenant Dynacare Génétique et services spécialisés",
+        "turnaroundTime": "12",
+        "price": "133.00 $",
+        "_citation": "[cite: 272]"
+      },
+      {
+        "code": "TEG",
+        "name": "CARBAMAZEPINE (TEGRETOL)",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "1",
+        "price": "54.00 $",
+        "_citation": "[cite: 272]"
+      },
+      {
+        "code": "CARNIT",
+        "name": "CARNITINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "53.00 $",
+        "_citation": "[cite: 276]"
+      },
+      {
+        "code": "CATEMETA",
+        "name": "CATÉCHOLAMINES et MÉTANÉPHRINE - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures avec 25mL de 6N HCL",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "11",
+        "price": "150.00 $",
+        "_citation": "[cite: 276]"
+      },
+      {
+        "code": "NATKC",
+        "name": "CD16/CD56 (CELLULES NK)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "4",
+        "price": "158.00 $",
+        "_citation": "[cite: 276]"
+      },
+      {
+        "code": "CERU",
+        "name": "CÉRULOPLASMINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "76.00 $",
+        "_citation": "[cite: 276]"
+      },
+      {
+        "code": "CH50",
+        "name": "CH50, COMPLÉMENT TOTAL",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "9",
+        "price": "74.00 $",
+        "_citation": "[cite: 276]"
+      },
+      {
+        "code": "FLC",
+        "name": "CHAÎNES LÉGÈRES LIBRES",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "7",
+        "price": "53.00 $",
+        "_citation": "[cite: 276]"
+      },
+      {
+        "code": "HIVCV",
+        "name": "CHARGE VIRALE (VIH)",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "16",
+        "price": "93.00 $",
+        "_citation": "[cite: 280]"
+      },
+      {
+        "code": "CHIKUN",
+        "name": "CHIKUNGUNYA - VIRUS (IgM par EIA)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "120.00 $",
+        "_citation": "[cite: 280]"
+      },
+      {
+        "code": "PCRCHSD",
+        "name": "CHLAMYDIA URINE DÉPISTAGE PAR TAAN",
+        "tube": "Contenant Urine Aptima",
+        "specimenType": "Contenant Urine Aptima",
+        "turnaroundTime": "1",
+        "price": "83.00 $",
+        "_citation": "[cite: 280]"
+      },
+      {
+        "code": "PCRCHSD",
+        "name": "CHLAMYDIA ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+        "tube": "Écouvillon Aptima",
+        "specimenType": "Écouvillon Aptima",
+        "turnaroundTime": "1",
+        "price": "83.00 $",
+        "_citation": "[cite: 280]"
+      },
+      {
+        "code": "CL",
+        "name": "CHLORURES",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 288]"
+      },
+      {
+        "code": "24UCL",
+        "name": "CHLORURES - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 288]"
+      },
+      {
+        "code": "CLURAN",
+        "name": "CHLORURES- URINE AU HASARD",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 288]"
+      },
+      {
+        "code": "CHOL",
+        "name": "CHOLESTÉROL TOTAL",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 288]"
+      },
+      {
+        "code": "CRBC",
+        "name": "CHOLINESTERASE DES GLOBULES ROUGES",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "4",
+        "price": "55.00 $",
+        "_citation": "[cite: 288]"
+      },
+      {
+        "code": "CSE",
+        "name": "CHOLINESTERASE TOTALE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "5",
+        "price": "59.00 $",
+        "_citation": "[cite: 288]"
+      },
+      {
+        "code": "CHROS",
+        "name": "CHROME PLASMA",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "8",
+        "price": "58.00 $",
+        "_citation": "[cite: 292]"
+      },
+      {
+        "code": "CHROMERU",
+        "name": "CHROME URINE ALEATOIRE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "9",
+        "price": "58.00 $",
+        "_citation": "[cite: 292]"
+      },
+      {
+        "code": "CHROMEWB",
+        "name": "CHROME SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "15",
+        "price": "79.00 $",
+        "_citation": "[cite: 292]"
+      },
+      {
+        "code": "CHROMA",
+        "name": "CHROMOGRANINE A",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "17",
+        "price": "93.00 $",
+        "_citation": "[cite: 292]"
+      },
+      {
+        "code": "CITU",
+        "name": "CITRATE URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures avec 25mL de 6N HCL",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "11",
+        "price": "122.00 $",
+        "_citation": "[cite: 295]"
+      },
+      {
+        "code": "CK",
+        "name": "CK (CRÉATINE KINASE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 295]"
+      },
+      {
+        "code": "CKMB",
+        "name": "CK-MB",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 295]"
+      },
+      {
+        "code": "CLOBAZAM",
+        "name": "CLOBAZAM (FRISIUM)",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "7",
+        "price": "152.00 $",
+        "_citation": "[cite: 295]"
+      },
+      {
+        "code": "CLOMI",
+        "name": "CLOMIPRAMINE (ANAFRIL)",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "11",
+        "price": "104.00 $",
+        "_citation": "[cite: 295]"
+      },
+      {
+        "code": "CLOS",
+        "name": "CLOSTRIDIUM DIFFICILE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "Min. 2",
+        "price": "100.00 $",
+        "_citation": "[cite: 295]"
+      },
+      {
+        "code": "CLOZA",
+        "name": "CLOZAPINE (CLOZARIL)",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "7",
+        "price": "142.00 $",
+        "_citation": "[cite: 300]"
+      },
+      {
+        "code": "CO2",
+        "name": "CO2 TOTAL (BICARBONATE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 300]"
+      },
+      {
+        "code": "COBALTWB",
+        "name": "COBALT SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "9",
+        "price": "58.00 $",
+        "_citation": "[cite: 300]"
+      },
+      {
+        "code": "COBALTU",
+        "name": "COBALT URINE ALÉATOIRE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "9",
+        "price": "59.00 $",
+        "_citation": "[cite: 300]"
+      },
+      {
+        "code": "COENZQ10",
+        "name": "COENZYME Q10",
+        "tube": "Tube à bouchon vert (héparine de sodium)",
+        "specimenType": "Tube à bouchon vert",
+        "turnaroundTime": "15",
+        "price": "110.00 $",
+        "_citation": "[cite: 304]"
+      },
+      {
+        "code": "HIV",
+        "name": "COMBO VIH (ANTICORPS ANTI-VIH-1 ET ANTI-VIH-2 + ANTIGÈNE P24)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "69.00 $",
+        "_citation": "[cite: 304]"
+      },
+      {
+        "code": "C3",
+        "name": "COMPLÉMENT C3",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "70.00 $",
+        "_citation": "[cite: 304]"
+      },
+      {
+        "code": "C4",
+        "name": "COMPLÉMENT C4",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "70.00 $",
+        "_citation": "[cite: 304]"
+      },
+      {
+        "code": "C3C4",
+        "name": "COMPLÉMENTS C3 et C4",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "104.00 $",
+        "_citation": "[cite: 304]"
+      },
+      {
+        "code": "CORTIPM",
+        "name": "CORTISOL (APRÈS-MIDI)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "63.00 $",
+        "_citation": "[cite: 304]"
+      },
+      {
+        "code": "CORTISOLAMPM",
+        "name": "CORTISOL (MATIN ET APRÈS-MIDI)",
+        "tube": "2 tubes gel",
+        "specimenType": "2 tubes gel",
+        "turnaroundTime": "1",
+        "price": "91.00 $",
+        "_citation": "[cite: 304]"
+      },
+      {
+        "code": "CORTIAM",
+        "name": "CORTISOL (MATIN)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "63.00 $",
+        "_citation": "[cite: 304]"
+      },
+      {
+        "code": "CORTIRAN",
+        "name": "CORTISOL ALÉATOIRE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "63.00 $",
+        "_citation": "[cite: 308]"
+      },
+      {
+        "code": "24CORTU",
+        "name": "CORTISOL LIBRE - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "11",
+        "price": "93.00 $",
+        "_citation": "[cite: 308]"
+      },
+      {
+        "code": "CREA",
+        "name": "CRÉATININE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "27.00 $",
+        "_citation": "[cite: 308]"
+      },
+      {
+        "code": "CREACL",
+        "name": "CRÉATININE - CLAIRANCE",
+        "tube": "1 tube gel + contenant pour collecte des urines de 24 heures",
+        "specimenType": "1 tube gel + contenant",
+        "turnaroundTime": "1",
+        "price": "63.00 $",
+        "_citation": "[cite: 308]"
+      },
+      {
+        "code": "CREAURAN",
+        "name": "CRÉATININE - URINE AU HASARD",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 308]"
+      },
+      {
+        "code": "24UCREA",
+        "name": "CREATININE - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 308]"
+      },
+      {
+        "code": "CRYOF",
+        "name": "CRYOFIBRINOGÈNE",
+        "tube": "1 tube lavande + 2 tubes rouge (10mL)",
+        "specimenType": "1 tube lavande + 2 tubes rouge",
+        "turnaroundTime": "5",
+        "price": "32.00 $",
+        "_citation": "[cite: 308]"
+      },
+      {
+        "code": "CRYO",
+        "name": "CRYOGLOBULINE",
+        "tube": "2 tubes à bouchon rouge avec activateur de coagulation (10mL)",
+        "specimenType": "2 tubes à bouchon rouge",
+        "turnaroundTime": "7",
+        "price": "38.00 $",
+        "_citation": "[cite: 312]"
+      },
+      {
+        "code": "COPPERWB",
+        "name": "CUIVRE SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "5",
+        "price": "58.00 $",
+        "_citation": "[cite: 312]"
+      },
+      {
+        "code": "COPPERRU",
+        "name": "CUIVRE URINE ALEATOIRE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "9",
+        "price": "59.00 $",
+        "_citation": "[cite: 312]"
+      },
+      {
+        "code": "CUL",
+        "name": "CULTURE ET SENSIBILITÉ: AUTRE",
+        "tube": "Contenant stérile ou écouvillon Amies (selon la source)",
+        "specimenType": "Contenant stérile ou écouvillon",
+        "turnaroundTime": "Min. 3",
+        "price": "56.00 $",
+        "_citation": "[cite: 312]"
+      },
+      {
+        "code": "FU",
+        "name": "CULTURE: CHAMPIGNONS",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "23",
+        "price": "149.00 $",
+        "_citation": "[cite: 312]"
+      },
+      {
+        "code": "CSC",
+        "name": "CULTURE: COL UTÉRIN",
+        "tube": "Écouvillon Amies",
+        "specimenType": "Écouvillon Amies",
+        "turnaroundTime": "Min. 3",
+        "price": "51.00 $",
+        "_citation": "[cite: 312]"
+      },
+      {
+        "code": "VRE",
+        "name": "CULTURE: ENTÉROCOQUE RÉSISTANT À LA VANCOMYCINE (ERV)",
+        "tube": "Écouvillon Amies ou contenant fecal swab",
+        "specimenType": "Écouvillon Amies ou contenant",
+        "turnaroundTime": "6",
+        "price": "82.00 $",
+        "_citation": "[cite: 312]"
+      },
+      {
+        "code": "CS",
+        "name": "CULTURE: EXPECTORATIONS",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "5",
+        "price": "51.00 $",
+        "_citation": "[cite: 316]"
+      },
+      {
+        "code": "CST",
+        "name": "CULTURE: GORGE",
+        "tube": "Écouvillon Amies",
+        "specimenType": "Écouvillon Amies",
+        "turnaroundTime": "Min. 2",
+        "price": "60.00 $",
+        "_citation": "[cite: 316]"
+      },
+      {
+        "code": "CSN",
+        "name": "CULTURE: NEZ",
+        "tube": "Écouvillon Amies",
+        "specimenType": "Écouvillon Amies",
+        "turnaroundTime": "Min. 3",
+        "price": "",
+        "_citation": "[cite: 316]"
+      },
+      {
+        "code": "CSS",
+        "name": "CULTURE: SELLES",
+        "tube": "Contenant avec milieu de transport pour agents pathogènes entériques",
+        "specimenType": "Contenant avec milieu de transport",
+        "turnaroundTime": "Min. 3",
+        "price": "56.00 $",
+        "_citation": "[cite: 316]"
+      },
+      {
+        "code": "MRSA",
+        "name": "CULTURE: Staphylococcus aureus résistant à la méthicilline (SARM)",
+        "tube": "Écouvillon Amies",
+        "specimenType": "Écouvillon Amies",
+        "turnaroundTime": "Min. 3",
+        "price": "65.00 $",
+        "_citation": "[cite: 316]"
+      },
+      {
+        "code": "STREP",
+        "name": "CULTURE DE LA GORGE + TEST RAPIDE DE DÉPISTAGE DU STREPTOCOQUE DU GROUPE A",
+        "tube": "Écouvillon Stuart",
+        "specimenType": "Écouvillon Stuart",
+        "turnaroundTime": "Min. 2",
+        "price": "56.00 $",
+        "_citation": "[cite: 316]"
+      },
+      {
+        "code": "STREPB",
+        "name": "CULTURE: STREPTOCOQUE DU GROUPE B",
+        "tube": "Écouvillon Amies",
+        "specimenType": "Écouvillon Amies",
+        "turnaroundTime": "Min. 3",
+        "price": "42.00 $",
+        "_citation": "[cite: 316]"
+      },
+      {
+        "code": "CSV",
+        "name": "CULTURE: URÈTRE",
+        "tube": "Écouvillon Amies",
+        "specimenType": "Écouvillon Amies",
+        "turnaroundTime": "Min. 3",
+        "price": "54.00 $",
+        "_citation": "[cite: 316]"
+      },
+      {
+        "code": "CSU",
+        "name": "CULTURE: URINE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "Min. 3",
+        "price": "64.00 $",
+        "_citation": "[cite: 320]"
+      },
+      {
+        "code": "CVA",
+        "name": "CULTURE: VAGIN",
+        "tube": "Écouvillon Amies",
+        "specimenType": "Écouvillon Amies",
+        "turnaroundTime": "Min. 3",
+        "price": "56.00 $",
+        "_citation": "[cite: 320]"
+      },
+      {
+        "code": "UC",
+        "name": "CULTURE D'URINE + ANALYSE D'URINE",
+        "tube": "Contenant stérile à urine + tube urine BD avec préservatif",
+        "specimenType": "Contenant stérile + tube urine BD",
+        "turnaroundTime": "Min . 3",
+        "price": "69.00 $",
+        "_citation": "[cite: 320]"
+      },
+      {
+        "code": "STREP",
+        "name": "CULTURE DE LA GORGE + TEST RAPIDE DE DÉPISTAGE DU STREPTOCOQUE DU GROUPE A",
+        "tube": "Écouvillon Stuart",
+        "specimenType": "Écouvillon Stuart",
+        "turnaroundTime": "Min. 2",
+        "price": "33.00 $",
+        "_citation": "[cite: 320]"
+      },
+      {
+        "code": "CSTGC",
+        "name": "CULTURE: GORGE ET CULTURE GONORRHOEAE GORGE",
+        "tube": "Écouvillon Amies",
+        "specimenType": "Écouvillon Amies",
+        "turnaroundTime": "Min. 2",
+        "price": "60.00 $",
+        "_citation": "[cite: 320]"
+      },
+      {
+        "code": "VIBCSS1",
+        "name": "CULTURE: SELLES ET VIBRIO CHOLÉRA X 1",
+        "tube": "Contenant avec milieu de transport pour agents pathogènes entériques",
+        "specimenType": "Contenant avec milieu",
+        "turnaroundTime": "Min. 3",
+        "price": "69.00 $",
+        "_citation": "[cite: 320]"
+      },
+      {
+        "code": "CYCLO",
+        "name": "CYCLOSPORINE",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "4",
+        "price": "104.00 $",
+        "_citation": "[cite: 320]"
+      },
+      {
+        "code": "CYSTC",
+        "name": "CYSTATINE C",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "11",
+        "price": "18.00 $",
+        "_citation": "[cite: 320]"
+      },
+      {
+        "code": "CYSTRU",
+        "name": "CYSTINE-URINE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "22",
+        "price": "132.00 $",
+        "_citation": "[cite: 320]"
+      },
+      {
+        "code": "BRCYTO",
+        "name": "CYTOLOGIE: ÉCHANTILLON DE TISSU MAMMAIRE OBTENU PAR ASPIRATION",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "4",
+        "price": "110.00 $",
+        "_citation": "[cite: 324]"
+      },
+      {
+        "code": "PAPSM",
+        "name": "CYTOLOGIE: TEST DE PAPANICOLAOU (SUR LAME)",
+        "tube": "Trousse",
+        "specimenType": "Trousse",
+        "turnaroundTime": "5",
+        "price": "32.00 $",
+        "_citation": "[cite: 324]"
+      },
+      {
+        "code": "LPAP",
+        "name": "CYTOLOGIE: TEST DE PAPANICOLAOU ThinPrep (PAP TEST LIQUIDE)",
+        "tube": "Trousse ThinPrep (Hologic)",
+        "specimenType": "Trousse ThinPrep",
+        "turnaroundTime": "5",
+        "price": "85.00 $",
+        "_citation": "[cite: 324]"
+      },
+      {
+        "code": "THINCASC",
+        "name": "CYTOLOGIE: TEST ThinPrep ET DÉPISTAGE DU VPH EN COMBO (2 TESTS)",
+        "tube": "Trousse ThinPrep (Hologic)",
+        "specimenType": "Trousse ThinPrep",
+        "turnaroundTime": "10",
+        "price": "186.00 $",
+        "_citation": "[cite: 328]"
+      },
+      {
+        "code": "UCYTO",
+        "name": "CYTOLOGIE: URINE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "4",
+        "price": "70.00 $",
+        "_citation": "[cite: 328]"
+      },
+      {
+        "code": "LPAPRAS",
+        "name": "CYTOLOGIE: TEST ThinPrep ET DÉPISTAGE DU VPH SEULEMENT SI PRÉSENCE DE ASCUS",
+        "tube": "Trousse ThinPrep (Hologic)",
+        "specimenType": "Trousse ThinPrep",
+        "turnaroundTime": "10",
+        "price": "140.00 $",
+        "_citation": "[cite: 332]"
+      }
+    ]
+  }
+}
+
+
+
+{
+  "labTests": {
+    "IndividualTests": [
+      {
+        "code": "ALA",
+        "name": "D-AMINOLÉVULINATE (ACIDE AMINOLĖVULINIQUE) URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Urine",
+        "turnaroundTime": "10",
+        "price": "137.00 $",
+        "_citation": "[cite: 332]"
+      },
+      {
+        "code": "ΑΜΙΟ",
+        "name": "DÉSÉTHYLAMIODARONE (AMIODARONE)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "17",
+        "price": "78.00 $",
+        "_citation": "[cite: 334]"
+      },
+      {
+        "code": "DESI",
+        "name": "DESIPRAMINE (ANTIDEPRESSEUR TRICYCLIQUE)",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "11",
+        "price": "104.00 $",
+        "_citation": "[cite: 336]"
+      },
+      {
+        "code": "DHEA",
+        "name": "DHEA",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "21",
+        "price": "114.00 $",
+        "_citation": "[cite: 336]"
+      },
+      {
+        "code": "DHEAS",
+        "name": "DHEAS (sulfate de déshydroepiandrostérone)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "89.00 $",
+        "_citation": "[cite: 336]"
+      },
+      {
+        "code": "DIG",
+        "name": "DIGOXIN",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "3",
+        "price": "58.00 $",
+        "_citation": "[cite: 336]"
+      },
+      {
+        "code": "DHT",
+        "name": "DIHYDROTESTOSTERONE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "17",
+        "price": "131.00 $",
+        "_citation": "[cite: 336]"
+      },
+      {
+        "code": "DIL",
+        "name": "DILANTIN (PHENYTOÏNE)",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "1",
+        "price": "56.00 $",
+        "_citation": "[cite: 336]"
+      },
+      {
+        "code": "DOX",
+        "name": "DOXÉPINE (SINEQUAN)",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "15",
+        "price": "104.00 $",
+        "_citation": "[cite: 336]"
+      },
+      {
+        "code": "RBCSICK",
+        "name": "DREPANOCYTOSE - TEST DE DÉPISTAGE (RECHERCHE DES CELLULES FALCIFORMES)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "3",
+        "price": "73.00 $",
+        "_citation": "[cite: 336]"
+      },
+      {
+        "code": "AMPH",
+        "name": "DROGUE: AMPHETAMINES - URINE",
+        "tube": "Contenant stérile ou trousse de dépistage de drogue",
+        "specimenType": "Contenant stérile ou trousse",
+        "turnaroundTime": "1",
+        "price": "58.00 $",
+        "_citation": "[cite: 340]"
+      },
+      {
+        "code": "BARB",
+        "name": "DROGUE: BARBITURIQUES - URINE",
+        "tube": "Contenant stérile ou trousse de dépistage de drogue",
+        "specimenType": "Contenant stérile ou trousse",
+        "turnaroundTime": "1",
+        "price": "58.00 $",
+        "_citation": "[cite: 340]"
+      },
+      {
+        "code": "BENZO",
+        "name": "DROGUE: BENZODIAZÉPINES - URINE",
+        "tube": "Contenant stérile ou trousse de dépistage de drogue",
+        "specimenType": "Contenant stérile ou trousse",
+        "turnaroundTime": "1",
+        "price": "58.00 $",
+        "_citation": "[cite: 340]"
+      },
+      {
+        "code": "CAN",
+        "name": "DROGUE: CANNABINOIDES - URINE",
+        "tube": "Contenant stérile ou trousse de dépistage de drogue",
+        "specimenType": "Contenant stérile ou trousse",
+        "turnaroundTime": "1",
+        "price": "51.00 $",
+        "_citation": "[cite: 340]"
+      },
+      {
+        "code": "COCAINE",
+        "name": "DROGUE: COCAINE - URINE",
+        "tube": "Contenant stérile ou trousse de dépistage de drogue",
+        "specimenType": "Contenant stérile ou trousse",
+        "turnaroundTime": "1",
+        "price": "58.00 $",
+        "_citation": "[cite: 340]"
+      },
+      {
+        "code": "OPI",
+        "name": "DROGUE: OPIACES URINE",
+        "tube": "Contenant stérile ou trousse de dépistage de drogue",
+        "specimenType": "Contenant stérile ou trousse",
+        "turnaroundTime": "1",
+        "price": "51.00 $",
+        "_citation": "[cite: 343]"
+      },
+      {
+        "code": "PCP",
+        "name": "DROGUE: PHENCYCLIDINE - URINE",
+        "tube": "Contenant stérile ou trousse de dépistage de drogue",
+        "specimenType": "Contenant stérile ou trousse",
+        "turnaroundTime": "1",
+        "price": "51.00 $",
+        "_citation": "[cite: 343]"
+      },
+      {
+        "code": "ECHIN",
+        "name": "ECHINOCOCCUS",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "10",
+        "price": "39.00 $",
+        "_citation": "[cite: 343]"
+      },
+      {
+        "code": "ECG",
+        "name": "ÉLECTROCARDIOGRAMME ET INTERPRETATION",
+        "tube": "ECG",
+        "specimenType": "ECG",
+        "turnaroundTime": "3",
+        "price": "68.00 $",
+        "_citation": "[cite: 343]"
+      },
+      {
+        "code": "LYTES",
+        "name": "ÉLECTROLYTES (Na, K, CI)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "37.00 $",
+        "_citation": "[cite: 343]"
+      },
+      {
+        "code": "UELER",
+        "name": "ÉLECTROLYTES - URINE AU HASARD",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "1",
+        "price": "34.00 $",
+        "_citation": "[cite: 343]"
+      },
+      {
+        "code": "24ELER",
+        "name": "ÉLECTROLYTES - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "1",
+        "price": "44.00 $",
+        "_citation": "[cite: 343]"
+      },
+      {
+        "code": "HBEL",
+        "name": "ÉLECTROPHORÈSE DE L'HEMOGLOBINE",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "6",
+        "price": "96.00 $",
+        "_citation": "[cite: 343]"
+      },
+      {
+        "code": "PEU",
+        "name": "ÉLECTROPHORESE DES PROTÉINES - URINE AU HASARD",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "7",
+        "price": "93.00 $",
+        "_citation": "[cite: 343]"
+      },
+      {
+        "code": "24PE",
+        "name": "ÉLECTROPHORÈSE DES PROTÉINES URINE DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "7",
+        "price": "93.00 $",
+        "_citation": "[cite: 348]"
+      },
+      {
+        "code": "ELEPRO",
+        "name": "ELECTROPHORÈSE DES PROTEINES (SÉRIQUE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "97.00 $",
+        "_citation": "[cite: 348]"
+      },
+      {
+        "code": "ENTAMO",
+        "name": "ENTAMOEBA HISTOLYTICA - SELLES",
+        "tube": "Contenant avec SAF et Contenant stérile",
+        "specimenType": "Contenant avec SAF",
+        "turnaroundTime": "12",
+        "price": "300.00 $",
+        "_citation": "[cite: 348]"
+      },
+      {
+        "code": "ACE",
+        "name": "ENZYME DE CONVERSION DE L'ANGIOTENSINE (ECA)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "11",
+        "price": "76.00 $",
+        "_citation": "[cite: 348]"
+      },
+      {
+        "code": "EPOX",
+        "name": "ÉPOXYDE DE CARBAMAZÉPINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "7",
+        "price": "83.00 $",
+        "_citation": "[cite: 348]"
+      },
+      {
+        "code": "C1EF",
+        "name": "ÉPREUVE FONCTIONNELLE C1 ESTERASE",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "32",
+        "price": "90.00 $",
+        "_citation": "[cite: 348]"
+      },
+      {
+        "code": "EPO",
+        "name": "ÉRYTHROPOÏÉTINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "164.00 $",
+        "_citation": "[cite: 348]"
+      },
+      {
+        "code": "ESTRA",
+        "name": "ESTRADIOL",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "66.00 $",
+        "_citation": "[cite: 348]"
+      },
+      {
+        "code": "ETHO",
+        "name": "ÉTHOSUXIMIDE (ZARONTIN)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "45.00 $",
+        "_citation": "[cite: 352]"
+      },
+      {
+        "code": "RF",
+        "name": "FACTEUR RHUMATOIDE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "32.00 $",
+        "_citation": "[cite: 352]"
+      },
+      {
+        "code": "FACII",
+        "name": "FACTEUR II",
+        "tube": "2 tubes à bouchon bleu clair",
+        "specimenType": "2 tubes à bouchon bleu clair",
+        "turnaroundTime": "8",
+        "price": "62.00 $",
+        "_citation": "[cite: 352]"
+      },
+      {
+        "code": "FACTIX",
+        "name": "FACTEUR IX",
+        "tube": "2 tubes à bouchon bleu clair",
+        "specimenType": "2 tubes à bouchon bleu clair",
+        "turnaroundTime": "8",
+        "price": "55.00 $",
+        "_citation": "[cite: 352]"
+      },
+      {
+        "code": "FALE",
+        "name": "FACTEUR V DE LEIDEN (MUTATION)",
+        "tube": "1 tubes lavande",
+        "specimenType": "1 tubes lavande",
+        "turnaroundTime": "12",
+        "price": "171.00 $",
+        "_citation": "[cite: 352]"
+      },
+      {
+        "code": "FACTVIII",
+        "name": "FACTEUR VIII",
+        "tube": "2 tubes à bouchon bleu clair",
+        "specimenType": "2 tubes à bouchon bleu clair",
+        "turnaroundTime": "8",
+        "price": "55.00 $",
+        "_citation": "[cite: 352]"
+      },
+      {
+        "code": "FACTX",
+        "name": "FACTEUR X",
+        "tube": "2 tubes à bouchon bleu clair",
+        "specimenType": "2 tubes à bouchon bleu clair",
+        "turnaroundTime": "8",
+        "price": "55.00 $",
+        "_citation": "[cite: 352]"
+      },
+      {
+        "code": "FACTXI",
+        "name": "FACTEUR XI",
+        "tube": "2 tubes à bouchon bleu clair",
+        "specimenType": "2 tubes à bouchon bleu clair",
+        "turnaroundTime": "8",
+        "price": "55.00 $",
+        "_citation": "[cite: 352]"
+      },
+      {
+        "code": "FE",
+        "name": "FER",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 352]"
+      },
+      {
+        "code": "FERI",
+        "name": "FERRITINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "69.00 $",
+        "_citation": "[cite: 352]"
+      }
+    ]
+  }
+}
+
+
+{
+  "labTests": {
+    "IndividualTests": [
+      {
+        "code": "FIBR",
+        "name": "FIBRINOGÈNE",
+        "tube": "1 tube à bouchon bleu clair",
+        "specimenType": "1 tube à bouchon bleu clair",
+        "turnaroundTime": "1",
+        "price": "63.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "FIT",
+        "name": "FIT (TEST IMMUNOCHIMIQUE FÉCAL)",
+        "tube": "Trousse FIT",
+        "specimenType": "Trousse FIT",
+        "turnaroundTime": "1",
+        "price": "62.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "FLUVO",
+        "name": "FLUVOXAMINE",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "17",
+        "price": "88.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "FOLRBC",
+        "name": "FOLATES ÉRYTHROCYTAIRES",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "4",
+        "price": "95.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "CBC",
+        "name": "FORMULE SANGUINE COMPLETE (FSC)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "1",
+        "price": "53.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "FRU",
+        "name": "FRUCTOSAMINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "63.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "CBCINT",
+        "name": "FSC AVEC INTERPRÉTATION",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "3",
+        "price": "65.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "CBCS",
+        "name": "FSC AVEC VITESSE DE SEDIMENTATION",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "1",
+        "price": "60.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "FSH",
+        "name": "FSH (HORMONE FOLLICULOSTIMULANTE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "63.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "G6PD",
+        "name": "G6PD (GLUCOSE-6- PHOSPHATE DÉSHYDROGENASE)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "11",
+        "price": "72.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "GAST",
+        "name": "GASTRINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "11",
+        "price": "269.00 $",
+        "_citation": "[cite: 356]"
+      },
+      {
+        "code": "SHOXGENE",
+        "name": "GÈNE SHOX ANALYSE DU",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "20",
+        "price": "650.00 $",
+        "_citation": "[cite: 360]"
+      },
+      {
+        "code": "GENECEPT",
+        "name": "GENECEPT ASSAY",
+        "tube": "Frottis buccal",
+        "specimenType": "Frottis buccal",
+        "turnaroundTime": "10",
+        "price": "495.00 $",
+        "_citation": "[cite: 360]"
+      },
+      {
+        "code": "HEPCGENO",
+        "name": "GÉNOTYPE DU VIRUS DE L'HÉPATITE C- DÉTERMINATION PAR PCR",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "16",
+        "price": "93.00 $",
+        "_citation": "[cite: 360]"
+      },
+      {
+        "code": "PREGEN",
+        "name": "GENTAMICINE PRÉ-DOSE",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "3",
+        "price": "68.00 $",
+        "_citation": "[cite: 360]"
+      },
+      {
+        "code": "POSTGEN",
+        "name": "GENTAMICINE POST-DOSE",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "3",
+        "price": "68.00 $",
+        "_citation": "[cite: 360]"
+      },
+      {
+        "code": "GGT",
+        "name": "GGT (GAMMA GLUTAMYLTRANSFERASE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 360]"
+      },
+      {
+        "code": "TBG",
+        "name": "GLOBULINE FIXANT LA THYROXINE (TBG)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "15",
+        "price": "51.00 $",
+        "_citation": "[cite: 363]"
+      },
+      {
+        "code": "GLU75",
+        "name": "GLUCOSE - HYPERGLYCÉMIE ORALE 75g NON-GESTATIONNEL (2 HEURES)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "58.00 $",
+        "_citation": "[cite: 363]"
+      },
+      {
+        "code": "AC",
+        "name": "GLUCOSE AC",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 363]"
+      },
+      {
+        "code": "ACP ou GLURan",
+        "name": "GLUCOSE AU HASARD",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 363]"
+      },
+      {
+        "code": "PREG75",
+        "name": "GLUCOSE PC (2HR-75g)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "60.00 $",
+        "_citation": "[cite: 363]"
+      },
+      {
+        "code": "PREG50",
+        "name": "GLUCOSE PC (1HR-50g)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 368]"
+      },
+      {
+        "code": "GOLM",
+        "name": "GOLIMUMAB",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "15",
+        "price": "305.00 $",
+        "_citation": "[cite: 368]"
+      },
+      {
+        "code": "BLOOD",
+        "name": "GROUPE SANGUIN ET FACTEUR Rh",
+        "tube": "1 tube à bouchon rose",
+        "specimenType": "1 tube à bouchon rose",
+        "turnaroundTime": "3",
+        "price": "31.00 $",
+        "_citation": "[cite: 368]"
+      },
+      {
+        "code": "HAPT",
+        "name": "HAPTOGLOBINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "47.00 $",
+        "_citation": "[cite: 368]"
+      },
+      {
+        "code": "HARMO",
+        "name": "HARMONY",
+        "tube": "Trousse",
+        "specimenType": "Trousse",
+        "turnaroundTime": "12",
+        "price": "495.00 $",
+        "_citation": "[cite: 368]"
+      },
+      {
+        "code": "H22Q11.2",
+        "name": "HARMONY OPTION DU TEST 22q11.2",
+        "tube": "Trousse",
+        "specimenType": "Trousse",
+        "turnaroundTime": "10",
+        "price": "175.00 $",
+        "_citation": "[cite: 368]"
+      },
+      {
+        "code": "PREG",
+        "name": "HCG (ANALYSE QUALITATIVE) - URINE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "1",
+        "price": "39.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "BSQUANT",
+        "name": "hCG (ANALYSE QUANTITATIVE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "63.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "",
+        "name": "HELICOBACTER PYLORI DE TYPE IgG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "76.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "HBA1C",
+        "name": "HÉMOGLOBINE A1C",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "1",
+        "price": "53.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "HBVDNA",
+        "name": "HEPATITE B- ADN VIRAL DE L'HÉPATITE B",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "10",
+        "price": "438.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "HEPCQUAL",
+        "name": "HÉPATITE C (ANALYSE QUALITATIVE) - PCR",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "148.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "HEPCQUANT",
+        "name": "HEPATITE C (ANALYSE QUANTITATIVE) - PCR",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "16",
+        "price": "93.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "HERPPCR",
+        "name": "HERPÈS - DÉTECTION PAR PCR (ÉCOUVILLON)",
+        "tube": "Milieu de transport Cobas pour PCR ou Yocon pour PCR",
+        "specimenType": "Milieu de transport",
+        "turnaroundTime": "10",
+        "price": "189.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "HERPBLOT",
+        "name": "HERPES SIMPLEX - IMMUNOTRANSFERT",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "261.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "HERPG",
+        "name": "HERPES SIMPLEX DE TYPE IgG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "137.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "HISTA",
+        "name": "HISTAMINE (PLASMA)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "16",
+        "price": "128.00 $",
+        "_citation": "[cite: 372]"
+      },
+      {
+        "code": "HOLTER",
+        "name": "HOLTER (24 HRS) ECG EN CONTINU",
+        "tube": "Trousse",
+        "specimenType": "Trousse",
+        "turnaroundTime": "10",
+        "price": "206.00 $",
+        "_citation": "[cite: 376]"
+      },
+      {
+        "code": "HOLTER48",
+        "name": "HOLTER (48 HRS) - ECG EN CONTINU",
+        "tube": "Trousse",
+        "specimenType": "Trousse",
+        "turnaroundTime": "10",
+        "price": "311.00 $",
+        "_citation": "[cite: 376]"
+      },
+      {
+        "code": "HOLTER72",
+        "name": "HOLTER (72 HRS) ECG EN CONTINU",
+        "tube": "Trousse",
+        "specimenType": "Trousse",
+        "turnaroundTime": "10",
+        "price": "425.00 $",
+        "_citation": "[cite: 376]"
+      },
+      {
+        "code": "LHOMO",
+        "name": "HOMOCYSTEINE (L-HOMOCYSTÉINE)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "3",
+        "price": "108.00 $",
+        "_citation": "[cite: 376]"
+      },
+      {
+        "code": "ACTH",
+        "name": "HORMONE ADRENOCORTICOTROPE (ACTH)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "5",
+        "price": "95.00 $",
+        "_citation": "[cite: 376]"
+      },
+      {
+        "code": "ADH",
+        "name": "HORMONE ANTI-DIURÉTIQUE",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "17",
+        "price": "84.00 $",
+        "_citation": "[cite: 376]"
+      },
+      {
+        "code": "ΑΜΗ",
+        "name": "HORMONE ANTI-MULLÉRIENNE (ΑΜΗ)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "6",
+        "price": "88.00 $",
+        "_citation": "[cite: 380]"
+      },
+      {
+        "code": "HGH",
+        "name": "HORMONE DE CROISSANCE (GH)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "9",
+        "price": "76.00 $",
+        "_citation": "[cite: 380]"
+      }
+    ]
+  }
+}
+
+
+
+{
+  "labTests": {
+    "IndividualTests": [
+      {
+        "code": "LH",
+        "name": "HORMONE LUTÉINISANTE (LH)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "66.00 $",
+        "_citation": "[cite: 380]"
+      },
+      {
+        "code": "HTLV1",
+        "name": "HTLV I et II",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "7",
+        "price": "155.00 $",
+        "_citation": "[cite: 380]"
+      },
+      {
+        "code": "IGE",
+        "name": "IgE TOTALE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "63.00 $",
+        "_citation": "[cite: 380]"
+      },
+      {
+        "code": "SOMA",
+        "name": "IGF-1 (SOMATOMÉDINE C)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "11",
+        "price": "73.00 $",
+        "_citation": "[cite: 380]"
+      },
+      {
+        "code": "IMIP",
+        "name": "IMIPRAMINE (ANTIDÉPRESSEUR TRICYCLIQUE)",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "11",
+        "price": "110.00 $",
+        "_citation": "[cite: 380]"
+      },
+      {
+        "code": "IMMUELE",
+        "name": "IMMUNOÉLECTROPHORÈSE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "101.00 $",
+        "_citation": "[cite: 380]"
+      },
+      {
+        "code": "24UIEP",
+        "name": "IMMUNOÉLECTROPHORĖSE URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "7",
+        "price": "104.00 $",
+        "_citation": "[cite: 380]"
+      },
+      {
+        "code": "IMQUANT",
+        "name": "IMMUNOGLOBULINES (ANALYSE QUANTITATIVE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "63.00 $",
+        "_citation": "[cite: 380]"
+      },
+      {
+        "code": "INFLEC",
+        "name": "INFLECTRA - ANALYSE QUANTITATIVE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "295.00 $",
+        "_citation": "[cite: 384]"
+      },
+      {
+        "code": "INFLIX",
+        "name": "INFLIXIMAB ET ANTI-INFLEXIMAB (REMICADE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "12",
+        "price": "311.00 $",
+        "_citation": "[cite: 384]"
+      },
+      {
+        "code": "CIE1",
+        "name": "INHIBITEUR DE LA C1 ESTÉRASE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "109.00 $",
+        "_citation": "[cite: 384]"
+      },
+      {
+        "code": "INSUL",
+        "name": "INSULINE (À JEUN)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "70.00 $",
+        "_citation": "[cite: 384]"
+      },
+      {
+        "code": "CKISO",
+        "name": "ISOENZYMES DE LA CK",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "93.00 $",
+        "_citation": "[cite: 384]"
+      },
+      {
+        "code": "ISOLDH",
+        "name": "ISOENZYMES DE LA LDH",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "14",
+        "price": "18.00 $",
+        "_citation": "[cite: 384]"
+      },
+      {
+        "code": "ISOALK",
+        "name": "ISOENZYMES DE LA PHOSPHATASE ALCALINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "7",
+        "price": "88.00 $",
+        "_citation": "[cite: 384]"
+      },
+      {
+        "code": "ISOPRO",
+        "name": "ISOPROPANOL",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "5",
+        "price": "45.00 $",
+        "_citation": "[cite: 384]"
+      },
+      {
+        "code": "JAK2EX12",
+        "name": "JAK2 MUTATIONS DE L'EXON 12 SANG",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "12",
+        "price": "163.00 $",
+        "_citation": "[cite: 384]"
+      },
+      {
+        "code": "J2VQ",
+        "name": "JAK2 QUALITATIF MUTATION V617F SANG",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "12",
+        "price": "311.00 $",
+        "_citation": "[cite: 384]"
+      },
+      {
+        "code": "JAKQ",
+        "name": "JAK2 QUANTITATIF MUTATION V617F SANG",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "12",
+        "price": "311.00 $",
+        "_citation": "[cite: 388]"
+      },
+      {
+        "code": "LD",
+        "name": "LACTATE DÉSHYDROGÉNASE (LDH)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 388]"
+      },
+      {
+        "code": "LTT",
+        "name": "LACTOSE (TEST DE TOLERANCE AU)",
+        "tube": "5 tubes gel",
+        "specimenType": "5 tubes gel",
+        "turnaroundTime": "1",
+        "price": "56.00 $",
+        "_citation": "[cite: 388]"
+      },
+      {
+        "code": "LAMO",
+        "name": "LAMOTRIGINE (LAMICTAL)",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "9",
+        "price": "135.00 $",
+        "_citation": "[cite: 388]"
+      },
+      {
+        "code": "LEPTO",
+        "name": "LEPTOSPIROSE (ÉPREUVE DE SÉRO-GGLUTINATION)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "30",
+        "price": "85.00 $",
+        "_citation": "[cite: 388]"
+      },
+      {
+        "code": "LGV",
+        "name": "LGV (LYMPHOGRANULOME VÉNÉRIEN)",
+        "tube": "Écouvillon Aptima",
+        "specimenType": "Écouvillon Aptima",
+        "turnaroundTime": "30",
+        "price": "100.00 $",
+        "_citation": "[cite: 388]"
+      },
+      {
+        "code": "LIP",
+        "name": "LIPASE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 388]"
+      },
+      {
+        "code": "LIPOA",
+        "name": "LIPOPROTÉINE A - Lp(a)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "95.00 $",
+        "_citation": "[cite: 388]"
+      },
+      {
+        "code": "NCYTO",
+        "name": "LIQUIDE BIOLOGIQUE PRÉLEVÉ PAR ASPIRATION ou EXPECTORATION (CYTOLOGIE)",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "5",
+        "price": "55.00 $",
+        "_citation": "[cite: 392]"
+      },
+      {
+        "code": "SYNOVIAL",
+        "name": "LIQUIDE SYNOVIAL: DÉNOMBREMENT CELLULAIRE ET RECHERCHE DE CRISTAUX",
+        "tube": "Contenant stérile et 1 tube lavande",
+        "specimenType": "Contenant stérile et 1 tube lavande",
+        "turnaroundTime": "4",
+        "price": "90.00 $",
+        "_citation": "[cite: 392]"
+      },
+      {
+        "code": "LI",
+        "name": "LITHIUM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "58.00 $",
+        "_citation": "[cite: 392]"
+      },
+      {
+        "code": "BCELLS",
+        "name": "LYMPHOCYTE B",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "4",
+        "price": "114.00 $",
+        "_citation": "[cite: 392]"
+      },
+      {
+        "code": "MACROPRO",
+        "name": "MACROPROLACTINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "49.00 $",
+        "_citation": "[cite: 392]"
+      },
+      {
+        "code": "MG",
+        "name": "MAGNÉSIUM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "38.00 $",
+        "_citation": "[cite: 392]"
+      },
+      {
+        "code": "MGRBC",
+        "name": "MAGNĖSIUM ERYTHROCYTAIRE",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "9",
+        "price": "35.00 $",
+        "_citation": "[cite: 392]"
+      },
+      {
+        "code": "24UMG",
+        "name": "MAGNÉSIUM URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 396]"
+      },
+      {
+        "code": "LY",
+        "name": "MALADIE DE LYME (ANTICORPS ANTI-BORRELIA BURGDORFERI)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "30",
+        "price": "80.00 $",
+        "_citation": "[cite: 396]"
+      },
+      {
+        "code": "MAL",
+        "name": "MALARIA (DEPISTAGE) FROTTIS",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "2",
+        "price": "153.00 $",
+        "_citation": "[cite: 396]"
+      },
+      {
+        "code": "MANGANWB",
+        "name": "MANGANESE - SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "9",
+        "price": "59.00 $",
+        "_citation": "[cite: 396]"
+      },
+      {
+        "code": "MANGU",
+        "name": "MANGANESE - URINE ALÉATOIRE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "9",
+        "price": "88.00 $",
+        "_citation": "[cite: 396]"
+      },
+      {
+        "code": "MERCA",
+        "name": "MERCAPTOPURINE (THIOGUANINE ERYTHROCYTAIRE)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "20",
+        "price": "53.00 $",
+        "_citation": "[cite: 400]"
+      },
+      {
+        "code": "MERCWB",
+        "name": "MERCURE - SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "9",
+        "price": "59.00 $",
+        "_citation": "[cite: 400]"
+      },
+      {
+        "code": "MERCU",
+        "name": "MERCURE - URINE ALÉATOIRE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "9",
+        "price": "59.00 $",
+        "_citation": "[cite: 400]"
+      },
+      {
+        "code": "METHAP",
+        "name": "MÉTANÉPHRINES, PLASMA",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "17",
+        "price": "270.00 $",
+        "_citation": "[cite: 400]"
+      },
+      {
+        "code": "MHATP",
+        "name": "MHA-TP (TEST D'AGGLUTINATION POUR T. PALLIDUM)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "15",
+        "price": "173.00 $",
+        "_citation": "[cite: 400]"
+      },
+      {
+        "code": "MIALBP",
+        "name": "MICROALBUMINE: RATIO ALBUMINE/ CRÉATININE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "1",
+        "price": "63.00 $",
+        "_citation": "[cite: 400]"
+      },
+      {
+        "code": "24MIALBP",
+        "name": "MICROALBUMINE - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "1",
+        "price": "63.00 $",
+        "_citation": "[cite: 400]"
+      },
+      {
+        "code": "ΜΟΝΟ",
+        "name": "MONONUCLÉOSE - TEST DE DÉPISTAGE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "30.00 $",
+        "_citation": "[cite: 404]"
+      },
+      {
+        "code": "MUCOPOLY",
+        "name": "MUCOPOLYSACCHARIDE URINE AU HASARD",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "37",
+        "price": "53.00 $",
+        "_citation": "[cite: 404]"
+      },
+      {
+        "code": "FAMU",
+        "name": "MUTATION DU FACTEUR II (VARIANT GÉNIQUE DE LA PROTHROMBINE)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "17",
+        "price": "116.00 $",
+        "_citation": "[cite: 404]"
+      },
+      {
+        "code": "HEMOCHRO",
+        "name": "MUTATION GÉNIQUE LIÉE À L'HÉMOCHROMATOSE (C282Y+ H63D)",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "17",
+        "price": "366.00 $",
+        "_citation": "[cite: 404]"
+      },
+      {
+        "code": "MYOGLO",
+        "name": "MYOGLOBINE - SANG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "10",
+        "price": "70.00 $",
+        "_citation": "[cite: 404]"
+      },
+      {
+        "code": "MYOGLOU",
+        "name": "MYOGLOBINE - URINE",
+        "tube": "Contenant stérile avec NACO3 + Tube de transport",
+        "specimenType": "Contenant stérile + Tube de transport",
+        "turnaroundTime": "9",
+        "price": "79.00 $",
+        "_citation": "[cite: 404]"
+      },
+      {
+        "code": "NGONOTAA",
+        "name": "NEISSERIA GONORRHOEAE DÉPISTAGE PAR TAAN ÉCOUVILLONNAGE",
+        "tube": "Écouvillon Aptima",
+        "specimenType": "Écouvillon Aptima",
+        "turnaroundTime": "1",
+        "price": "83.00 $",
+        "_citation": "[cite: 404]"
+      }
+    ]
+  }
+}
+
+
+
+
+
+{
+  "labTests": {
+    "IndividualTests": [
+      {
+        "code": "NGONOTAA",
+        "name": "NEISSERIA GONORRHOEAE DÉPISTAGE PAR TAAN URINE",
+        "tube": "Contenant Urine Aptima",
+        "specimenType": "Contenant Urine Aptima",
+        "turnaroundTime": "1",
+        "price": "83.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "NICKELWB",
+        "name": "NICKEL - SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "9",
+        "price": "58.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PF96",
+        "name": "NOISETTE - Profil composants de Noisette (rCor al, rCor a8, rCor a9, rCor a14)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "169.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "NORTRI",
+        "name": "NORTRIPTYLINE (AVENTYL) (ANTIDEPRESSEUR TRICYCLIQUE)",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "9",
+        "price": "99.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "BNP",
+        "name": "NT-pro-BNP",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "88.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "ESOL",
+        "name": "CESTRIOL (ESTRIOL)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "11",
+        "price": "76.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "ESTRON",
+        "name": "CESTRONE (ESTRONE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "9",
+        "price": "230.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "OP1P",
+        "name": "CŒUFS ET PARASITES - SELLES",
+        "tube": "Contenant avec SAF",
+        "specimenType": "Contenant avec SAF",
+        "turnaroundTime": "8",
+        "price": "98.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "OPU",
+        "name": "CŒUFS ET PARASITES - URINE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "8",
+        "price": "79.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "OMG3",
+        "name": "OMEGA-3 (ACIDES GRAS TOTAUX)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "22",
+        "price": "97.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "OSS",
+        "name": "OSMOLALITÉ - SÉRUM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "57.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "OSU",
+        "name": "OSMOLALITÉ - URINE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "4",
+        "price": "57.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "OSU24HR",
+        "name": "OSMOLALITÉ - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "4",
+        "price": "57.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "OSTEO",
+        "name": "OSTÉOCALCINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "20",
+        "price": "152.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "OXAUR",
+        "name": "OXALATES - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures avec 25mL de 6N HCL",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "11",
+        "price": "110.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "TAPE",
+        "name": "OXYURES (SPATULE ADHÉSIVE)",
+        "tube": "Trousse de détection des Oxyures",
+        "specimenType": "Trousse",
+        "turnaroundTime": "Min. 1",
+        "price": "31.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PATHO",
+        "name": "PATHOLOGIE / HISTOLOGIE ÉCHANTILLON POUR ÉVALUATION",
+        "tube": "Contenant avec FORMOL 10%",
+        "specimenType": "Contenant",
+        "turnaroundTime": "Min. 9",
+        "price": "106.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PEPC",
+        "name": "PEPTIDE C À JEUN",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "11",
+        "price": "73.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PHEN",
+        "name": "PHÉNOBARBITAL",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "3",
+        "price": "66.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "ALK",
+        "name": "PHOSPHATASE ALCALINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PHOS",
+        "name": "PHOSPHORE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PHOSURAN",
+        "name": "PHOSPHORE URINE AU HASARD",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "24UPHOS",
+        "name": "PHOSPHORE - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PLASMINO",
+        "name": "PLASMINOGÈNE",
+        "tube": "2 tubes à bouchon bleu clair",
+        "specimenType": "2 tubes à bouchon bleu clair",
+        "turnaroundTime": "19",
+        "price": "31.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PbO",
+        "name": "PLOMB (Pb) - SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "5",
+        "price": "101.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PBU",
+        "name": "PLOMB (Pb) - URINE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "5",
+        "price": "100.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PORPHO",
+        "name": "PORPHOBILINOGÈNE (ANALYSE QUANTITATIVE) - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "20",
+        "price": "92.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PORSG",
+        "name": "PORPHYRINES ERYTHROCYTAIRES LIBRES",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "14",
+        "price": "80.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "24PORP",
+        "name": "PORPHYRINES - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures avec 5g de Carbonate de Sodium",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "15",
+        "price": "90.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "K",
+        "name": "POTASSIUM (K)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "KURAN",
+        "name": "POTASSIUM (K) - URINE AU HASARD",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "24UK",
+        "name": "POTASSIUM (K) URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "1",
+        "price": "27.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PREA",
+        "name": "PRÉALBUMINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "8",
+        "price": "447.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PREGNOL",
+        "name": "PREGNENOLONE",
+        "tube": "2 tubes gel",
+        "specimenType": "2 tubes gel",
+        "turnaroundTime": "13",
+        "price": "104.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "TT1",
+        "name": "PRENATEST (1ER TRIMESTRE)",
+        "tube": "Trousse",
+        "specimenType": "Trousse",
+        "turnaroundTime": "3",
+        "price": "265.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "MYSO",
+        "name": "PRIMIDONE (MYSOLINE)",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "3",
+        "price": "71.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "Voir réquisiton",
+        "name": "Profil ALLERGEN",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "8",
+        "price": "Sur demande",
+        "_citation": ""
+      },
+      {
+        "code": "CELISCRE",
+        "name": "PROFIL DÉPISTAGE MALADIE COELIAQUE (IgA TOTALES, ANTICORPS ANTI- TRANSGLUTAMINASE DE TYPE IgA, ANTICORPS ANTI- GLIADINE DE TYPE IgG)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "6",
+        "price": "104.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "LIPID",
+        "name": "PROFIL LIPIDIQUE (CHOLESTEROL, TRIGLYCERIDES, HDL, LDL ET RISQUE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "72.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "CELIAC",
+        "name": "PROFILE MALADIE COELIAQUE (IgA TOTALES, ANTICORPS ANTI- TRANSGLUTAMINASE DE TYPE IgA, ANTICORPS ANTI- GLIADINE DE TYPE IgG and TYPE IgA)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "6",
+        "price": "146.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PROG",
+        "name": "PROGESTERONE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "66.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PROL",
+        "name": "PROLACTINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "71.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "IGFBP3",
+        "name": "PROTÉINE DE LIAISON DES FACTEURS DE TYPE INSULINE 3 (IGFBP3)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "15",
+        "price": "59.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "SHBG",
+        "name": "PROTÉINE PORTEUSE DES STÉROÏDES SEXUELS (SHBG)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "101.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "CRP",
+        "name": "PROTÉINE C-RÉACTIVE INFLAMMATION",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "49.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "CRPHS",
+        "name": "PROTÉINE C-RÉACTIVE HAUTE SENSIBILITÉ",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "49.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PROTSACT",
+        "name": "PROTÉINE S ACTIVITÉ",
+        "tube": "1 tube à bouchon bleu clair",
+        "specimenType": "1 tube à bouchon bleu clair",
+        "turnaroundTime": "12",
+        "price": "78.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PROTSF",
+        "name": "PROTÉINE S LIBRE (ANTIGÈNE DE LA PROTÉINE S LIBRE)",
+        "tube": "2 tubes à bouchon bleu clair",
+        "specimenType": "2 tubes à bouchon bleu clair",
+        "turnaroundTime": "17",
+        "price": "197.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PROTST",
+        "name": "PROTÉINE S TOTAL",
+        "tube": "1 tube à bouchon bleu clair",
+        "specimenType": "1 tube à bouchon bleu clair",
+        "turnaroundTime": "17",
+        "price": "127.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PROT",
+        "name": "PROTÉINES TOTALES",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PROTURP",
+        "name": "PROTEINES URINE AU HASARD",
+        "tube": "Contenant sterile",
+        "specimenType": "Contenant sterile",
+        "turnaroundTime": "1",
+        "price": "44.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "24UPROT",
+        "name": "PROTÉINES - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PTH",
+        "name": "PTH (PARATHORMONE)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "1",
+        "price": "129.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PTT",
+        "name": "PTT (TEMPS DE CÉPHALINE ACTIVÉE)",
+        "tube": "1 tube à bouchon bleu clair",
+        "specimenType": "1 tube à bouchon bleu clair",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "QTB",
+        "name": "QuantiFERON-TB (Q-TB GOLD)",
+        "tube": "Trousse",
+        "specimenType": "Trousse",
+        "turnaroundTime": "14",
+        "price": "100.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "QUI",
+        "name": "QUINIDINE",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "9",
+        "price": "44.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PT",
+        "name": "RAPPORT INTERNATIONAL NORMALISÉ (INR)",
+        "tube": "1 tube à bouchon bleu clair",
+        "specimenType": "1 tube à bouchon bleu clair",
+        "turnaroundTime": "1",
+        "price": "37.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "PTPTT",
+        "name": "RAPPORT INTERNATIONAL NORMALISÉ (INR) - TEMPS DE CÉPHALINE ACTIVÉE (PTT)",
+        "tube": "1 tube à bouchon bleu clair",
+        "specimenType": "1 tube à bouchon bleu clair",
+        "turnaroundTime": "1",
+        "price": "58.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "AMAT ou CODI",
+        "name": "RECHERCHE D'ANTICORPS (TEST DE COOMBS INDIRECT)",
+        "tube": "2 tubes à bouchon rose",
+        "specimenType": "2 tubes à bouchon rose",
+        "turnaroundTime": "3",
+        "price": "65.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "HDLP",
+        "name": "REGROUPEMENT D'ANALYSES CHOLESTÉROL HDL (HDL/LDL/RISQUE DE CORONAROPATHIE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "64.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "TIBCP",
+        "name": "REGROUPEMENT D'ANALYSES LIÉES À LA CAPACITÉ TOTALE DE FIXATION DU FER (FER, UIBC, TIBC)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "53.00 $",
+        "_citation": ""
+      },
+      {
+        "code": "REN",
+        "name": "RÉNINE",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "11",
+        "price": "106.00 $",
+        "_citation": ""
+      }
+    ]
+  }
+}
+
+
+
+{
+  "labTests": {
+    "IndividualTests": [
+      {
+        "code": "APCR",
+        "name": "RÉSISTANCE À LA PROTÉINE C ACTIVÉE",
+        "tube": "1 tube à bouchon bleu clair",
+        "specimenType": "1 tube à bouchon bleu clair",
+        "turnaroundTime": "12",
+        "price": "145.00 $",
+        "_citation": "[cite: 444]"
+      },
+      {
+        "code": "RETICP",
+        "name": "RÉTICULOCYTES (NUMÉRATION)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "1",
+        "price": "42.00 $",
+        "_citation": "[cite: 444]"
+      },
+      {
+        "code": "ROTAVIRUS",
+        "name": "ROTAVIRUS Ag, EIA",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "12",
+        "price": "141.00 $",
+        "_citation": "[cite: 444]"
+      },
+      {
+        "code": "SAL",
+        "name": "SALICYLATES",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "48.00 $",
+        "_citation": "[cite: 444]"
+      },
+      {
+        "code": "COV2AB",
+        "name": "SARS-COV2 NP Ac",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "84.00 $",
+        "_citation": "[cite: 444]"
+      },
+      {
+        "code": "SELENWB",
+        "name": "SÉLÉNIUM - SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "9",
+        "price": "116.00 $",
+        "_citation": "[cite: 444]"
+      },
+      {
+        "code": "SELENIUM",
+        "name": "SÉLÉNIUM - URINE AU HASARD",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "17",
+        "price": "110.00 $",
+        "_citation": "[cite: 444]"
+      },
+      {
+        "code": "SER",
+        "name": "SÉROTONINE",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "25",
+        "price": "57.00 $",
+        "_citation": "[cite: 448]"
+      },
+      {
+        "code": "NA",
+        "name": "SODIUM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 448]"
+      },
+      {
+        "code": "NAURAN",
+        "name": "SODIUM - URINE AU HASARD",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 448]"
+      },
+      {
+        "code": "24UNA",
+        "name": "SODIUM URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 448]"
+      },
+      {
+        "code": "IGGP",
+        "name": "SOUS-CLASSES D'IMMUNOGLOBULINE IgG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "9",
+        "price": "148.00 $",
+        "_citation": "[cite: 448]"
+      },
+      {
+        "code": "SPER",
+        "name": "SPERMOGRAMME - FERTILITÉ",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "4",
+        "price": "72.00 $",
+        "_citation": "[cite: 448]"
+      },
+      {
+        "code": "SPECO",
+        "name": "SPERMOGRAMME - POST-VASECTOMIE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "1",
+        "price": "66.00 $",
+        "_citation": "[cite: 448]"
+      },
+      {
+        "code": "REDSUB",
+        "name": "SUBSTANCE RÉDUCTRICE DANS LES SELLES",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "11",
+        "price": "33.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "SYPH",
+        "name": "SYPHILIS CMIA (DÉPISTAGE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "31.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "RPR",
+        "name": "SYPHILIS (RPR) (SUIVI DE TRAITEMENT)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "31.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "T3F",
+        "name": "T3 LIBRE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "47.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "T3",
+        "name": "T3 TOTALE (TRIIODOTHYRONINE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "37.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "T4F",
+        "name": "T4 LIBRE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "63.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "TAC",
+        "name": "TACROLIMUS",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "4",
+        "price": "116.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "CTX",
+        "name": "TÉLOPEPTIDE-C",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "6",
+        "price": "139.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "TT",
+        "name": "TEMPS DE THROMBINE",
+        "tube": "1 tube à bouchon bleu clair",
+        "specimenType": "1 tube à bouchon bleu clair",
+        "turnaroundTime": "2",
+        "price": "34.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "COD",
+        "name": "TEST DE COOMBS DIRECT",
+        "tube": "1 tube à bouchon rose",
+        "specimenType": "1 tube à bouchon rose",
+        "turnaroundTime": "3",
+        "price": "38.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "DIA13HELI",
+        "name": "TEST RESPIRATOIRE POUR DÉTECTER LA PRÉSENCE D'HELICOBACTER PYLORI",
+        "tube": "Trousse",
+        "specimenType": "Trousse",
+        "turnaroundTime": "5",
+        "price": "158.00 $",
+        "_citation": "[cite: 452]"
+      },
+      {
+        "code": "TESBIO",
+        "name": "TESTOSTERONE BIODISPONIBLE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "2",
+        "price": "113.00 $",
+        "_citation": "[cite: 456]"
+      },
+      {
+        "code": "TESLI",
+        "name": "TESTOSTERONE LIBRE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "100.00 $",
+        "_citation": "[cite: 456]"
+      },
+      {
+        "code": "TEST",
+        "name": "TESTOSTÉRONE TOTALE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "80.00 $",
+        "_citation": "[cite: 456]"
+      },
+      {
+        "code": "THEO",
+        "name": "THÉOPHYLLINE",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "3",
+        "price": "59.00 $",
+        "_citation": "[cite: 456]"
+      },
+      {
+        "code": "TMPT",
+        "name": "THIOPURINE S MÉTHYLTRANSFÉRASE (TPMT) GÉNOTΥΡΕ",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "40",
+        "price": "179.00 $",
+        "_citation": "[cite: 456]"
+      },
+      {
+        "code": "THYRO",
+        "name": "THYROGLOBULINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "3",
+        "price": "82.00 $",
+        "_citation": "[cite: 456]"
+      },
+      {
+        "code": "TOPIRAMA",
+        "name": "TOPIRAMATE",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "7",
+        "price": "69.00 $",
+        "_citation": "[cite: 456]"
+      },
+      {
+        "code": "TOXO",
+        "name": "TOXOPLASMOSE ANTICORPS DE TYPE IgG",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "5",
+        "price": "43.00 $",
+        "_citation": "[cite: 460]"
+      },
+      {
+        "code": "TOXOM",
+        "name": "TOXOPLASMOSE ANTICORPS DE TYPE IgM",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "7",
+        "price": "100.00 $",
+        "_citation": "[cite: 460]"
+      },
+      {
+        "code": "TRANS",
+        "name": "TRANSFERRINE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "51.00 $",
+        "_citation": "[cite: 460]"
+      },
+      {
+        "code": "TRICHI",
+        "name": "TRICHINELLA",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "11",
+        "price": "42.00 $",
+        "_citation": "[cite: 460]"
+      },
+      {
+        "code": "TRICHAA",
+        "name": "TRICHOMONAS VAGINALIS URINE DÉPISTAGE PAR TAAN",
+        "tube": "Contenant urine Aptima",
+        "specimenType": "Contenant urine Aptima",
+        "turnaroundTime": "6",
+        "price": "83.00 $",
+        "_citation": "[cite: 460]"
+      },
+      {
+        "code": "TRICHAA",
+        "name": "TRICHOMONAS VAGINALIS ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+        "tube": "Écouvillon Aptima",
+        "specimenType": "Écouvillon Aptima",
+        "turnaroundTime": "6",
+        "price": "83.00 $",
+        "_citation": "[cite: 460]"
+      },
+      {
+        "code": "TRIG",
+        "name": "TRIGLYCERIDES",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 460]"
+      },
+      {
+        "code": "TRIMI",
+        "name": "TRIMIPRAMINE (SURMONTIL)",
+        "tube": "1 tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "1 tube à bouchon rouge",
+        "turnaroundTime": "17",
+        "price": "109.00 $",
+        "_citation": "[cite: 464]"
+      },
+      {
+        "code": "Y907",
+        "name": "TRYPTASE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "4",
+        "price": "64.00 $",
+        "_citation": "[cite: 464]"
+      },
+      {
+        "code": "TSH",
+        "name": "TSH ULTRASENSIBLE, (DOSAGE DE LA THYRÉOSTIMULINE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "69.00 $",
+        "_citation": "[cite: 464]"
+      },
+      {
+        "code": "TUBP",
+        "name": "TUBERCULOSE - PCR",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "63",
+        "price": "110.00 $",
+        "_citation": "[cite: 464]"
+      },
+      {
+        "code": "HLATYPE",
+        "name": "TYPAGE HLA DQ2/DQ8",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "14",
+        "price": "528.00 $",
+        "_citation": "[cite: 464]"
+      },
+      {
+        "code": "91UD",
+        "name": "UREAPLASMA & MYCOPLASMA URINE",
+        "tube": "Contenant stérile",
+        "specimenType": "Contenant stérile",
+        "turnaroundTime": "9",
+        "price": "53.00 $",
+        "_citation": "[cite: 464]"
+      },
+      {
+        "code": "UM",
+        "name": "UREAPLASMA et MYCOPLASMA",
+        "tube": "Milieu de transport UTM de Copan",
+        "specimenType": "Milieu de transport",
+        "turnaroundTime": "9",
+        "price": "93.00 $",
+        "_citation": "[cite: 464]"
+      },
+      {
+        "code": "UREA",
+        "name": "URÉE (AZOTE URÉIQUE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 464]"
+      },
+      {
+        "code": "24HRUREA",
+        "name": "URÉE - URINES DE 24 HEURES",
+        "tube": "Contenant pour collecte des urines de 24 heures",
+        "specimenType": "Contenant pour collecte",
+        "turnaroundTime": "1",
+        "price": "38.00 $",
+        "_citation": "[cite: 464]"
+      },
+      {
+        "code": "VANPRE",
+        "name": "VANCOMYCINE PRÉ-DOSE",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "3",
+        "price": "96.00 $",
+        "_citation": "[cite: 468]"
+      },
+      {
+        "code": "VANPOST",
+        "name": "VANCOMYCINE POST-DOSE",
+        "tube": "Tube à bouchon rouge avec activateur de coagulation",
+        "specimenType": "Tube à bouchon rouge",
+        "turnaroundTime": "3",
+        "price": "91.00 $",
+        "_citation": "[cite: 468]"
+      },
+      {
+        "code": "MTHFR",
+        "name": "VARIANT DE LA MÉTHYLENE TETRAHYDROFOLATE RÉDUCTASE (MTHFR)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "12",
+        "price": "116.00 $",
+        "_citation": "[cite: 468]"
+      },
+      {
+        "code": "HIVINT",
+        "name": "VIH (GÉNOPTYPAGE DE L'INTÉGRASE)",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "16",
+        "price": "200.00 $",
+        "_citation": "[cite: 468]"
+      },
+      {
+        "code": "HIVDNA",
+        "name": "VIH ADN PROVIRAL (GENOTYPAGE DU TROPISME VIH)",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "16",
+        "price": "314.00 $",
+        "_citation": "[cite: 468]"
+      },
+      {
+        "code": "HIVRNA",
+        "name": "VIH ARN PROVIRAL (GENOTYPAGE DU TROPISME VIH)",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "16",
+        "price": "314.00 $",
+        "_citation": "[cite: 468]"
+      },
+      {
+        "code": "HIVGENO",
+        "name": "VIH GENOTYPE",
+        "tube": "2 tubes lavande",
+        "specimenType": "2 tubes lavande",
+        "turnaroundTime": "16",
+        "price": "259.00 $",
+        "_citation": "[cite: 468]"
+      },
+      {
+        "code": "DENGUE",
+        "name": "VIRUS DE LA DENGUE",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "15",
+        "price": "158.00 $",
+        "_citation": "[cite: 472]"
+      },
+      {
+        "code": "VNO",
+        "name": "VIRUS DU NIL OCCIDENTAL (Détection des anticorps)",
+        "tube": "2 fois 1 tube gel, à 2 semaine d'intervalle",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "15",
+        "price": "196.00 $",
+        "_citation": "[cite: 472]"
+      },
+      {
+        "code": "HPV",
+        "name": "VIRUS DU PAPILLOME HUMAIN (VPH) / ANALYSE DE L'ADN (VPH)",
+        "tube": "Trousse de dépistage du VPH (contenant ThinPrep de Hologic)",
+        "specimenType": "Trousse ThinPrep",
+        "turnaroundTime": "7",
+        "price": "115.00 $",
+        "_citation": "[cite: 472]"
+      },
+      {
+        "code": "ZIKAIGM",
+        "name": "VIRUS ZIKA, DETECTION DES ANTICORPS (IgM)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "14",
+        "price": "74.00 $",
+        "_citation": "[cite: 472]"
+      },
+      {
+        "code": "ZIKAPCR",
+        "name": "VIRUS ZIKA, DÉTECTION PAR PCR",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "14",
+        "price": "95.00 $",
+        "_citation": "[cite: 476]"
+      },
+      {
+        "code": "VITB1",
+        "name": "VITAMINE B₁ (THIAMINE)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "17",
+        "price": "180.00 $",
+        "_citation": "[cite: 476]"
+      },
+      {
+        "code": "B12",
+        "name": "VITAMINE B12 (CYANOCOBALAMINE)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "1",
+        "price": "56.00 $",
+        "_citation": "[cite: 476]"
+      },
+      {
+        "code": "VITA",
+        "name": "VITAMINE A (RÉTINOL)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "9",
+        "price": "127.00 $",
+        "_citation": "[cite: 476]"
+      },
+      {
+        "code": "VITB6",
+        "name": "VITAMINE B6 (PYRIDOXINE)",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "9",
+        "price": "174.00 $",
+        "_citation": "[cite: 476]"
+      },
+      {
+        "code": "VITE",
+        "name": "VITAMINE E (TOCOPHEROL)",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "9",
+        "price": "111.00 $",
+        "_citation": "[cite: 480]"
+      },
+      {
+        "code": "VITK1",
+        "name": "VITAMINE K",
+        "tube": "1 tube gel",
+        "specimenType": "1 tube gel",
+        "turnaroundTime": "14",
+        "price": "202.00 $",
+        "_citation": "[cite: 480]"
+      },
+      {
+        "code": "SED",
+        "name": "VITESSE DE SÉDIMENTATION",
+        "tube": "1 tube lavande",
+        "specimenType": "1 tube lavande",
+        "turnaroundTime": "1",
+        "price": "42.00 $",
+        "_citation": "[cite: 480]"
+      },
+      {
+        "code": "ZINCWB",
+        "name": "ZINC-SANG ENTIER",
+        "tube": "1 tube bleu foncé (K2EDTA)",
+        "specimenType": "1 tube bleu foncé",
+        "turnaroundTime": "9",
+        "price": "95.00 $",
+        "_citation": "[cite: 480]"
+      }
+    ]
+  }
+}

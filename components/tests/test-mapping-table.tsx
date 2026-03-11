@@ -39,7 +39,7 @@ export default function TestMappingTable({
   }
 
   return (
-    <TooltipProvider>
+    <TooltipProvider disableHoverableContent>
       <Table>
         <TableHeader>
           <TableRow>

@@ -59,7 +59,14 @@ export default function BundleDealTable({
               <TableRow key={d.id}>
                 <TableCell>
                   <div>
-                    <p className="font-medium text-sm">{d.dealName}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-sm">{d.dealName}</p>
+                      {d.sourceLabCode && (
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border/60">
+                          {d.sourceLabCode}
+                        </span>
+                      )}
+                    </div>
                     {d.description && (
                       <p className="text-xs text-muted-foreground line-clamp-1">{d.description}</p>
                     )}

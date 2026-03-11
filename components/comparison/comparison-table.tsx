@@ -583,7 +583,7 @@ export default function ComparisonTable({
                                       {tube?.label ?? "Tube non renseigné"}
                                     </span>
                                   </span>
-                                  {match && (
+                                  {match?.matchType === "FUZZY" && (
                                     <div className="flex items-center gap-1">
                                       <Tooltip>
                                         <TooltipTrigger asChild>
@@ -596,7 +596,7 @@ export default function ComparisonTable({
                                           <p className="text-xs">Confiance : {Math.round(match.similarity * 100)}%</p>
                                         </TooltipContent>
                                       </Tooltip>
-                                      {match.matchType === "FUZZY" && data.onCreateMapping && (
+                                      {data.onCreateMapping && (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
                                             <button onClick={() => data.onCreateMapping!(test.id, lab.id)}

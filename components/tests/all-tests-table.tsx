@@ -202,7 +202,7 @@ export default function AllTestsTable({
   };
 
   return (
-    <TooltipProvider>
+    <TooltipProvider disableHoverableContent>
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
@@ -377,16 +377,9 @@ export default function AllTestsTable({
                         <TableCell className="font-medium max-w-[220px]">
                           <div className="flex items-center gap-1.5">
                             <TubeDot tubeType={test.tubeType} withTooltip />
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="block truncate cursor-default">
-                                  {test.name}
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent side="right">
-                                {test.name}
-                              </TooltipContent>
-                            </Tooltip>
+                            <span className="block truncate cursor-default" title={test.name}>
+                              {test.name}
+                            </span>
                           </div>
                         </TableCell>
 
@@ -419,16 +412,9 @@ export default function AllTestsTable({
                             <span className="text-xs font-semibold shrink-0">
                               {test.laboratoryCode}
                             </span>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="block text-sm truncate max-w-[120px] cursor-default">
-                                  {test.laboratoryName}
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                {test.laboratoryName}
-                              </TooltipContent>
-                            </Tooltip>
+                            <span className="block text-sm truncate max-w-[120px] cursor-default" title={test.laboratoryName}>
+                              {test.laboratoryName}
+                            </span>
                           </div>
                         </TableCell>
 
@@ -453,19 +439,12 @@ export default function AllTestsTable({
 
                         <TableCell>
                           {test.canonicalName ? (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="flex items-center gap-1.5 cursor-default">
-                                  <Link2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                                  <span className="text-xs text-emerald-600 truncate max-w-[130px]">
-                                    {test.canonicalName}
-                                  </span>
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                Correspondance : {test.canonicalName}
-                              </TooltipContent>
-                            </Tooltip>
+                            <div className="flex items-center gap-1.5 cursor-default" title={`Correspondance : ${test.canonicalName}`}>
+                              <Link2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                              <span className="text-xs text-emerald-600 truncate max-w-[130px]">
+                                {test.canonicalName}
+                              </span>
+                            </div>
                           ) : (
                             <div className="flex items-center gap-1.5">
                               <Link2Off className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />

@@ -152,7 +152,7 @@ export default function TestMappingsPage() {
       </div>
 
       {/* Pagination */}
-      {pagination.pages > 1 && (
+      {pagination.total > 0 && (
         <div className="flex items-center justify-between border-t border-border/40 px-4 py-3 mt-2">
           <p className="text-xs text-muted-foreground">
             {((pagination.page - 1) * pagination.limit) + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} sur{" "}
@@ -162,7 +162,7 @@ export default function TestMappingsPage() {
             <Button
               variant="outline" size="sm" className="h-7 w-7 p-0"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={pagination.page <= 1 || isLoading}
+              disabled={pagination.page <= 1 || isLoading || pagination.pages <= 1}
               aria-label="Page précédente"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
@@ -191,7 +191,7 @@ export default function TestMappingsPage() {
             <Button
               variant="outline" size="sm" className="h-7 w-7 p-0"
               onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
-              disabled={pagination.page >= pagination.pages || isLoading}
+              disabled={pagination.page >= pagination.pages || isLoading || pagination.pages <= 1}
               aria-label="Page suivante"
             >
               <ChevronRight className="h-3.5 w-3.5" />

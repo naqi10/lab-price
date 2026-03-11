@@ -1,0 +1,1574 @@
+[
+  {
+    "canonical": "ALLERGÈNES INDIVIDUELS, MIXES OU EN PROFIL",
+    "local": "ALLERGÈNES INDIVIDUELS, MIXES OU EN PROFIL",
+    "code": null,
+    "price": 52
+  },
+  {
+    "canonical": "AMIKACINE POST-DOSE",
+    "local": "AMIKACINE POST-DOSE",
+    "code": "AMIK",
+    "price": 114
+  },
+  {
+    "canonical": "AMIKACINE PRÉ-DOSE",
+    "local": "AMIKACINE PRÉ-DOSE",
+    "code": "AMIK",
+    "price": 114
+  },
+  {
+    "canonical": "ANTI-HBs",
+    "local": "ANTI-HBs",
+    "code": "ANHBS",
+    "price": 69
+  },
+  {
+    "canonical": "ANTICORPS ANTI-ASPERGILLUS",
+    "local": "ANTICORPS ANTI-ASPERGILLUS",
+    "code": "ASPP",
+    "price": 114
+  },
+  {
+    "canonical": "ANTICORPS ANTI-BETA 2-GLYCOPROTÉINE I DE TYPE IgA",
+    "local": "ANTICORPS ANTI-BETA 2-GLYCOPROTÉINE I DE TYPE IgA",
+    "code": "B2GPIGA",
+    "price": 90
+  },
+  {
+    "canonical": "ANTICORPS ANTI-BETA 2-GLYCOPROTÉINE I DE TYPE IgM",
+    "local": "ANTICORPS ANTI-BETA 2-GLYCOPROTÉINE I DE TYPE IgM",
+    "code": "B2GPIGM",
+    "price": 90
+  },
+  {
+    "canonical": "ANTICORPS ANTI-CARDIOLIPINES (APA)",
+    "local": "ANTICORPS ANTI-CARDIOLIPINES (APA)",
+    "code": "ANTICAR",
+    "price": 70
+  },
+  {
+    "canonical": "ANTICORPS ANTI-ENDOMYSIUM",
+    "local": "ANTICORPS ANTI-ENDOMYSIUM",
+    "code": "ACENDOM",
+    "price": 129
+  },
+  {
+    "canonical": "ANTICORPS ANTI-GLUTAMATE DÉCARBOXYLASE",
+    "local": "ANTICORPS ANTI-GLUTAMATE DÉCARBOXYLASE",
+    "code": "AGAD",
+    "price": 55
+  },
+  {
+    "canonical": "ANTICORPS ANTI-HBc (TOTAL)",
+    "local": "ANTICORPS ANTI-HBc (TOTAL)",
+    "code": "HEPBC",
+    "price": 89
+  },
+  {
+    "canonical": "ANTICORPS ANTI-HBe",
+    "local": "ANTICORPS ANTI-HBe",
+    "code": "HEPBE",
+    "price": 73
+  },
+  {
+    "canonical": "ANTICORPS ANTI-HÉPATITE A DE TYPE IgM",
+    "local": "ANTICORPS ANTI-HÉPATITE A DE TYPE IgM",
+    "code": "HEPAM",
+    "price": 89
+  },
+  {
+    "canonical": "ANTICORPS ANTI-HÉPATITE D (ANTI-DELTA)",
+    "local": "ANTICORPS ANTI-HÉPATITE D (ANTI-DELTA)",
+    "code": "ACDELTA",
+    "price": 103
+  },
+  {
+    "canonical": "ANTICORPS ANTI-MICROSOMES THYROÏDIENS",
+    "local": "ANTICORPS ANTI-MICROSOMES THYROÏDIENS",
+    "code": "TAPRO",
+    "price": 106
+  },
+  {
+    "canonical": "ANTICORPS ANTI-MYOCARDE",
+    "local": "ANTICORPS ANTI-MYOCARDE",
+    "code": "MYOCAR",
+    "price": 70
+  },
+  {
+    "canonical": "ANTICORPS ANTI-PEAU",
+    "local": "ANTICORPS ANTI-PEAU",
+    "code": "ANTISKIN",
+    "price": 58
+  },
+  {
+    "canonical": "ANTICORPS ANTI-RABIQUES (RAGE)",
+    "local": "ANTICORPS ANTI-RABIQUES (RAGE)",
+    "code": "RABI",
+    "price": 73
+  },
+  {
+    "canonical": "ANTICORPS ANTI-RÉCEPTEURS DE LA THYRÉOSTIMULINE (TBII)",
+    "local": "ANTICORPS ANTI-RÉCEPTEURS DE LA THYRÉOSTIMULINE (TBII)",
+    "code": "ANTHY",
+    "price": 171
+  },
+  {
+    "canonical": "ANTICORPS ANTI-SPERMATOZOÏDES",
+    "local": "ANTICORPS ANTI-SPERMATOZOÏDES",
+    "code": "ANTISPERM",
+    "price": 58
+  },
+  {
+    "canonical": "ANTICORPS ANTI-VIRUS EPSTEIN-BARR DE TYPE IgG",
+    "local": "ANTICORPS ANTI-VIRUS EPSTEIN-BARR DE TYPE IgG",
+    "code": "EBVIGG",
+    "price": 103
+  },
+  {
+    "canonical": "ANTICORPS ANTI-VIRUS EPSTEIN-BARR DE TYPE IgM",
+    "local": "ANTICORPS ANTI-VIRUS EPSTEIN-BARR DE TYPE IgM",
+    "code": "EBVIGM",
+    "price": 103
+  },
+  {
+    "canonical": "ANTICORPS ANTITÉTANIQUES",
+    "local": "ANTICORPS ANTITÉTANIQUES",
+    "code": "TETA",
+    "price": 65
+  },
+  {
+    "canonical": "ANTICORPS IgG ANTI-VARICELLE",
+    "local": "ANTICORPS IgG ANTI-VARICELLE",
+    "code": "VARIG",
+    "price": 76
+  },
+  {
+    "canonical": "ANTICORPS IgG ANTI-VIRUS DE LA ROUGEOLE",
+    "local": "ANTICORPS IgG ANTI-VIRUS DE LA ROUGEOLE",
+    "code": "ROUGG",
+    "price": 68
+  },
+  {
+    "canonical": "ANTICORPS IgG ANTI-VIRUS DES OREILLONS",
+    "local": "ANTICORPS IgG ANTI-VIRUS DES OREILLONS",
+    "code": "MUMPIGG",
+    "price": 95
+  },
+  {
+    "canonical": "ANTICORPS IgM ANTI-VARICELLE",
+    "local": "ANTICORPS IgM ANTI-VARICELLE",
+    "code": "VARIM",
+    "price": 84
+  },
+  {
+    "canonical": "ANTICORPS IgM ANTI-VIRUS DE LA ROUGEOLE",
+    "local": "ANTICORPS IgM ANTI-VIRUS DE LA ROUGEOLE",
+    "code": "ROUGM",
+    "price": 84
+  },
+  {
+    "canonical": "ANTICORPS IgM ANTI-VIRUS DE LA RUBÉOLE",
+    "local": "ANTICORPS IgM ANTI-VIRUS DE LA RUBÉOLE",
+    "code": "RUBIGM",
+    "price": 93
+  },
+  {
+    "canonical": "ANTICORPS IgM ANTI-VIRUS DES OREILLONS",
+    "local": "ANTICORPS IgM ANTI-VIRUS DES OREILLONS",
+    "code": "MUMPIGM",
+    "price": 79
+  },
+  {
+    "canonical": "ANTICORPS TOTAUX ANTI-HÉPATITE A (IgG)",
+    "local": "ANTICORPS TOTAUX ANTI-HÉPATITE A (IgG)",
+    "code": "HEPAG",
+    "price": 84
+  },
+  {
+    "canonical": "ANTIMOINE - URINE",
+    "local": "ANTIMOINE - URINE",
+    "code": "MOINE",
+    "price": 93
+  },
+  {
+    "canonical": "ARSENIC URINE",
+    "local": "ARSENIC URINE",
+    "code": "ARSENIRU",
+    "price": 59
+  },
+  {
+    "canonical": "BILIRUBINE INDIRECTE/NON CONJUGUÉE",
+    "local": "BILIRUBINE INDIRECTE/NON CONJUGUÉE",
+    "code": "BILINDP",
+    "price": 54
+  },
+  {
+    "canonical": "BRUCELLA/BRUCELLOSE",
+    "local": "BRUCELLA/BRUCELLOSE",
+    "code": "BRUC",
+    "price": 33
+  },
+  {
+    "canonical": "BÉRYLLIUM SANG ENTIER",
+    "local": "BÉRYLLIUM SANG ENTIER",
+    "code": "BERY",
+    "price": 166
+  },
+  {
+    "canonical": "CAFÉINE",
+    "local": "CAFÉINE",
+    "code": "CAF",
+    "price": 48
+  },
+  {
+    "canonical": "CALCIUM - URINE AU HASARD",
+    "local": "CALCIUM - URINE AU HASARD",
+    "code": "CAURAN",
+    "price": 38
+  },
+  {
+    "canonical": "CALCIUM URINES DE 24 HEURES",
+    "local": "CALCIUM URINES DE 24 HEURES",
+    "code": "24UCA",
+    "price": 38
+  },
+  {
+    "canonical": "CALPROTECTINE FÉCALE",
+    "local": "CALPROTECTINE FÉCALE",
+    "code": "FECAL",
+    "price": 133
+  },
+  {
+    "canonical": "CAPACITÉ TOTALE DE FIXATION DU FER (FER, UIBC, TIBC)",
+    "local": "CAPACITÉ TOTALE DE FIXATION DU FER (FER, UIBC, TIBC)",
+    "code": "TIBCP",
+    "price": 53
+  },
+  {
+    "canonical": "CARNITINE",
+    "local": "CARNITINE",
+    "code": "CARNIT",
+    "price": 53
+  },
+  {
+    "canonical": "CATÉCHOLAMINES ET MÉTANÉPHRINES - URINES DE 24 HEURES",
+    "local": "CATÉCHOLAMINES ET MÉTANÉPHRINES - URINES DE 24 HEURES",
+    "code": "CATEMETA",
+    "price": 150
+  },
+  {
+    "canonical": "CD16/CD56 (CELLULES NK)",
+    "local": "CD16/CD56 (CELLULES NK)",
+    "code": "NATKC",
+    "price": 158
+  },
+  {
+    "canonical": "CHARGE VIRALE (VIH)",
+    "local": "CHARGE VIRALE (VIH)",
+    "code": "HIVCV",
+    "price": 93
+  },
+  {
+    "canonical": "CHAÎNES LÉGÈRES LIBRES",
+    "local": "CHAÎNES LÉGÈRES LIBRES",
+    "code": "FLC",
+    "price": 53
+  },
+  {
+    "canonical": "CHIKUNGUNYA - VIRUS (IgM par EIA)",
+    "local": "CHIKUNGUNYA - VIRUS (IgM par EIA)",
+    "code": "CHIKUN",
+    "price": 120
+  },
+  {
+    "canonical": "CHLAMYDIA URINE - DÉPISTAGE PAR TAAN",
+    "local": "CHLAMYDIA URINE - DÉPISTAGE PAR TAAN",
+    "code": "PCRCHSD",
+    "price": 83
+  },
+  {
+    "canonical": "CHLAMYDIA ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+    "local": "CHLAMYDIA ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+    "code": "PCRCHSD",
+    "price": 83
+  },
+  {
+    "canonical": "CHLORURES - URINE AU HASARD",
+    "local": "CHLORURES - URINE AU HASARD",
+    "code": "CLURAN",
+    "price": 38
+  },
+  {
+    "canonical": "CHLORURES - URINES DE 24 HEURES",
+    "local": "CHLORURES - URINES DE 24 HEURES",
+    "code": "24UCL",
+    "price": 38
+  },
+  {
+    "canonical": "CHOLESTÉROL HDL/LDL/RISQUE DE CORONAROPATHIE",
+    "local": "CHOLESTÉROL HDL/LDL/RISQUE DE CORONAROPATHIE",
+    "code": "HDLP",
+    "price": 64
+  },
+  {
+    "canonical": "CHOLINESTÉRASE DES GLOBULES ROUGES",
+    "local": "CHOLINESTÉRASE DES GLOBULES ROUGES",
+    "code": "CRBC",
+    "price": 55
+  },
+  {
+    "canonical": "CHOLINESTÉRASE TOTALE (SÉRIQUE)",
+    "local": "CHOLINESTÉRASE TOTALE (SÉRIQUE)",
+    "code": "CSE",
+    "price": 59
+  },
+  {
+    "canonical": "CHROME PLASMA",
+    "local": "CHROME PLASMA",
+    "code": "CHROS",
+    "price": 58
+  },
+  {
+    "canonical": "CHROME URINE ALÉATOIRE",
+    "local": "CHROME URINE ALÉATOIRE",
+    "code": "CHROMERU",
+    "price": 58
+  },
+  {
+    "canonical": "CLOBAZAM (FRISIUM)",
+    "local": "CLOBAZAM (FRISIUM)",
+    "code": "CLOBAZAM",
+    "price": 152
+  },
+  {
+    "canonical": "CLOMIPRAMINE (ANAFRIL)",
+    "local": "CLOMIPRAMINE (ANAFRIL)",
+    "code": "CLOMI",
+    "price": 104
+  },
+  {
+    "canonical": "CLOZAPINE (CLOZARIL)",
+    "local": "CLOZAPINE (CLOZARIL)",
+    "code": "CLOZA",
+    "price": 142
+  },
+  {
+    "canonical": "COBALT URINE ALÉATOIRE",
+    "local": "COBALT URINE ALÉATOIRE",
+    "code": "COBALTU",
+    "price": 59
+  },
+  {
+    "canonical": "COENZYME Q10",
+    "local": "COENZYME Q10",
+    "code": "COENZQ10",
+    "price": 110
+  },
+  {
+    "canonical": "COMPLÉMENTS C3 ET C4",
+    "local": "COMPLÉMENTS C3 ET C4",
+    "code": "C3C4",
+    "price": 104
+  },
+  {
+    "canonical": "CORTISOL (APRÈS-MIDI)",
+    "local": "CORTISOL (APRÈS-MIDI)",
+    "code": "CORTIPM",
+    "price": 63
+  },
+  {
+    "canonical": "CORTISOL (MATIN ET APRÈS-MIDI)",
+    "local": "CORTISOL (MATIN ET APRÈS-MIDI)",
+    "code": "CORTISOLAMPM",
+    "price": 91
+  },
+  {
+    "canonical": "CORTISOL (MATIN)",
+    "local": "CORTISOL (MATIN)",
+    "code": "CORTIAM",
+    "price": 63
+  },
+  {
+    "canonical": "CORTISOL ALÉATOIRE",
+    "local": "CORTISOL ALÉATOIRE",
+    "code": "CORTIRAN",
+    "price": 63
+  },
+  {
+    "canonical": "CORTISOL LIBRE - URINES DE 24 HEURES",
+    "local": "CORTISOL LIBRE - URINES DE 24 HEURES",
+    "code": "24CORTU",
+    "price": 93
+  },
+  {
+    "canonical": "CRYOFIBRINOGÈNE",
+    "local": "CRYOFIBRINOGÈNE",
+    "code": "CRYOF",
+    "price": 32
+  },
+  {
+    "canonical": "CRÉATININE - URINE AU HASARD",
+    "local": "CRÉATININE - URINE AU HASARD",
+    "code": "CREAURAN",
+    "price": 38
+  },
+  {
+    "canonical": "CRÉATININE - URINES DE 24 HEURES",
+    "local": "CRÉATININE - URINES DE 24 HEURES",
+    "code": "24UCREA",
+    "price": 38
+  },
+  {
+    "canonical": "CUIVRE SANG ENTIER",
+    "local": "CUIVRE SANG ENTIER",
+    "code": "COPPERWB",
+    "price": 58
+  },
+  {
+    "canonical": "CUIVRE URINE ALÉATOIRE",
+    "local": "CUIVRE URINE ALÉATOIRE",
+    "code": "COPPERRU",
+    "price": 59
+  },
+  {
+    "canonical": "CULTURE DE LA GORGE + TEST RAPIDE STREPTOCOQUE GROUPE A",
+    "local": "CULTURE DE LA GORGE + TEST RAPIDE STREPTOCOQUE GROUPE A",
+    "code": "STREP",
+    "price": 56
+  },
+  {
+    "canonical": "CULTURE ET SENSIBILITÉ: AUTRE",
+    "local": "CULTURE ET SENSIBILITÉ: AUTRE",
+    "code": "CUL",
+    "price": 56
+  },
+  {
+    "canonical": "CULTURE: CHAMPIGNONS",
+    "local": "CULTURE: CHAMPIGNONS",
+    "code": "FU",
+    "price": 149
+  },
+  {
+    "canonical": "CULTURE: COL UTÉRIN",
+    "local": "CULTURE: COL UTÉRIN",
+    "code": "CSC",
+    "price": 51
+  },
+  {
+    "canonical": "CULTURE: ENTÉROCOQUE RÉSISTANT À LA VANCOMYCINE (ERV)",
+    "local": "CULTURE: ENTÉROCOQUE RÉSISTANT À LA VANCOMYCINE (ERV)",
+    "code": "VRE",
+    "price": 82
+  },
+  {
+    "canonical": "CULTURE: EXPECTORATIONS",
+    "local": "CULTURE: EXPECTORATIONS",
+    "code": "CS",
+    "price": 51
+  },
+  {
+    "canonical": "CULTURE: GORGE",
+    "local": "CULTURE: GORGE",
+    "code": "CST",
+    "price": 60
+  },
+  {
+    "canonical": "CULTURE: GORGE ET CULTURE GONORRHOEAE GORGE",
+    "local": "CULTURE: GORGE ET CULTURE GONORRHOEAE GORGE",
+    "code": "CSTGC",
+    "price": 60
+  },
+  {
+    "canonical": "CULTURE: SARM (Staphylococcus aureus résistant à la méthicilline)",
+    "local": "CULTURE: SARM (Staphylococcus aureus résistant à la méthicilline)",
+    "code": "MRSA",
+    "price": 65
+  },
+  {
+    "canonical": "CULTURE: SELLES ET VIBRIO CHOLÉRA",
+    "local": "CULTURE: SELLES ET VIBRIO CHOLÉRA",
+    "code": "VIBCSS1",
+    "price": 69
+  },
+  {
+    "canonical": "CULTURE: STREPTOCOQUE DU GROUPE B",
+    "local": "CULTURE: STREPTOCOQUE DU GROUPE B",
+    "code": "STREPB",
+    "price": 42
+  },
+  {
+    "canonical": "CULTURE: URÈTRE",
+    "local": "CULTURE: URÈTRE",
+    "code": "CSV",
+    "price": 54
+  },
+  {
+    "canonical": "CULTURE: VAGIN",
+    "local": "CULTURE: VAGIN",
+    "code": "CVA",
+    "price": 56
+  },
+  {
+    "canonical": "CYCLOSPORINE",
+    "local": "CYCLOSPORINE",
+    "code": "CYCLO",
+    "price": 104
+  },
+  {
+    "canonical": "CYSTATINE C",
+    "local": "CYSTATINE C",
+    "code": "CYSTC",
+    "price": 18
+  },
+  {
+    "canonical": "CYSTINE - URINE",
+    "local": "CYSTINE - URINE",
+    "code": "CYSTRU",
+    "price": 132
+  },
+  {
+    "canonical": "CYTOLOGIE: ASPIRATION MAMMAIRE",
+    "local": "CYTOLOGIE: ASPIRATION MAMMAIRE",
+    "code": "BRCYTO",
+    "price": 110
+  },
+  {
+    "canonical": "CYTOLOGIE: TEST DE PAPANICOLAOU (SUR LAME)",
+    "local": "CYTOLOGIE: TEST DE PAPANICOLAOU (SUR LAME)",
+    "code": "PAPSM",
+    "price": 32
+  },
+  {
+    "canonical": "CYTOLOGIE: TEST DE PAPANICOLAOU ThinPrep (PAP TEST LIQUIDE)",
+    "local": "CYTOLOGIE: TEST DE PAPANICOLAOU ThinPrep (PAP TEST LIQUIDE)",
+    "code": "LPAP",
+    "price": 85
+  },
+  {
+    "canonical": "CYTOLOGIE: ThinPrep + DÉPISTAGE VPH EN COMBO",
+    "local": "CYTOLOGIE: ThinPrep + DÉPISTAGE VPH EN COMBO",
+    "code": "THINCASC",
+    "price": 186
+  },
+  {
+    "canonical": "CYTOLOGIE: ThinPrep + DÉPISTAGE VPH SI ASCUS",
+    "local": "CYTOLOGIE: ThinPrep + DÉPISTAGE VPH SI ASCUS",
+    "code": "LPAPRAS",
+    "price": 140
+  },
+  {
+    "canonical": "D-AMINOLÉVULINATE - URINES DE 24 HEURES",
+    "local": "D-AMINOLÉVULINATE - URINES DE 24 HEURES",
+    "code": "ALA",
+    "price": 137
+  },
+  {
+    "canonical": "DHEA",
+    "local": "DHEA",
+    "code": "DHEA",
+    "price": 114
+  },
+  {
+    "canonical": "DHEAS (SULFATE DE DÉSHYDROÉPIANDROSTÉRONE)",
+    "local": "DHEAS (SULFATE DE DÉSHYDROÉPIANDROSTÉRONE)",
+    "code": "DHEAS",
+    "price": 89
+  },
+  {
+    "canonical": "DIGOXINE",
+    "local": "DIGOXINE",
+    "code": "DIG",
+    "price": 58
+  },
+  {
+    "canonical": "DILANTIN (PHÉNYTOÏNE)",
+    "local": "DILANTIN (PHÉNYTOÏNE)",
+    "code": "DIL",
+    "price": 56
+  },
+  {
+    "canonical": "DOXÉPINE (SINEQUAN)",
+    "local": "DOXÉPINE (SINEQUAN)",
+    "code": "DOX",
+    "price": 104
+  },
+  {
+    "canonical": "DROGUE: BARBITURIQUES - URINE",
+    "local": "DROGUE: BARBITURIQUES - URINE",
+    "code": "BARB",
+    "price": 58
+  },
+  {
+    "canonical": "DROGUE: BENZODIAZÉPINES - URINE",
+    "local": "DROGUE: BENZODIAZÉPINES - URINE",
+    "code": "BENZO",
+    "price": 58
+  },
+  {
+    "canonical": "DROGUE: CANNABINOÏDES - URINE",
+    "local": "DROGUE: CANNABINOÏDES - URINE",
+    "code": "CAN",
+    "price": 51
+  },
+  {
+    "canonical": "DROGUE: COCAÏNE - URINE",
+    "local": "DROGUE: COCAÏNE - URINE",
+    "code": "COCAINE",
+    "price": 58
+  },
+  {
+    "canonical": "DROGUE: OPIACÉS URINE",
+    "local": "DROGUE: OPIACÉS URINE",
+    "code": "OPI",
+    "price": 51
+  },
+  {
+    "canonical": "DRÉPANOCYTOSE - TEST DE DÉPISTAGE (CELLULES FALCIFORMES)",
+    "local": "DRÉPANOCYTOSE - TEST DE DÉPISTAGE (CELLULES FALCIFORMES)",
+    "code": "RBCSICK",
+    "price": 73
+  },
+  {
+    "canonical": "DÉSIPRAMINE (ANTIDÉPRESSEUR TRICYCLIQUE)",
+    "local": "DÉSIPRAMINE (ANTIDÉPRESSEUR TRICYCLIQUE)",
+    "code": "DESI",
+    "price": 104
+  },
+  {
+    "canonical": "DÉSÉTHYLAMIODARONE (AMIODARONE)",
+    "local": "DÉSÉTHYLAMIODARONE (AMIODARONE)",
+    "code": "AMIO",
+    "price": 78
+  },
+  {
+    "canonical": "ENTAMOEBA HISTOLYTICA - SELLES",
+    "local": "ENTAMOEBA HISTOLYTICA - SELLES",
+    "code": "ENTAMO",
+    "price": 300
+  },
+  {
+    "canonical": "FACTEUR II",
+    "local": "FACTEUR II",
+    "code": "FACII",
+    "price": 62
+  },
+  {
+    "canonical": "FACTEUR IX",
+    "local": "FACTEUR IX",
+    "code": "FACTIX",
+    "price": 55
+  },
+  {
+    "canonical": "FACTEUR X",
+    "local": "FACTEUR X",
+    "code": "FACTX",
+    "price": 55
+  },
+  {
+    "canonical": "FACTEUR XI",
+    "local": "FACTEUR XI",
+    "code": "FACTXI",
+    "price": 55
+  },
+  {
+    "canonical": "FIT (TEST IMMUNOCHIMIQUE FÉCAL)",
+    "local": "FIT (TEST IMMUNOCHIMIQUE FÉCAL)",
+    "code": "FIT",
+    "price": 62
+  },
+  {
+    "canonical": "FLUVOXAMINE",
+    "local": "FLUVOXAMINE",
+    "code": "FLUVO",
+    "price": 88
+  },
+  {
+    "canonical": "FOLATES ÉRYTHROCYTAIRES",
+    "local": "FOLATES ÉRYTHROCYTAIRES",
+    "code": "FOLRBC",
+    "price": 95
+  },
+  {
+    "canonical": "FSC AVEC INTERPRÉTATION",
+    "local": "FSC AVEC INTERPRÉTATION",
+    "code": "CBCINT",
+    "price": 65
+  },
+  {
+    "canonical": "G6PD (GLUCOSE-6-PHOSPHATE DÉSHYDROGÉNASE)",
+    "local": "G6PD (GLUCOSE-6-PHOSPHATE DÉSHYDROGÉNASE)",
+    "code": "G6PD",
+    "price": 72
+  },
+  {
+    "canonical": "GENECEPT ASSAY",
+    "local": "GENECEPT ASSAY",
+    "code": "GENECEPT",
+    "price": 495
+  },
+  {
+    "canonical": "GENTAMICINE POST-DOSE",
+    "local": "GENTAMICINE POST-DOSE",
+    "code": "POSTGEN",
+    "price": 68
+  },
+  {
+    "canonical": "GENTAMICINE PRÉ-DOSE",
+    "local": "GENTAMICINE PRÉ-DOSE",
+    "code": "PREGEN",
+    "price": 68
+  },
+  {
+    "canonical": "GLOBULINE FIXANT LA THYROXINE (TBG)",
+    "local": "GLOBULINE FIXANT LA THYROXINE (TBG)",
+    "code": "TBG",
+    "price": 51
+  },
+  {
+    "canonical": "GLUCOSE - HYPERGLYCÉMIE ORALE 75g NON-GESTATIONNEL (2 HEURES)",
+    "local": "GLUCOSE - HYPERGLYCÉMIE ORALE 75g NON-GESTATIONNEL (2 HEURES)",
+    "code": "GLU75",
+    "price": 58
+  },
+  {
+    "canonical": "GLUCOSE AU HASARD",
+    "local": "GLUCOSE AU HASARD",
+    "code": null,
+    "price": 38
+  },
+  {
+    "canonical": "GLUCOSE PC (1HR-50g)",
+    "local": "GLUCOSE PC (1HR-50g)",
+    "code": "PREG50",
+    "price": 38
+  },
+  {
+    "canonical": "GLUCOSE PC (2HR-75g)",
+    "local": "GLUCOSE PC (2HR-75g)",
+    "code": "PREG75",
+    "price": 60
+  },
+  {
+    "canonical": "GLUCOSE À JEUN",
+    "local": "GLUCOSE À JEUN",
+    "code": "AC",
+    "price": 38
+  },
+  {
+    "canonical": "GOLIMUMAB",
+    "local": "GOLIMUMAB",
+    "code": "GOLM",
+    "price": 305
+  },
+  {
+    "canonical": "GÈNE SHOX - ANALYSE",
+    "local": "GÈNE SHOX - ANALYSE",
+    "code": "SHOXGENE",
+    "price": 650
+  },
+  {
+    "canonical": "GÉNOTYPE DU VIRUS DE L'HÉPATITE C - PCR",
+    "local": "GÉNOTYPE DU VIRUS DE L'HÉPATITE C - PCR",
+    "code": "HEPCGENO",
+    "price": 93
+  },
+  {
+    "canonical": "HARMONY (DÉPISTAGE PRÉNATAL NON INVASIF)",
+    "local": "HARMONY (DÉPISTAGE PRÉNATAL NON INVASIF)",
+    "code": "HARMO",
+    "price": 495
+  },
+  {
+    "canonical": "HARMONY OPTION DU TEST 22q11.2",
+    "local": "HARMONY OPTION DU TEST 22q11.2",
+    "code": null,
+    "price": 175
+  },
+  {
+    "canonical": "HCG (ANALYSE QUANTITATIVE)",
+    "local": "HCG (ANALYSE QUANTITATIVE)",
+    "code": "BSQUANT",
+    "price": 63
+  },
+  {
+    "canonical": "HELICOBACTER PYLORI ANTICORPS DE TYPE IgG",
+    "local": "HELICOBACTER PYLORI ANTICORPS DE TYPE IgG",
+    "code": null,
+    "price": 76
+  },
+  {
+    "canonical": "HERPÈS - DÉTECTION PAR PCR (ÉCOUVILLON)",
+    "local": "HERPÈS - DÉTECTION PAR PCR (ÉCOUVILLON)",
+    "code": "HERPPCR",
+    "price": 189
+  },
+  {
+    "canonical": "HERPÈS SIMPLEX - IMMUNOTRANSFERT",
+    "local": "HERPÈS SIMPLEX - IMMUNOTRANSFERT",
+    "code": "HERPBLOT",
+    "price": 261
+  },
+  {
+    "canonical": "HISTAMINE (PLASMA)",
+    "local": "HISTAMINE (PLASMA)",
+    "code": "HISTA",
+    "price": 128
+  },
+  {
+    "canonical": "HOLTER (24 HRS) - ECG EN CONTINU",
+    "local": "HOLTER (24 HRS) - ECG EN CONTINU",
+    "code": "HOLTER",
+    "price": 206
+  },
+  {
+    "canonical": "HOLTER (48 HRS) - ECG EN CONTINU",
+    "local": "HOLTER (48 HRS) - ECG EN CONTINU",
+    "code": "HOLTER48",
+    "price": 311
+  },
+  {
+    "canonical": "HOLTER (72 HRS) - ECG EN CONTINU",
+    "local": "HOLTER (72 HRS) - ECG EN CONTINU",
+    "code": "HOLTER72",
+    "price": 425
+  },
+  {
+    "canonical": "HORMONE ANTI-DIURÉTIQUE (ADH)",
+    "local": "HORMONE ANTI-DIURÉTIQUE (ADH)",
+    "code": "ADH",
+    "price": 84
+  },
+  {
+    "canonical": "HÉPATITE B - ADN VIRAL",
+    "local": "HÉPATITE B - ADN VIRAL",
+    "code": "HBVDNA",
+    "price": 438
+  },
+  {
+    "canonical": "HÉPATITE C (ANALYSE QUALITATIVE) - PCR",
+    "local": "HÉPATITE C (ANALYSE QUALITATIVE) - PCR",
+    "code": "HEPCQUAL",
+    "price": 148
+  },
+  {
+    "canonical": "HÉPATITE C (ANALYSE QUANTITATIVE) - PCR",
+    "local": "HÉPATITE C (ANALYSE QUANTITATIVE) - PCR",
+    "code": "HEPCQUANT",
+    "price": 93
+  },
+  {
+    "canonical": "IGF-1 (SOMATOMÉDINE C)",
+    "local": "IGF-1 (SOMATOMÉDINE C)",
+    "code": "SOMA",
+    "price": 73
+  },
+  {
+    "canonical": "IMIPRAMINE (ANTIDÉPRESSEUR TRICYCLIQUE)",
+    "local": "IMIPRAMINE (ANTIDÉPRESSEUR TRICYCLIQUE)",
+    "code": "IMIP",
+    "price": 110
+  },
+  {
+    "canonical": "IMMUNOGLOBULINES (ANALYSE QUANTITATIVE)",
+    "local": "IMMUNOGLOBULINES (ANALYSE QUANTITATIVE)",
+    "code": "IMQUANT",
+    "price": 63
+  },
+  {
+    "canonical": "IMMUNOÉLECTROPHORÈSE",
+    "local": "IMMUNOÉLECTROPHORÈSE",
+    "code": "IMMUELE",
+    "price": 101
+  },
+  {
+    "canonical": "INFLECTRA - ANALYSE QUANTITATIVE",
+    "local": "INFLECTRA - ANALYSE QUANTITATIVE",
+    "code": "INFLEC",
+    "price": 295
+  },
+  {
+    "canonical": "INFLIXIMAB ET ANTI-INFLIXIMAB (REMICADE)",
+    "local": "INFLIXIMAB ET ANTI-INFLIXIMAB (REMICADE)",
+    "code": "INFLIX",
+    "price": 311
+  },
+  {
+    "canonical": "INR + PTT (TEMPS DE CÉPHALINE ACTIVÉE)",
+    "local": "INR + PTT (TEMPS DE CÉPHALINE ACTIVÉE)",
+    "code": "PTPTT",
+    "price": 58
+  },
+  {
+    "canonical": "INSULINE (À JEUN)",
+    "local": "INSULINE (À JEUN)",
+    "code": "INSUL",
+    "price": 70
+  },
+  {
+    "canonical": "ISOENZYMES DE LA CK",
+    "local": "ISOENZYMES DE LA CK",
+    "code": "CKISO",
+    "price": 93
+  },
+  {
+    "canonical": "ISOENZYMES DE LA LDH",
+    "local": "ISOENZYMES DE LA LDH",
+    "code": "ISOLDH",
+    "price": 18
+  },
+  {
+    "canonical": "ISOPROPANOL",
+    "local": "ISOPROPANOL",
+    "code": "ISOPRO",
+    "price": 45
+  },
+  {
+    "canonical": "JAK2 MUTATIONS DE L'EXON 12 SANG",
+    "local": "JAK2 MUTATIONS DE L'EXON 12 SANG",
+    "code": "JAK2EX12",
+    "price": 163
+  },
+  {
+    "canonical": "JAK2 QUALITATIF MUTATION V617F SANG",
+    "local": "JAK2 QUALITATIF MUTATION V617F SANG",
+    "code": "J2VQ",
+    "price": 311
+  },
+  {
+    "canonical": "JAK2 QUANTITATIF MUTATION V617F SANG",
+    "local": "JAK2 QUANTITATIF MUTATION V617F SANG",
+    "code": "JAKQ",
+    "price": 311
+  },
+  {
+    "canonical": "LAMOTRIGINE (LAMICTAL)",
+    "local": "LAMOTRIGINE (LAMICTAL)",
+    "code": "LAMO",
+    "price": 135
+  },
+  {
+    "canonical": "LEPTOSPIROSE (SÉROAGGLUTINATION)",
+    "local": "LEPTOSPIROSE (SÉROAGGLUTINATION)",
+    "code": "LEPTO",
+    "price": 85
+  },
+  {
+    "canonical": "LGV (LYMPHOGRANULOME VÉNÉRIEN)",
+    "local": "LGV (LYMPHOGRANULOME VÉNÉRIEN)",
+    "code": "LGV",
+    "price": 100
+  },
+  {
+    "canonical": "LIPOPROTÉINE A - Lp(a)",
+    "local": "LIPOPROTÉINE A - Lp(a)",
+    "code": "LIPOA",
+    "price": 95
+  },
+  {
+    "canonical": "LIQUIDE BIOLOGIQUE - CYTOLOGIE PAR ASPIRATION",
+    "local": "LIQUIDE BIOLOGIQUE - CYTOLOGIE PAR ASPIRATION",
+    "code": "NCYTO",
+    "price": 55
+  },
+  {
+    "canonical": "LIQUIDE SYNOVIAL: DÉNOMBREMENT CELLULAIRE ET CRISTAUX",
+    "local": "LIQUIDE SYNOVIAL: DÉNOMBREMENT CELLULAIRE ET CRISTAUX",
+    "code": "SYNOVIAL",
+    "price": 90
+  },
+  {
+    "canonical": "MAGNÉSIUM ÉRYTHROCYTAIRE",
+    "local": "MAGNÉSIUM ÉRYTHROCYTAIRE",
+    "code": "MGRBC",
+    "price": 35
+  },
+  {
+    "canonical": "MALADIE DE LYME (ANTICORPS ANTI-BORRELIA BURGDORFERI)",
+    "local": "MALADIE DE LYME (ANTICORPS ANTI-BORRELIA BURGDORFERI)",
+    "code": "LY",
+    "price": 80
+  },
+  {
+    "canonical": "MANGANÈSE - URINE ALÉATOIRE",
+    "local": "MANGANÈSE - URINE ALÉATOIRE",
+    "code": "MANGU",
+    "price": 88
+  },
+  {
+    "canonical": "MERCAPTOPURINE (THIOGUANINE ÉRYTHROCYTAIRE)",
+    "local": "MERCAPTOPURINE (THIOGUANINE ÉRYTHROCYTAIRE)",
+    "code": "MERCA",
+    "price": 53
+  },
+  {
+    "canonical": "MERCURE - URINE ALÉATOIRE",
+    "local": "MERCURE - URINE ALÉATOIRE",
+    "code": "MERCU",
+    "price": 59
+  },
+  {
+    "canonical": "MHA-TP (TEST D'AGGLUTINATION POUR T. PALLIDUM)",
+    "local": "MHA-TP (TEST D'AGGLUTINATION POUR T. PALLIDUM)",
+    "code": "MHATP",
+    "price": 173
+  },
+  {
+    "canonical": "MICROALBUMINE - URINES DE 24 HEURES",
+    "local": "MICROALBUMINE - URINES DE 24 HEURES",
+    "code": "24MIALBP",
+    "price": 63
+  },
+  {
+    "canonical": "MICROALBUMINE: RATIO ALBUMINE/CRÉATININE",
+    "local": "MICROALBUMINE: RATIO ALBUMINE/CRÉATININE",
+    "code": "MIALBP",
+    "price": 63
+  },
+  {
+    "canonical": "MONONUCLÉOSE - TEST DE DÉPISTAGE",
+    "local": "MONONUCLÉOSE - TEST DE DÉPISTAGE",
+    "code": null,
+    "price": 30
+  },
+  {
+    "canonical": "MUCOPOLYSACCHARIDE URINE AU HASARD",
+    "local": "MUCOPOLYSACCHARIDE URINE AU HASARD",
+    "code": "MUCOPOLY",
+    "price": 53
+  },
+  {
+    "canonical": "MUTATION DU FACTEUR II (VARIANT GÉNIQUE DE LA PROTHROMBINE)",
+    "local": "MUTATION DU FACTEUR II (VARIANT GÉNIQUE DE LA PROTHROMBINE)",
+    "code": "FAMU",
+    "price": 116
+  },
+  {
+    "canonical": "MUTATION GÉNIQUE HÉMOCHROMATOSE (C282Y + H63D)",
+    "local": "MUTATION GÉNIQUE HÉMOCHROMATOSE (C282Y + H63D)",
+    "code": "HEMOCHRO",
+    "price": 366
+  },
+  {
+    "canonical": "MYOGLOBINE - SANG",
+    "local": "MYOGLOBINE - SANG",
+    "code": "MYOGLO",
+    "price": 70
+  },
+  {
+    "canonical": "MYOGLOBINE - URINE",
+    "local": "MYOGLOBINE - URINE",
+    "code": "MYOGLOU",
+    "price": 79
+  },
+  {
+    "canonical": "NEISSERIA GONORRHOEAE - DÉPISTAGE PAR TAAN URINE",
+    "local": "NEISSERIA GONORRHOEAE - DÉPISTAGE PAR TAAN URINE",
+    "code": "NGONOTAA",
+    "price": 83
+  },
+  {
+    "canonical": "NEISSERIA GONORRHOEAE - DÉPISTAGE PAR TAAN ÉCOUVILLONNAGE",
+    "local": "NEISSERIA GONORRHOEAE - DÉPISTAGE PAR TAAN ÉCOUVILLONNAGE",
+    "code": "NGONOTAA",
+    "price": 83
+  },
+  {
+    "canonical": "NOISETTE - PROFIL COMPOSANTS (rCor a1, rCor a8, rCor a9, rCor a14)",
+    "local": "NOISETTE - PROFIL COMPOSANTS (rCor a1, rCor a8, rCor a9, rCor a14)",
+    "code": "PF96",
+    "price": 169
+  },
+  {
+    "canonical": "NORTRIPTYLINE (AVENTYL) (ANTIDÉPRESSEUR TRICYCLIQUE)",
+    "local": "NORTRIPTYLINE (AVENTYL) (ANTIDÉPRESSEUR TRICYCLIQUE)",
+    "code": "NORTRI",
+    "price": 99
+  },
+  {
+    "canonical": "OESTRIOL (ESTRIOL)",
+    "local": "OESTRIOL (ESTRIOL)",
+    "code": "ESOL",
+    "price": 76
+  },
+  {
+    "canonical": "OESTRONE (ESTRONE)",
+    "local": "OESTRONE (ESTRONE)",
+    "code": "ESTRON",
+    "price": 230
+  },
+  {
+    "canonical": "OMÉGA-3 (ACIDES GRAS TOTAUX)",
+    "local": "OMÉGA-3 (ACIDES GRAS TOTAUX)",
+    "code": "OMG3",
+    "price": 97
+  },
+  {
+    "canonical": "OSMOLALITÉ - URINES DE 24 HEURES",
+    "local": "OSMOLALITÉ - URINES DE 24 HEURES",
+    "code": "OSU24HR",
+    "price": 57
+  },
+  {
+    "canonical": "OXALATES - URINES DE 24 HEURES",
+    "local": "OXALATES - URINES DE 24 HEURES",
+    "code": "OXAUR",
+    "price": 110
+  },
+  {
+    "canonical": "OXYURES (SPATULE ADHÉSIVE)",
+    "local": "OXYURES (SPATULE ADHÉSIVE)",
+    "code": "TAPE",
+    "price": 31
+  },
+  {
+    "canonical": "PATHOLOGIE/HISTOLOGIE - ÉVALUATION",
+    "local": "PATHOLOGIE/HISTOLOGIE - ÉVALUATION",
+    "code": "PATHO",
+    "price": 106
+  },
+  {
+    "canonical": "PEPTIDE C À JEUN",
+    "local": "PEPTIDE C À JEUN",
+    "code": "PEPC",
+    "price": 73
+  },
+  {
+    "canonical": "PHOSPHORE - URINES DE 24 HEURES",
+    "local": "PHOSPHORE - URINES DE 24 HEURES",
+    "code": "24UPHOS",
+    "price": 38
+  },
+  {
+    "canonical": "PHOSPHORE URINE AU HASARD",
+    "local": "PHOSPHORE URINE AU HASARD",
+    "code": "PHOSURAN",
+    "price": 38
+  },
+  {
+    "canonical": "PHÉNOBARBITAL",
+    "local": "PHÉNOBARBITAL",
+    "code": "PHEN",
+    "price": 66
+  },
+  {
+    "canonical": "PLASMINOGÈNE",
+    "local": "PLASMINOGÈNE",
+    "code": "PLASMINO",
+    "price": 31
+  },
+  {
+    "canonical": "PLOMB (Pb) - URINE",
+    "local": "PLOMB (Pb) - URINE",
+    "code": "PBU",
+    "price": 100
+  },
+  {
+    "canonical": "PORPHOBILINOGÈNE - URINES DE 24 HEURES (QUANTITATIF)",
+    "local": "PORPHOBILINOGÈNE - URINES DE 24 HEURES (QUANTITATIF)",
+    "code": "PORPHO",
+    "price": 92
+  },
+  {
+    "canonical": "PORPHYRINES - URINES DE 24 HEURES",
+    "local": "PORPHYRINES - URINES DE 24 HEURES",
+    "code": "24PORP",
+    "price": 90
+  },
+  {
+    "canonical": "PORPHYRINES ÉRYTHROCYTAIRES LIBRES",
+    "local": "PORPHYRINES ÉRYTHROCYTAIRES LIBRES",
+    "code": "PORSG",
+    "price": 80
+  },
+  {
+    "canonical": "POTASSIUM (K) - URINE AU HASARD",
+    "local": "POTASSIUM (K) - URINE AU HASARD",
+    "code": "KURAN",
+    "price": 38
+  },
+  {
+    "canonical": "POTASSIUM (K) URINES DE 24 HEURES",
+    "local": "POTASSIUM (K) URINES DE 24 HEURES",
+    "code": "24UK",
+    "price": 27
+  },
+  {
+    "canonical": "PRENATEST (1ER TRIMESTRE)",
+    "local": "PRENATEST (1ER TRIMESTRE)",
+    "code": "TT1",
+    "price": 265
+  },
+  {
+    "canonical": "PRIMIDONE (MYSOLINE)",
+    "local": "PRIMIDONE (MYSOLINE)",
+    "code": "MYSO",
+    "price": 71
+  },
+  {
+    "canonical": "PROFIL DÉPISTAGE MALADIE COELIAQUE (IgA TOTALES, ANTI-TRANSGLUTAMINASE IgA, ANTI-GLIADINE IgG)",
+    "local": "PROFIL DÉPISTAGE MALADIE COELIAQUE (IgA TOTALES, ANTI-TRANSGLUTAMINASE IgA, ANTI-GLIADINE IgG)",
+    "code": "CELISCRE",
+    "price": 104
+  },
+  {
+    "canonical": "PROFIL LIPIDIQUE (CHOLESTÉROL, TRIGLYCÉRIDES, HDL, LDL ET RISQUE)",
+    "local": "PROFIL LIPIDIQUE (CHOLESTÉROL, TRIGLYCÉRIDES, HDL, LDL ET RISQUE)",
+    "code": "LIPID",
+    "price": 72
+  },
+  {
+    "canonical": "PROFIL MALADIE COELIAQUE COMPLET (IgA TOTALES, ANTI-TRANSGLUTAMINASE IgA, ANTI-GLIADINE IgG ET IgA)",
+    "local": "PROFIL MALADIE COELIAQUE COMPLET (IgA TOTALES, ANTI-TRANSGLUTAMINASE IgA, ANTI-GLIADINE IgG ET IgA)",
+    "code": "CELIAC",
+    "price": 146
+  },
+  {
+    "canonical": "PROTÉINE DE LIAISON DES FACTEURS DE TYPE INSULINE 3 (IGFBP-3)",
+    "local": "PROTÉINE DE LIAISON DES FACTEURS DE TYPE INSULINE 3 (IGFBP-3)",
+    "code": "IGFBP3",
+    "price": 59
+  },
+  {
+    "canonical": "PROTÉINE S TOTAL",
+    "local": "PROTÉINE S TOTAL",
+    "code": "PROTST",
+    "price": 127
+  },
+  {
+    "canonical": "PROTÉINES - URINES DE 24 HEURES",
+    "local": "PROTÉINES - URINES DE 24 HEURES",
+    "code": "24UPROT",
+    "price": 38
+  },
+  {
+    "canonical": "PROTÉINES URINE AU HASARD",
+    "local": "PROTÉINES URINE AU HASARD",
+    "code": "PROTURP",
+    "price": 44
+  },
+  {
+    "canonical": "QUINIDINE",
+    "local": "QUINIDINE",
+    "code": "QUI",
+    "price": 44
+  },
+  {
+    "canonical": "QuantiFERON-TB (Q-TB GOLD)",
+    "local": "QuantiFERON-TB (Q-TB GOLD)",
+    "code": "QTB",
+    "price": 100
+  },
+  {
+    "canonical": "RECHERCHE D'ANTICORPS (TEST DE COOMBS INDIRECT)",
+    "local": "RECHERCHE D'ANTICORPS (TEST DE COOMBS INDIRECT)",
+    "code": null,
+    "price": 65
+  },
+  {
+    "canonical": "ROTAVIRUS Ag, EIA",
+    "local": "ROTAVIRUS Ag, EIA",
+    "code": "ROTAVIRUS",
+    "price": 141
+  },
+  {
+    "canonical": "RÉTICULOCYTES (NUMÉRATION)",
+    "local": "RÉTICULOCYTES (NUMÉRATION)",
+    "code": "RETICP",
+    "price": 42
+  },
+  {
+    "canonical": "SALICYLATES",
+    "local": "SALICYLATES",
+    "code": "SAL",
+    "price": 48
+  },
+  {
+    "canonical": "SARS-COV2 ANTICORPS NP",
+    "local": "SARS-COV2 ANTICORPS NP",
+    "code": "COV2AB",
+    "price": 84
+  },
+  {
+    "canonical": "SODIUM - URINE AU HASARD",
+    "local": "SODIUM - URINE AU HASARD",
+    "code": "NAURAN",
+    "price": 38
+  },
+  {
+    "canonical": "SODIUM URINES DE 24 HEURES",
+    "local": "SODIUM URINES DE 24 HEURES",
+    "code": "24UNA",
+    "price": 38
+  },
+  {
+    "canonical": "SOUS-CLASSES D'IMMUNOGLOBULINE IgG",
+    "local": "SOUS-CLASSES D'IMMUNOGLOBULINE IgG",
+    "code": "IGGP",
+    "price": 148
+  },
+  {
+    "canonical": "SUBSTANCE RÉDUCTRICE DANS LES SELLES",
+    "local": "SUBSTANCE RÉDUCTRICE DANS LES SELLES",
+    "code": "REDSUB",
+    "price": 33
+  },
+  {
+    "canonical": "SYPHILIS (RPR) (SUIVI DE TRAITEMENT)",
+    "local": "SYPHILIS (RPR) (SUIVI DE TRAITEMENT)",
+    "code": "RPR",
+    "price": 31
+  },
+  {
+    "canonical": "SYPHILIS CMIA (DÉPISTAGE)",
+    "local": "SYPHILIS CMIA (DÉPISTAGE)",
+    "code": "SYPH",
+    "price": 31
+  },
+  {
+    "canonical": "SÉLÉNIUM - URINE AU HASARD",
+    "local": "SÉLÉNIUM - URINE AU HASARD",
+    "code": "SELENIUM",
+    "price": 110
+  },
+  {
+    "canonical": "SÉROTONINE",
+    "local": "SÉROTONINE",
+    "code": "SER",
+    "price": 57
+  },
+  {
+    "canonical": "T3 TOTALE (TRIIODOTHYRONINE)",
+    "local": "T3 TOTALE (TRIIODOTHYRONINE)",
+    "code": "T3",
+    "price": 37
+  },
+  {
+    "canonical": "TACROLIMUS",
+    "local": "TACROLIMUS",
+    "code": "TAC",
+    "price": 116
+  },
+  {
+    "canonical": "TEMPS DE THROMBINE",
+    "local": "TEMPS DE THROMBINE",
+    "code": "TT",
+    "price": 34
+  },
+  {
+    "canonical": "THIOPURINE S-MÉTHYLTRANSFÉRASE (TPMT) GÉNOTYPE",
+    "local": "THIOPURINE S-MÉTHYLTRANSFÉRASE (TPMT) GÉNOTYPE",
+    "code": "TMPT",
+    "price": 179
+  },
+  {
+    "canonical": "THÉOPHYLLINE",
+    "local": "THÉOPHYLLINE",
+    "code": "THEO",
+    "price": 59
+  },
+  {
+    "canonical": "TOPIRAMATE",
+    "local": "TOPIRAMATE",
+    "code": "TOPIRAMA",
+    "price": 69
+  },
+  {
+    "canonical": "TOXOPLASMOSE ANTICORPS DE TYPE IgG",
+    "local": "TOXOPLASMOSE ANTICORPS DE TYPE IgG",
+    "code": "TOXO",
+    "price": 43
+  },
+  {
+    "canonical": "TOXOPLASMOSE ANTICORPS DE TYPE IgM",
+    "local": "TOXOPLASMOSE ANTICORPS DE TYPE IgM",
+    "code": "TOXOM",
+    "price": 100
+  },
+  {
+    "canonical": "TRICHINELLA",
+    "local": "TRICHINELLA",
+    "code": "TRICHI",
+    "price": 42
+  },
+  {
+    "canonical": "TRICHOMONAS VAGINALIS URINE - DÉPISTAGE PAR TAAN",
+    "local": "TRICHOMONAS VAGINALIS URINE - DÉPISTAGE PAR TAAN",
+    "code": "TRICHAA",
+    "price": 83
+  },
+  {
+    "canonical": "TRICHOMONAS VAGINALIS ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+    "local": "TRICHOMONAS VAGINALIS ÉCOUVILLON - DÉPISTAGE PAR TAAN",
+    "code": "TRICHAA",
+    "price": 83
+  },
+  {
+    "canonical": "TRIMIPRAMINE (SURMONTIL)",
+    "local": "TRIMIPRAMINE (SURMONTIL)",
+    "code": "TRIMI",
+    "price": 109
+  },
+  {
+    "canonical": "TRYPTASE",
+    "local": "TRYPTASE",
+    "code": "Y907",
+    "price": 64
+  },
+  {
+    "canonical": "TUBERCULOSE - PCR",
+    "local": "TUBERCULOSE - PCR",
+    "code": "TUBP",
+    "price": 110
+  },
+  {
+    "canonical": "TYPAGE HLA DQ2/DQ8",
+    "local": "TYPAGE HLA DQ2/DQ8",
+    "code": "HLATYPE",
+    "price": 528
+  },
+  {
+    "canonical": "TÉLOPEPTIDE-C",
+    "local": "TÉLOPEPTIDE-C",
+    "code": "CTX",
+    "price": 139
+  },
+  {
+    "canonical": "UREAPLASMA ET MYCOPLASMA (ÉCOUVILLON)",
+    "local": "UREAPLASMA ET MYCOPLASMA (ÉCOUVILLON)",
+    "code": "UM",
+    "price": 93
+  },
+  {
+    "canonical": "URÉE - URINES DE 24 HEURES",
+    "local": "URÉE - URINES DE 24 HEURES",
+    "code": "24HRUREA",
+    "price": 38
+  },
+  {
+    "canonical": "VANCOMYCINE POST-DOSE",
+    "local": "VANCOMYCINE POST-DOSE",
+    "code": "VANPOST",
+    "price": 91
+  },
+  {
+    "canonical": "VANCOMYCINE PRÉ-DOSE",
+    "local": "VANCOMYCINE PRÉ-DOSE",
+    "code": "VANPRE",
+    "price": 96
+  },
+  {
+    "canonical": "VIH (GÉNOTYPAGE DE L'INTÉGRASE)",
+    "local": "VIH (GÉNOTYPAGE DE L'INTÉGRASE)",
+    "code": "HIVINT",
+    "price": 200
+  },
+  {
+    "canonical": "VIH ADN PROVIRAL (GÉNOTYPAGE DU TROPISME)",
+    "local": "VIH ADN PROVIRAL (GÉNOTYPAGE DU TROPISME)",
+    "code": "HIVDNA",
+    "price": 314
+  },
+  {
+    "canonical": "VIH ARN PROVIRAL (GÉNOTYPAGE DU TROPISME)",
+    "local": "VIH ARN PROVIRAL (GÉNOTYPAGE DU TROPISME)",
+    "code": "HIVRNA",
+    "price": 314
+  },
+  {
+    "canonical": "VIH GÉNOTYPE",
+    "local": "VIH GÉNOTYPE",
+    "code": "HIVGENO",
+    "price": 259
+  },
+  {
+    "canonical": "VIRUS DE LA DENGUE",
+    "local": "VIRUS DE LA DENGUE",
+    "code": "DENGUE",
+    "price": 158
+  },
+  {
+    "canonical": "VIRUS DU NIL OCCIDENTAL (ANTICORPS)",
+    "local": "VIRUS DU NIL OCCIDENTAL (ANTICORPS)",
+    "code": "VNO",
+    "price": 196
+  },
+  {
+    "canonical": "VIRUS ZIKA - ANTICORPS (IgM)",
+    "local": "VIRUS ZIKA - ANTICORPS (IgM)",
+    "code": "ZIKAIGM",
+    "price": 74
+  },
+  {
+    "canonical": "VIRUS ZIKA - DÉTECTION PAR PCR",
+    "local": "VIRUS ZIKA - DÉTECTION PAR PCR",
+    "code": "ZIKAPCR",
+    "price": 95
+  },
+  {
+    "canonical": "VITAMINE B1 (THIAMINE)",
+    "local": "VITAMINE B1 (THIAMINE)",
+    "code": "VITB1",
+    "price": 180
+  },
+  {
+    "canonical": "VITAMINE E (TOCOPHÉROL)",
+    "local": "VITAMINE E (TOCOPHÉROL)",
+    "code": "VITE",
+    "price": 111
+  },
+  {
+    "canonical": "VITAMINE K",
+    "local": "VITAMINE K",
+    "code": "VITK1",
+    "price": 202
+  },
+  {
+    "canonical": "ZINC - SANG ENTIER",
+    "local": "ZINC - SANG ENTIER",
+    "code": "ZINCWB",
+    "price": 95
+  },
+  {
+    "canonical": "ÉCHINOCOCCUS",
+    "local": "ÉCHINOCOCCUS",
+    "code": "ECHIN",
+    "price": 39
+  },
+  {
+    "canonical": "ÉLECTROLYTES - URINE AU HASARD",
+    "local": "ÉLECTROLYTES - URINE AU HASARD",
+    "code": "UELER",
+    "price": 34
+  },
+  {
+    "canonical": "ÉLECTROLYTES - URINES DE 24 HEURES",
+    "local": "ÉLECTROLYTES - URINES DE 24 HEURES",
+    "code": "24ELER",
+    "price": 44
+  },
+  {
+    "canonical": "ÉLECTROPHORÈSE DES PROTÉINES URINE DE 24 HEURES",
+    "local": "ÉLECTROPHORÈSE DES PROTÉINES URINE DE 24 HEURES",
+    "code": "24PE",
+    "price": 93
+  },
+  {
+    "canonical": "ÉPOXYDE DE CARBAMAZÉPINE",
+    "local": "ÉPOXYDE DE CARBAMAZÉPINE",
+    "code": "EPOX",
+    "price": 83
+  },
+  {
+    "canonical": "ÉPREUVE FONCTIONNELLE C1 ESTÉRASE",
+    "local": "ÉPREUVE FONCTIONNELLE C1 ESTÉRASE",
+    "code": "C1EF",
+    "price": 90
+  },
+  {
+    "canonical": "ÉTHOSUXIMIDE (ZARONTIN)",
+    "local": "ÉTHOSUXIMIDE (ZARONTIN)",
+    "code": "ETHO",
+    "price": 45
+  }
+]

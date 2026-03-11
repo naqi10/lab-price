@@ -25,12 +25,14 @@ const DialogContent = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => {
+  const ariaDescribedBy = props["aria-describedby"];
   return (
     <>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
         translate="no"
+        aria-describedby={ariaDescribedBy ?? undefined}
         className={cn(
           "fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border/60 bg-card shadow-2xl notranslate",
           className

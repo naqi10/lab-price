@@ -55,6 +55,26 @@ export const CATEGORY_COLORS: Record<string, { gradient: string; badge: string; 
     badge: "bg-teal-100 text-teal-700 border-teal-300",
     accent: "bg-teal-500",
   },
+  Coagulation: {
+    gradient: "from-rose-500/20 via-rose-500/5 to-transparent",
+    badge: "bg-rose-100 text-rose-700 border-rose-300",
+    accent: "bg-rose-500",
+  },
+  Oncologie: {
+    gradient: "from-violet-500/20 via-violet-500/5 to-transparent",
+    badge: "bg-violet-100 text-violet-700 border-violet-300",
+    accent: "bg-violet-500",
+  },
+  Métabolisme: {
+    gradient: "from-amber-500/20 via-amber-500/5 to-transparent",
+    badge: "bg-amber-100 text-amber-700 border-amber-300",
+    accent: "bg-amber-500",
+  },
+  Hormones: {
+    gradient: "from-purple-500/20 via-purple-500/5 to-transparent",
+    badge: "bg-purple-100 text-purple-700 border-purple-300",
+    accent: "bg-purple-500",
+  },
 };
 
 export const DEFAULT_CATEGORY_COLOR = {

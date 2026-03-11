@@ -47,6 +47,7 @@ import {
   DollarSign,
   ClipboardList,
   FileText,
+  List,
 } from "lucide-react";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -582,6 +583,9 @@ function UnifiedTestsContent() {
                 });
               }}
               onRemoveFromCart={(testMappingId) => removeItem(testMappingId)}
+              availableBundles={availableBundles}
+              selectedBundleIds={selectedBundleIds}
+              onAddBundle={(bundle) => toggleBundle(bundle as ActiveDeal)}
             />
           </div>
 
@@ -695,6 +699,13 @@ function UnifiedTestsContent() {
             {/* Nav links */}
             <div className="pt-3 mt-2 border-t border-border/30 space-y-1">
               <button
+                onClick={() => router.push("/tests/all")}
+                className="w-full flex items-center gap-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-2.5 rounded-lg hover:bg-muted/30"
+              >
+                <List className="h-4 w-4 shrink-0" />
+                <span>Parcourir tous les tests</span>
+              </button>
+              <button
                 onClick={() => router.push("/tests/deals")}
                 className="w-full flex items-center gap-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-2.5 rounded-lg hover:bg-muted/30"
               >
@@ -741,7 +752,7 @@ function UnifiedTestsContent() {
           <div className="flex-1 overflow-y-auto">
             {/* Selected items list — always rendered to avoid React 19 portal
                 insertBefore bugs when transitioning from 0→1 items */}
-            <TooltipProvider>
+            <TooltipProvider disableHoverableContent>
             <div className="px-5 pt-4 pb-3 border-b border-border/30 empty:hidden">
               {items.map((item) => {
                   const tube = parseTubeColor(item.tubeType);
