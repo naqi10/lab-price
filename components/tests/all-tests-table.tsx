@@ -14,12 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   Search,
   FlaskConical,
@@ -458,45 +453,31 @@ export default function AllTestsTable({
                         {onAddToCart && (
                           <TableCell className="text-right pr-4">
                             {inCart ? (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() =>
-                                      test.testMappingId &&
-                                      onRemoveFromCart?.(test.testMappingId)
-                                    }
-                                    className="h-7 w-7 p-0 text-emerald-600 hover:text-destructive hover:bg-destructive/10"
-                                    aria-label="Retirer de la sélection"
-                                  >
-                                    <CheckCircle2 className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  Retirer de la sélection
-                                </TooltipContent>
-                              </Tooltip>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  test.testMappingId &&
+                                  onRemoveFromCart?.(test.testMappingId)
+                                }
+                                className="h-7 w-7 p-0 text-emerald-600 hover:text-destructive hover:bg-destructive/10"
+                                aria-label="Retirer de la sélection"
+                                title="Retirer de la sélection"
+                              >
+                                <CheckCircle2 className="h-4 w-4" />
+                              </Button>
                             ) : (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => onAddToCart(test)}
-                                    disabled={!test.testMappingId}
-                                    className="h-7 w-7 p-0 disabled:opacity-30"
-                                    aria-label="Ajouter à la comparaison"
-                                  >
-                                    <PlusCircle className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  {test.testMappingId
-                                    ? "Ajouter à la comparaison"
-                                    : "Créez une correspondance d'abord"}
-                                </TooltipContent>
-                              </Tooltip>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onAddToCart(test)}
+                                disabled={!test.testMappingId}
+                                className="h-7 w-7 p-0 disabled:opacity-30"
+                                aria-label="Ajouter à la comparaison"
+                                title={test.testMappingId ? "Ajouter à la comparaison" : "Créez une correspondance d'abord"}
+                              >
+                                <PlusCircle className="h-4 w-4" />
+                              </Button>
                             )}
                           </TableCell>
                         )}

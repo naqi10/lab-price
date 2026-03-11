@@ -27,9 +27,6 @@ import { TubeDot } from "@/components/ui/tube-dot";
 import { formatCurrency } from "@/lib/utils";
 import { parseTubeColor } from "@/lib/tube-colors";
 import {
-  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   GitCompare,
   Package,
   Mail,
@@ -750,9 +747,7 @@ function UnifiedTestsContent() {
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto">
-            {/* Selected items list — always rendered to avoid React 19 portal
-                insertBefore bugs when transitioning from 0→1 items */}
-            <TooltipProvider disableHoverableContent>
+            {/* Selected items list */}
             <div className="px-5 pt-4 pb-3 border-b border-border/30 empty:hidden">
               {items.map((item) => {
                   const tube = parseTubeColor(item.tubeType);
@@ -763,15 +758,11 @@ function UnifiedTestsContent() {
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       {tube ? (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span
-                              className="inline-block h-2.5 w-2.5 rounded-full shrink-0 ring-1 ring-black/15"
-                              style={{ backgroundColor: tube.color }}
-                            />
-                          </TooltipTrigger>
-                          <TooltipContent side="top">{tube.label}</TooltipContent>
-                        </Tooltip>
+                        <span
+                          className="inline-block h-2.5 w-2.5 rounded-full shrink-0 ring-1 ring-black/15"
+                          style={{ backgroundColor: tube.color }}
+                          title={tube.label}
+                        />
                       ) : (
                         <FlaskConical className="h-3 w-3 text-muted-foreground/40 shrink-0" />
                       )}
@@ -807,7 +798,6 @@ function UnifiedTestsContent() {
                   </div>
                 ))}
             </div>
-            </TooltipProvider>
 
             {/* Empty state */}
             {allTestMappingIds.length === 0 && (
