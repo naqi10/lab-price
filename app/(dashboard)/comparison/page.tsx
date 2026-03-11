@@ -3,7 +3,6 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState, useContext } from "react";
 import ComparisonTable from "@/components/comparison/comparison-table";
-import LabCostSummary from "@/components/comparison/lab-cost-summary";
 import MissingTestsAlert from "@/components/comparison/missing-tests-alert";
 import EmailComparisonDialog from "@/components/comparison/email-comparison-dialog";
 import SaveEstimateDialog from "@/components/comparison/save-estimate-dialog";
@@ -447,16 +446,6 @@ function ComparisonContent() {
          <div className={missingTests.length > 0 ? undefined : "hidden"}>
            <MissingTestsAlert missingTests={missingTests} />
          </div>
-
-         <LabCostSummary
-           labs={labs}
-           bestLabId={bestLabId}
-           selections={hasActiveSelections ? selections : undefined}
-           selectionTotal={selectionTotal}
-           testNames={testNames}
-           testMappingIds={testIds}
-           laboratories={tableData?.laboratories}
-         />
 
          {tableData && (
            <ComparisonTable

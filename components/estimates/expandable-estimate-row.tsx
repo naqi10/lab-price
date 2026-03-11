@@ -5,7 +5,7 @@ import { ChevronDown, Download, Trash2, Loader2, Mail } from "lucide-react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
 
 interface TestMappingDetail {
@@ -225,40 +225,32 @@ export function ExpandableEstimateRow({
           <TableCell className="text-right">
             <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
               {onDownload && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDownload(estimate.id)}
-                      disabled={downloadingId === estimate.id}
-                      aria-label="Télécharger PDF"
-                    >
-                      {downloadingId === estimate.id ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Download className="h-3.5 w-3.5" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Télécharger PDF</TooltipContent>
-                </Tooltip>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDownload(estimate.id)}
+                  disabled={downloadingId === estimate.id}
+                  aria-label="Télécharger PDF"
+                  title="Télécharger PDF"
+                >
+                  {downloadingId === estimate.id ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" />
+                  )}
+                </Button>
               )}
               {onDelete && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDelete(estimate.id)}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      aria-label="Supprimer"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Supprimer</TooltipContent>
-                </Tooltip>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete(estimate.id)}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  aria-label="Supprimer"
+                  title="Supprimer"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
               )}
             </div>
           </TableCell>

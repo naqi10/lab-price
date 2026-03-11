@@ -4,9 +4,6 @@ import React, { useState, useMemo } from "react";
 import { formatCurrency, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import MatchIndicator from "@/components/tests/match-indicator";
-import {
-  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link2, Check, Zap, DollarSign, RotateCcw, Clock, X, Package } from "lucide-react";
@@ -218,8 +215,7 @@ export default function ComparisonTable({
   }, [visibleLabs, data.tests]);
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <div className="space-y-3">
+    <div className="space-y-3">
 
         {/* ── Optimisation toolbar ──────────────────────────────────────── */}
         {onSelectLab && (
@@ -510,33 +506,20 @@ export default function ComparisonTable({
                                       onCancel={() => setEditingPrice(null)}
                                     />
                                   ) : (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <span
-                                          className={cn(
-                                            "tabular-nums cursor-pointer transition-colors",
-                                            isCheapest
-                                              ? "text-foreground font-bold text-base"
-                                              : "text-foreground font-semibold text-base",
-                                            isCustomPrice && "text-blue-400 hover:text-blue-300",
-                                            !isCustomPrice && "hover:text-blue-400",
-                                          )}
-                                          onDoubleClick={() => setEditingPrice({ testId: test.id, labId: lab.id })}
-                                        >
-                                          {formatCurrency(effectivePrice)}
-                                        </span>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        {isCustomPrice ? (
-                                          <>
-                                            <p className="text-xs text-blue-500">Prix personnalisé</p>
-                                            <p className="text-xs mt-1 text-muted-foreground">Double-cliquez pour modifier</p>
-                                          </>
-                                        ) : (
-                                          <p className="text-xs text-muted-foreground">Double-cliquez pour modifier le prix</p>
-                                        )}
-                                      </TooltipContent>
-                                    </Tooltip>
+                                    <span
+                                      className={cn(
+                                        "tabular-nums cursor-pointer transition-colors",
+                                        isCheapest
+                                          ? "text-foreground font-bold text-base"
+                                          : "text-foreground font-semibold text-base",
+                                        isCustomPrice && "text-blue-400 hover:text-blue-300",
+                                        !isCustomPrice && "hover:text-blue-400",
+                                      )}
+                                      onDoubleClick={() => setEditingPrice({ testId: test.id, labId: lab.id })}
+                                      title={isCustomPrice ? "Prix personnalisé — Double-cliquez pour modifier" : "Double-cliquez pour modifier le prix"}
+                                    >
+                                      {formatCurrency(effectivePrice)}
+                                    </span>
                                   )}
 
                                   {/* Diff from cheapest — compact inline % */}
@@ -585,27 +568,17 @@ export default function ComparisonTable({
                                   </span>
                                   {match?.matchType === "FUZZY" && (
                                     <div className="flex items-center gap-1">
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <span>
-                                            <MatchIndicator type={match.matchType} confidence={match.similarity} compact />
-                                          </span>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p className="text-xs">Nom local : <strong>{match.localTestName}</strong></p>
-                                          <p className="text-xs">Confiance : {Math.round(match.similarity * 100)}%</p>
-                                        </TooltipContent>
-                                      </Tooltip>
+                                      <span title={`Nom local : ${match.localTestName} — Confiance : ${Math.round(match.similarity * 100)}%`}>
+                                        <MatchIndicator type={match.matchType} confidence={match.similarity} compact />
+                                      </span>
                                       {data.onCreateMapping && (
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <button onClick={() => data.onCreateMapping!(test.id, lab.id)}
-                                              className="text-muted-foreground/30 hover:text-primary transition-colors">
-                                              <Link2 className="h-2.5 w-2.5" />
-                                            </button>
-                                          </TooltipTrigger>
-                                          <TooltipContent>Corriger la correspondance</TooltipContent>
-                                        </Tooltip>
+                                        <button
+                                          onClick={() => data.onCreateMapping!(test.id, lab.id)}
+                                          className="text-muted-foreground/30 hover:text-primary transition-colors"
+                                          title="Corriger la correspondance"
+                                        >
+                                          <Link2 className="h-2.5 w-2.5" />
+                                        </button>
                                       )}
                                     </div>
                                   )}
@@ -616,15 +589,13 @@ export default function ComparisonTable({
                               <div className="flex items-center gap-1.5">
                                 <span className="text-sm text-muted-foreground/50">—</span>
                                 {data.onCreateMapping && (
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button onClick={() => data.onCreateMapping!(test.id, lab.id)}
-                                        className="text-muted-foreground/25 hover:text-primary transition-colors">
-                                        <Link2 className="h-3 w-3" />
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Créer une correspondance</TooltipContent>
-                                  </Tooltip>
+                                  <button
+                                    onClick={() => data.onCreateMapping!(test.id, lab.id)}
+                                    className="text-muted-foreground/25 hover:text-primary transition-colors"
+                                    title="Créer une correspondance"
+                                  >
+                                    <Link2 className="h-3 w-3" />
+                                  </button>
                                 )}
                               </div>
                             )}
@@ -686,6 +657,5 @@ export default function ComparisonTable({
           </div>
         </div>
       </div>
-    </TooltipProvider>
   );
 }

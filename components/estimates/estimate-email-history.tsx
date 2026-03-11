@@ -13,12 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { MailCheck, MailX, Clock, Download, Loader2, Mail } from "lucide-react";
 
 const emailStatusConfig: Record<
@@ -94,8 +89,7 @@ export default function EstimateEmailHistory({
     .sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime());
 
   return (
-    <TooltipProvider>
-      <Card>
+    <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold">
             <Mail className="h-4 w-4 text-muted-foreground" />
@@ -151,23 +145,19 @@ export default function EstimateEmailHistory({
                         {email.sentAt ? formatDate(new Date(email.sentAt)) : "—"}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDownloadPdf(email.id)}
-                              disabled={downloadingId === email.id}
-                            >
-                              {downloadingId === email.id ? (
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                              ) : (
-                                <Download className="h-3.5 w-3.5" />
-                              )}
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Télécharger PDF</TooltipContent>
-                        </Tooltip>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDownloadPdf(email.id)}
+                          disabled={downloadingId === email.id}
+                          title="Télécharger PDF"
+                        >
+                          {downloadingId === email.id ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Download className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );
@@ -177,6 +167,5 @@ export default function EstimateEmailHistory({
           )}
         </CardContent>
       </Card>
-    </TooltipProvider>
   );
 }

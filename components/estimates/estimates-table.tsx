@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TooltipProvider } from "@/components/ui/tooltip";
+
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Search, FileText, ChevronLeft, ChevronRight, X, Plus,
@@ -207,7 +207,7 @@ export default function EstimatesTable({
   };
 
   return (
-    <TooltipProvider>
+    <>
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
@@ -383,6 +383,6 @@ export default function EstimatesTable({
         variant="destructive"
         onConfirm={handleDelete}
       />
-    </TooltipProvider>
+    </>
   );
 }

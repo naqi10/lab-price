@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import {
   Search, Mail, ChevronLeft, ChevronRight, X, FileText,
   RotateCcw, ExternalLink, Loader2,
@@ -252,8 +252,7 @@ export default function CustomerHistoryTable({
   };
 
   return (
-    <TooltipProvider>
-      <Card>
+    <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
@@ -377,24 +376,20 @@ export default function CustomerHistoryTable({
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-1" onClick={(ev) => ev.stopPropagation()}>
                               {e.status === "SENT" && e.estimateId && (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleResendEmail(e.id)}
-                                      disabled={resendingId === e.id}
-                                      aria-label="Renvoyer"
-                                    >
-                                      {resendingId === e.id ? (
-                                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                      ) : (
-                                        <RotateCcw className="h-3.5 w-3.5" />
-                                      )}
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Renvoyer</TooltipContent>
-                                </Tooltip>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleResendEmail(e.id)}
+                                  disabled={resendingId === e.id}
+                                  aria-label="Renvoyer"
+                                  title="Renvoyer"
+                                >
+                                  {resendingId === e.id ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <RotateCcw className="h-3.5 w-3.5" />
+                                  )}
+                                </Button>
                               )}
                             </div>
                           </TableCell>
@@ -445,19 +440,15 @@ export default function CustomerHistoryTable({
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-1" onClick={(ev) => ev.stopPropagation()}>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => router.push(`/estimates/${est.id}`)}
-                                    aria-label="Voir"
-                                  >
-                                    <ExternalLink className="h-3.5 w-3.5" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Voir l'estimation</TooltipContent>
-                              </Tooltip>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => router.push(`/estimates/${est.id}`)}
+                                aria-label="Voir"
+                                title="Voir l'estimation"
+                              >
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </Button>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -518,6 +509,5 @@ export default function CustomerHistoryTable({
           )}
         </CardContent>
       </Card>
-    </TooltipProvider>
   );
 }

@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import { X, Trophy, FlaskConical, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { formatCurrency } from "@/lib/utils";
 import { parseTubeColor } from "@/lib/tube-colors";
 import type { LabColor } from "@/hooks/use-lab-colors";
@@ -100,7 +97,6 @@ export default function TestCart({
       </div>
 
       {/* ── Selected tests list ──────────────────────────────────────── */}
-      <TooltipProvider>
       <ul className="divide-y divide-border/30 max-h-44 overflow-y-auto border-b border-border/30">
         {items.map((item) => {
           const tube = parseTubeColor(item.tubeType);
@@ -124,7 +120,6 @@ export default function TestCart({
           );
         })}
       </ul>
-      </TooltipProvider>
 
       {/* ── Lab leaderboard ──────────────────────────────────────────── */}
       <div className="px-4 py-3 space-y-2.5 flex-1">

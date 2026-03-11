@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { Edit, Trash2, Package, Plus } from "lucide-react";
 import { CATEGORY_COLORS, DEFAULT_CATEGORY_COLOR } from "@/lib/data/bundles";
 import { formatCurrency } from "@/lib/utils";
@@ -40,8 +40,7 @@ export default function BundleDealTable({
   }
 
   return (
-    <TooltipProvider>
-      <Table>
+    <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Nom</TableHead>
@@ -94,28 +93,19 @@ export default function BundleDealTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-1">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="sm" onClick={() => onEdit(d)} aria-label="Modifier">
-                          <Edit className="h-3.5 w-3.5" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Modifier</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onDelete(d.id)}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          aria-label="Supprimer"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Supprimer</TooltipContent>
-                    </Tooltip>
+                    <Button variant="ghost" size="sm" onClick={() => onEdit(d)} aria-label="Modifier" title="Modifier">
+                      <Edit className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete(d.id)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      aria-label="Supprimer"
+                      title="Supprimer"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -123,6 +113,5 @@ export default function BundleDealTable({
           })}
         </TableBody>
       </Table>
-    </TooltipProvider>
   );
 }

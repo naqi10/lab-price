@@ -329,12 +329,18 @@ export async function GET() {
           : null) ??
         deal.description;
 
+      // The profile test's own testMappingId (used to add the profile as a single
+      // entry in the comparison table instead of expanding into component tests).
+      const selfTestMappingId =
+        profileFromSeed?.testMappingEntry?.testMappingId ?? null;
+
       return {
         ...deal,
         description,
         canonicalNames,
         componentTests,
         profileComponentNames,
+        selfTestMappingId,
         profileTube: resolveProfileTubeValue({
           metaTube: meta?.tube ?? null,
           seedTube: profileFromSeed?.tubeType ?? null,

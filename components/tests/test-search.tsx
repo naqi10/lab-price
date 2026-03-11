@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import {
   Search, PlusCircle, CheckCircle2, X, Clock,
-  ChevronLeft, ChevronRight, ChevronDown, Layers,
+  ChevronLeft, ChevronRight, Layers,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,8 @@ interface BundleSummary {
   customRate: number;
   canonicalNames: string[];
   testMappingIds: string[];
+  selfTestMappingId?: string | null;
+  sourceLabCode?: string | null;
 }
 
 // ── Utilities ──────────────────────────────────────────────────────────────────
@@ -81,40 +83,16 @@ function isProfileResult(test: SearchResult): boolean {
 function ProfileComparePanel({
   labPrices,
   relatedBundles,
-  allBundles,
   selectedBundleIds,
   onAddBundle,
 }: {
   labPrices: { code: string; name: string; price: number }[];
+  /** Only profiles that actually include this test (CDL only). */
   relatedBundles: BundleSummary[];
-  allBundles: BundleSummary[];
   selectedBundleIds?: Set<string>;
   onAddBundle?: (b: BundleSummary) => void;
 }) {
-  const [manualSearch, setManualSearch] = useState("");
-  const [showManual, setShowManual] = useState(relatedBundles.length === 0);
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const cheapestIndividual = Math.min(...labPrices.map((l) => l.price));
-  const normalizedManual = normalizeSearchText(manualSearch);
-
-  const relatedIds = new Set(relatedBundles.map((b) => b.id));
-  const otherBundles = useMemo(
-    () => allBundles.filter((b) => !relatedIds.has(b.id)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [allBundles, relatedBundles],
-  );
-
-  const filteredOther = useMemo(() => {
-    if (!normalizedManual) return otherBundles.slice(0, 10);
-    return otherBundles
-      .filter(
-        (b) =>
-          normalizeSearchText(b.dealName).includes(normalizedManual) ||
-          b.canonicalNames.some((n) => normalizeSearchText(n).includes(normalizedManual)),
-      )
-      .slice(0, 10);
-  }, [otherBundles, normalizedManual]);
 
   function BundleCard({ bundle }: { bundle: BundleSummary }) {
     const inSelection = !!selectedBundleIds?.has(bundle.id);
@@ -164,7 +142,7 @@ function ProfileComparePanel({
           {onAddBundle && (
             <button
               onClick={() => onAddBundle(bundle)}
-              title={inSelection ? "Retirer" : "Comparer"}
+              title={inSelection ? "Retirer" : "Ajouter au comparateur"}
               className={`shrink-0 mt-0.5 h-9 w-9 rounded-lg flex items-center justify-center transition-colors ${
                 inSelection
                   ? "bg-primary text-primary-foreground"
@@ -183,7 +161,7 @@ function ProfileComparePanel({
 
   return (
     <div className="mt-3 rounded-xl border border-primary/20 bg-primary/[0.03] p-3 space-y-3">
-      {/* Header: baseline prices */}
+      {/* Header: baseline prices per lab */}
       <div>
         <div className="flex items-center gap-1.5 mb-1.5">
           <Layers className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -210,61 +188,20 @@ function ProfileComparePanel({
 
       <div className="border-t border-primary/10" />
 
-      {/* Auto-detected profiles */}
-      {relatedBundles.length > 0 && (
+      {/* Profiles that include this test */}
+      {relatedBundles.length > 0 ? (
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">
-            Profils incluant ce test
+            Profils incluant ce test ({relatedBundles.length})
           </p>
           <div className="space-y-2">
             {relatedBundles.map((b) => <BundleCard key={b.id} bundle={b} />)}
           </div>
         </div>
-      )}
-
-      {/* Manual selection */}
-      {otherBundles.length > 0 && (
-        <div className="space-y-2">
-          <button
-            onClick={() => {
-              setShowManual((v) => {
-                const next = !v;
-                if (next) setTimeout(() => inputRef.current?.focus(), 60);
-                return next;
-              });
-            }}
-            className="flex items-center gap-1.5 text-xs text-primary/80 hover:text-primary transition-colors py-0.5"
-          >
-            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showManual ? "rotate-180" : ""}`} />
-            {relatedBundles.length > 0
-              ? "Comparer avec un autre profil"
-              : `Sélectionner un profil (${otherBundles.length} disponibles)`}
-          </button>
-
-          {showManual && (
-            <div className="space-y-2">
-              {otherBundles.length > 4 && (
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-                  <input
-                    ref={inputRef}
-                    value={manualSearch}
-                    onChange={(e) => setManualSearch(e.target.value)}
-                    placeholder="Filtrer les profils…"
-                    className="w-full h-9 rounded-lg border border-border/50 bg-background pl-8 pr-3 text-sm outline-none focus:ring-1 focus:ring-primary/40"
-                  />
-                </div>
-              )}
-              {filteredOther.length === 0 ? (
-                <p className="text-xs text-muted-foreground px-1">Aucun profil correspondant.</p>
-              ) : (
-                <div className="space-y-2 max-h-56 overflow-y-auto">
-                  {filteredOther.map((b) => <BundleCard key={b.id} bundle={b} />)}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+      ) : (
+        <p className="text-xs text-muted-foreground">
+          Aucun profil CDL ne contient ce test.
+        </p>
       )}
     </div>
   );
@@ -352,9 +289,14 @@ export default function TestSearch({
     }
     return [...groupMap.entries()].map(([key, tests]) => {
       const mapped = tests.find((t) => t.testMappingId);
-      return { key, testMappingId: mapped?.testMappingId ?? null, canonicalName: mapped?.canonicalName ?? null, tests };
+      const primary = tests[0];
+      const isProfile = isProfileResult(primary);
+      const matchingBundle = isProfile && mapped?.testMappingId
+        ? (availableBundles ?? []).find((b) => b.selfTestMappingId === mapped.testMappingId) ?? null
+        : null;
+      return { key, testMappingId: mapped?.testMappingId ?? null, canonicalName: mapped?.canonicalName ?? null, tests, isProfile, matchingBundle };
     });
-  }, [rankedResults]);
+  }, [rankedResults, availableBundles]);
 
   const totalGroupPages = Math.ceil(allGrouped.length / GROUPS_PER_PAGE);
   const grouped = allGrouped.slice((searchPage - 1) * GROUPS_PER_PAGE, searchPage * GROUPS_PER_PAGE);
@@ -363,6 +305,44 @@ export default function TestSearch({
     if (!openProfileKey) return;
     if (!allGrouped.some((g) => g.key === openProfileKey)) setOpenProfileKey(null);
   }, [allGrouped, openProfileKey]);
+
+  // ── Bulk select (select-all) ──────────────────────────────────────────────
+  const visibleMappableGroups = useMemo(
+    () => grouped.filter((g) => g.testMappingId != null && !g.matchingBundle),
+    [grouped]
+  );
+
+  const selectedCount = useMemo(
+    () => visibleMappableGroups.filter((g) => cartItemIds?.has(g.testMappingId!)).length,
+    [visibleMappableGroups, cartItemIds]
+  );
+
+  const allSelected = visibleMappableGroups.length > 0 && selectedCount === visibleMappableGroups.length;
+  const someSelected = selectedCount > 0 && !allSelected;
+  const selectAllRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!selectAllRef.current) return;
+    selectAllRef.current.indeterminate = someSelected;
+  }, [someSelected]);
+
+  const handleSelectAll = () => {
+    if (allSelected) {
+      // Deselect all
+      for (const g of visibleMappableGroups) {
+        if (cartItemIds?.has(g.testMappingId!)) {
+          onRemoveFromCart?.(g.testMappingId!);
+        }
+      }
+    } else {
+      // Select all not yet in cart
+      for (const g of visibleMappableGroups) {
+        if (!cartItemIds?.has(g.testMappingId!)) {
+          onAddToCart?.(g.tests[0]);
+        }
+      }
+    }
+  };
 
   return (
     <div className="w-full space-y-2">
@@ -409,6 +389,37 @@ export default function TestSearch({
             )}
           </div>
 
+          {/* Select-all bar */}
+          {onAddToCart && visibleMappableGroups.length > 0 && (
+            <div className="px-3 py-2 border-b border-border/30 bg-muted/10 flex items-center gap-2">
+              <label
+                htmlFor="search-select-all"
+                className="inline-flex cursor-pointer select-none items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <input
+                  ref={selectAllRef}
+                  id="search-select-all"
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={handleSelectAll}
+                  className="h-4 w-4 rounded border-border text-primary focus:ring-primary/40"
+                  aria-label="Tout sélectionner les tests affichés"
+                />
+                {allSelected ? "Tout désélectionner" : "Tout sélectionner"}
+              </label>
+              {someSelected && (
+                <span className="ml-auto text-xs text-muted-foreground/70 tabular-nums">
+                  {selectedCount} / {visibleMappableGroups.length}
+                </span>
+              )}
+              {allSelected && (
+                <span className="ml-auto text-xs text-emerald-600 font-medium tabular-nums">
+                  {selectedCount} sélectionné{selectedCount > 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Result list */}
           <ul className="divide-y divide-border/25 overflow-y-auto max-h-[55vh] sm:max-h-[480px]">
             {grouped.map((group) => {
@@ -419,18 +430,22 @@ export default function TestSearch({
               const isMultiLab = group.testMappingId != null && uniqueLabs.length > 1;
               const primary = group.tests[0];
               const displayName = isMultiLab ? (group.canonicalName || primary.name) : primary.name;
-              const isProfile = isProfileResult(primary);
+              const { isProfile, matchingBundle } = group;
+              // Profile with a matching bundle → treat as bundle slot
+              const inCart = isProfile && matchingBundle
+                ? !!selectedBundleIds?.has(matchingBundle.id)
+                : !!group.testMappingId && !!cartItemIds?.has(group.testMappingId);
               const selectedMappingId =
                 group.tests.find((t) => t.testMappingId && cartItemIds?.has(t.testMappingId))?.testMappingId
                 ?? group.testMappingId;
-              const inCart = !!group.testMappingId && !!cartItemIds?.has(group.testMappingId);
               const displayTubeType = resolveGroupTubeType(group.tests);
 
               const relatedBundles = !isProfile && group.testMappingId
                 ? (relatedBundleMap.get(group.testMappingId) ?? [])
+                    .filter((b) => !b.sourceLabCode || b.sourceLabCode.toUpperCase() === "CDL")
                 : [];
               const canCompareWithProfile =
-                !isProfile && !!group.testMappingId && (availableBundles?.length ?? 0) > 0;
+                !isProfile && !!group.testMappingId && relatedBundles.length > 0;
               const profileOpen = openProfileKey === group.key;
 
               const labPrices = uniqueLabs.map((lab) => ({
@@ -448,6 +463,20 @@ export default function TestSearch({
                 >
                   {/* ── Row: tube · name/badges · price · add ─── */}
                   <div className="flex items-start gap-2">
+
+                    {/* Individual test checkbox (bulk-select companion) */}
+                    {!isProfile && !!group.testMappingId && onAddToCart && (
+                      <input
+                        type="checkbox"
+                        checked={!!cartItemIds?.has(group.testMappingId)}
+                        onChange={(e) => {
+                          if (e.target.checked) onAddToCart?.(primary);
+                          else onRemoveFromCart?.(group.testMappingId!);
+                        }}
+                        className="mt-1 h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-primary/40"
+                        aria-label={`Sélectionner ${displayName}`}
+                      />
+                    )}
 
                     {/* Tube dot — top-aligned */}
                     <div className="pt-0.5 shrink-0">
@@ -540,21 +569,30 @@ export default function TestSearch({
 
                     {/* Right: price + add/remove button */}
                     <div className="shrink-0 flex flex-col items-end gap-1.5 pt-0.5">
-                      {!isMultiLab && (
+                      {matchingBundle ? (
+                        <span className="text-sm font-bold tabular-nums text-foreground whitespace-nowrap">
+                          {formatCurrency(matchingBundle.customRate)}
+                        </span>
+                      ) : !isMultiLab ? (
                         <span className="text-sm font-bold tabular-nums text-foreground whitespace-nowrap">
                           {formatCurrency(primary.price)}
                         </span>
-                      )}
-                      {isMultiLab && (
+                      ) : (
                         <span className="text-xs font-semibold text-emerald-600 whitespace-nowrap">
                           {formatCurrency(cheapestPrice)}
                         </span>
                       )}
 
-                      {onAddToCart && (
+                      {(onAddToCart || (isProfile && matchingBundle && onAddBundle)) && (
                         inCart ? (
                           <button
-                            onClick={() => selectedMappingId && onRemoveFromCart?.(selectedMappingId)}
+                            onClick={() => {
+                              if (isProfile && matchingBundle) {
+                                onRemoveFromCart?.(matchingBundle.selfTestMappingId!);
+                              } else {
+                                selectedMappingId && onRemoveFromCart?.(selectedMappingId);
+                              }
+                            }}
                             className="h-9 w-9 rounded-lg flex items-center justify-center bg-emerald-50 text-emerald-500 hover:bg-destructive/10 hover:text-destructive transition-colors"
                             aria-label="Retirer"
                             title="Retirer de la sélection"
@@ -563,11 +601,17 @@ export default function TestSearch({
                           </button>
                         ) : (
                           <button
-                            onClick={() => onAddToCart(primary)}
+                            onClick={() => {
+                              if (isProfile && matchingBundle) {
+                                onAddBundle?.(matchingBundle);
+                              } else {
+                                onAddToCart?.(primary);
+                              }
+                            }}
                             disabled={!group.testMappingId}
                             className="h-9 w-9 rounded-lg flex items-center justify-center border border-border/60 bg-background hover:border-primary/50 hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-colors"
                             aria-label="Ajouter"
-                            title="Ajouter à la comparaison"
+                            title={isProfile && matchingBundle ? "Ajouter le profil" : "Ajouter à la comparaison"}
                           >
                             <PlusCircle className="h-4 w-4" />
                           </button>
@@ -582,7 +626,6 @@ export default function TestSearch({
                       <ProfileComparePanel
                         labPrices={labPrices}
                         relatedBundles={relatedBundles}
-                        allBundles={availableBundles ?? []}
                         selectedBundleIds={selectedBundleIds}
                         onAddBundle={onAddBundle}
                       />

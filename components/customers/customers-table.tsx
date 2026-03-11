@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import {
   Search, Contact, ChevronLeft, ChevronRight, X, Plus, Edit, Trash2,
 } from "lucide-react";
@@ -108,8 +108,7 @@ const CustomersTable = forwardRef<CustomersTableRef, CustomersTableProps>(
     };
 
     return (
-      <TooltipProvider>
-        <Card>
+      <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold">
@@ -221,33 +220,25 @@ const CustomersTable = forwardRef<CustomersTableRef, CustomersTableProps>(
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => onEdit(c)}
-                                  aria-label="Modifier"
-                                >
-                                  <Edit className="h-3.5 w-3.5" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Modifier</TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => onDelete(c.id)}
-                                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                                  aria-label="Supprimer"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Supprimer</TooltipContent>
-                            </Tooltip>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onEdit(c)}
+                              aria-label="Modifier"
+                              title="Modifier"
+                            >
+                              <Edit className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onDelete(c.id)}
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              aria-label="Supprimer"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -307,7 +298,6 @@ const CustomersTable = forwardRef<CustomersTableRef, CustomersTableProps>(
             )}
           </CardContent>
         </Card>
-      </TooltipProvider>
     );
   }
 );

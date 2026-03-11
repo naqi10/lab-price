@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { Edit, Trash2, GitCompare, Plus } from "lucide-react";
 import MatchIndicator from "./match-indicator";
 
@@ -39,8 +39,7 @@ export default function TestMappingTable({
   }
 
   return (
-    <TooltipProvider disableHoverableContent>
-      <Table>
+    <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Nom canonique</TableHead>
@@ -80,39 +79,30 @@ export default function TestMappingTable({
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEdit(m)}
-                        aria-label="Modifier"
-                      >
-                        <Edit className="h-3.5 w-3.5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Modifier</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onDelete(m.id)}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        aria-label="Supprimer"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Supprimer</TooltipContent>
-                  </Tooltip>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEdit(m)}
+                    aria-label="Modifier"
+                    title="Modifier"
+                  >
+                    <Edit className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDelete(m.id)}
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    aria-label="Supprimer"
+                    title="Supprimer"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </TooltipProvider>
   );
 }

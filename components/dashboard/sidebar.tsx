@@ -5,12 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   FlaskConical,
   TestTubes,
   Contact,
@@ -20,10 +14,12 @@ import {
   ChevronRight,
   Menu,
   X,
+  Receipt,
 } from "lucide-react";
 
 const navItems = [
   { href: "/tests", label: "Tests & Correspondances", icon: TestTubes },
+  { href: "/devis", label: "Devis patient", icon: Receipt },
   { href: "/laboratories", label: "Laboratoires", icon: FlaskConical },
   { href: "/customers", label: "Clients", icon: Contact },
   { href: "/estimates", label: "Estimations", icon: FileText },
@@ -38,49 +34,42 @@ export default function Sidebar() {
   const NavLinks = ({ onNavigate, showLabels }: { onNavigate?: () => void; showLabels?: boolean }) => {
     const labels = showLabels ?? !collapsed;
     return (
-    <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
-      {navItems.map((item) => {
-        const isActive =
-          pathname === item.href ||
-          (item.href !== "/" && pathname.startsWith(item.href));
-        const link = (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onNavigate}
-            title={item.label}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
-              isActive
-                ? "bg-primary/15 text-primary border border-primary/20"
-                : "text-muted-foreground hover:bg-accent hover:text-foreground border border-transparent"
-            )}
-          >
-            <item.icon
+      <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
+        {navItems.map((item) => {
+          const isActive =
+            pathname === item.href ||
+            (item.href !== "/" && pathname.startsWith(item.href));
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              title={item.label}
               className={cn(
-                "h-4 w-4 shrink-0 transition-colors",
-                isActive ? "text-primary" : ""
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                isActive
+                  ? "bg-primary/15 text-primary border border-primary/20"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground border border-transparent"
               )}
-            />
-            {labels && (
-              <span className="truncate">{item.label}</span>
-            )}
-          </Link>
-        );
-
-        return (
-          <Tooltip key={item.href}>
-            <TooltipTrigger asChild>{link}</TooltipTrigger>
-            <TooltipContent side={collapsed ? "right" : "top"}>{item.label}</TooltipContent>
-          </Tooltip>
-        );
-      })}
-    </nav>
-  );
+            >
+              <item.icon
+                className={cn(
+                  "h-4 w-4 shrink-0 transition-colors",
+                  isActive ? "text-primary" : ""
+                )}
+              />
+              {labels && (
+                <span className="truncate">{item.label}</span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+    );
   };
 
   return (
-    <TooltipProvider delayDuration={120}>
+    <>
       {/* Mobile hamburger trigger */}
       <button
         className="fixed top-4 left-4 z-50 flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-card shadow-sm md:hidden"
@@ -162,6 +151,6 @@ export default function Sidebar() {
           </p>
         </div>
       </aside>
-    </TooltipProvider>
+    </>
   );
 }

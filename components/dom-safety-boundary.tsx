@@ -5,36 +5,54 @@ import { Component, type ReactNode } from "react";
 interface Props { children: ReactNode }
 interface State { hasError: boolean }
 
+const DOM_ERROR_PATTERNS = ["removeChild", "insertBefore", "not a child"];
+
+function isDomMutationError(msg: string): boolean {
+  return DOM_ERROR_PATTERNS.some((p) => msg.includes(p));
+}
+
 /**
- * Silently swallows React 19 DOM reconciliation errors (removeChild / insertBefore).
+ * Catches React 19 DOM reconciliation errors (removeChild / insertBefore)
+ * caused by Radix UI portal teardown racing with React's commit phase.
  *
- * CRITICAL: render() MUST always return this.props.children — never null.
- * Returning null unmounts children which includes open Radix portals.
- * Unmounting an open portal triggers *another* removeChild during cleanup,
- * which the boundary catches again → infinite crash loop.
+ * Two layers of suppression:
+ *  1. Error boundary (getDerivedStateFromError) — prevents React from
+ *     unmounting the tree and re-rendering to a broken state.
+ *  2. window "error" event listener — prevents the dev overlay from
+ *     showing the error in development mode.
  *
- * By always rendering children the fiber tree stays unchanged across the
- * error-recovery render → React produces no DOM mutations → no cascade.
+ * render() MUST always return children — returning null would unmount
+ * open portals, triggering another removeChild in the cleanup.
  */
 export class DOMSafetyBoundary extends Component<Props, State> {
   state: State = { hasError: false };
 
+  private _suppressWindowError = (event: ErrorEvent) => {
+    const msg = event.error?.message ?? event.message ?? "";
+    if (isDomMutationError(msg)) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  };
+
+  componentDidMount() {
+    window.addEventListener("error", this._suppressWindowError, true);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("error", this._suppressWindowError, true);
+  }
+
   static getDerivedStateFromError(error: Error): State {
-    const msg = error?.message ?? "";
-    if (
-      msg.includes("removeChild") ||
-      msg.includes("insertBefore") ||
-      msg.includes("not a child")
-    ) {
+    if (isDomMutationError(error?.message ?? "")) {
       return { hasError: true };
     }
     throw error;
   }
 
   componentDidCatch() {
-    // Reset so future errors can be caught.
-    // setState triggers a re-render, but render() always returns the same
-    // children output → no DOM mutations needed → no cascading errors.
+    // Reset immediately so future errors can be caught.
+    // render() always returns children → no DOM mutations on recovery.
     this.setState({ hasError: false });
   }
 

@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TooltipProvider } from "@/components/ui/tooltip";
+
 import {
   Search,
   FlaskConical,
@@ -197,8 +197,7 @@ export default function AllTestsTable({
   };
 
   return (
-    <TooltipProvider disableHoverableContent>
-      <Card>
+    <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
@@ -548,6 +547,5 @@ export default function AllTestsTable({
           )}
         </CardContent>
       </Card>
-    </TooltipProvider>
   );
 }

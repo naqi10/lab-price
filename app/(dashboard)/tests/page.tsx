@@ -11,7 +11,6 @@ import TestSearch from "@/components/tests/test-search";
 import { DOMSafetyBoundary } from "@/components/dom-safety-boundary";
 import DraftManager from "@/components/comparison/draft-manager";
 import ComparisonTable from "@/components/comparison/comparison-table";
-import LabCostSummary from "@/components/comparison/lab-cost-summary";
 import MissingTestsAlert from "@/components/comparison/missing-tests-alert";
 import EmailComparisonDialog from "@/components/comparison/email-comparison-dialog";
 import SaveEstimateDialog from "@/components/comparison/save-estimate-dialog";
@@ -65,6 +64,7 @@ interface ActiveDeal {
   profileNotes?: string | null;
   sourceLabCode?: string | null;
   profileCode?: string | null;
+  selfTestMappingId?: string | null;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -152,7 +152,9 @@ function UnifiedTestsContent() {
   const allTestMappingIds = useMemo(() => {
     const ids = new Set(individualIds);
     for (const b of selectedBundles) {
-      for (const id of b.testMappingIds) ids.add(id);
+      // Use the profile's own test mapping ID (single entry), not its component IDs.
+      const id = b.selfTestMappingId ?? b.testMappingIds[0];
+      if (id) ids.add(id);
     }
     return Array.from(ids);
   }, [individualIds, selectedBundles]);
@@ -226,22 +228,12 @@ function UnifiedTestsContent() {
     const prices: Record<string, number> = {};
     const priceMatrix = comparison.priceMatrix || {};
     for (const bundle of selectedBundles) {
+      // Single-entry mode: the profile appears as one row with its customRate.
+      const selfId = bundle.selfTestMappingId ?? bundle.testMappingIds[0];
+      if (!selfId) continue;
       for (const lab of comparison.laboratories || []) {
-        // Check full coverage: every test in the bundle must have a price for this lab
-        const hasAllTests = bundle.testMappingIds.every(
-          (tmId) => (priceMatrix[tmId]?.[lab.id] ?? null) != null
-        );
-        if (!hasAllTests) continue; // skip partial-coverage labs
-
-        let labTotal = 0;
-        for (const tmId of bundle.testMappingIds) {
-          labTotal += priceMatrix[tmId]![lab.id]!;
-        }
-        if (labTotal === 0) continue;
-        const ratio = bundle.customRate / labTotal;
-        for (const tmId of bundle.testMappingIds) {
-          const origPrice = priceMatrix[tmId]![lab.id]!;
-          prices[`${tmId}-${lab.id}`] = Math.round(origPrice * ratio * 100) / 100;
+        if ((priceMatrix[selfId]?.[lab.id] ?? null) != null) {
+          prices[`${selfId}-${lab.id}`] = bundle.customRate;
         }
       }
     }
@@ -530,11 +522,6 @@ function UnifiedTestsContent() {
 
   const hasAnySelection = items.length > 0 || selectedBundles.length > 0;
   const [showBundles, setShowBundles] = useState(false);
-  const selectedLabScopeId = useMemo(() => {
-    const ids = Array.from(new Set(Object.values(selections)));
-    return ids.length === 1 ? ids[0] : null;
-  }, [selections]);
-
   function cleanBundleName(name: string): string {
     return name.replace(/,\s*PROFIL(E)?$/i, "").replace(/\s+PROFIL(E)?$/i, "").trim();
   }
@@ -845,36 +832,11 @@ function UnifiedTestsContent() {
                   <MissingTestsAlert missingTests={missingTests} />
                 )}
 
-                {/* Lab cost summary */}
-                <LabCostSummary
-                  labs={labs}
-                  bestLabId={bestLabId}
-                  selections={hasActiveSelections ? selections : undefined}
-                  selectionTotal={selectionTotal}
-                  testNames={testNames}
-                  testMappingIds={allTestMappingIds}
-                  laboratories={tableData?.laboratories}
-                  selectedLabScopeId={selectedLabScopeId}
-                />
-
                 {/* Comparison table */}
                 {tableData && (
                   <div className="-mx-3 sm:mx-0">
                     <ComparisonTable
-                      data={{
-                        ...tableData,
-                        bundleGroups: selectedBundles.map((b) => ({
-                          bundleId: b.id,
-                          bundleName: b.dealName,
-                          customRate: b.customRate,
-                          testIds: b.testMappingIds,
-                          componentNames: b.profileComponentNames ?? b.canonicalNames ?? [],
-                          description: b.description ?? null,
-                          profileTube: b.profileTube ?? null,
-                          profileTurnaround: b.profileTurnaround ?? null,
-                          profileNotes: b.profileNotes ?? null,
-                        })),
-                      }}
+                      data={tableData}
                       selections={selections}
                       customPrices={mergedCustomPrices}
                       onSelectLab={handleSelectLab}
@@ -951,15 +913,6 @@ function UnifiedTestsContent() {
 
           {/* Action buttons */}
           <div className="space-y-2">
-            <Button
-              className="w-full"
-              disabled={allTestMappingIds.length === 0}
-              onClick={() => setEmailDialogOpen(true)}
-            >
-              <Send className="mr-2 h-4 w-4" />
-              <span>{"Envoyer au client"}</span>
-            </Button>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <Button
                 variant="outline"
@@ -992,6 +945,15 @@ function UnifiedTestsContent() {
               <RotateCcw className="h-3 w-3" />
               <span>Tout effacer</span>
             </button>
+
+            <Button
+              className="w-full"
+              disabled={allTestMappingIds.length === 0}
+              onClick={() => setEmailDialogOpen(true)}
+            >
+              <Send className="mr-2 h-4 w-4" />
+              <span>{"Envoyer au client"}</span>
+            </Button>
           </div>
         </div>
       </div>
