@@ -163,6 +163,131 @@ export async function compareLabPrices(
   });
 }
 
+// ── Bundle suggestion types ───────────────────────────────────────────────
+
+/**
+ * A cheaper bundle that covers (a subset of) the user's selected tests.
+ * Returned inside the comparison response so the client can auto-swap
+ * without re-fetching or re-running price arithmetic.
+ */
+export interface BundleSuggestion {
+  bundleId: string;
+  bundleName: string;
+  /** The bundle's fixed custom rate (always in the lab's currency). */
+  bundlePrice: number;
+  sourceLabCode: string | null;
+  /** testMappingIds from the bundle that are present in the user's selection. */
+  coveredTestMappingIds: string[];
+  /** testMappingIds from the bundle that are NOT in the user's selection (extras). */
+  extraTestMappingIds: string[];
+  /** Canonical names of covered tests (for display, index-aligned with coveredTestMappingIds). */
+  coveredTestNames: string[];
+  /** Per-lab savings details — only labs where bundle is strictly cheaper are included. */
+  savingsByLab: {
+    labId: string;
+    labName: string;
+    labCode: string;
+    /** Sum of individual prices for covered tests at this lab. */
+    individualPrice: number;
+    /** individualPrice − bundlePrice */
+    savings: number;
+  }[];
+  /** Maximum savings across all qualifying labs (convenience for sorting). */
+  maxSavings: number;
+}
+
+/**
+ * Match active bundles against the selected tests and return those that are
+ * cheaper than buying the individual tests, subject to size constraints.
+ *
+ * Rules:
+ *  1. Bundle must cover ≥ 1 selected test.
+ *  2. Bundle size must be ≤ selectedCount + 10  (avoids over-suggestion).
+ *  3. Per lab: bundle is only recommended where bundle.customRate < individualSum.
+ *  4. A bundle with no qualifying lab is excluded.
+ *
+ * Sorted by maxSavings descending (best deal first).
+ */
+async function computeBundleSuggestions(
+  testMappingIds: string[],
+  priceMatrix: Record<string, Record<string, number | null>>,
+  laboratories: { id: string; name: string; code: string }[],
+  testNameMap: Map<string, string>
+): Promise<BundleSuggestion[]> {
+  if (testMappingIds.length < 2 || laboratories.length === 0) return [];
+
+  const activeBundles = await prisma.bundleDeal.findMany({
+    where: { isActive: true },
+    select: {
+      id: true,
+      dealName: true,
+      customRate: true,
+      testMappingIds: true,
+      sourceLabCode: true,
+    },
+  });
+
+  const selectedIdSet = new Set(testMappingIds);
+  const selectedCount = testMappingIds.length;
+  const suggestions: BundleSuggestion[] = [];
+
+  for (const bundle of activeBundles) {
+    // ── Containment check ─────────────────────────────────────────────────
+    const coveredIds = bundle.testMappingIds.filter((id) => selectedIdSet.has(id));
+    const coveredCount = coveredIds.length;
+    if (coveredCount === 0) continue;
+
+    // ── Size constraint: bundle must not have more than selectedCount + 10 tests
+    if (bundle.testMappingIds.length > selectedCount + 10) continue;
+
+    const extraIds = bundle.testMappingIds.filter((id) => !selectedIdSet.has(id));
+
+    // ── Per-lab price comparison ───────────────────────────────────────────
+    const savingsByLab: BundleSuggestion["savingsByLab"] = [];
+
+    for (const lab of laboratories) {
+      // Sum individual prices for the tests this bundle covers, at this lab
+      let individualSum = 0;
+      let complete = true;
+      for (const testId of coveredIds) {
+        const price = priceMatrix[testId]?.[lab.id];
+        if (price == null) { complete = false; break; }
+        individualSum += price;
+      }
+      if (!complete || individualSum <= 0) continue;
+
+      if (bundle.customRate < individualSum) {
+        savingsByLab.push({
+          labId: lab.id,
+          labName: lab.name,
+          labCode: lab.code,
+          individualPrice: individualSum,
+          savings: individualSum - bundle.customRate,
+        });
+      }
+    }
+
+    if (savingsByLab.length === 0) continue;
+
+    const maxSavings = Math.max(...savingsByLab.map((s) => s.savings));
+
+    suggestions.push({
+      bundleId: bundle.id,
+      bundleName: bundle.dealName,
+      bundlePrice: bundle.customRate,
+      sourceLabCode: bundle.sourceLabCode ?? null,
+      coveredTestMappingIds: coveredIds,
+      extraTestMappingIds: extraIds,
+      coveredTestNames: coveredIds.map((id) => testNameMap.get(id) ?? id),
+      savingsByLab,
+      maxSavings,
+    });
+  }
+
+  // Best deal first
+  return suggestions.sort((a, b) => b.maxSavings - a.maxSavings);
+}
+
 /**
  * Get detailed comparison for rendering a comparison table.
  * @param testMappingIds - Array of TestMapping IDs
@@ -341,6 +466,17 @@ export async function getComparisonDetails(testMappingIds: string[]) {
     }
   }
 
+  // ── Bundle suggestions ────────────────────────────────────────────────────
+  // Build testNameMap here (we already have testMappings in scope)
+  const testNameMap = new Map(testMappings.map((tm) => [tm.id, tm.canonicalName]));
+  const labsForSuggestions = laboratories.map((l) => ({ id: l.id, name: l.name, code: l.code }));
+  const bundleSuggestions = await computeBundleSuggestions(
+    testMappingIds,
+    priceMatrix as Record<string, Record<string, number | null>>,
+    labsForSuggestions,
+    testNameMap
+  );
+
   return {
     laboratories,
     testMappings,
@@ -349,6 +485,7 @@ export async function getComparisonDetails(testMappingIds: string[]) {
     tubeTypeMatrix,
     matchMatrix,
     bestLaboratory: laboratories.find((l) => l.isComplete) ?? laboratories[0] ?? null,
+    bundleSuggestions,
   };
 }
 

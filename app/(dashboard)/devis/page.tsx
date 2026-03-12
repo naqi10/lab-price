@@ -22,8 +22,6 @@ import {
   Undo2,
 } from "lucide-react";
 import EmailComparisonDialog from "@/components/comparison/email-comparison-dialog";
-import BulkInputWizard, { type BulkTestResult } from "@/components/devis/bulk-input-wizard";
-import { ListPlus } from "lucide-react";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -78,7 +76,6 @@ export default function DevisPage() {
   const [editingFee, setEditingFee] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [autoBundleNotice, setAutoBundleNotice] = useState<{ name: string; savings: number; replaced: Extract<QuoteItem, { type: "test" }>[] } | null>(null);
-  const [bulkWizardOpen, setBulkWizardOpen] = useState(false);
   const smartBundleSig = useRef<string>("");
   const { comparison, isLoading, compare, reset } = useComparison();
 
@@ -295,22 +292,6 @@ export default function DevisPage() {
     });
   }, []);
 
-  const handleBulkAdd = useCallback((tests: BulkTestResult[]) => {
-    setQuoteItems((prev) => {
-      const existing = new Set(
-        prev.filter((i) => i.type === "test").map((i) => (i as Extract<QuoteItem, { type: "test" }>).testMappingId)
-      );
-      const toAdd = tests
-        .filter((t) => !existing.has(t.testMappingId))
-        .map((t) => ({
-          type: "test" as const,
-          testMappingId: t.testMappingId,
-          name: t.canonicalName || t.name,
-          tubeType: t.tubeType,
-        }));
-      return [...prev, ...toAdd];
-    });
-  }, []);
 
   // ── Derived price data ────────────────────────────────────────────────────
 
@@ -408,14 +389,6 @@ export default function DevisPage() {
         <div className="rounded-2xl border border-border/60 bg-card overflow-hidden lg:sticky lg:top-4">
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
             <h2 className="text-base font-semibold">Ajouter des tests</h2>
-            <button
-              onClick={() => setBulkWizardOpen(true)}
-              title="Saisie en lot"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/40 rounded-lg px-2.5 py-1.5 transition-colors hover:bg-primary/5"
-            >
-              <ListPlus className="h-3.5 w-3.5" />
-              En lot
-            </button>
           </div>
           <div className="px-4 py-4">
             <TestSearch
@@ -741,11 +714,6 @@ export default function DevisPage() {
         })()}
       />
 
-      <BulkInputWizard
-        open={bulkWizardOpen}
-        onClose={() => setBulkWizardOpen(false)}
-        onAddTests={handleBulkAdd}
-      />
     </div>
   );
 }

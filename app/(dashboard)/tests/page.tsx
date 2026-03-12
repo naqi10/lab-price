@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
@@ -19,6 +20,7 @@ import { useTestCart } from "@/hooks/use-tests";
 import { useComparison } from "@/hooks/use-comparison";
 import { useLabColors } from "@/hooks/use-lab-colors";
 import { useDashboardTitle } from "@/hooks/use-dashboard-title";
+import BulkSearchPanel, { type BulkTestResult } from "@/components/tests/bulk-search-panel";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -45,6 +47,9 @@ import {
   ClipboardList,
   FileText,
   List,
+  ListPlus,
+  Sparkles,
+  Undo2,
 } from "lucide-react";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -515,6 +520,87 @@ function UnifiedTestsContent() {
 
   const hasAnySelection = items.length > 0 || selectedBundles.length > 0;
   const [showBundles, setShowBundles] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+
+  const handleBulkAdd = useCallback((tests: BulkTestResult[]) => {
+    for (const t of tests) {
+      addItem({
+        id: t.testMappingId,
+        testMappingId: t.testMappingId,
+        canonicalName: t.canonicalName || t.name,
+        tubeType: t.tubeType,
+      });
+    }
+    setBulkMode(false);
+  }, [addItem]);
+
+  // ── Smart bundling ────────────────────────────────────────────────────────
+  // CDL-only bundles for auto-select eligibility
+  const cdlBundles = useMemo(
+    () => availableBundles.filter((b) => !b.sourceLabCode || b.sourceLabCode.toUpperCase() === "CDL"),
+    [availableBundles]
+  );
+
+  type CartItem = typeof items[0];
+  const [autoBundleNotice, setAutoBundleNotice] = useState<{
+    name: string;
+    savings: number;
+    replacedItems: CartItem[];
+    bundleId: string;
+  } | null>(null);
+  const smartBundleSig = useRef<string>("");
+
+  useEffect(() => {
+    if (!comparison) return;
+    if (items.length < 2) return;
+
+    const sig = items.map((i) => i.testMappingId).sort().join(",");
+    if (sig === smartBundleSig.current) return;
+
+    // Use server-computed bundle suggestions (already price-compared, size-filtered)
+    const suggestions = (comparison as { bundleSuggestions?: import("@/lib/services/comparison.service").BundleSuggestion[] }).bundleSuggestions ?? [];
+    if (suggestions.length === 0) return;
+
+    // Pick the best suggestion whose bundle exists in availableBundles and isn't already selected
+    const best = suggestions.find(
+      (s) => !selectedBundleIds.has(s.bundleId) && availableBundles.some((b) => b.id === s.bundleId)
+    );
+    if (!best) return;
+
+    const bundleToAdd = availableBundles.find((b) => b.id === best.bundleId);
+    if (!bundleToAdd) return;
+
+    // Lock signature BEFORE mutating state to prevent re-trigger
+    smartBundleSig.current = sig;
+
+    const coveredSet = new Set(best.coveredTestMappingIds);
+    const replacedItems = items.filter((i) => coveredSet.has(i.testMappingId));
+
+    for (const item of replacedItems) removeItem(item.id);
+    toggleBundle(bundleToAdd);
+
+    setAutoBundleNotice({
+      name: best.bundleName,
+      savings: best.maxSavings,
+      replacedItems,
+      bundleId: best.bundleId,
+    });
+
+    const t = setTimeout(() => setAutoBundleNotice(null), 8000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comparison]);
+
+  const handleUndoAutoBundle = useCallback((notice: NonNullable<typeof autoBundleNotice>) => {
+    setAutoBundleNotice(null);
+    smartBundleSig.current = "__undone__";
+    // Deselect the auto-added bundle
+    const bundle = cdlBundles.find((b) => b.id === notice.bundleId);
+    if (bundle && selectedBundleIds.has(bundle.id)) toggleBundle(bundle);
+    // Restore individual items
+    for (const item of notice.replacedItems) addItem(item);
+  }, [cdlBundles, selectedBundleIds, toggleBundle, addItem]);
+
   function cleanBundleName(name: string): string {
     return name.replace(/,\s*PROFIL(E)?$/i, "").replace(/\s+PROFIL(E)?$/i, "").trim();
   }
@@ -529,23 +615,70 @@ function UnifiedTestsContent() {
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <DOMSafetyBoundary>
-    <div className="w-full mt-4 sm:mt-6">
+    <div className="w-full mt-4 sm:mt-6 space-y-4">
+
+      {/* ── Smart bundle auto-select banner ─────────────────────────────── */}
+      {autoBundleNotice && (
+        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm">
+          <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-emerald-800">
+              Profil auto-sélectionné — économie de {formatCurrency(autoBundleNotice.savings)}
+            </p>
+            <p className="text-xs text-emerald-700/80 mt-0.5">
+              <span className="font-medium">{autoBundleNotice.name}</span> couvre vos tests et revient moins cher qu&apos;acheter séparément.
+            </p>
+          </div>
+          <button
+            onClick={() => handleUndoAutoBundle(autoBundleNotice)}
+            className="shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-400 rounded-lg px-2.5 py-1.5 transition-colors bg-white/60 hover:bg-white"
+          >
+            <Undo2 className="h-3.5 w-3.5" />
+            Annuler
+          </button>
+          <button
+            onClick={() => setAutoBundleNotice(null)}
+            className="shrink-0 h-6 w-6 flex items-center justify-center rounded-md text-emerald-600/60 hover:text-emerald-800 hover:bg-emerald-100 transition-colors"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* ── 3-column grid — always visible ─────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[340px_minmax(0,1fr)_280px] gap-4">
 
         {/* ════════════════ LEFT: Test Search ════════════════ */}
         <div className="order-2 lg:order-1 rounded-2xl border border-border/60 bg-card flex flex-col overflow-hidden">
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
-            <div>
-              <h2 className="text-base font-semibold">Recherche de tests</h2>
-              <p className="text-xs text-muted-foreground/70">{"Recherchez et ajoutez des analyses"}</p>
+          {/* Header — hidden when bulk mode (bulk panel has its own header) */}
+          {!bulkMode && (
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
+              <div>
+                <h2 className="text-base font-semibold">Recherche de tests</h2>
+                <p className="text-xs text-muted-foreground/70">Recherchez et ajoutez des analyses</p>
+              </div>
+              <button
+                onClick={() => setBulkMode(true)}
+                title="Saisie en lot"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/40 rounded-lg px-2.5 py-1.5 transition-colors hover:bg-primary/5"
+              >
+                <ListPlus className="h-3.5 w-3.5" />
+                En lot
+              </button>
             </div>
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Search className="h-4 w-4 text-primary" />
-            </div>
-          </div>
+          )}
 
+          {/* Bulk search panel — replaces search + bundles when active */}
+          {bulkMode && (
+            <BulkSearchPanel
+              onAddTests={handleBulkAdd}
+              onClose={() => setBulkMode(false)}
+            />
+          )}
+
+          {/* Search input + bundles — hidden in bulk mode */}
+          {!bulkMode && (
+          <>
           {/* Search input */}
           <div className="px-4 pt-4 pb-2">
             <TestSearch
@@ -706,6 +839,8 @@ function UnifiedTestsContent() {
               />
             </div>
           </div>
+          </>
+          )}
         </div>
 
         {/* ════════════════ CENTER: Order Items + Comparison ════════════════ */}
