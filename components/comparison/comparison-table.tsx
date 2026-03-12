@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Link2, Check, Zap, DollarSign, RotateCcw, Clock, X, Package } from "lucide-react";
 import { parseTubeColor } from "@/lib/tube-colors";
 import { TubeDot } from "@/components/ui/tube-dot";
+import { parseTurnaroundToHours } from "@/lib/turnaround";
 
 
 interface BundleGroup {
@@ -104,14 +105,7 @@ function InlinePriceEditor({
 }
 
 function parseTatToHours(tat: string): number {
-  if (!tat) return Infinity;
-  const s = tat.toLowerCase().trim();
-  if (s.includes("même jour") || s.includes("same day")) return 0;
-  const hoursMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*h/);
-  if (hoursMatch) return Number(hoursMatch[1]);
-  const daysMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*(?:jour|day|business)/);
-  if (daysMatch) return Number(daysMatch[1]) * 24;
-  return Infinity;
+  return parseTurnaroundToHours(tat);
 }
 
 export default function ComparisonTable({

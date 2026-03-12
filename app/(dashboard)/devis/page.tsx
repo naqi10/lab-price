@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import TestSearch from "@/components/tests/test-search";
 import { useComparison } from "@/hooks/use-comparison";
 import { useDashboardTitle } from "@/hooks/use-dashboard-title";
@@ -18,8 +18,12 @@ import {
   Search,
   CheckCircle2,
   Send,
+  Sparkles,
+  Undo2,
 } from "lucide-react";
 import EmailComparisonDialog from "@/components/comparison/email-comparison-dialog";
+import BulkInputWizard, { type BulkTestResult } from "@/components/devis/bulk-input-wizard";
+import { ListPlus } from "lucide-react";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -73,6 +77,9 @@ export default function DevisPage() {
   const [serviceFee, setServiceFee] = useState(30);
   const [editingFee, setEditingFee] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [autoBundleNotice, setAutoBundleNotice] = useState<{ name: string; savings: number; replaced: Extract<QuoteItem, { type: "test" }>[] } | null>(null);
+  const [bulkWizardOpen, setBulkWizardOpen] = useState(false);
+  const smartBundleSig = useRef<string>("");
   const { comparison, isLoading, compare, reset } = useComparison();
 
   // Load CDL bundles once
@@ -147,6 +154,103 @@ export default function DevisPage() {
     return result.sort((a, b) => b.matchedIds.length - a.matchedIds.length);
   }, [quoteItems, relatedBundleMap, selectedBundleIds]);
 
+  // ── Smart bundling algorithm ──────────────────────────────────────────────
+  //
+  // After each comparison update, scan the individual tests in the cart.
+  // If a CDL profile covers those tests AND is cheaper AND doesn't add too
+  // many extra tests, auto-swap to the profile and show an undo banner.
+  //
+  // Threshold: extraTests ≤ min(3, coveredCount)
+  //   → user selects 2 tests, profile has 4: 2 extra ≤ min(3,2)=2 ✓
+  //   → user selects 3 tests, profile has 15: 12 extra > min(3,3)=3 ✗
+
+  useEffect(() => {
+    if (!comparison || cdlBundles.length === 0) return;
+
+    const individualItems = quoteItems.filter(
+      (i): i is Extract<QuoteItem, { type: "test" }> => i.type === "test"
+    );
+    if (individualItems.length < 2) return;
+
+    // Build signature from sorted ids — skip if already processed this set
+    const sig = individualItems.map((i) => i.testMappingId).sort().join(",");
+    if (sig === smartBundleSig.current) return;
+
+    // Find CDL lab id in the comparison result
+    const cdlLab = comparison.laboratories.find((l: { id: string; name: string }) =>
+      l.name.toUpperCase().includes("CDL")
+    );
+    if (!cdlLab) return;
+
+    const individualIdSet = new Set(individualItems.map((i) => i.testMappingId));
+    const getPrice = (tmId: string): number =>
+      (comparison.priceMatrix as Record<string, Record<string, number>>)[tmId]?.[cdlLab.id] ?? 0;
+
+    let bestBundle: BundleSummary | null = null;
+    let bestSavings = 0;
+
+    for (const bundle of cdlBundles) {
+      if (!bundle.selfTestMappingId) continue;
+      // Skip if already in cart
+      if (quoteItems.some((i) => i.type === "bundle" && i.bundleId === bundle.id)) continue;
+
+      const coveredIds = bundle.testMappingIds.filter((id) => individualIdSet.has(id));
+      const coveredCount = coveredIds.length;
+      if (coveredCount === 0) continue;
+
+      const extraCount = bundle.testMappingIds.length - coveredCount;
+      const maxExtra = Math.min(3, coveredCount);
+      if (extraCount > maxExtra) continue;
+
+      const individualSum = coveredIds.reduce((sum, id) => sum + getPrice(id), 0);
+      if (individualSum <= 0) continue; // no price data for these tests
+
+      if (bundle.customRate < individualSum) {
+        const savings = individualSum - bundle.customRate;
+        if (savings > bestSavings) {
+          bestSavings = savings;
+          bestBundle = bundle;
+        }
+      }
+    }
+
+    if (!bestBundle) return;
+
+    // Mark as processed BEFORE state mutation to prevent re-trigger
+    smartBundleSig.current = sig;
+
+    // Capture which items are being replaced for the undo action
+    const covered = new Set(bestBundle.testMappingIds);
+    const replaced = individualItems.filter((i) => covered.has(i.testMappingId));
+
+    handleUseBundle(bestBundle);
+    setAutoBundleNotice({ name: bestBundle.dealName, savings: bestSavings, replaced });
+
+    // Auto-dismiss after 8 seconds
+    const t = setTimeout(() => setAutoBundleNotice(null), 8000);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comparison]);
+
+  const handleUndoAutoBundle = useCallback((notice: NonNullable<typeof autoBundleNotice>) => {
+    setAutoBundleNotice(null);
+    // Invalidate the sig so the same test set won't auto-bundle again this session
+    smartBundleSig.current = "__undone__";
+    // Remove the bundle and restore individual tests
+    setQuoteItems((prev) => {
+      const withoutBundle = prev.filter(
+        (i) => !(i.type === "bundle" && i.name === notice.name)
+      );
+      const existingIds = new Set(
+        withoutBundle
+          .filter((i) => i.type === "test")
+          .map((i) => (i as Extract<QuoteItem, { type: "test" }>).testMappingId)
+      );
+      const toRestore = notice.replaced.filter((i) => !existingIds.has(i.testMappingId));
+      return [...withoutBundle, ...toRestore];
+    });
+  }, []);
+
   // ── Handlers ─────────────────────────────────────────────────────────────
 
   const handleAddTest = useCallback((test: SearchResult) => {
@@ -188,6 +292,23 @@ export default function DevisPage() {
         rate: bundle.customRate,
         coveredTestIds: bundle.testMappingIds,
       }];
+    });
+  }, []);
+
+  const handleBulkAdd = useCallback((tests: BulkTestResult[]) => {
+    setQuoteItems((prev) => {
+      const existing = new Set(
+        prev.filter((i) => i.type === "test").map((i) => (i as Extract<QuoteItem, { type: "test" }>).testMappingId)
+      );
+      const toAdd = tests
+        .filter((t) => !existing.has(t.testMappingId))
+        .map((t) => ({
+          type: "test" as const,
+          testMappingId: t.testMappingId,
+          name: t.canonicalName || t.name,
+          tubeType: t.tubeType,
+        }));
+      return [...prev, ...toAdd];
     });
   }, []);
 
@@ -253,13 +374,48 @@ export default function DevisPage() {
         )}
       </div>
 
+      {/* ── Smart bundle auto-select notification ───────────────── */}
+      {autoBundleNotice && (
+        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm">
+          <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-emerald-800">
+              Profil auto-sélectionné — économie de {formatCurrency(autoBundleNotice.savings)}
+            </p>
+            <p className="text-xs text-emerald-700/80 mt-0.5">
+              <span className="font-medium">{autoBundleNotice.name}</span> couvre vos tests et est moins cher qu'acheter séparément.
+            </p>
+          </div>
+          <button
+            onClick={() => handleUndoAutoBundle(autoBundleNotice)}
+            className="shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-400 rounded-lg px-2.5 py-1.5 transition-colors bg-white/60 hover:bg-white"
+          >
+            <Undo2 className="h-3.5 w-3.5" />
+            Annuler
+          </button>
+          <button
+            onClick={() => setAutoBundleNotice(null)}
+            className="shrink-0 h-6 w-6 flex items-center justify-center rounded-md text-emerald-600/60 hover:text-emerald-800 hover:bg-emerald-100 transition-colors"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-4 items-start">
 
         {/* ── Left: search ──────────────────────────────────────────── */}
         <div className="rounded-2xl border border-border/60 bg-card overflow-hidden lg:sticky lg:top-4">
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
             <h2 className="text-base font-semibold">Ajouter des tests</h2>
-            <Search className="h-4 w-4 text-muted-foreground" />
+            <button
+              onClick={() => setBulkWizardOpen(true)}
+              title="Saisie en lot"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/40 rounded-lg px-2.5 py-1.5 transition-colors hover:bg-primary/5"
+            >
+              <ListPlus className="h-3.5 w-3.5" />
+              En lot
+            </button>
           </div>
           <div className="px-4 py-4">
             <TestSearch
@@ -469,40 +625,83 @@ export default function DevisPage() {
 
               <div className="p-4 space-y-2">
                 <p className="text-xs text-amber-700/70 mb-3">
-                  Ces profils CDL couvrent un ou plusieurs de vos tests. Utiliser un profil
+                  Ces profils couvrent un ou plusieurs de vos tests. Utiliser un profil
                   peut être plus avantageux qu'acheter les tests séparément.
                 </p>
                 {profileSuggestions.map(({ bundle, matchedIds }) => {
-                  const extra = bundle.testMappingIds.length - matchedIds.length;
+                  const labCode = bundle.sourceLabCode?.toUpperCase() || "CDL";
+                  const matchedSet = new Set(matchedIds);
+                  // Split canonicalNames into matched vs extra using index alignment with testMappingIds
+                  const matchedNames: string[] = [];
+                  const extraNames: string[] = [];
+                  bundle.testMappingIds.forEach((tmId, idx) => {
+                    const name = bundle.canonicalNames[idx] ?? null;
+                    if (!name) return;
+                    if (matchedSet.has(tmId)) matchedNames.push(name);
+                    else extraNames.push(name);
+                  });
                   return (
                     <div
                       key={bundle.id}
-                      className="flex items-start gap-3 rounded-xl border border-amber-200/40 bg-white p-3"
+                      className="rounded-xl border border-amber-200/40 bg-white overflow-hidden"
                     >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold leading-snug">{bundle.dealName}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          Couvre{" "}
-                          <span className="font-medium text-amber-700">
-                            {matchedIds.length} test{matchedIds.length > 1 ? "s" : ""}
-                          </span>{" "}
-                          sélectionné{matchedIds.length > 1 ? "s" : ""}
-                          {extra > 0 && (
-                            <> + {extra} autre{extra > 1 ? "s" : ""} inclus</>
-                          )}
-                        </p>
-                        <p className="text-sm font-bold mt-1 tabular-nums">
-                          {formatCurrency(bundle.customRate)}
-                        </p>
+                      {/* Card header: lab badge + name + price */}
+                      <div className="flex items-start justify-between gap-3 px-3 pt-3 pb-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 border border-blue-200/60 text-blue-700 text-[10px] font-bold uppercase px-1.5 py-0.5 shrink-0">
+                              <FlaskConical className="h-2.5 w-2.5" />
+                              {labCode}
+                            </span>
+                            <p className="text-sm font-semibold leading-snug">{bundle.dealName}</p>
+                          </div>
+                          <p className="text-sm font-bold mt-1.5 tabular-nums text-amber-800">
+                            {formatCurrency(bundle.customRate)}
+                          </p>
+                        </div>
+                        {bundle.selfTestMappingId ? (
+                          <button
+                            onClick={() => handleUseBundle(bundle)}
+                            className="shrink-0 self-start mt-0.5 text-xs px-3 py-1.5 rounded-lg bg-amber-100 text-amber-800 hover:bg-amber-200 font-medium transition-colors whitespace-nowrap"
+                          >
+                            Utiliser
+                          </button>
+                        ) : null}
                       </div>
-                      {bundle.selfTestMappingId ? (
-                        <button
-                          onClick={() => handleUseBundle(bundle)}
-                          className="shrink-0 self-center text-xs px-3 py-1.5 rounded-lg bg-amber-100 text-amber-800 hover:bg-amber-200 font-medium transition-colors whitespace-nowrap"
-                        >
-                          Utiliser ce profil
-                        </button>
-                      ) : null}
+
+                      {/* Tests list */}
+                      <div className="px-3 pb-3 space-y-1.5">
+                        {matchedNames.length > 0 && (
+                          <div>
+                            <p className="text-[10px] font-semibold text-amber-700 uppercase tracking-wide mb-1">
+                              Inclus dans votre sélection
+                            </p>
+                            <div className="flex flex-col gap-0.5">
+                              {matchedNames.map((n) => (
+                                <span key={n} className="inline-flex items-center gap-1.5 text-xs text-foreground/80">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                                  {n}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {extraNames.length > 0 && (
+                          <div>
+                            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                              Également inclus
+                            </p>
+                            <div className="flex flex-col gap-0.5">
+                              {extraNames.map((n) => (
+                                <span key={n} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30 shrink-0" />
+                                  {n}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -540,6 +739,12 @@ export default function DevisPage() {
           }
           return Object.keys(cp).length > 0 ? cp : undefined;
         })()}
+      />
+
+      <BulkInputWizard
+        open={bulkWizardOpen}
+        onClose={() => setBulkWizardOpen(false)}
+        onAddTests={handleBulkAdd}
       />
     </div>
   );

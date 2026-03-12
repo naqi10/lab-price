@@ -13,27 +13,14 @@ import { Button } from "@/components/ui/button";
 import { Mail, Zap, Download, Loader2, Save } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { DashboardTitleContext } from "@/lib/contexts/dashboard-title";
+import { parseTurnaroundToHours } from "@/lib/turnaround";
 
 /**
  * Parse a human-readable turnaround time string into hours for comparison.
  * Lower value = faster. Returns Infinity if unparseable.
  */
 function parseTatToHours(tat: string | null | undefined): number {
-   if (!tat) return Infinity;
-   const s = tat.toLowerCase().trim();
-
-   // "même jour" / "same day"
-   if (s.includes("même jour") || s.includes("same day")) return 0;
-
-   // "résultats en X heures" / "résultats en X–Y heures" / "results in X hours"
-   const hoursMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*h/);
-   if (hoursMatch) return Number(hoursMatch[1]);
-
-   // "X jours ouvrables" / "X–Y jours ouvrables" / "X business days"
-   const daysMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*(?:jour|day|business)/);
-   if (daysMatch) return Number(daysMatch[1]) * 24;
-
-   return Infinity;
+   return parseTurnaroundToHours(tat);
 }
 
 /**

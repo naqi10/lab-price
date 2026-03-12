@@ -4,8 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-import { Edit, Trash2, GitCompare, Plus } from "lucide-react";
+import { Edit, Trash2, GitCompare, Plus, DollarSign, Clock3 } from "lucide-react";
 import MatchIndicator from "./match-indicator";
+import { formatTurnaroundShort } from "@/lib/turnaround";
 
 export default function TestMappingTable({
   mappings,
@@ -61,15 +62,30 @@ export default function TestMappingTable({
                 )}
               </TableCell>
               <TableCell>
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1.5">
                   {m.entries?.map((e: any) => (
-                    <div key={e.id} className="flex items-center gap-1.5">
-                      <MatchIndicator type={e.matchType} confidence={e.similarity} />
-                      <span className="text-xs text-muted-foreground">
-                        <span className="font-medium text-foreground/80">{e.laboratory?.name}</span>
-                        {": "}
-                        {e.localTestName}
-                      </span>
+                    <div key={e.id} className="rounded-lg border border-border/50 bg-card overflow-hidden">
+                      {/* Lab name header */}
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/5 border-b border-primary/10">
+                        <span className="text-[11px] font-semibold text-primary/80 uppercase tracking-wide">
+                          {e.laboratory?.name}
+                        </span>
+                        <MatchIndicator type={e.matchType} confidence={e.similarity} />
+                      </div>
+                      {/* Test details */}
+                      <div className="px-2.5 py-2">
+                        <p className="text-xs font-medium text-foreground/90 leading-snug">{e.localTestName}</p>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-[11px] text-muted-foreground">
+                          <span className="inline-flex items-center gap-1">
+                            <DollarSign className="h-3 w-3" />
+                            {e.price != null ? Number(e.price).toFixed(2) : "—"}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Clock3 className="h-3 w-3" />
+                            {formatTurnaroundShort(e.duration)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>

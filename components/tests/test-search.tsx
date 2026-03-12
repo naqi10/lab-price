@@ -13,6 +13,7 @@ import { formatCurrency } from "@/lib/utils";
 import { getProfileMeta } from "@/lib/data/profile-metadata";
 import { TubeDot } from "@/components/ui/tube-dot";
 import MatchIndicator from "./match-indicator";
+import { formatTurnaroundShort } from "@/lib/turnaround";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -101,23 +102,25 @@ function ProfileComparePanel({
     const perExtraTest = extraTestCount > 0 ? Math.abs(delta) / extraTestCount : 0;
     const cheaper = delta <= 0;
 
+    const labCode = bundle.sourceLabCode?.toUpperCase() || "CDL";
+
     return (
       <div
-        className={`rounded-lg border p-3 transition-colors ${
+        className={`rounded-lg border overflow-hidden transition-colors ${
           inSelection ? "border-primary/40 bg-primary/5" : "border-border/50 bg-background"
         }`}
       >
-        <div className="flex items-start gap-2.5">
+        {/* Header: lab badge + name + add button */}
+        <div className="flex items-start gap-2 px-3 pt-2.5 pb-2">
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold leading-snug break-words">{bundle.dealName}</p>
-
-            {bundle.canonicalNames.length > 0 && (
-              <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
-                {bundle.canonicalNames.join(" · ")}
-              </p>
-            )}
-
-            <div className="mt-2 flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+              <span className="inline-flex items-center gap-1 rounded text-[10px] font-bold uppercase px-1.5 py-0.5 bg-blue-50 border border-blue-200/60 text-blue-700 shrink-0">
+                <Layers className="h-2.5 w-2.5" />
+                {labCode}
+              </span>
+              <p className="text-sm font-semibold leading-snug break-words">{bundle.dealName}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 mt-1">
               <span className="text-sm font-bold tabular-nums">{formatCurrency(bundle.customRate)}</span>
               {cheaper ? (
                 <span className="rounded-full bg-emerald-100 text-emerald-700 text-[11px] font-semibold px-2 py-0.5 leading-5">
@@ -155,6 +158,20 @@ function ProfileComparePanel({
             </button>
           )}
         </div>
+
+        {/* Full test list — no truncation */}
+        {bundle.canonicalNames.length > 0 && (
+          <div className="px-3 pb-2.5 border-t border-border/20 pt-2">
+            <div className="flex flex-col gap-0.5">
+              {bundle.canonicalNames.map((name) => (
+                <span key={name} className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground leading-relaxed">
+                  <span className="h-1 w-1 rounded-full bg-muted-foreground/40 shrink-0" />
+                  {name}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -531,7 +548,7 @@ export default function TestSearch({
                         {primary.turnaroundTime && (
                           <span className="inline-flex items-center gap-0.5 text-xs text-muted-foreground/70">
                             <Clock className="h-3 w-3 shrink-0" />
-                            {primary.turnaroundTime}
+                            {formatTurnaroundShort(primary.turnaroundTime)}
                           </span>
                         )}
                       </div>

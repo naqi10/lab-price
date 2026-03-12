@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { TubeDot } from "@/components/ui/tube-dot";
 import { formatCurrency } from "@/lib/utils";
 import { parseTubeColor } from "@/lib/tube-colors";
+import { parseTurnaroundToHours } from "@/lib/turnaround";
 import {
   GitCompare,
   Package,
@@ -69,15 +70,7 @@ interface ActiveDeal {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function parseTatToHours(tat: string | null | undefined): number {
-  if (!tat) return Infinity;
-  const s = tat.toLowerCase().trim();
-  if (s.includes("même jour") || s.includes("same day")) return 0;
-  const hoursMatch = s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*h/);
-  if (hoursMatch) return Number(hoursMatch[1]);
-  const daysMatch =
-    s.match(/(\d+)(?:\s*[–-]\s*(\d+))?\s*(?:jour|day|business)/);
-  if (daysMatch) return Number(daysMatch[1]) * 24;
-  return Infinity;
+  return parseTurnaroundToHours(tat);
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────

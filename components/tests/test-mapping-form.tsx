@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, FlaskConical, DollarSign, Clock3 } from "lucide-react";
 import { parseTubeColor } from "@/lib/tube-colors";
+import { buildTurnaroundString, parseTurnaroundParts, type TurnaroundUnit } from "@/lib/turnaround";
 
 interface MappingEntry {
   laboratoryId: string;
@@ -15,7 +16,8 @@ interface MappingEntry {
   testName: string;
   price: string;
   code: string;
-  duration: string;
+  durationValue: string;
+  durationUnit: TurnaroundUnit;
 }
 
 const TUBE_OPTIONS = [
@@ -88,7 +90,8 @@ export default function TestMappingForm({
             price: e?.price != null ? String(e.price) : "",
             // Prefer explicit mapping fields, then fallback to seeded active tests.
             code: e?.code || fallback?.code || "",
-            duration: e?.duration || fallback?.turnaroundTime || "",
+            durationValue: parseTurnaroundParts(e?.duration || fallback?.turnaroundTime || "")?.value?.toString() || "",
+            durationUnit: parseTurnaroundParts(e?.duration || fallback?.turnaroundTime || "")?.unit || "days",
           };
         })
       );
@@ -105,7 +108,8 @@ export default function TestMappingForm({
           testName: "",
           price: "",
           code: "",
-          duration: "",
+          durationValue: "",
+          durationUnit: "days",
         }))
       );
     }
@@ -122,7 +126,7 @@ export default function TestMappingForm({
           ...e,
           price: e.price !== "" ? parseFloat(e.price) : null,
           code: e.code || null,
-          duration: e.duration || null,
+          duration: buildTurnaroundString(e.durationValue, e.durationUnit),
         })),
       });
       setCanonicalName("");
@@ -222,18 +226,23 @@ export default function TestMappingForm({
           <div className="space-y-2">
             <Label>Correspondances par laboratoire *</Label>
             {entries.map((entry, i) => (
-              <div key={entry.laboratoryId} className="flex flex-col gap-1.5 rounded-md border border-border/50 bg-muted/20 p-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium truncate">{entry.laboratoryName}</span>
+              <div key={entry.laboratoryId} className="rounded-lg border border-border/60 bg-card overflow-hidden">
+                {/* Lab header strip */}
+                <div className="flex items-center justify-between px-3 py-2 bg-primary/5 border-b border-primary/10">
+                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary/90">
+                    <FlaskConical className="h-3.5 w-3.5 shrink-0" />
+                    {entry.laboratoryName}
+                  </span>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 shrink-0"
+                    className="h-7 w-7 shrink-0 hover:bg-destructive/10"
+                    title="Effacer les champs"
                     onClick={() =>
                       setEntries((prev) =>
                         prev.map((row, idx) =>
                           idx === i
-                            ? { ...row, testName: "", price: "", code: "", duration: "" }
+                            ? { ...row, testName: "", price: "", code: "", durationValue: "", durationUnit: "days" }
                             : row
                         )
                       )
@@ -242,40 +251,62 @@ export default function TestMappingForm({
                     <Trash2 className="h-3.5 w-3.5 text-destructive" />
                   </Button>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                {/* Fields */}
+                <div className="p-2.5 grid grid-cols-2 gap-2">
                   <Input
                     value={entry.testName}
                     onChange={(e) => updateEntry(i, "testName", e.target.value)}
                     placeholder="Nom du test dans ce labo"
                     autoComplete="off"
                   />
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={entry.price}
-                    onChange={(e) => updateEntry(i, "price", e.target.value)}
-                    placeholder="Prix ($)"
-                  />
+                  <div className="relative">
+                    <DollarSign className="h-3.5 w-3.5 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={entry.price}
+                      onChange={(e) => updateEntry(i, "price", e.target.value)}
+                      placeholder="Prix"
+                      className="pl-7"
+                    />
+                  </div>
                   <Input
                     value={entry.code}
                     onChange={(e) => updateEntry(i, "code", e.target.value)}
                     placeholder="Code labo (ex: CDL-GLU)"
                     autoComplete="off"
                   />
-                  <Input
-                    value={entry.duration}
-                    onChange={(e) => updateEntry(i, "duration", e.target.value)}
-                    placeholder="Délai (ex: Même jour, 24h)"
-                    autoComplete="off"
-                  />
+                  <div className="grid grid-cols-[1fr_88px] gap-2">
+                    <div className="relative">
+                      <Clock3 className="h-3.5 w-3.5 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        value={entry.durationValue}
+                        onChange={(e) => updateEntry(i, "durationValue", e.target.value)}
+                        placeholder="Délai"
+                        autoComplete="off"
+                        className="pl-7"
+                      />
+                    </div>
+                    <select
+                      value={entry.durationUnit}
+                      onChange={(e) => updateEntry(i, "durationUnit", e.target.value as TurnaroundUnit)}
+                      className="flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm font-medium text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+                    >
+                      <option value="hours">heures</option>
+                      <option value="days">jours</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             ))}
             <div className="flex flex-wrap gap-2 mt-2">
               {laboratories.map((lab) => {
                 const existing = entries.find((e) => e.laboratoryId === lab.id);
-                const isFilled = !!existing?.testName || !!existing?.price || !!existing?.code || !!existing?.duration;
+                const isFilled = !!existing?.testName || !!existing?.price || !!existing?.code || !!existing?.durationValue;
                 if (isFilled) return null;
                 return (
                   <Button

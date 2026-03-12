@@ -31,6 +31,7 @@ import {
 import { useDebounce } from "@/hooks/use-debounce";
 import { parseTubeColor } from "@/lib/tube-colors";
 import { TubeDot } from "@/components/ui/tube-dot";
+import { formatTurnaroundShort, parseTurnaroundToHours } from "@/lib/turnaround";
 
 interface Test {
   id: string;
@@ -48,24 +49,19 @@ interface Test {
   canonicalName: string | null;
 }
 
-/** Color-codes a turnaround string: same-day → green, ≤3 days → amber, slower → muted */
+/** Color-codes a turnaround value: same-day → green, ≤3 days → amber, slower → muted */
 function TatBadge({ value }: { value: string }) {
-  const lower = value.toLowerCase();
-  let colorClass = "text-muted-foreground";
-  if (
-    lower.includes("même jour") ||
-    lower.includes("same day") ||
-    lower.includes("j0") ||
-    lower.includes("urgent")
-  ) {
-    colorClass = "text-emerald-600";
-  } else if (/\b[1-3]\s*(j|jour|day)/.test(lower)) {
-    colorClass = "text-amber-400";
-  }
+  const hours = parseTurnaroundToHours(value);
+  const colorClass =
+    hours === 0
+      ? "text-emerald-600"
+      : hours !== Infinity && hours <= 72
+        ? "text-amber-500"
+        : "text-muted-foreground";
   return (
-    <div className={`flex items-center gap-1 whitespace-nowrap ${colorClass}`}>
+    <div className={`inline-flex items-center gap-1 whitespace-nowrap ${colorClass}`}>
       <Clock className="h-3 w-3 shrink-0" />
-      <span className="text-xs">{value}</span>
+      <span className="text-xs font-medium">{formatTurnaroundShort(value)}</span>
     </div>
   );
 }
