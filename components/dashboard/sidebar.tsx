@@ -12,7 +12,6 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Menu,
   X,
   Receipt,
 } from "lucide-react";
@@ -26,12 +25,23 @@ const navItems = [
   { href: "/settings", label: "Paramètres", icon: Settings },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({
+  mobileOpen,
+  onClose,
+}: {
+  mobileOpen: boolean;
+  onClose: () => void;
+}) {
   const [collapsed, setCollapsed] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
-  const NavLinks = ({ onNavigate, showLabels }: { onNavigate?: () => void; showLabels?: boolean }) => {
+  const NavLinks = ({
+    onNavigate,
+    showLabels,
+  }: {
+    onNavigate?: () => void;
+    showLabels?: boolean;
+  }) => {
     const labels = showLabels ?? !collapsed;
     return (
       <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
@@ -46,7 +56,7 @@ export default function Sidebar() {
               onClick={onNavigate}
               title={item.label}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all duration-150",
                 isActive
                   ? "bg-primary/15 text-primary border border-primary/20"
                   : "text-muted-foreground hover:bg-accent hover:text-foreground border border-transparent"
@@ -58,9 +68,7 @@ export default function Sidebar() {
                   isActive ? "text-primary" : ""
                 )}
               />
-              {labels && (
-                <span className="truncate">{item.label}</span>
-              )}
+              {labels && <span className="truncate">{item.label}</span>}
             </Link>
           );
         })}
@@ -70,57 +78,48 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile hamburger trigger */}
-      <button
-        className="fixed top-4 left-4 z-50 flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-card shadow-sm md:hidden"
-        onClick={() => setMobileOpen(true)}
-        aria-label="Ouvrir le menu"
-      >
-        <Menu className="h-4 w-4" />
-      </button>
-
       {/* Mobile backdrop */}
       <div
         className={cn(
           "fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity md:hidden",
           mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
-        onClick={() => setMobileOpen(false)}
+        onClick={onClose}
       />
 
-      {/* Mobile sidebar (slide-in) */}
+      {/* Mobile sidebar (slide-in drawer) */}
       <aside
         className={cn(
           "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-border/60 bg-card shadow-2xl transition-transform duration-300 md:hidden",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between border-b border-border/60 px-4 py-4">
+        <div className="flex items-center justify-between border-b border-border/60 px-4 py-4 min-h-[56px]">
           <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
+            <div className="h-7 w-7 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
               <FlaskConical className="h-3.5 w-3.5 text-primary" />
             </div>
             <h1 className="text-base font-bold text-foreground">Lab Price</h1>
           </div>
           <button
-            onClick={() => setMobileOpen(false)}
-            className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-accent"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent transition-colors"
             aria-label="Fermer le menu"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
-        <NavLinks onNavigate={() => setMobileOpen(false)} showLabels={true} />
+        <NavLinks onNavigate={onClose} showLabels={true} />
       </aside>
 
-      {/* Desktop sidebar */}
+      {/* Desktop sidebar — fixed width, always visible at md+ */}
       <aside
         className={cn(
           "hidden md:flex flex-col border-r border-border/60 bg-card shadow-sm transition-all duration-300 h-screen sticky top-0 shrink-0",
           collapsed ? "w-[60px]" : "w-60"
         )}
       >
-        <div className="flex items-center justify-between border-b border-border/60 px-3 py-4 min-h-[60px]">
+        <div className="flex items-center justify-between border-b border-border/60 px-3 py-4 min-h-[56px]">
           {!collapsed && (
             <div className="flex items-center gap-2 overflow-hidden">
               <div className="h-7 w-7 shrink-0 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
@@ -146,7 +145,12 @@ export default function Sidebar() {
         </div>
         <NavLinks />
         <div className="border-t border-border/40 px-3 py-3">
-          <p className={cn("text-xs text-muted-foreground/50 transition-opacity", collapsed ? "opacity-0" : "opacity-100")}>
+          <p
+            className={cn(
+              "text-xs text-muted-foreground/50 transition-opacity",
+              collapsed ? "opacity-0" : "opacity-100"
+            )}
+          >
             v0.1.0
           </p>
         </div>
