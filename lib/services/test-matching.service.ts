@@ -53,6 +53,28 @@ function expandSearchSynonyms(query: string): string[] {
 }
 
 /**
+ * Numeric token rule: if the query contains specific alphanumeric tokens like
+ * "b12", "b9", "d3", "iga", "igg", etc., results MUST contain those tokens.
+ * This prevents "vitamin b12" from matching "Acide Folique" standalone.
+ *
+ * Matches:
+ *   - vitamin-letter codes: b12, b9, b6, d3, a1c, b1, b2, etc.
+ *   - immunoglobulin classes: iga, igg, igm, ige, igd
+ */
+function extractNumericTokens(query: string): string[] {
+  const q = query.toLowerCase();
+  const tokens: string[] = [];
+  // Single letter followed by digits (b12, b9, d3, e1...) — not pure numbers
+  const alphaNum = q.match(/\b[a-z]\d+[a-z0-9]*\b/g) ?? [];
+  // Immunoglobulin classes: iga, igg, igm, ige, igd
+  const ig = q.match(/\big[geamd]\b/g) ?? [];
+  for (const t of [...alphaNum, ...ig]) {
+    if (!tokens.includes(t)) tokens.push(t);
+  }
+  return tokens;
+}
+
+/**
  * Search for lab tests using a hybrid approach:
  *   1. ILIKE prefix/substring match (fast, exact)
  *   2. pg_trgm similarity (fuzzy fallback)
@@ -105,6 +127,20 @@ export async function searchTests(
     synScoreWhen.push(`WHEN tm."canonical_name" ILIKE '%' || $${idx} || '%' THEN 0.80`);
     params.push(syn);
   }
+
+  // Numeric token mandatory filter: "vitamin b12" → result MUST contain "b12"
+  // Prevents "Acide Folique" (standalone) from appearing when b12/b9/d3 etc. are in the query.
+  const numericTokens = extractNumericTokens(query);
+  const numericTokenClauses: string[] = numericTokens.map((tok) => {
+    const idx = params.length + 1;
+    params.push(tok);
+    return `(t.name ILIKE '%' || $${idx} || '%' OR tm."canonical_name" ILIKE '%' || $${idx} || '%' OR t.code ILIKE '%' || $${idx} || '%')`;
+  });
+  // Joined with AND — all tokens must be present
+  const numericTokenFilter =
+    numericTokenClauses.length > 0
+      ? `AND ${numericTokenClauses.join(" AND ")}`
+      : "";
 
   const scoreExpr = `GREATEST(
       similarity(${normalizedNameExpr}, ${normalizedQueryExpr}),
@@ -166,6 +202,7 @@ export async function searchTests(
         AND l."deleted_at" IS NULL
         AND (t.category IS NULL OR LOWER(t.category) NOT IN ('profil', 'profile'))
         ${labFilter}
+        ${numericTokenFilter}
         AND (
 ${matchWhere}
         )

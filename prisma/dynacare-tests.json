@@ -451,6 +451,7 @@
   { "code": "SED", "name": "VITESSE DE SÉDIMENTATION", "price": 42, "turnaroundTime": "1", "tubeType": "1 tube lavande" },
   { "code": "ZINCWB", "name": "ZINC - SANG ENTIER", "price": 95, "turnaroundTime": "9", "tubeType": "1 tube bleu foncé (K2EDTA)" },
   { "code": "CDT", "name": "% CDT", "price": 63, "turnaroundTime": "4", "tubeType": "1 tube gel" },
+  { "code": "VITD", "name": "VITD 25-HYDROXY VITAMINE D (CHOLÉCALCIFEROL)", "price": 53, "turnaroundTime": "1", "tubeType": "1 tube gel" },
   { "code": "VITD125", "name": "1.25-DIHYDROXY- VITAMINE D", "price": 104, "turnaroundTime": "11", "tubeType": "1 tube gel" },
   { "code": "17HYPROG", "name": "17- HYDROXY- PROGESTERONE (17- OH-PROGESTERONE)", "price": 109, "turnaroundTime": "9", "tubeType": "1 tube gel" },
   { "code": "24U5HIAA", "name": "5-HIAA (MÉTABOLITE DE LA SEROTONINE) URINES DE 24 HEURES", "price": 95, "turnaroundTime": "11", "tubeType": "Contenant pour collecte des urines de 24 heures avec 25mL de 6N HCL" },
