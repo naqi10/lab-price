@@ -18,6 +18,8 @@ import {
   Plus,
   AlertCircle,
   ArrowLeft,
+  AlertTriangle,
+  Receipt,
 } from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -45,6 +47,10 @@ interface MatchedTest {
   tubeType: string | null;
   labResults: LabResult[];
   chosen: LabResult | null;
+  /** true = both CDL and Dynacare have entries for this canonical */
+  isPaired: boolean;
+  /** which lab codes are available */
+  availableLabs: string[];
 }
 
 export interface BulkTestResult {
@@ -62,9 +68,23 @@ export interface BulkTestResult {
 interface BulkSearchPanelProps {
   onAddTests: (tests: BulkTestResult[]) => void;
   onClose: () => void;
+  /** Service fee shown in total summary (default 30) */
+  serviceFee?: number;
 }
 
-// ── Selection logic ────────────────────────────────────────────────────────
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+function isCDL(code: string, name: string) {
+  return code.toUpperCase().includes("CDL") || name.toUpperCase().includes("CDL");
+}
+function isDynacare(code: string, name: string) {
+  return (
+    code.toUpperCase().includes("DYN") ||
+    name.toUpperCase().includes("DYNACARE")
+  );
+}
+
+// ── Selection logic ──────────────────────────────────────────────────────────
 
 function chooseBest(
   labResults: LabResult[],
@@ -73,9 +93,6 @@ function chooseBest(
 ): LabResult | null {
   if (labResults.length === 0) return null;
   if (labResults.length === 1) return labResults[0];
-
-  const prefToken =
-    labPref === "cdl" ? "CDL" : labPref === "dynacare" ? "DYN" : null;
 
   const sorted =
     priority === "cheaper"
@@ -86,11 +103,11 @@ function chooseBest(
           return aH !== bH ? aH - bH : a.price - b.price;
         });
 
-  if (prefToken) {
-    const prefResult = labResults.find(
-      (r) =>
-        r.labCode.toUpperCase().includes(prefToken) ||
-        r.labName.toUpperCase().includes(prefToken)
+  if (labPref !== "none") {
+    const prefResult = labResults.find((r) =>
+      labPref === "cdl"
+        ? isCDL(r.labCode, r.labName)
+        : isDynacare(r.labCode, r.labName)
     );
     if (prefResult) {
       const best = sorted[0];
@@ -111,7 +128,11 @@ const STEP_ORDER: WizardStep[] = ["input", "lab", "priority", "results"];
 
 // ── Component ──────────────────────────────────────────────────────────────
 
-export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanelProps) {
+export default function BulkSearchPanel({
+  onAddTests,
+  onClose,
+  serviceFee = 30,
+}: BulkSearchPanelProps) {
   const [step, setStep] = useState<WizardStep>("input");
   const [rawInput, setRawInput] = useState("");
   const [labPref, setLabPref] = useState<LabPreference>("none");
@@ -145,12 +166,17 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
               tubeType: null,
               labResults: [],
               chosen: null,
+              isPaired: false,
+              availableLabs: [],
             };
             try {
-              const r = await fetch(`/api/tests?q=${encodeURIComponent(name)}&limit=10`);
+              const r = await fetch(
+                `/api/tests?q=${encodeURIComponent(name)}&limit=10`
+              );
               const d = await r.json();
               if (!d.success || !d.data?.length) return empty;
 
+              // Group by testMappingId — first group = best match
               const grouped = new Map<string, LabResult[]>();
               let firstKey: string | null = null;
               for (const t of d.data) {
@@ -172,6 +198,15 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
 
               if (!firstKey) return empty;
               const labResults = grouped.get(firstKey) ?? [];
+
+              // ── Pairing detection ─────────────────────────────────────
+              const hasCDL = labResults.some((r) => isCDL(r.labCode, r.labName));
+              const hasDyn = labResults.some((r) =>
+                isDynacare(r.labCode, r.labName)
+              );
+              const isPaired = hasCDL && hasDyn;
+              const availableLabs = labResults.map((r) => r.labCode);
+
               return {
                 inputName: name,
                 found: true,
@@ -180,6 +215,8 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
                 tubeType: labResults[0]?.tubeType ?? null,
                 labResults,
                 chosen: chooseBest(labResults, lp, pr),
+                isPaired,
+                availableLabs,
               };
             } catch {
               return empty;
@@ -198,8 +235,9 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
 
   const handleAddAll = () => {
     const toAdd = matchedTests
-      .filter((t): t is MatchedTest & { chosen: LabResult } =>
-        t.found && t.chosen !== null && t.testMappingId !== null
+      .filter(
+        (t): t is MatchedTest & { chosen: LabResult } =>
+          t.found && t.chosen !== null && t.testMappingId !== null
       )
       .map((t) => ({
         testMappingId: t.testMappingId!,
@@ -218,11 +256,17 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
 
   const foundCount = matchedTests.filter((t) => t.found && t.chosen).length;
   const notFoundCount = matchedTests.filter((t) => !t.found).length;
-  const totalPrice = matchedTests
+  const singleLabCount = matchedTests.filter(
+    (t) => t.found && !t.isPaired
+  ).length;
+  const subtotal = matchedTests
     .filter((t) => t.found && t.chosen)
     .reduce((sum, t) => sum + (t.chosen?.price ?? 0), 0);
+  const total = subtotal + (subtotal > 0 ? serviceFee : 0);
 
-  const stepIdx = STEP_ORDER.indexOf(step === "searching" ? "results" : step);
+  const stepIdx = STEP_ORDER.indexOf(
+    step === "searching" ? "results" : step
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -237,7 +281,9 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
         </button>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold">Saisie en lot</p>
-          <p className="text-xs text-muted-foreground/70">Plusieurs tests à la fois</p>
+          <p className="text-xs text-muted-foreground/70">
+            Plusieurs tests à la fois
+          </p>
         </div>
       </div>
 
@@ -266,13 +312,19 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
         {step === "input" && (
           <>
             <p className="text-sm text-muted-foreground">
-              Entrez les noms des tests, <strong>un par ligne</strong>.
+              Entrez les noms des tests,{" "}
+              <strong>un par ligne</strong>. Le système trouvera la meilleure
+              correspondance pour chacun.
             </p>
             <Textarea
               value={rawInput}
               onChange={(e) => setRawInput(e.target.value)}
               onKeyDown={(e) => {
-                if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && parsedNames.length > 0) {
+                if (
+                  (e.ctrlKey || e.metaKey) &&
+                  e.key === "Enter" &&
+                  parsedNames.length > 0
+                ) {
                   e.preventDefault();
                   setStep("lab");
                 }
@@ -295,7 +347,9 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
               </div>
             )}
             <div className="flex items-center justify-between pt-1">
-              <p className="text-xs text-muted-foreground">Ctrl+Entrée pour continuer</p>
+              <p className="text-xs text-muted-foreground">
+                Ctrl+Entrée pour continuer
+              </p>
               <Button
                 onClick={() => setStep("lab")}
                 disabled={parsedNames.length === 0}
@@ -347,7 +401,9 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
                       : "border-border/60 bg-card hover:border-border/80 hover:bg-muted/20"
                   }`}
                 >
-                  <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${opt.iconBg}`}>
+                  <div
+                    className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${opt.iconBg}`}
+                  >
                     <FlaskConical className="h-3.5 w-3.5" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -361,11 +417,20 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
               ))}
             </div>
             <div className="flex justify-between pt-1">
-              <Button variant="outline" size="sm" onClick={() => setStep("input")} className="gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setStep("input")}
+                className="gap-1.5"
+              >
                 <ChevronLeft className="h-3.5 w-3.5" />
                 Retour
               </Button>
-              <Button size="sm" onClick={() => setStep("priority")} className="gap-1.5">
+              <Button
+                size="sm"
+                onClick={() => setStep("priority")}
+                className="gap-1.5"
+              >
                 Suivant
                 <ChevronRight className="h-3.5 w-3.5" />
               </Button>
@@ -407,12 +472,16 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
                       : "border-border/60 bg-card hover:border-border/80 hover:bg-muted/20"
                   }`}
                 >
-                  <div className={`h-9 w-9 rounded-xl flex items-center justify-center ${opt.iconBg}`}>
+                  <div
+                    className={`h-9 w-9 rounded-xl flex items-center justify-center ${opt.iconBg}`}
+                  >
                     {opt.icon}
                   </div>
                   <div>
                     <p className="text-xs font-semibold">{opt.label}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">{opt.sub}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      {opt.sub}
+                    </p>
                   </div>
                   {priority === opt.value && (
                     <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
@@ -421,11 +490,20 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
               ))}
             </div>
             <div className="flex justify-between pt-1">
-              <Button variant="outline" size="sm" onClick={() => setStep("lab")} className="gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setStep("lab")}
+                className="gap-1.5"
+              >
                 <ChevronLeft className="h-3.5 w-3.5" />
                 Retour
               </Button>
-              <Button size="sm" onClick={() => runSearch(labPref, priority)} className="gap-1.5">
+              <Button
+                size="sm"
+                onClick={() => runSearch(labPref, priority)}
+                className="gap-1.5"
+              >
                 Compiler
                 <ChevronRight className="h-3.5 w-3.5" />
               </Button>
@@ -439,7 +517,8 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
             <Loader2 className="h-8 w-8 text-primary animate-spin" />
             <p className="text-sm font-semibold">Analyse en cours…</p>
             <p className="text-xs text-muted-foreground text-center">
-              Recherche de {parsedNames.length} test{parsedNames.length > 1 ? "s" : ""} dans la base de données
+              Recherche de {parsedNames.length} test
+              {parsedNames.length > 1 ? "s" : ""} dans la base de données
             </p>
           </div>
         )}
@@ -451,28 +530,37 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
             <div className="flex items-center gap-3 rounded-xl bg-muted/40 border border-border/40 px-3 py-2.5">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold">
-                  {foundCount} test{foundCount > 1 ? "s" : ""} trouvé{foundCount > 1 ? "s" : ""}
+                  {foundCount} test{foundCount > 1 ? "s" : ""} trouvé
+                  {foundCount > 1 ? "s" : ""}
                   {notFoundCount > 0 && (
                     <span className="text-destructive/70 font-normal ml-2">
-                      · {notFoundCount} introuvable{notFoundCount > 1 ? "s" : ""}
+                      · {notFoundCount} introuvable
+                      {notFoundCount > 1 ? "s" : ""}
                     </span>
                   )}
                 </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {priority === "cheaper" ? "💰 Prix le plus bas" : "⚡ Résultats rapides"}
-                  {labPref !== "none" && (
-                    <span className="ml-1.5">
-                      · Labo : <span className="font-medium">{labPref === "cdl" ? "CDL" : "Dynacare"}</span>
+                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <p className="text-xs text-muted-foreground">
+                    {priority === "cheaper"
+                      ? "💰 Prix le plus bas"
+                      : "⚡ Résultats rapides"}
+                    {labPref !== "none" && (
+                      <span className="ml-1.5">
+                        · Labo :{" "}
+                        <span className="font-medium">
+                          {labPref === "cdl" ? "CDL" : "Dynacare"}
+                        </span>
+                      </span>
+                    )}
+                  </p>
+                  {singleLabCount > 0 && (
+                    <span className="inline-flex items-center gap-0.5 text-[10px] bg-amber-50 text-amber-700 border border-amber-200 rounded px-1.5 py-0.5">
+                      <AlertTriangle className="h-2.5 w-2.5" />
+                      {singleLabCount} labo unique
                     </span>
                   )}
-                </p>
-              </div>
-              {totalPrice > 0 && (
-                <div className="text-right shrink-0">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total</p>
-                  <p className="text-lg font-bold tabular-nums">{formatCurrency(totalPrice)}</p>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Per-test cards */}
@@ -491,18 +579,36 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
                         {t.canonicalName || t.inputName}
                       </p>
                       {t.canonicalName &&
-                        t.canonicalName.toLowerCase() !== t.inputName.toLowerCase() && (
-                          <p className="text-[10px] text-muted-foreground">← &ldquo;{t.inputName}&rdquo;</p>
+                        t.canonicalName.toLowerCase() !==
+                          t.inputName.toLowerCase() && (
+                          <p className="text-[10px] text-muted-foreground">
+                            ← &ldquo;{t.inputName}&rdquo;
+                          </p>
                         )}
-                      <div className="flex items-center gap-1.5 mt-0.5">
+                      <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                         <span className="text-[10px] font-bold uppercase px-1 py-0.5 rounded bg-primary/5 text-primary/70">
                           {t.chosen.labCode}
                         </span>
-                        <span className="text-[10px] text-muted-foreground">{t.chosen.labName}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {t.chosen.labName}
+                        </span>
+                        {/* Pairing badge */}
+                        {t.isPaired ? (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 rounded px-1 py-0.5">
+                            <CheckCircle2 className="h-2.5 w-2.5" />2 labos
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] bg-amber-50 text-amber-700 border border-amber-200 rounded px-1 py-0.5">
+                            <AlertTriangle className="h-2.5 w-2.5" />
+                            {t.availableLabs?.[0] ?? "1 labo"} uniquement
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="text-sm font-bold tabular-nums">{formatCurrency(t.chosen.price)}</p>
+                      <p className="text-sm font-bold tabular-nums">
+                        {formatCurrency(t.chosen.price)}
+                      </p>
                       {t.chosen.turnaroundTime && (
                         <p className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground mt-0.5">
                           <Clock className="h-2.5 w-2.5" />
@@ -518,17 +624,55 @@ export default function BulkSearchPanel({ onAddTests, onClose }: BulkSearchPanel
                   >
                     <AlertCircle className="h-4 w-4 text-destructive/50 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-destructive/80">&ldquo;{t.inputName}&rdquo;</p>
-                      <p className="text-xs text-muted-foreground">Aucune correspondance trouvée</p>
+                      <p className="text-sm text-destructive/80">
+                        &ldquo;{t.inputName}&rdquo;
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Aucune correspondance trouvée
+                      </p>
                     </div>
                   </div>
                 )
               )}
             </div>
 
+            {/* ── Price summary ──────────────────────────────── */}
+            {subtotal > 0 && (
+              <div className="rounded-xl border border-border/50 bg-muted/20 overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 border-b border-border/30">
+                  <span className="text-xs text-muted-foreground">
+                    Sous-total ({foundCount} test{foundCount > 1 ? "s" : ""})
+                  </span>
+                  <span className="text-sm tabular-nums font-medium">
+                    {formatCurrency(subtotal)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2 border-b border-border/30">
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Receipt className="h-3 w-3" />
+                    Frais de service
+                  </span>
+                  <span className="text-sm tabular-nums font-medium">
+                    {formatCurrency(serviceFee)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2.5 bg-muted/30">
+                  <span className="text-sm font-semibold">Total estimé</span>
+                  <span className="text-base font-bold tabular-nums">
+                    {formatCurrency(total)}
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Actions */}
             <div className="flex items-center justify-between pt-1">
-              <Button variant="outline" size="sm" onClick={() => setStep("priority")} className="gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setStep("priority")}
+                className="gap-1"
+              >
                 <ChevronLeft className="h-3.5 w-3.5" />
                 Modifier
               </Button>

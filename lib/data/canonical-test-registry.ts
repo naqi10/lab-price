@@ -646,14 +646,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
       "ANTI-TRANSGLUTAMINASE IGG",
     ],
   },
-  {
-    canonicalName: "Anticoagulant Lupique",
-    code: "LUPUS",
-    category: "Individuel",
-    aliases: [
-      "ANTICOAGULANT LUPIQUE",
-    ],
-  },
+  // Merged into "Lupus Anticoagulant" (code LAGT) — same test, both labs
   {
     canonicalName: "Anticorps Anti CCP",
     code: "ACCP",
@@ -3317,6 +3310,7 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "LUPUS ANTICOAGULANT",
+      "ANTICOAGULANT LUPIQUE",
     ],
   },
   {
