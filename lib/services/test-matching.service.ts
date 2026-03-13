@@ -35,6 +35,13 @@ const SYNONYM_MAP: [RegExp, string[]][] = [
   [/\bdhea\b/i, ["dh-s", "dhea-sulfate"]],
   [/\bfibr\b/i, ["fibrinogene"]],
   [/\bferi\b/i, ["ferritine"]],
+  // Vitamin letter suffixes — prevent "vitamin a" from drifting to "vitamine k" via trigram
+  [/\bvitamin[e]?\s*a\b/i, ["vitamine a", "retinol"]],
+  [/\bvitamin[e]?\s*b[\s-]*12\b/i, ["vitamine b12", "cobalamine", "cyanocobalamine"]],
+  [/\bvitamin[e]?\s*k\b/i, ["vitamine k"]],
+  [/\bvitamin[e]?\s*b[\s-]*6\b/i, ["vitamine b6", "pyridoxine"]],
+  [/\bvitamin[e]?\s*c\b/i, ["vitamine c", "acide ascorbique"]],
+  [/\bvitamin[e]?\s*e\b/i, ["vitamine e", "tocopherol"]],
 ];
 
 function expandSearchSynonyms(query: string): string[] {
@@ -84,12 +91,18 @@ export async function searchTests(
     params.push(laboratoryId);
   }
 
-  // Build synonym ILIKE clauses
+  // Build synonym ILIKE clauses for WHERE and also for SCORE
+  // Synonyms are added to the score so that e.g. "vitamin a" → "vitamine a" gets
+  // a proper score boost (not just included in WHERE by trigram alone).
   const synClauses: string[] = [];
+  const synScoreWhen: string[] = [];
   for (const syn of synonyms) {
     const idx = params.length + 1;
     synClauses.push(`    OR t.name ILIKE '%' || $${idx} || '%'`);
     synClauses.push(`    OR tm."canonical_name" ILIKE '%' || $${idx} || '%'`);
+    // Score: synonym name match = 0.82, canonical match = 0.80
+    synScoreWhen.push(`WHEN t.name ILIKE '%' || $${idx} || '%' THEN 0.82`);
+    synScoreWhen.push(`WHEN tm."canonical_name" ILIKE '%' || $${idx} || '%' THEN 0.80`);
     params.push(syn);
   }
 
@@ -106,6 +119,7 @@ export async function searchTests(
            WHEN tm."canonical_name" ILIKE '%' || $1 || '%' THEN 0.83
            WHEN t.code ILIKE '%' || $1 || '%'             THEN 0.80
            WHEN array_to_string(tm.aliases, ' ') ILIKE '%' || $1 || '%' THEN 0.78
+           ${synScoreWhen.join("\n           ")}
            ELSE 0 END
     )`;
 

@@ -291,7 +291,19 @@ export default function TestSearch({
       return { item, score, exact };
     }).sort((a, b) => b.score - a.score || (b.item.similarity ?? 0) - (a.item.similarity ?? 0));
     const exact = scored.filter((e) => e.exact).map((e) => e.item);
-    return exact.length > 0 ? exact : scored.map((e) => e.item);
+    if (exact.length > 0) {
+      // Also include non-exact entries that share a testMappingId with an exact match
+      // so both CDL and Dynacare show when only one lab's name is an exact hit
+      const exactMappingIds = new Set(exact.map((e) => e.testMappingId).filter(Boolean));
+      return scored
+        .map((e) => e.item)
+        .filter(
+          (item) =>
+            (item.testMappingId && exactMappingIds.has(item.testMappingId)) ||
+            scored.find((s) => s.item === item && s.exact)
+        );
+    }
+    return scored.map((e) => e.item);
   }, [results, debouncedQuery]);
 
   const GROUPS_PER_PAGE = 8;

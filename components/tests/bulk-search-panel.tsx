@@ -112,6 +112,7 @@ function chooseBest(
     if (prefResult) {
       const best = sorted[0];
       if (priority === "cheaper") {
+        // Prefer chosen lab if within 15% of cheapest — ties always go to preferred lab
         if (prefResult.price <= best.price * 1.15) return prefResult;
       } else {
         const prefH = parseTurnaroundToHours(prefResult.turnaroundTime);
@@ -121,7 +122,18 @@ function chooseBest(
     }
   }
 
-  return sorted[0];
+  // No preference — return cheapest, but deduplicate same-lab duplicates (CDL $82 + CDL $56)
+  // by picking the unique-lab cheapest
+  const bestPerLab = new Map<string, LabResult>();
+  for (const r of sorted) {
+    if (!bestPerLab.has(r.labId)) bestPerLab.set(r.labId, r);
+  }
+  const deduped = [...bestPerLab.values()].sort((a, b) =>
+    priority === "cheaper"
+      ? a.price - b.price
+      : parseTurnaroundToHours(a.turnaroundTime) - parseTurnaroundToHours(b.turnaroundTime)
+  );
+  return deduped[0] ?? sorted[0];
 }
 
 const STEP_ORDER: WizardStep[] = ["input", "lab", "priority", "results"];
@@ -139,8 +151,9 @@ export default function BulkSearchPanel({
   const [priority, setPriority] = useState<PriorityPreference>("cheaper");
   const [matchedTests, setMatchedTests] = useState<MatchedTest[]>([]);
 
+  // Each non-empty line = one test (commas also split for paste convenience)
   const parsedNames = rawInput
-    .split("\n")
+    .split(/[\n,]+/)
     .map((s) => s.trim())
     .filter(Boolean);
 
@@ -176,12 +189,16 @@ export default function BulkSearchPanel({
               const d = await r.json();
               if (!d.success || !d.data?.length) return empty;
 
-              // Group by testMappingId — first group = best match
+              // Group by testMappingId, scoring each group by rank + specificity
               const grouped = new Map<string, LabResult[]>();
-              let firstKey: string | null = null;
-              for (const t of d.data) {
+              // Track best rank (lowest index) per group — lower index = higher server score
+              const groupBestRank = new Map<string, number>();
+              const groupCanonical = new Map<string, string>();
+              const totalResults = d.data.length;
+
+              for (let i = 0; i < d.data.length; i++) {
+                const t = d.data[i];
                 if (!t.testMappingId) continue;
-                if (!firstKey) firstKey = t.testMappingId;
                 const arr = grouped.get(t.testMappingId) ?? [];
                 arr.push({
                   labName: t.laboratoryName,
@@ -194,23 +211,55 @@ export default function BulkSearchPanel({
                   canonicalName: t.canonicalName ?? null,
                 });
                 grouped.set(t.testMappingId, arr);
+                // Keep best (lowest) rank per group
+                if (!groupBestRank.has(t.testMappingId) || i < groupBestRank.get(t.testMappingId)!) {
+                  groupBestRank.set(t.testMappingId, i);
+                }
+                if (t.canonicalName && !groupCanonical.has(t.testMappingId)) {
+                  groupCanonical.set(t.testMappingId, t.canonicalName);
+                }
               }
 
-              if (!firstKey) return empty;
-              const labResults = grouped.get(firstKey) ?? [];
+              if (grouped.size === 0) return empty;
 
-              // ── Pairing detection ─────────────────────────────────────
-              const hasCDL = labResults.some((r) => isCDL(r.labCode, r.labName));
-              const hasDyn = labResults.some((r) =>
-                isDynacare(r.labCode, r.labName)
-              );
+              // Pick best group: rankScore (0–1) + specificity bonus (0–0.15)
+              // Specificity = how much of the canonical name is covered by the query
+              // → shorter canonical relative to query = more direct match
+              const normQuery = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+              let bestKey: string | null = null;
+              let bestScore = -1;
+              for (const [mid] of grouped) {
+                const rank = groupBestRank.get(mid) ?? 0;
+                const rankScore = 1 - rank / Math.max(totalResults, 1);
+                const canonical = (groupCanonical.get(mid) ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+                const specificity = canonical.length > 0
+                  ? Math.min(normQuery.length / canonical.length, 1)
+                  : 0;
+                const score = rankScore + specificity * 0.15;
+                if (score > bestScore) {
+                  bestScore = score;
+                  bestKey = mid;
+                }
+              }
+
+              if (!bestKey) return empty;
+              const labResults = grouped.get(bestKey) ?? [];
+
+              // ── Pairing detection (deduplicate by lab — CDL may appear twice) ────
+              const uniqueLabs = new Map<string, LabResult>();
+              for (const r of labResults) {
+                if (!uniqueLabs.has(r.labId)) uniqueLabs.set(r.labId, r);
+              }
+              const uniqueLabResults = [...uniqueLabs.values()];
+              const hasCDL = uniqueLabResults.some((r) => isCDL(r.labCode, r.labName));
+              const hasDyn = uniqueLabResults.some((r) => isDynacare(r.labCode, r.labName));
               const isPaired = hasCDL && hasDyn;
-              const availableLabs = labResults.map((r) => r.labCode);
+              const availableLabs = uniqueLabResults.map((r) => r.labCode);
 
               return {
                 inputName: name,
                 found: true,
-                testMappingId: firstKey,
+                testMappingId: bestKey,
                 canonicalName: labResults[0]?.canonicalName ?? null,
                 tubeType: labResults[0]?.tubeType ?? null,
                 labResults,
@@ -312,9 +361,8 @@ export default function BulkSearchPanel({
         {step === "input" && (
           <>
             <p className="text-sm text-muted-foreground">
-              Entrez les noms des tests,{" "}
-              <strong>un par ligne</strong>. Le système trouvera la meilleure
-              correspondance pour chacun.
+              Entrez les noms des tests, <strong>un par ligne</strong>.
+              Le système trouvera la meilleure correspondance pour chacun.
             </p>
             <Textarea
               value={rawInput}
@@ -330,7 +378,7 @@ export default function BulkSearchPanel({
                 }
               }}
               placeholder={"TSH\nFER\nGlucose\nHémogramme\nBilirubine totale"}
-              rows={7}
+              rows={8}
               className="font-mono text-sm resize-none"
               autoFocus
             />
@@ -348,7 +396,9 @@ export default function BulkSearchPanel({
             )}
             <div className="flex items-center justify-between pt-1">
               <p className="text-xs text-muted-foreground">
-                Ctrl+Entrée pour continuer
+                {parsedNames.length > 0
+                  ? `${parsedNames.length} test${parsedNames.length > 1 ? "s" : ""} · Ctrl+Entrée pour continuer`
+                  : "Ctrl+Entrée pour continuer"}
               </p>
               <Button
                 onClick={() => setStep("lab")}
