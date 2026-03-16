@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency } from "@/lib/utils";
@@ -16,7 +16,6 @@ import {
   ChevronRight,
   ChevronLeft,
   Loader2,
-  Plus,
   AlertCircle,
   ArrowLeft,
   AlertTriangle,
@@ -68,16 +67,22 @@ export interface BulkTestResult {
   turnaroundTime: string | null;
 }
 
+export interface BulkPreviewState {
+  mode: "individual" | "profile";
+  tests: BulkTestResult[];
+  subtotal: number;
+  selectedProfileId: string | null;
+  selectedProfileName: string | null;
+}
+
 type ResultTab = "individual" | "profiles";
 
 interface BulkSearchPanelProps {
-  onAddTests: (tests: BulkTestResult[]) => void;
-  onAddProfile?: (profileId: string) => void;
   onClose: () => void;
   /** Fires whenever the wizard step changes */
   onStepChange?: (step: WizardStep) => void;
   /** Fires when results are ready (results step) or cleared */
-  onResultsChange?: (tests: BulkTestResult[], subtotal: number) => void;
+  onResultsChange?: (state: BulkPreviewState) => void;
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -149,8 +154,6 @@ const STEP_ORDER: WizardStep[] = ["input", "lab", "results"];
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function BulkSearchPanel({
-  onAddTests,
-  onAddProfile,
   onClose,
   onStepChange,
   onResultsChange,
@@ -161,8 +164,10 @@ export default function BulkSearchPanel({
   const [priority, setPriority] = useState<PriorityPreference>("cheaper");
   const [matchedTests, setMatchedTests] = useState<MatchedTest[]>([]);
   const [matchingProfiles, setMatchingProfiles] = useState<ProfileMatchResult[]>([]);
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ResultTab>("individual");
   // serviceFee is now managed in the parent summary panel
+  const lastResultsSignatureRef = useRef<string>("");
 
   // Pre-search results: run once with no lab preference to get accurate per-lab stats
   const [preSearchResults, setPreSearchResults] = useState<MatchedTest[]>([]);
@@ -173,18 +178,6 @@ export default function BulkSearchPanel({
     .split(/[\n,]+/)
     .map((s) => s.trim())
     .filter(Boolean);
-
-  const handleReset = () => {
-    setStep("input");
-    setRawInput("");
-    setLabPref("none");
-    setPriority("cheaper");
-    setMatchedTests([]);
-    setMatchingProfiles([]);
-    setActiveTab("individual");
-    setPreSearchResults([]);
-    setPreSearchLoading(false);
-  };
 
   // Compute per-lab stats from actual matched results (accurate, no separate search)
   const labPreview = useMemo(() => {
@@ -334,12 +327,12 @@ export default function BulkSearchPanel({
       setPreSearchResults(resolved);
     } catch { /* ignore */ }
     setPreSearchLoading(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawInput]);
 
   const runSearch = useCallback(
     async (lp: LabPreference, pr: PriorityPreference) => {
       setStep("searching");
+      setSelectedProfileId(null);
       try {
         // Phase 1: Fetch all candidates for each input name in parallel
         type Candidate = {
@@ -502,6 +495,12 @@ export default function BulkSearchPanel({
               if (d.success) {
                 const profiles: ProfileMatchResult[] = d.data ?? [];
                 setMatchingProfiles(profiles);
+                const preferred =
+                  profiles.find((p) => p.isRecommended && p.extraIncludedCount > 0) ??
+                  profiles.find((p) => p.isRecommended) ??
+                  profiles[0] ??
+                  null;
+                setSelectedProfileId(preferred?.id ?? null);
                 const hasStrongProfile = profiles.some(
                   (p) => p.isRecommended && p.extraIncludedCount > 0
                 );
@@ -519,28 +518,6 @@ export default function BulkSearchPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [rawInput]
   );
-
-  const handleAddAll = () => {
-    // Only add tests that belong to the primary lab (exclude single-lab tests from other labs)
-    const toAdd = relevantTests
-      .filter(
-        (t): t is MatchedTest & { chosen: LabResult; excluded?: boolean } =>
-          t.found && t.chosen !== null && t.testMappingId !== null && !("excluded" in t && t.excluded)
-      )
-      .map((t) => ({
-        testMappingId: t.testMappingId!,
-        name: t.canonicalName || t.inputName,
-        canonicalName: t.canonicalName,
-        tubeType: t.tubeType,
-        laboratoryId: t.chosen.labId,
-        laboratoryName: t.chosen.labName,
-        laboratoryCode: t.chosen.labCode,
-        price: t.chosen.price,
-        turnaroundTime: t.chosen.turnaroundTime,
-      }));
-    onAddTests(toAdd);
-    handleReset();
-  };
 
   // Step 2: Determine the primary lab.
   // When user explicitly picked a lab, find its ID from ANY lab result (not just chosen).
@@ -606,6 +583,13 @@ export default function BulkSearchPanel({
       null,
     [matchingProfiles]
   );
+  const selectedProfile = useMemo(
+    () =>
+      matchingProfiles.find((p) => p.id === selectedProfileId) ??
+      bestProfile ??
+      null,
+    [matchingProfiles, selectedProfileId, bestProfile]
+  );
 
   const stepIdx = STEP_ORDER.indexOf(
     step === "searching" ? "results" : step
@@ -618,8 +602,20 @@ export default function BulkSearchPanel({
 
   // Notify parent when results are ready or cleared
   useEffect(() => {
+    const emitResultsChange = (payload: BulkPreviewState, signature: string) => {
+      if (lastResultsSignatureRef.current === signature) return;
+      lastResultsSignatureRef.current = signature;
+      onResultsChange?.(payload);
+    };
+
     if (step !== "results") {
-      onResultsChange?.([], 0);
+      emitResultsChange({
+        mode: "individual",
+        tests: [],
+        subtotal: 0,
+        selectedProfileId: null,
+        selectedProfileName: null,
+      }, "not-results");
       return;
     }
     const tests = includedTests
@@ -637,8 +633,29 @@ export default function BulkSearchPanel({
         price: t.chosen.price,
         turnaroundTime: t.chosen.turnaroundTime,
       }));
-    onResultsChange?.(tests, subtotal);
-  }, [step, subtotal]); // eslint-disable-line react-hooks/exhaustive-deps
+    const testsSignature = tests
+      .map((t) => `${t.testMappingId}:${t.laboratoryId}:${t.price}`)
+      .join("|");
+
+    if (activeTab === "profiles" && selectedProfile) {
+      emitResultsChange({
+        mode: "profile",
+        tests,
+        subtotal: selectedProfile.profilePrice,
+        selectedProfileId: selectedProfile.id,
+        selectedProfileName: selectedProfile.dealName,
+      }, `results:profile:${selectedProfile.id}:${selectedProfile.profilePrice}:${testsSignature}`);
+      return;
+    }
+
+    emitResultsChange({
+      mode: "individual",
+      tests,
+      subtotal,
+      selectedProfileId: null,
+      selectedProfileName: null,
+    }, `results:individual:${subtotal}:${testsSignature}`);
+  }, [step, subtotal, activeTab, selectedProfile, includedTests]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex flex-col h-full">
@@ -1075,90 +1092,80 @@ export default function BulkSearchPanel({
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {matchingProfiles.map((p) => {
-                      const profileTotal = p.profilePrice;
-                      return (
-                        <div
-                          key={p.id}
-                          className={`rounded-lg border px-3 py-2.5 ${
-                            p.isRecommended
-                              ? "border-emerald-300 bg-emerald-50/50"
-                              : "border-border/50 bg-card"
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                <p className="text-sm font-semibold leading-snug">
-                                  {p.dealName}
-                                </p>
-                                {p.isRecommended && (
-                                  <span className="inline-flex items-center gap-0.5 text-[10px] font-bold bg-emerald-600 text-white rounded px-1.5 py-0.5">
-                                    <Star className="h-2.5 w-2.5" />
-                                    Offre recommandée
-                                  </span>
-                                )}
-                              </div>
-                              {/* Included tests list */}
-                              <div className="flex flex-wrap gap-1 mt-1.5">
-                                {p.components.map((c) => (
-                                  <span
-                                    key={c.testMappingId}
-                                    className="text-[10px] bg-muted rounded px-1.5 py-0.5 text-muted-foreground"
-                                  >
-                                    {c.canonicalName}
-                                  </span>
-                                ))}
-                              </div>
-                              {p.extraIncludedCount > 0 && (
-                                <p className="mt-1 text-[10px] text-muted-foreground">
-                                  Inclut {p.extraIncludedCount} test{p.extraIncludedCount > 1 ? "s" : ""} supplémentaire{p.extraIncludedCount > 1 ? "s" : ""}.
-                                </p>
-                              )}
-                            </div>
-                            <div className="shrink-0 text-right">
-                              <p className="text-sm font-bold tabular-nums">
-                                {formatCurrency(p.profilePrice)}
+                    {selectedProfile && (
+                      <div
+                        className={`rounded-lg border px-3 py-2.5 ${
+                          selectedProfile.isRecommended
+                            ? "border-emerald-300 bg-emerald-50/50"
+                            : "border-border/50 bg-card"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <p className="text-sm font-semibold leading-snug">
+                                {selectedProfile.dealName}
                               </p>
-                              {p.isRecommended && p.selectedIndividualSum > 0 && (
-                                <p className="text-[10px] text-emerald-700 tabular-nums">
-                                  vs {formatCurrency(p.selectedIndividualSum)} séparé
-                                </p>
-                              )}
-                              {p.savingsAmount > 0 && (
-                                <p className="text-[10px] text-emerald-700 tabular-nums">
-                                  Économie {formatCurrency(p.savingsAmount)}
-                                </p>
+                              {selectedProfile.isRecommended && (
+                                <span className="inline-flex items-center gap-0.5 text-[10px] font-bold bg-emerald-600 text-white rounded px-1.5 py-0.5">
+                                  <Star className="h-2.5 w-2.5" />
+                                  Offre recommandée
+                                </span>
                               )}
                             </div>
-                          </div>
-                          {/* Profile price */}
-                          <div className="mt-2 pt-2 border-t border-border/20 flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">
-                              Prix du profil
-                            </span>
-                            <span className="text-sm font-bold tabular-nums">
-                              {formatCurrency(profileTotal)}
-                            </span>
-                          </div>
-                          {onAddProfile && (
-                            <div className="mt-2 pt-2 border-t border-border/20">
-                              <Button
-                                size="sm"
-                                className="w-full gap-1.5"
-                                onClick={() => {
-                                  onAddProfile(p.id);
-                                  handleReset();
-                                }}
-                              >
-                                <Plus className="h-3.5 w-3.5" />
-                                Utiliser ce profil
-                              </Button>
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                              {selectedProfile.components.map((c) => (
+                                <span
+                                  key={c.testMappingId}
+                                  className="text-[10px] bg-muted rounded px-1.5 py-0.5 text-muted-foreground"
+                                >
+                                  {c.canonicalName}
+                                </span>
+                              ))}
                             </div>
-                          )}
+                            {selectedProfile.extraIncludedCount > 0 && (
+                              <p className="mt-1 text-[10px] text-muted-foreground">
+                                Inclut {selectedProfile.extraIncludedCount} test{selectedProfile.extraIncludedCount > 1 ? "s" : ""} supplémentaire{selectedProfile.extraIncludedCount > 1 ? "s" : ""}.
+                              </p>
+                            )}
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <p className="text-sm font-bold tabular-nums">
+                              {formatCurrency(selectedProfile.profilePrice)}
+                            </p>
+                            {selectedProfile.selectedIndividualSum > 0 && (
+                              <p className="text-[10px] text-muted-foreground tabular-nums">
+                                vs {formatCurrency(selectedProfile.selectedIndividualSum)} séparé
+                              </p>
+                            )}
+                            {selectedProfile.savingsAmount > 0 && (
+                              <p className="text-[10px] text-emerald-700 tabular-nums">
+                                Économie {formatCurrency(selectedProfile.savingsAmount)}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    )}
+
+                    {matchingProfiles.length > 1 && (
+                      <div className="rounded-lg border border-border/40 bg-muted/20 px-3 py-2.5 space-y-1.5">
+                        <p className="text-[11px] font-medium text-muted-foreground">
+                          Offres alternatives
+                        </p>
+                        <select
+                          value={selectedProfile?.id ?? ""}
+                          onChange={(e) => setSelectedProfileId(e.target.value)}
+                          className="w-full h-8 rounded-md border border-border/60 bg-background px-2 text-xs"
+                        >
+                          {matchingProfiles.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.dealName} - {formatCurrency(p.profilePrice)}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1176,12 +1183,6 @@ export default function BulkSearchPanel({
                 <ChevronLeft className="h-3.5 w-3.5" />
                 Modifier
               </Button>
-              {foundCount > 0 && activeTab === "individual" && (
-                <Button size="sm" onClick={handleAddAll} className="gap-1.5">
-                  <Plus className="h-3.5 w-3.5" />
-                  Ajouter {foundCount} test{foundCount > 1 ? "s" : ""}
-                </Button>
-              )}
             </div>
           </>
         )}

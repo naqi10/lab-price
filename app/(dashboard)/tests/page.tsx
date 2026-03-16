@@ -20,7 +20,11 @@ import { useTestCart } from "@/hooks/use-tests";
 import { useComparison } from "@/hooks/use-comparison";
 import { useLabColors } from "@/hooks/use-lab-colors";
 import { useDashboardTitle } from "@/hooks/use-dashboard-title";
-import BulkSearchPanel, { type BulkTestResult, type WizardStep } from "@/components/tests/bulk-search-panel";
+import BulkSearchPanel, {
+  type BulkPreviewState,
+  type BulkTestResult,
+  type WizardStep,
+} from "@/components/tests/bulk-search-panel";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -524,8 +528,13 @@ function UnifiedTestsContent() {
   const [showBundles, setShowBundles] = useState(false);
   const [bulkMode, setBulkMode] = useState(false);
   const [bulkStep, setBulkStep] = useState<WizardStep>("input");
-  const [bulkPreviewTests, setBulkPreviewTests] = useState<BulkTestResult[]>([]);
-  const [bulkPreviewSubtotal, setBulkPreviewSubtotal] = useState(0);
+  const [bulkPreview, setBulkPreview] = useState<BulkPreviewState>({
+    mode: "individual",
+    tests: [],
+    subtotal: 0,
+    selectedProfileId: null,
+    selectedProfileName: null,
+  });
   const [serviceFee, setServiceFee] = useState(30);
   const [pendingEmailAfterBulk, setPendingEmailAfterBulk] = useState(false);
 
@@ -533,8 +542,13 @@ function UnifiedTestsContent() {
   useEffect(() => {
     if (!bulkMode) {
       setBulkStep("input");
-      setBulkPreviewTests([]);
-      setBulkPreviewSubtotal(0);
+      setBulkPreview({
+        mode: "individual",
+        tests: [],
+        subtotal: 0,
+        selectedProfileId: null,
+        selectedProfileName: null,
+      });
     }
   }, [bulkMode]);
 
@@ -574,13 +588,18 @@ function UnifiedTestsContent() {
   // If bulk results are ready, add them to cart then open email dialog;
   // otherwise open email dialog directly (normal cart mode)
   const handleEmailOpen = useCallback(() => {
-    if (bulkExpanded && bulkPreviewTests.length > 0) {
-      handleBulkAdd(bulkPreviewTests);
+    if (bulkExpanded && bulkPreview.mode === "profile" && bulkPreview.selectedProfileId) {
+      handleBulkAddProfile(bulkPreview.selectedProfileId);
+      setPendingEmailAfterBulk(true);
+      return;
+    }
+    if (bulkExpanded && bulkPreview.tests.length > 0) {
+      handleBulkAdd(bulkPreview.tests);
       setPendingEmailAfterBulk(true);
     } else {
       setEmailDialogOpen(true);
     }
-  }, [bulkExpanded, bulkPreviewTests, handleBulkAdd]);
+  }, [bulkExpanded, bulkPreview, handleBulkAdd, handleBulkAddProfile]);
 
   // ── Smart bundling ────────────────────────────────────────────────────────
   // CDL-only bundles for auto-select eligibility
@@ -719,14 +738,9 @@ function UnifiedTestsContent() {
           {/* Bulk search panel — replaces search + bundles when active */}
           {bulkMode && (
             <BulkSearchPanel
-              onAddTests={handleBulkAdd}
-              onAddProfile={handleBulkAddProfile}
               onClose={() => setBulkMode(false)}
               onStepChange={setBulkStep}
-              onResultsChange={(tests, sub) => {
-                setBulkPreviewTests(tests);
-                setBulkPreviewSubtotal(sub);
-              }}
+              onResultsChange={setBulkPreview}
             />
           )}
 
@@ -1059,9 +1073,9 @@ function UnifiedTestsContent() {
                 <div className="rounded-xl border border-primary/20 bg-primary/5 overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-2.5 border-b border-primary/10">
                     <span className="text-[11px] text-muted-foreground">
-                      Sous-total ({bulkPreviewTests.length} test{bulkPreviewTests.length !== 1 ? "s" : ""})
+                      Sous-total ({bulkPreview.tests.length} test{bulkPreview.tests.length !== 1 ? "s" : ""})
                     </span>
-                    <span className="text-sm tabular-nums font-medium">{formatCurrency(bulkPreviewSubtotal)}</span>
+                    <span className="text-sm tabular-nums font-medium">{formatCurrency(bulkPreview.subtotal)}</span>
                   </div>
                   <div className="flex items-center justify-between px-4 py-2.5 border-b border-primary/10 gap-2">
                     <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground shrink-0">
@@ -1082,10 +1096,12 @@ function UnifiedTestsContent() {
                   </div>
                   <div className="flex items-center justify-between px-4 py-3 bg-primary/5">
                     <span className="text-sm font-semibold">Total estimé</span>
-                    <span className="text-xl font-bold tabular-nums">{formatCurrency(bulkPreviewSubtotal + serviceFee)}</span>
+                    <span className="text-xl font-bold tabular-nums">{formatCurrency(bulkPreview.subtotal + serviceFee)}</span>
                   </div>
                   <p className="text-[10px] text-muted-foreground/50 text-center pb-2">
-                    {bulkPreviewTests[0]?.laboratoryName ?? "—"}
+                    {bulkPreview.mode === "profile"
+                      ? (bulkPreview.selectedProfileName ?? "Profil")
+                      : (bulkPreview.tests[0]?.laboratoryName ?? "—")}
                   </p>
                 </div>
               ) : (
@@ -1111,7 +1127,7 @@ function UnifiedTestsContent() {
                   <span className="text-xs text-muted-foreground/70">Tests sélectionnés</span>
                 </div>
                 <span className="text-sm font-bold tabular-nums">
-                  {bulkExpanded ? bulkPreviewTests.length : allTestMappingIds.length}
+                  {bulkExpanded ? bulkPreview.tests.length : allTestMappingIds.length}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -1119,7 +1135,11 @@ function UnifiedTestsContent() {
                   <Package className="h-3.5 w-3.5 text-muted-foreground/50" />
                   <span className="text-xs text-muted-foreground/70">Offres incluses</span>
                 </div>
-                <span className="text-sm font-bold tabular-nums">{selectedBundles.length}</span>
+                <span className="text-sm font-bold tabular-nums">
+                  {bulkExpanded
+                    ? (bulkPreview.mode === "profile" ? 1 : 0)
+                    : selectedBundles.length}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -1168,7 +1188,7 @@ function UnifiedTestsContent() {
 
             <Button
               className="w-full"
-              disabled={allTestMappingIds.length === 0 && bulkPreviewTests.length === 0}
+              disabled={allTestMappingIds.length === 0 && bulkPreview.tests.length === 0 && !bulkPreview.selectedProfileId}
               onClick={handleEmailOpen}
             >
               <Send className="mr-2 h-4 w-4" />
