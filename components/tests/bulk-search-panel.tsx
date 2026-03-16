@@ -16,6 +16,7 @@ import {
   ChevronRight,
   ChevronLeft,
   Loader2,
+  Plus,
   AlertCircle,
   ArrowLeft,
   AlertTriangle,
@@ -165,6 +166,8 @@ export default function BulkSearchPanel({
   const [matchedTests, setMatchedTests] = useState<MatchedTest[]>([]);
   const [matchingProfiles, setMatchingProfiles] = useState<ProfileMatchResult[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+  const [profilesLoading, setProfilesLoading] = useState(false);
+  const [showAlternatives, setShowAlternatives] = useState(false);
   const [activeTab, setActiveTab] = useState<ResultTab>("individual");
   // serviceFee is now managed in the parent summary panel
   const lastResultsSignatureRef = useRef<string>("");
@@ -474,10 +477,12 @@ export default function BulkSearchPanel({
         setMatchedTests(results);
         setStep("results");
         setActiveTab("individual");
+        setProfilesLoading(false);
 
         // ── Profile matching (async, non-blocking) ────────────────────
         const foundTests = results.filter((t) => t.found && t.testMappingId && t.chosen);
         if (foundTests.length > 0) {
+          setProfilesLoading(true);
           const ids = foundTests.map((t) => t.testMappingId!);
           const selectedPrices: Record<string, number> = {};
           for (const t of foundTests) {
@@ -501,15 +506,17 @@ export default function BulkSearchPanel({
                   profiles[0] ??
                   null;
                 setSelectedProfileId(preferred?.id ?? null);
-                const hasStrongProfile = profiles.some(
-                  (p) => p.isRecommended && p.extraIncludedCount > 0
-                );
-                if (hasStrongProfile) {
-                  setActiveTab("profiles");
-                }
+                setShowAlternatives(false);
               }
+              setProfilesLoading(false);
             })
-            .catch(() => {/* ignore */});
+            .catch(() => {
+              setProfilesLoading(false);
+            });
+        } else {
+          setMatchingProfiles([]);
+          setSelectedProfileId(null);
+          setShowAlternatives(false);
         }
       } catch {
         setStep("lab");
@@ -958,7 +965,9 @@ export default function BulkSearchPanel({
               >
                 <Layers className="h-3.5 w-3.5" />
                 Avec profil
-                {matchingProfiles.length > 0 && (
+                {profilesLoading ? (
+                  <Loader2 className="h-3 w-3 animate-spin text-muted-foreground/70" />
+                ) : matchingProfiles.length > 0 && (
                   <span className="inline-flex items-center justify-center h-4 min-w-4 rounded-full bg-primary text-primary-foreground text-[9px] font-bold px-1">
                     {matchingProfiles.length}
                   </span>
@@ -1080,7 +1089,14 @@ export default function BulkSearchPanel({
             {/* ── Tab 2: Profiles ───────────────────────────── */}
             {activeTab === "profiles" && (
               <>
-                {matchingProfiles.length === 0 ? (
+                {profilesLoading ? (
+                  <div className="flex flex-col items-center justify-center py-8 gap-2 text-center">
+                    <Loader2 className="h-6 w-6 text-muted-foreground/60 animate-spin" />
+                    <p className="text-sm text-muted-foreground">
+                      Recherche des profils correspondants...
+                    </p>
+                  </div>
+                ) : matchingProfiles.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-8 gap-2 text-center">
                     <Layers className="h-8 w-8 text-muted-foreground/30" />
                     <p className="text-sm text-muted-foreground">
@@ -1149,21 +1165,49 @@ export default function BulkSearchPanel({
                     )}
 
                     {matchingProfiles.length > 1 && (
-                      <div className="rounded-lg border border-border/40 bg-muted/20 px-3 py-2.5 space-y-1.5">
-                        <p className="text-[11px] font-medium text-muted-foreground">
-                          Offres alternatives
-                        </p>
-                        <select
-                          value={selectedProfile?.id ?? ""}
-                          onChange={(e) => setSelectedProfileId(e.target.value)}
-                          className="w-full h-8 rounded-md border border-border/60 bg-background px-2 text-xs"
-                        >
-                          {matchingProfiles.map((p) => (
-                            <option key={p.id} value={p.id}>
-                              {p.dealName} - {formatCurrency(p.profilePrice)}
-                            </option>
-                          ))}
-                        </select>
+                      <div className="rounded-lg border border-border/40 bg-muted/20 px-3 py-2.5">
+                        <div className="flex items-center justify-between">
+                          <p className="text-[11px] font-medium text-muted-foreground">
+                            Offres alternatives
+                          </p>
+                          <button
+                            onClick={() => setShowAlternatives((v) => !v)}
+                            className="text-[11px] font-medium text-primary hover:text-primary/80"
+                          >
+                            {showAlternatives ? "Masquer" : "Voir alternatives"}
+                          </button>
+                        </div>
+
+                        {showAlternatives && (
+                          <div className="mt-2 max-h-44 overflow-y-auto space-y-1.5 pr-1">
+                            {matchingProfiles
+                              .filter((p) => p.id !== selectedProfile?.id)
+                              .map((p) => (
+                                <div
+                                  key={p.id}
+                                  className="flex items-center justify-between rounded-md border border-border/50 bg-background px-2.5 py-1.5"
+                                >
+                                  <div className="min-w-0">
+                                    <p className="text-xs font-medium truncate">{p.dealName}</p>
+                                    <p className="text-[10px] text-muted-foreground tabular-nums">
+                                      {formatCurrency(p.profilePrice)}
+                                      {p.savingsAmount > 0 ? ` · économie ${formatCurrency(p.savingsAmount)}` : ""}
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedProfileId(p.id);
+                                      setShowAlternatives(false);
+                                    }}
+                                    className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
+                                    title="Choisir cette alternative"
+                                  >
+                                    <Plus className="h-3.5 w-3.5" />
+                                  </button>
+                                </div>
+                              ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

@@ -23,7 +23,6 @@ import { useDashboardTitle } from "@/hooks/use-dashboard-title";
 import BulkSearchPanel, {
   type BulkPreviewState,
   type BulkTestResult,
-  type WizardStep,
 } from "@/components/tests/bulk-search-panel";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -527,7 +526,6 @@ function UnifiedTestsContent() {
   const hasAnySelection = items.length > 0 || selectedBundles.length > 0;
   const [showBundles, setShowBundles] = useState(false);
   const [bulkMode, setBulkMode] = useState(false);
-  const [bulkStep, setBulkStep] = useState<WizardStep>("input");
   const [bulkPreview, setBulkPreview] = useState<BulkPreviewState>({
     mode: "individual",
     tests: [],
@@ -541,7 +539,6 @@ function UnifiedTestsContent() {
   // When bulk panel is dismissed, reset its preview state
   useEffect(() => {
     if (!bulkMode) {
-      setBulkStep("input");
       setBulkPreview({
         mode: "individual",
         tests: [],
@@ -558,11 +555,10 @@ function UnifiedTestsContent() {
       setEmailDialogOpen(true);
       setPendingEmailAfterBulk(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingEmailAfterBulk, allTestMappingIds.length]);
 
-  // Sidebar expands (center panel hides) only when bulk results are being shown
-  const bulkExpanded = bulkMode && bulkStep === "results";
+  // Sidebar expands (center panel hides) immediately in bulk mode
+  const bulkExpanded = bulkMode;
 
   const handleBulkAdd = useCallback((tests: BulkTestResult[]) => {
     for (const t of tests) {
@@ -713,7 +709,7 @@ function UnifiedTestsContent() {
       )}
 
       {/* ── Grid — 3-col normal, 2-col when bulk is expanded ────────────── */}
-      <div className={`gap-4 grid grid-cols-1 transition-all duration-300 ${bulkExpanded ? "xl:grid-cols-[minmax(0,1fr)_280px]" : "lg:grid-cols-2 xl:grid-cols-[340px_minmax(0,1fr)_280px]"}`}>
+      <div className={`gap-4 grid grid-cols-1 transition-all duration-300 ${bulkExpanded ? "lg:grid-cols-[minmax(0,1fr)_280px]" : "lg:grid-cols-2 xl:grid-cols-[340px_minmax(0,1fr)_280px]"}`}>
 
         {/* ════════════════ LEFT: Test Search ════════════════ */}
         <div className={`${bulkExpanded ? "order-1" : "order-2 lg:order-1"} rounded-2xl border border-border/60 bg-card flex flex-col overflow-hidden`}>
@@ -739,7 +735,6 @@ function UnifiedTestsContent() {
           {bulkMode && (
             <BulkSearchPanel
               onClose={() => setBulkMode(false)}
-              onStepChange={setBulkStep}
               onResultsChange={setBulkPreview}
             />
           )}
