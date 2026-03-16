@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/lib/utils";
 import { formatTurnaroundShort, parseTurnaroundToHours } from "@/lib/turnaround";
 import { TubeDot } from "@/components/ui/tube-dot";
@@ -21,7 +20,6 @@ import {
   AlertCircle,
   ArrowLeft,
   AlertTriangle,
-  Receipt,
   Layers,
   Star,
   ListChecks,
@@ -29,7 +27,7 @@ import {
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-type WizardStep = "input" | "lab" | "searching" | "results";
+export type WizardStep = "input" | "lab" | "searching" | "results";
 type LabPreference = "cdl" | "dynacare" | "none";
 type PriorityPreference = "cheaper" | "faster";
 
@@ -74,9 +72,12 @@ type ResultTab = "individual" | "profiles";
 
 interface BulkSearchPanelProps {
   onAddTests: (tests: BulkTestResult[]) => void;
+  onAddProfile?: (profileId: string) => void;
   onClose: () => void;
-  /** Default service fee (default 30) */
-  serviceFee?: number;
+  /** Fires whenever the wizard step changes */
+  onStepChange?: (step: WizardStep) => void;
+  /** Fires when results are ready (results step) or cleared */
+  onResultsChange?: (tests: BulkTestResult[], subtotal: number) => void;
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -149,8 +150,10 @@ const STEP_ORDER: WizardStep[] = ["input", "lab", "results"];
 
 export default function BulkSearchPanel({
   onAddTests,
+  onAddProfile,
   onClose,
-  serviceFee = 30,
+  onStepChange,
+  onResultsChange,
 }: BulkSearchPanelProps) {
   const [step, setStep] = useState<WizardStep>("input");
   const [rawInput, setRawInput] = useState("");
@@ -159,7 +162,7 @@ export default function BulkSearchPanel({
   const [matchedTests, setMatchedTests] = useState<MatchedTest[]>([]);
   const [matchingProfiles, setMatchingProfiles] = useState<ProfileMatchResult[]>([]);
   const [activeTab, setActiveTab] = useState<ResultTab>("individual");
-  const [editableServiceFee, setEditableServiceFee] = useState(serviceFee);
+  // serviceFee is now managed in the parent summary panel
 
   // Pre-search results: run once with no lab preference to get accurate per-lab stats
   const [preSearchResults, setPreSearchResults] = useState<MatchedTest[]>([]);
@@ -231,6 +234,13 @@ export default function BulkSearchPanel({
   // Run the actual search with no lab preference to get accurate per-lab stats,
   // then show the lab selection step with real data.
   const goToLabStep = useCallback(async () => {
+    // Parse names fresh from rawInput to avoid any stale-closure issues
+    const names = rawInput
+      .split(/[\n,]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (names.length === 0) return;
+
     setStep("lab");
     setPreSearchLoading(true);
     try {
@@ -245,7 +255,7 @@ export default function BulkSearchPanel({
       };
 
       const searchResults = await Promise.all(
-        parsedNames.map(async (name) => {
+        names.map(async (name) => {
           try {
             const r = await fetch(`/api/tests?q=${encodeURIComponent(name)}&limit=10`);
             const d = await r.json();
@@ -489,7 +499,16 @@ export default function BulkSearchPanel({
           })
             .then((r) => r.json())
             .then((d) => {
-              if (d.success) setMatchingProfiles(d.data ?? []);
+              if (d.success) {
+                const profiles: ProfileMatchResult[] = d.data ?? [];
+                setMatchingProfiles(profiles);
+                const hasStrongProfile = profiles.some(
+                  (p) => p.isRecommended && p.extraIncludedCount > 0
+                );
+                if (hasStrongProfile) {
+                  setActiveTab("profiles");
+                }
+              }
             })
             .catch(() => {/* ignore */});
         }
@@ -579,11 +598,47 @@ export default function BulkSearchPanel({
   const singleLabCount = excludedTests.length;
   const subtotal = includedTests
     .reduce((sum, t) => sum + (t.chosen?.price ?? 0), 0);
-  const total = subtotal + (subtotal > 0 ? editableServiceFee : 0);
+  const bestProfile = useMemo(
+    () =>
+      matchingProfiles.find((p) => p.isRecommended && p.extraIncludedCount > 0) ??
+      matchingProfiles.find((p) => p.isRecommended) ??
+      matchingProfiles[0] ??
+      null,
+    [matchingProfiles]
+  );
 
   const stepIdx = STEP_ORDER.indexOf(
     step === "searching" ? "results" : step
   );
+
+  // Notify parent of step changes
+  useEffect(() => {
+    onStepChange?.(step);
+  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Notify parent when results are ready or cleared
+  useEffect(() => {
+    if (step !== "results") {
+      onResultsChange?.([], 0);
+      return;
+    }
+    const tests = includedTests
+      .filter((t): t is MatchedTest & { chosen: LabResult; testMappingId: string } =>
+        t.found && !!t.chosen && !!t.testMappingId && !("excluded" in t && t.excluded)
+      )
+      .map((t) => ({
+        testMappingId: t.testMappingId,
+        name: t.canonicalName || t.inputName,
+        canonicalName: t.canonicalName,
+        tubeType: t.tubeType,
+        laboratoryId: t.chosen.labId,
+        laboratoryName: t.chosen.labName,
+        laboratoryCode: t.chosen.labCode,
+        price: t.chosen.price,
+        turnaroundTime: t.chosen.turnaroundTime,
+      }));
+    onResultsChange?.(tests, subtotal);
+  }, [step, subtotal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex flex-col h-full">
@@ -874,7 +929,7 @@ export default function BulkSearchPanel({
                 }`}
               >
                 <ListChecks className="h-3.5 w-3.5" />
-                Tests individuels
+                Individuel
               </button>
               <button
                 onClick={() => setActiveTab("profiles")}
@@ -885,7 +940,7 @@ export default function BulkSearchPanel({
                 }`}
               >
                 <Layers className="h-3.5 w-3.5" />
-                Profils
+                Avec profil
                 {matchingProfiles.length > 0 && (
                   <span className="inline-flex items-center justify-center h-4 min-w-4 rounded-full bg-primary text-primary-foreground text-[9px] font-bold px-1">
                     {matchingProfiles.length}
@@ -897,6 +952,26 @@ export default function BulkSearchPanel({
             {/* ── Tab 1: Individual tests ────────────────────── */}
             {activeTab === "individual" && (
               <>
+                {bestProfile && bestProfile.isRecommended && (
+                  <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-3 py-2">
+                    <p className="text-xs text-emerald-800">
+                      Offre profil disponible:{" "}
+                      <span className="font-semibold">{bestProfile.dealName}</span>
+                      {bestProfile.extraIncludedCount > 0 && (
+                        <span>
+                          {" "}(+{bestProfile.extraIncludedCount} test{bestProfile.extraIncludedCount > 1 ? "s" : ""})
+                        </span>
+                      )}{" "}
+                      · économie {formatCurrency(bestProfile.savingsAmount)}
+                    </p>
+                    <button
+                      onClick={() => setActiveTab("profiles")}
+                      className="mt-1 text-[11px] font-medium text-emerald-700 hover:text-emerald-900"
+                    >
+                      Voir le profil recommandé
+                    </button>
+                  </div>
+                )}
                 <div className="space-y-1.5">
                   {relevantTests.map((t, idx) => {
                     const isExcluded = "excluded" in t && t.excluded;
@@ -971,42 +1046,15 @@ export default function BulkSearchPanel({
                   })}
                 </div>
 
-                {/* Price summary with editable service fee */}
+                {/* Subtotal — service fee is shown in the summary panel on the right */}
                 {subtotal > 0 && (
-                  <div className="rounded-xl border border-border/50 bg-muted/20 overflow-hidden">
-                    <div className="flex items-center justify-between px-3 py-2 border-b border-border/30">
-                      <span className="text-xs text-muted-foreground">
-                        Sous-total ({foundCount} test{foundCount > 1 ? "s" : ""})
-                      </span>
-                      <span className="text-sm tabular-nums font-medium">
-                        {formatCurrency(subtotal)}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between px-3 py-2 border-b border-border/30 gap-2">
-                      <span className="flex items-center gap-1.5 text-xs text-muted-foreground shrink-0">
-                        <Receipt className="h-3 w-3" />
-                        Frais de service
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs text-muted-foreground">$</span>
-                        <Input
-                          type="number"
-                          min={0}
-                          step={1}
-                          value={editableServiceFee}
-                          onChange={(e) =>
-                            setEditableServiceFee(Math.max(0, Number(e.target.value) || 0))
-                          }
-                          className="h-6 w-16 text-xs text-right tabular-nums px-1.5 py-0"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between px-3 py-2.5 bg-muted/30">
-                      <span className="text-sm font-semibold">Total estimé</span>
-                      <span className="text-base font-bold tabular-nums">
-                        {formatCurrency(total)}
-                      </span>
-                    </div>
+                  <div className="flex items-center justify-between rounded-lg border border-border/40 bg-muted/20 px-3 py-2">
+                    <span className="text-xs text-muted-foreground">
+                      Sous-total ({foundCount} test{foundCount > 1 ? "s" : ""})
+                    </span>
+                    <span className="text-sm tabular-nums font-semibold">
+                      {formatCurrency(subtotal)}
+                    </span>
                   </div>
                 )}
               </>
@@ -1028,7 +1076,7 @@ export default function BulkSearchPanel({
                 ) : (
                   <div className="space-y-2">
                     {matchingProfiles.map((p) => {
-                      const profileTotal = p.profilePrice + editableServiceFee;
+                      const profileTotal = p.profilePrice;
                       return (
                         <div
                           key={p.id}
@@ -1062,6 +1110,11 @@ export default function BulkSearchPanel({
                                   </span>
                                 ))}
                               </div>
+                              {p.extraIncludedCount > 0 && (
+                                <p className="mt-1 text-[10px] text-muted-foreground">
+                                  Inclut {p.extraIncludedCount} test{p.extraIncludedCount > 1 ? "s" : ""} supplémentaire{p.extraIncludedCount > 1 ? "s" : ""}.
+                                </p>
+                              )}
                             </div>
                             <div className="shrink-0 text-right">
                               <p className="text-sm font-bold tabular-nums">
@@ -1072,43 +1125,43 @@ export default function BulkSearchPanel({
                                   vs {formatCurrency(p.selectedIndividualSum)} séparé
                                 </p>
                               )}
+                              {p.savingsAmount > 0 && (
+                                <p className="text-[10px] text-emerald-700 tabular-nums">
+                                  Économie {formatCurrency(p.savingsAmount)}
+                                </p>
+                              )}
                             </div>
                           </div>
-                          {/* Profile total with service fee */}
+                          {/* Profile price */}
                           <div className="mt-2 pt-2 border-t border-border/20 flex items-center justify-between">
                             <span className="text-xs text-muted-foreground">
-                              Total avec frais ({formatCurrency(editableServiceFee)})
+                              Prix du profil
                             </span>
                             <span className="text-sm font-bold tabular-nums">
                               {formatCurrency(profileTotal)}
                             </span>
                           </div>
+                          {onAddProfile && (
+                            <div className="mt-2 pt-2 border-t border-border/20">
+                              <Button
+                                size="sm"
+                                className="w-full gap-1.5"
+                                onClick={() => {
+                                  onAddProfile(p.id);
+                                  handleReset();
+                                }}
+                              >
+                                <Plus className="h-3.5 w-3.5" />
+                                Utiliser ce profil
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
                   </div>
                 )}
 
-                {/* Service fee editor (also shown in profile tab) */}
-                <div className="flex items-center justify-between rounded-lg border border-border/40 bg-muted/20 px-3 py-2">
-                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Receipt className="h-3 w-3" />
-                    Frais de service
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-muted-foreground">$</span>
-                    <Input
-                      type="number"
-                      min={0}
-                      step={1}
-                      value={editableServiceFee}
-                      onChange={(e) =>
-                        setEditableServiceFee(Math.max(0, Number(e.target.value) || 0))
-                      }
-                      className="h-6 w-16 text-xs text-right tabular-nums px-1.5 py-0"
-                    />
-                  </div>
-                </div>
               </>
             )}
 

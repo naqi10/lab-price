@@ -1171,6 +1171,11 @@ export const CANONICAL_TEST_REGISTRY: CanonicalTestDefinition[] = [
     category: "Individuel",
     aliases: [
       "BÉTA-HCG QUALITATIF, SÉRUM",
+      "BÉTA-HCG QUALITATIF, SÉRUM PREG",
+      "BETA HCG QUALITATIVE",
+      "HCG QUALITATIF",
+      "TEST DE GROSSESSE SÉRUM",
+      "PREGNANCY TEST SERUM",
     ],
   },
   {
