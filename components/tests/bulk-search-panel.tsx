@@ -480,15 +480,50 @@ export default function BulkSearchPanel({
         setProfilesLoading(false);
 
         // ── Profile matching (async, non-blocking) ────────────────────
-        const foundTests = results.filter((t) => t.found && t.testMappingId && t.chosen);
+        // Must use the same "included" logic as UI (respect primary lab filter),
+        // otherwise profiles can disappear because excluded tests are still queried.
+        const localPrimaryLabId = (() => {
+          if (lp !== "none") {
+            for (const t of results) {
+              if (!t.found) continue;
+              for (const r of t.labResults) {
+                const isMatch = lp === "cdl"
+                  ? isCDL(r.labCode, r.labName)
+                  : isDynacare(r.labCode, r.labName);
+                if (isMatch) return r.labId;
+              }
+            }
+          }
+          const labCounts = new Map<string, number>();
+          for (const t of results) {
+            if (!t.found || !t.chosen) continue;
+            labCounts.set(t.chosen.labId, (labCounts.get(t.chosen.labId) ?? 0) + 1);
+          }
+          let bestId = "";
+          let bestCount = 0;
+          for (const [id, count] of labCounts) {
+            if (count > bestCount) {
+              bestCount = count;
+              bestId = id;
+            }
+          }
+          return bestId;
+        })();
+
+        const foundTests = results
+          .filter((t): t is MatchedTest & { chosen: LabResult; testMappingId: string } =>
+            t.found && !!t.chosen && !!t.testMappingId
+          )
+          .filter((t) =>
+            !localPrimaryLabId || t.labResults.some((r) => r.labId === localPrimaryLabId)
+          );
+
         if (foundTests.length > 0) {
           setProfilesLoading(true);
-          const ids = foundTests.map((t) => t.testMappingId!);
+          const ids = foundTests.map((t) => t.testMappingId);
           const selectedPrices: Record<string, number> = {};
           for (const t of foundTests) {
-            if (t.testMappingId && t.chosen) {
-              selectedPrices[t.testMappingId] = t.chosen.price;
-            }
+            selectedPrices[t.testMappingId] = t.chosen.price;
           }
           fetch("/api/tests/profile-match", {
             method: "POST",
