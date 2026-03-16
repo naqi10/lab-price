@@ -298,31 +298,71 @@ function normalizeName(s: string): string {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
 }
 
+/**
+ * Medically-significant short tokens that must NOT be stripped during word filtering.
+ * These are chemical symbols, vitamin codes, and lab abbreviations that distinguish tests.
+ */
+const SIGNIFICANT_SHORT_TOKENS = new Set([
+  "na", "k", "cl", "fe", "ca", "mg", "cu", "zn", "li", "mn", "pb", "cd", "hg", "al", "as", "co", "cr", "se",
+  "t3", "t4", "b2", "b6", "b9", "d2", "d3", "a1", "e2", "c3", "c4", "q10",
+  "ck", "lh", "lp", "ph", "tsh", "psa", "cea", "afp", "hba1c", "iga", "igg", "igm", "ige",
+  "alt", "ast", "ggt", "ldh", "bnp", "crp", "esr", "pcr", "hiv", "vma", "hcg",
+  "24h", "hdl", "ldl", "vldl",
+]);
+
 /** Word-overlap (Jaccard) score between two normalized strings. */
 function wordOverlap(a: string, b: string): number {
-  const wa = new Set(a.split(" ").filter((w) => w.length > 2));
-  const wb = new Set(b.split(" ").filter((w) => w.length > 2));
+  // Keep words that are either >2 chars OR medically significant
+  const wa = new Set(a.split(" ").filter((w) => w.length > 2 || SIGNIFICANT_SHORT_TOKENS.has(w)));
+  const wb = new Set(b.split(" ").filter((w) => w.length > 2 || SIGNIFICANT_SHORT_TOKENS.has(w)));
   if (wa.size === 0 || wb.size === 0) return 0;
   const intersection = [...wa].filter((w) => wb.has(w)).length;
   return intersection / Math.max(wa.size, wb.size);
 }
 
 /**
- * Domain-aware boost for known equivalent analytes across labs.
- * Example: CDL "ÉLECTROLYTES" and Dynacare "ÉLECTROLYTES (Na, K, Cl)".
+ * Domain-aware scoring for fuzzy lab test matching.
+ * Applies stricter requirements to prevent false matches between
+ * tests that share common prefixes (e.g. "ANTICORPS ANTI-X" vs "ANTICORPS ANTI-Y").
  */
 function semanticLabScore(normalizedCanonical: string, normalizedEntry: string): number {
   const base = wordOverlap(normalizedCanonical, normalizedEntry);
+
+  // Electrolytes boost: same specimen type → treat as equivalent
   const hasElectrolytesCanonical = normalizedCanonical.includes("electrolytes");
   const hasElectrolytesEntry = normalizedEntry.includes("electrolytes");
   if (hasElectrolytesCanonical && hasElectrolytesEntry) {
     const canonicalUrine = normalizedCanonical.includes("urine");
     const entryUrine = normalizedEntry.includes("urine");
-    // Keep urine electrolytes separate from serum electrolytes.
     if (canonicalUrine === entryUrine) {
       return Math.max(base, 0.98);
     }
   }
+
+  // Penalty: if strings share a common prefix (like "anticorps anti")
+  // but the distinguishing suffix differs, reduce the score
+  const wordsA = normalizedCanonical.split(" ").filter((w) => w.length > 2 || SIGNIFICANT_SHORT_TOKENS.has(w));
+  const wordsB = normalizedEntry.split(" ").filter((w) => w.length > 2 || SIGNIFICANT_SHORT_TOKENS.has(w));
+  if (wordsA.length >= 2 && wordsB.length >= 2) {
+    // Find how many leading words match
+    let prefixLen = 0;
+    for (let i = 0; i < Math.min(wordsA.length, wordsB.length); i++) {
+      if (wordsA[i] === wordsB[i]) prefixLen++;
+      else break;
+    }
+    // If >50% of words are a shared prefix and the suffixes differ,
+    // this is likely a false match (e.g. "anticorps anti muscle lisse" vs "anticorps anti mitochondries")
+    const maxLen = Math.max(wordsA.length, wordsB.length);
+    if (prefixLen > 0 && prefixLen < maxLen && prefixLen >= maxLen * 0.5) {
+      const suffixA = wordsA.slice(prefixLen).join(" ");
+      const suffixB = wordsB.slice(prefixLen).join(" ");
+      if (suffixA !== suffixB && suffixA.length > 0 && suffixB.length > 0) {
+        // Penalize: the match is only because of shared generic prefix
+        return base * 0.5;
+      }
+    }
+  }
+
   return base;
 }
 
@@ -444,7 +484,7 @@ export async function getComparisonDetails(testMappingIds: string[]) {
           const score = semanticLabScore(normCanonical, entry.normName);
           if (score > bestScore) { bestScore = score; bestMatch = entry; }
         }
-        if (bestMatch && bestScore >= 0.6) {
+        if (bestMatch && bestScore >= 0.75) {
           priceMatrix[mapping.id][lab.id] = bestMatch.price;
           tatMatrix[mapping.id][lab.id] = bestMatch.tat;
           tubeTypeMatrix[mapping.id][lab.id] = bestMatch.tubeType;

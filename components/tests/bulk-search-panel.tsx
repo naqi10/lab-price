@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -29,7 +29,7 @@ import {
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-type WizardStep = "input" | "lab" | "priority" | "searching" | "results";
+type WizardStep = "input" | "lab" | "searching" | "results";
 type LabPreference = "cdl" | "dynacare" | "none";
 type PriorityPreference = "cheaper" | "faster";
 
@@ -143,7 +143,7 @@ function chooseBest(
   return deduped[0] ?? sorted[0];
 }
 
-const STEP_ORDER: WizardStep[] = ["input", "lab", "priority", "results"];
+const STEP_ORDER: WizardStep[] = ["input", "lab", "results"];
 
 // ── Component ──────────────────────────────────────────────────────────────
 
@@ -161,6 +161,10 @@ export default function BulkSearchPanel({
   const [activeTab, setActiveTab] = useState<ResultTab>("individual");
   const [editableServiceFee, setEditableServiceFee] = useState(serviceFee);
 
+  // Pre-search results: run once with no lab preference to get accurate per-lab stats
+  const [preSearchResults, setPreSearchResults] = useState<MatchedTest[]>([]);
+  const [preSearchLoading, setPreSearchLoading] = useState(false);
+
   // Each non-empty line = one test (commas also split for paste convenience)
   const parsedNames = rawInput
     .split(/[\n,]+/)
@@ -175,45 +179,185 @@ export default function BulkSearchPanel({
     setMatchedTests([]);
     setMatchingProfiles([]);
     setActiveTab("individual");
+    setPreSearchResults([]);
+    setPreSearchLoading(false);
   };
+
+  // Compute per-lab stats from actual matched results (accurate, no separate search)
+  const labPreview = useMemo(() => {
+    const source = preSearchResults.length > 0 ? preSearchResults : matchedTests;
+    if (source.length === 0) return { cdl: null, dynacare: null, loading: preSearchLoading };
+
+    let cdlTotal = 0, cdlTatSum = 0, cdlCount = 0, cdlId = "";
+    let dynTotal = 0, dynTatSum = 0, dynCount = 0, dynId = "";
+
+    for (const t of source) {
+      if (!t.found || !t.labResults.length) continue;
+      for (const r of t.labResults) {
+        const labIsCdl = isCDL(r.labCode, r.labName);
+        const labIsDyn = isDynacare(r.labCode, r.labName);
+        if (labIsCdl && !cdlId) cdlId = r.labId;
+        if (labIsDyn && !dynId) dynId = r.labId;
+      }
+    }
+
+    for (const t of source) {
+      if (!t.found || !t.labResults.length) continue;
+      // Find best price per lab for this test
+      const cdlResult = cdlId ? t.labResults.filter((r) => r.labId === cdlId).sort((a, b) => a.price - b.price)[0] : null;
+      const dynResult = dynId ? t.labResults.filter((r) => r.labId === dynId).sort((a, b) => a.price - b.price)[0] : null;
+
+      if (cdlResult) {
+        cdlTotal += cdlResult.price;
+        const tat = parseTurnaroundToHours(cdlResult.turnaroundTime);
+        cdlTatSum += tat === Infinity ? 0 : tat;
+        cdlCount++;
+      }
+      if (dynResult) {
+        dynTotal += dynResult.price;
+        const tat = parseTurnaroundToHours(dynResult.turnaroundTime);
+        dynTatSum += tat === Infinity ? 0 : tat;
+        dynCount++;
+      }
+    }
+
+    return {
+      cdl: cdlId ? { total: cdlTotal, avgTat: cdlCount > 0 ? cdlTatSum / cdlCount : Infinity, testCount: cdlCount } : null,
+      dynacare: dynId ? { total: dynTotal, avgTat: dynCount > 0 ? dynTatSum / dynCount : Infinity, testCount: dynCount } : null,
+      loading: preSearchLoading,
+    };
+  }, [preSearchResults, matchedTests, preSearchLoading]);
+
+  // Run the actual search with no lab preference to get accurate per-lab stats,
+  // then show the lab selection step with real data.
+  const goToLabStep = useCallback(async () => {
+    setStep("lab");
+    setPreSearchLoading(true);
+    try {
+      // Reuse the same search logic but with no preference
+      // We need to inline the fetch+resolve here to get pre-search results
+      type Candidate = {
+        testMappingId: string;
+        score: number;
+        labResults: LabResult[];
+        canonicalName: string | null;
+        tubeType: string | null;
+      };
+
+      const searchResults = await Promise.all(
+        parsedNames.map(async (name) => {
+          try {
+            const r = await fetch(`/api/tests?q=${encodeURIComponent(name)}&limit=10`);
+            const d = await r.json();
+            if (!d.success || !d.data?.length) return { inputName: name, candidates: [] as Candidate[] };
+
+            const grouped = new Map<string, LabResult[]>();
+            const groupBestRank = new Map<string, number>();
+            const groupCanonical = new Map<string, string>();
+            const groupTubeType = new Map<string, string | null>();
+
+            for (let i = 0; i < d.data.length; i++) {
+              const t = d.data[i];
+              if (!t.testMappingId) continue;
+              const arr = grouped.get(t.testMappingId) ?? [];
+              arr.push({
+                labName: t.laboratoryName, labCode: t.laboratoryCode, labId: t.laboratoryId,
+                price: t.price, turnaroundTime: t.turnaroundTime ?? null, tubeType: t.tubeType ?? null,
+                testMappingId: t.testMappingId, canonicalName: t.canonicalName ?? null,
+              });
+              grouped.set(t.testMappingId, arr);
+              if (!groupBestRank.has(t.testMappingId) || i < groupBestRank.get(t.testMappingId)!)
+                groupBestRank.set(t.testMappingId, i);
+              if (t.canonicalName && !groupCanonical.has(t.testMappingId))
+                groupCanonical.set(t.testMappingId, t.canonicalName);
+              if (!groupTubeType.has(t.testMappingId))
+                groupTubeType.set(t.testMappingId, t.tubeType ?? null);
+            }
+
+            const qWords = name.toLowerCase().replace(/[^a-z0-9]/g, " ").split(/\s+/).filter(Boolean);
+            const wordPrecision = (canonical: string): number => {
+              const cWords = canonical.toLowerCase().replace(/[^a-z0-9]/g, " ").split(/\s+/).filter(Boolean);
+              if (cWords.length === 0) return 0;
+              let matches = 0;
+              for (const qw of qWords) {
+                if (cWords.some((cw) => cw.startsWith(qw) || qw.startsWith(cw))) matches++;
+              }
+              return matches / cWords.length;
+            };
+
+            const candidates: Candidate[] = [];
+            for (const [mid, labResults] of grouped) {
+              const rank = groupBestRank.get(mid) ?? 0;
+              const rankScore = 1 - rank / Math.max(d.data.length, 1);
+              const precision = wordPrecision(groupCanonical.get(mid) ?? "");
+              candidates.push({
+                testMappingId: mid, score: rankScore * 0.2 + precision * 0.8,
+                labResults, canonicalName: groupCanonical.get(mid) ?? null, tubeType: groupTubeType.get(mid) ?? null,
+              });
+            }
+            candidates.sort((a, b) => b.score - a.score);
+            return { inputName: name, candidates };
+          } catch { return { inputName: name, candidates: [] as Candidate[] }; }
+        })
+      );
+
+      // Resolve duplicates
+      const claimedIds = new Set<string>();
+      const resolved: MatchedTest[] = searchResults.map(({ inputName, candidates }) => {
+        for (const c of candidates) {
+          if (claimedIds.has(c.testMappingId)) continue;
+          claimedIds.add(c.testMappingId);
+          const uniqueLabs = new Map<string, LabResult>();
+          for (const r of c.labResults) { if (!uniqueLabs.has(r.labId)) uniqueLabs.set(r.labId, r); }
+          const ulr = [...uniqueLabs.values()];
+          return {
+            inputName, found: true, testMappingId: c.testMappingId,
+            canonicalName: c.canonicalName, tubeType: c.tubeType, labResults: c.labResults,
+            chosen: chooseBest(c.labResults, "none", "cheaper"),
+            isPaired: ulr.some((r) => isCDL(r.labCode, r.labName)) && ulr.some((r) => isDynacare(r.labCode, r.labName)),
+            availableLabs: ulr.map((r) => r.labCode),
+          };
+        }
+        return { inputName, found: false, testMappingId: null, canonicalName: null, tubeType: null, labResults: [], chosen: null, isPaired: false, availableLabs: [] };
+      });
+
+      setPreSearchResults(resolved);
+    } catch { /* ignore */ }
+    setPreSearchLoading(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawInput]);
 
   const runSearch = useCallback(
     async (lp: LabPreference, pr: PriorityPreference) => {
       setStep("searching");
       try {
-        const results = await Promise.all(
-          parsedNames.map(async (name): Promise<MatchedTest> => {
-            const empty: MatchedTest = {
-              inputName: name,
-              found: false,
-              testMappingId: null,
-              canonicalName: null,
-              tubeType: null,
-              labResults: [],
-              chosen: null,
-              isPaired: false,
-              availableLabs: [],
-            };
+        // Phase 1: Fetch all candidates for each input name in parallel
+        type Candidate = {
+          testMappingId: string;
+          score: number;
+          labResults: LabResult[];
+          canonicalName: string | null;
+          tubeType: string | null;
+        };
+        type SearchResult = {
+          inputName: string;
+          candidates: Candidate[];
+        };
+
+        const searchResults = await Promise.all(
+          parsedNames.map(async (name): Promise<SearchResult> => {
             try {
               const r = await fetch(
                 `/api/tests?q=${encodeURIComponent(name)}&limit=10`
               );
               const d = await r.json();
-              if (!d.success || !d.data?.length) return empty;
+              if (!d.success || !d.data?.length) return { inputName: name, candidates: [] };
 
-              if (process.env.NODE_ENV === "development") {
-                console.log(`[bulk] "${name}" API results:`,
-                  d.data.map((t: { testMappingId: string; canonicalName: string; laboratoryCode: string }, i: number) =>
-                    `${i}: [${t.testMappingId?.slice(0,6)}] ${t.canonicalName} (${t.laboratoryCode})`
-                  )
-                );
-              }
-
-              // Group by testMappingId, scoring each group by rank + specificity
+              // Group by testMappingId
               const grouped = new Map<string, LabResult[]>();
-              // Track best rank (lowest index) per group — lower index = higher server score
               const groupBestRank = new Map<string, number>();
               const groupCanonical = new Map<string, string>();
+              const groupTubeType = new Map<string, string | null>();
               const totalResults = d.data.length;
 
               for (let i = 0; i < d.data.length; i++) {
@@ -231,21 +375,18 @@ export default function BulkSearchPanel({
                   canonicalName: t.canonicalName ?? null,
                 });
                 grouped.set(t.testMappingId, arr);
-                // Keep best (lowest) rank per group
                 if (!groupBestRank.has(t.testMappingId) || i < groupBestRank.get(t.testMappingId)!) {
                   groupBestRank.set(t.testMappingId, i);
                 }
                 if (t.canonicalName && !groupCanonical.has(t.testMappingId)) {
                   groupCanonical.set(t.testMappingId, t.canonicalName);
                 }
+                if (!groupTubeType.has(t.testMappingId)) {
+                  groupTubeType.set(t.testMappingId, t.tubeType ?? null);
+                }
               }
 
-              if (grouped.size === 0) return empty;
-
-              // Word-precision scoring: how much of the canonical is covered by the query?
-              // "vitamin b12" covers 2/3 words of "Vitamine B12 (VB12)"      → 0.67
-              //   but only  2/4 words of "Acide Folique Vitamine B12"         → 0.50
-              // Combined with server rank to break genuine ties correctly.
+              // Score each candidate group
               const qWords = name.toLowerCase()
                 .replace(/[^a-z0-9]/g, " ").split(/\s+/).filter(Boolean);
 
@@ -260,52 +401,73 @@ export default function BulkSearchPanel({
                 return matches / cWords.length;
               };
 
-              let bestKey: string | null = null;
-              let bestScore = -1;
-              for (const [mid] of grouped) {
+              const candidates: Candidate[] = [];
+              for (const [mid, labResults] of grouped) {
                 const rank = groupBestRank.get(mid) ?? 0;
                 const rankScore = 1 - rank / Math.max(totalResults, 1);
                 const precision = wordPrecision(groupCanonical.get(mid) ?? "");
-                // 20% rank + 80% word precision — precision is the primary discriminator.
-                // This ensures "Vitamine B12" beats "Acide Folique Et Vitamine B12"
-                // even when the combo test appears earlier in server results.
                 const score = rankScore * 0.2 + precision * 0.8;
-                if (score > bestScore) {
-                  bestScore = score;
-                  bestKey = mid;
-                }
+                candidates.push({
+                  testMappingId: mid,
+                  score,
+                  labResults,
+                  canonicalName: groupCanonical.get(mid) ?? null,
+                  tubeType: groupTubeType.get(mid) ?? null,
+                });
               }
-
-              if (!bestKey) return empty;
-              const labResults = grouped.get(bestKey) ?? [];
-
-              // ── Pairing detection (deduplicate by lab — CDL may appear twice) ────
-              const uniqueLabs = new Map<string, LabResult>();
-              for (const r of labResults) {
-                if (!uniqueLabs.has(r.labId)) uniqueLabs.set(r.labId, r);
-              }
-              const uniqueLabResults = [...uniqueLabs.values()];
-              const hasCDL = uniqueLabResults.some((r) => isCDL(r.labCode, r.labName));
-              const hasDyn = uniqueLabResults.some((r) => isDynacare(r.labCode, r.labName));
-              const isPaired = hasCDL && hasDyn;
-              const availableLabs = uniqueLabResults.map((r) => r.labCode);
-
-              return {
-                inputName: name,
-                found: true,
-                testMappingId: bestKey,
-                canonicalName: labResults[0]?.canonicalName ?? null,
-                tubeType: labResults[0]?.tubeType ?? null,
-                labResults,
-                chosen: chooseBest(labResults, lp, pr),
-                isPaired,
-                availableLabs,
-              };
+              // Sort by score descending — best match first
+              candidates.sort((a, b) => b.score - a.score);
+              return { inputName: name, candidates };
             } catch {
-              return empty;
+              return { inputName: name, candidates: [] };
             }
           })
         );
+
+        // Phase 2: Assign best non-duplicate match per input name
+        const claimedIds = new Set<string>();
+        const results: MatchedTest[] = searchResults.map(({ inputName, candidates }) => {
+          const empty: MatchedTest = {
+            inputName,
+            found: false,
+            testMappingId: null,
+            canonicalName: null,
+            tubeType: null,
+            labResults: [],
+            chosen: null,
+            isPaired: false,
+            availableLabs: [],
+          };
+          // Pick the highest-scored candidate whose testMappingId isn't already taken
+          for (const candidate of candidates) {
+            if (claimedIds.has(candidate.testMappingId)) continue;
+
+            claimedIds.add(candidate.testMappingId);
+
+            // Pairing detection
+            const uniqueLabs = new Map<string, LabResult>();
+            for (const r of candidate.labResults) {
+              if (!uniqueLabs.has(r.labId)) uniqueLabs.set(r.labId, r);
+            }
+            const uniqueLabResults = [...uniqueLabs.values()];
+            const hasCDL = uniqueLabResults.some((r) => isCDL(r.labCode, r.labName));
+            const hasDyn = uniqueLabResults.some((r) => isDynacare(r.labCode, r.labName));
+
+            return {
+              inputName,
+              found: true,
+              testMappingId: candidate.testMappingId,
+              canonicalName: candidate.canonicalName,
+              tubeType: candidate.tubeType,
+              labResults: candidate.labResults,
+              chosen: chooseBest(candidate.labResults, lp, pr),
+              isPaired: hasCDL && hasDyn,
+              availableLabs: uniqueLabResults.map((r) => r.labCode),
+            };
+          }
+          return empty;
+        });
+
         setMatchedTests(results);
         setStep("results");
         setActiveTab("individual");
@@ -332,7 +494,7 @@ export default function BulkSearchPanel({
             .catch(() => {/* ignore */});
         }
       } catch {
-        setStep("priority");
+        setStep("lab");
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -340,10 +502,11 @@ export default function BulkSearchPanel({
   );
 
   const handleAddAll = () => {
-    const toAdd = matchedTests
+    // Only add tests that belong to the primary lab (exclude single-lab tests from other labs)
+    const toAdd = relevantTests
       .filter(
-        (t): t is MatchedTest & { chosen: LabResult } =>
-          t.found && t.chosen !== null && t.testMappingId !== null
+        (t): t is MatchedTest & { chosen: LabResult; excluded?: boolean } =>
+          t.found && t.chosen !== null && t.testMappingId !== null && !("excluded" in t && t.excluded)
       )
       .map((t) => ({
         testMappingId: t.testMappingId!,
@@ -360,13 +523,61 @@ export default function BulkSearchPanel({
     handleReset();
   };
 
-  const foundCount = matchedTests.filter((t) => t.found && t.chosen).length;
-  const notFoundCount = matchedTests.filter((t) => !t.found).length;
-  const singleLabCount = matchedTests.filter(
-    (t) => t.found && !t.isPaired
-  ).length;
-  const subtotal = matchedTests
-    .filter((t) => t.found && t.chosen)
+  // Step 2: Determine the primary lab.
+  // When user explicitly picked a lab, find its ID from ANY lab result (not just chosen).
+  // This handles the case where the chosen lab is different but the preferred lab exists somewhere.
+  const primaryLabId = useMemo(() => {
+    if (labPref !== "none") {
+      // Search all lab results across all tests to find the preferred lab's ID
+      for (const t of matchedTests) {
+        if (!t.found) continue;
+        for (const r of t.labResults) {
+          const isMatch = labPref === "cdl"
+            ? isCDL(r.labCode, r.labName)
+            : isDynacare(r.labCode, r.labName);
+          if (isMatch) return r.labId;
+        }
+      }
+    }
+    // Fallback: majority vote (lab with most tests)
+    const labCounts = new Map<string, number>();
+    for (const t of matchedTests) {
+      if (!t.found || !t.chosen) continue;
+      labCounts.set(t.chosen.labId, (labCounts.get(t.chosen.labId) ?? 0) + 1);
+    }
+    let bestId = "";
+    let bestCount = 0;
+    for (const [id, count] of labCounts) {
+      if (count > bestCount) { bestCount = count; bestId = id; }
+    }
+    return bestId;
+  }, [matchedTests, labPref]);
+
+  // Step 3: Exclude tests that only exist at a non-primary lab
+  const relevantTests = useMemo(() => {
+    if (!primaryLabId) return matchedTests;
+    return matchedTests.map((t) => {
+      if (!t.found || !t.chosen) return t;
+      // Check if the primary lab actually has this test
+      const primaryHasIt = t.labResults.some((r) => r.labId === primaryLabId);
+      if (!primaryHasIt) {
+        return { ...t, excluded: true as const };
+      }
+      return { ...t, excluded: false as const };
+    });
+  }, [matchedTests, primaryLabId]);
+
+  const includedTests = relevantTests.filter(
+    (t) => t.found && t.chosen && !("excluded" in t && t.excluded)
+  );
+  const excludedTests = relevantTests.filter(
+    (t) => t.found && t.chosen && "excluded" in t && t.excluded
+  );
+
+  const foundCount = includedTests.length;
+  const notFoundCount = relevantTests.filter((t) => !t.found).length;
+  const singleLabCount = excludedTests.length;
+  const subtotal = includedTests
     .reduce((sum, t) => sum + (t.chosen?.price ?? 0), 0);
   const total = subtotal + (subtotal > 0 ? editableServiceFee : 0);
 
@@ -431,7 +642,7 @@ export default function BulkSearchPanel({
                   parsedNames.length > 0
                 ) {
                   e.preventDefault();
-                  setStep("lab");
+                  goToLabStep();
                 }
               }}
               placeholder={"TSH\nFER\nGlucose\nHémogramme\nBilirubine totale"}
@@ -458,7 +669,7 @@ export default function BulkSearchPanel({
                   : "Ctrl+Entrée pour continuer"}
               </p>
               <Button
-                onClick={() => setStep("lab")}
+                onClick={goToLabStep}
                 disabled={parsedNames.length === 0}
                 size="sm"
                 className="gap-1.5"
@@ -470,58 +681,121 @@ export default function BulkSearchPanel({
           </>
         )}
 
-        {/* ── Step 2: Lab preference ────────────────────────── */}
+        {/* ── Step 2: Lab selection with badges ────────────── */}
         {step === "lab" && (
           <>
             <p className="text-sm text-muted-foreground">
-              Quel laboratoire souhaitez-vous en priorité ?
+              Choisissez un laboratoire pour vos {parsedNames.length} tests.
             </p>
             <div className="flex flex-col gap-2">
-              {(
-                [
+              {(() => {
+                const { cdl, dynacare, loading } = labPreview;
+                const isCheaper = (lab: "cdl" | "dynacare") => {
+                  if (!cdl || !dynacare) return false;
+                  return lab === "cdl" ? cdl.total < dynacare.total : dynacare.total < cdl.total;
+                };
+                const isFaster = (lab: "cdl" | "dynacare") => {
+                  if (!cdl || !dynacare) return false;
+                  return lab === "cdl" ? cdl.avgTat < dynacare.avgTat : dynacare.avgTat < cdl.avgTat;
+                };
+                const labs = [
                   {
                     value: "cdl" as const,
-                    label: "CDL",
-                    sub: "Centre de dépistage Laurentien",
+                    label: "CDL Laboratoires",
                     iconBg: "bg-blue-50 text-blue-700",
+                    stats: cdl,
+                    cheaper: isCheaper("cdl"),
+                    faster: isFaster("cdl"),
                   },
                   {
                     value: "dynacare" as const,
                     label: "Dynacare",
-                    sub: "Dynacare Montréal",
                     iconBg: "bg-purple-50 text-purple-700",
+                    stats: dynacare,
+                    cheaper: isCheaper("dynacare"),
+                    faster: isFaster("dynacare"),
                   },
-                  {
-                    value: "none" as const,
-                    label: "Pas de préférence",
-                    sub: "Laisser le système décider",
-                    iconBg: "bg-muted text-muted-foreground",
-                  },
-                ] as const
-              ).map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => setLabPref(opt.value)}
-                  className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-all ${
-                    labPref === opt.value
-                      ? "border-primary/60 bg-primary/5 ring-1 ring-primary/20"
-                      : "border-border/60 bg-card hover:border-border/80 hover:bg-muted/20"
-                  }`}
-                >
-                  <div
-                    className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${opt.iconBg}`}
+                ];
+                return labs.map((opt) => (
+                  <button
+                    key={opt.value}
+                    disabled={loading || !opt.stats}
+                    onClick={() => {
+                      setLabPref(opt.value);
+                      // Auto-set priority based on which badge this lab won
+                      const pr = opt.cheaper ? "cheaper" as const : "faster" as const;
+                      setPriority(pr);
+                      runSearch(opt.value, pr);
+                    }}
+                    className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-all ${
+                      !opt.stats && !loading
+                        ? "border-border/30 bg-muted/10 opacity-50 cursor-not-allowed"
+                        : "border-border/60 bg-card hover:border-primary/40 hover:bg-primary/5 active:scale-[0.98]"
+                    }`}
                   >
-                    <FlaskConical className="h-3.5 w-3.5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold">{opt.label}</p>
-                    <p className="text-xs text-muted-foreground">{opt.sub}</p>
-                  </div>
-                  {labPref === opt.value && (
-                    <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                  )}
-                </button>
-              ))}
+                    <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${opt.iconBg}`}>
+                      <FlaskConical className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="text-sm font-semibold">{opt.label}</p>
+                        {!loading && opt.stats && (
+                          <div className="flex gap-1">
+                            {opt.cheaper && (
+                              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-700 rounded px-1.5 py-0.5">
+                                <DollarSign className="h-2.5 w-2.5" />
+                                Moins cher
+                              </span>
+                            )}
+                            {opt.faster && (
+                              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold bg-blue-100 text-blue-700 rounded px-1.5 py-0.5">
+                                <Zap className="h-2.5 w-2.5" />
+                                Plus rapide
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {loading ? (
+                        <p className="text-xs text-muted-foreground animate-pulse">Chargement...</p>
+                      ) : opt.stats ? (
+                        <p className="text-xs text-muted-foreground">
+                          {opt.stats.testCount}/{parsedNames.length} tests
+                          {" · "}
+                          {formatCurrency(opt.stats.total)}
+                          {opt.stats.avgTat < Infinity && (
+                            <span> · ~{formatTurnaroundShort(`${Math.round(opt.stats.avgTat)}h`)}</span>
+                          )}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-muted-foreground/50">Aucun test disponible</p>
+                      )}
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground/40 shrink-0" />
+                  </button>
+                ));
+              })()}
+              {/* Auto-select option */}
+              <button
+                disabled={labPreview.loading}
+                onClick={() => {
+                  setLabPref("none");
+                  setPriority("cheaper");
+                  runSearch("none", "cheaper");
+                }}
+                className="flex items-center gap-3 rounded-xl border border-border/40 p-3 text-left transition-all bg-card hover:border-primary/40 hover:bg-primary/5 active:scale-[0.98]"
+              >
+                <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0 bg-muted text-muted-foreground">
+                  <Zap className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold">Meilleur prix global</p>
+                  <p className="text-xs text-muted-foreground">
+                    Choisir le moins cher par test, tous labos confondus
+                  </p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground/40 shrink-0" />
+              </button>
             </div>
             <div className="flex justify-between pt-1">
               <Button
@@ -532,87 +806,6 @@ export default function BulkSearchPanel({
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
                 Retour
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => setStep("priority")}
-                className="gap-1.5"
-              >
-                Suivant
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          </>
-        )}
-
-        {/* ── Step 3: Priority ──────────────────────────────── */}
-        {step === "priority" && (
-          <>
-            <p className="text-sm text-muted-foreground">
-              Quelle est votre priorité pour ce patient ?
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {(
-                [
-                  {
-                    value: "cheaper" as const,
-                    icon: <DollarSign className="h-5 w-5" />,
-                    label: "Prix le plus bas",
-                    sub: "Optimise le coût total",
-                    iconBg: "bg-emerald-100 text-emerald-700",
-                  },
-                  {
-                    value: "faster" as const,
-                    icon: <Zap className="h-5 w-5" />,
-                    label: "Résultats rapides",
-                    sub: "Minimise le délai",
-                    iconBg: "bg-amber-100 text-amber-700",
-                  },
-                ] as const
-              ).map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => setPriority(opt.value)}
-                  className={`flex flex-col items-center gap-2 rounded-xl border p-3 text-center transition-all ${
-                    priority === opt.value
-                      ? "border-primary/60 bg-primary/5 ring-1 ring-primary/20"
-                      : "border-border/60 bg-card hover:border-border/80 hover:bg-muted/20"
-                  }`}
-                >
-                  <div
-                    className={`h-9 w-9 rounded-xl flex items-center justify-center ${opt.iconBg}`}
-                  >
-                    {opt.icon}
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold">{opt.label}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      {opt.sub}
-                    </p>
-                  </div>
-                  {priority === opt.value && (
-                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-                  )}
-                </button>
-              ))}
-            </div>
-            <div className="flex justify-between pt-1">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setStep("lab")}
-                className="gap-1.5"
-              >
-                <ChevronLeft className="h-3.5 w-3.5" />
-                Retour
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => runSearch(labPref, priority)}
-                className="gap-1.5"
-              >
-                Compiler
-                <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             </div>
           </>
@@ -663,7 +856,7 @@ export default function BulkSearchPanel({
                   {singleLabCount > 0 && (
                     <span className="inline-flex items-center gap-0.5 text-[10px] bg-amber-50 text-amber-700 border border-amber-200 rounded px-1.5 py-0.5">
                       <AlertTriangle className="h-2.5 w-2.5" />
-                      {singleLabCount} labo unique
+                      {singleLabCount} exclu{singleLabCount > 1 ? "s" : ""} (autre labo)
                     </span>
                   )}
                 </div>
@@ -705,8 +898,11 @@ export default function BulkSearchPanel({
             {activeTab === "individual" && (
               <>
                 <div className="space-y-1.5">
-                  {matchedTests.map((t, idx) =>
-                    t.found && t.chosen ? (
+                  {relevantTests.map((t, idx) => {
+                    const isExcluded = "excluded" in t && t.excluded;
+                    // Hide tests that only exist in a non-primary lab
+                    if (isExcluded) return null;
+                    return t.found && t.chosen ? (
                       <div
                         key={idx}
                         className="flex items-start gap-2.5 rounded-lg border border-border/50 bg-card px-3 py-2.5"
@@ -771,8 +967,8 @@ export default function BulkSearchPanel({
                           </p>
                         </div>
                       </div>
-                    )
-                  )}
+                    );
+                  })}
                 </div>
 
                 {/* Price summary with editable service fee */}
@@ -921,7 +1117,7 @@ export default function BulkSearchPanel({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setStep("priority")}
+                onClick={() => setStep("lab")}
                 className="gap-1"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />

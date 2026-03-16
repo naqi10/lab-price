@@ -32,27 +32,31 @@ function isSelectionModeCheapest(
    customPrices: Record<string, number>
 ): boolean {
    if (!tableData) return false;
-   
-   for (const test of tableData.tests) {
-     const selectedLabId = selections[test.id];
-     if (!selectedLabId) return false;
-     
-     // Find the cheapest lab for this test considering custom prices
-     let cheapestLabId: string | null = null;
-     let cheapestPrice = Infinity;
-     
-     for (const lab of tableData.laboratories) {
+
+   // All selections must point to a single lab
+   const selectedLabIds = new Set(Object.values(selections));
+   if (selectedLabIds.size !== 1) return false;
+   const singleLabId = [...selectedLabIds][0];
+
+   // That lab must be the one with highest coverage + lowest total
+   let bestLabId: string | null = null;
+   let bestTotal = Infinity;
+   let bestCoverage = 0;
+   for (const lab of tableData.laboratories) {
+     let total = 0;
+     let coverage = 0;
+     for (const test of tableData.tests) {
        const price = customPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
-       if (price != null && price < cheapestPrice) {
-         cheapestPrice = price;
-         cheapestLabId = lab.id;
-       }
+       if (price != null) { total += price; coverage++; }
      }
-     
-     if (selectedLabId !== cheapestLabId) return false;
+     if (coverage > bestCoverage || (coverage === bestCoverage && total < bestTotal)) {
+       bestCoverage = coverage;
+       bestTotal = total;
+       bestLabId = lab.id;
+     }
    }
-   
-   return true;
+
+   return singleLabId === bestLabId;
 }
 
 /**
@@ -60,32 +64,49 @@ function isSelectionModeCheapest(
  */
 function isSelectionModeFastest(
    selections: Record<string, string>,
-   tableData: any
+   tableData: any,
+   customPrices: Record<string, number> = {}
 ): boolean {
    if (!tableData) return false;
-   
-   for (const test of tableData.tests) {
-     const selectedLabId = selections[test.id];
-     if (!selectedLabId) return false;
-     
-     // Find the fastest lab for this test
-     let fastestLabId: string | null = null;
-     let fastestHours = Infinity;
-     
-     for (const lab of tableData.laboratories) {
-       if (test.prices[lab.id] == null) continue; // Skip labs that don't have this test
+
+   // All selections must point to a single lab
+   const selectedLabIds = new Set(Object.values(selections));
+   if (selectedLabIds.size !== 1) return false;
+   const singleLabId = [...selectedLabIds][0];
+
+   // That lab must be the one with highest coverage + lowest avg TAT
+   let bestLabId: string | null = null;
+   let bestAvgTat = Infinity;
+   let bestCoverage = 0;
+   let bestTotal = Infinity;
+   for (const lab of tableData.laboratories) {
+     let totalHours = 0;
+     let tatCount = 0;
+     let coverage = 0;
+     let total = 0;
+     for (const test of tableData.tests) {
+       const price = customPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
+       if (price == null) continue;
+       coverage++;
+       total += price;
        const tat = test.turnaroundTimes?.[lab.id];
        const hours = parseTatToHours(tat);
-       if (hours < fastestHours) {
-         fastestHours = hours;
-         fastestLabId = lab.id;
-       }
+       if (hours < Infinity) { totalHours += hours; tatCount++; }
      }
-     
-     if (selectedLabId !== fastestLabId) return false;
+     const avgTat = tatCount > 0 ? totalHours / tatCount : Infinity;
+     if (
+       coverage > bestCoverage ||
+       (coverage === bestCoverage && avgTat < bestAvgTat) ||
+       (coverage === bestCoverage && avgTat === bestAvgTat && total < bestTotal)
+     ) {
+       bestCoverage = coverage;
+       bestAvgTat = avgTat;
+       bestTotal = total;
+       bestLabId = lab.id;
+     }
    }
-   
-   return true;
+
+   return singleLabId === bestLabId;
 }
 
 export default function ComparisonPage() {
@@ -241,52 +262,103 @@ function ComparisonContent() {
      setSelectionMode("CUSTOM");
    }, []);
 
-   // Preset: select cheapest lab per test
+   // Preset: select the single cheapest lab for ALL tests
    const handlePresetCheapest = useCallback(() => {
      if (!tableData) return;
-     const next: Record<string, string> = {};
-     for (const test of tableData.tests) {
-       let cheapestLabId: string | null = null;
-       let cheapestPrice = Infinity;
-       for (const lab of tableData.laboratories) {
+
+     // Find the single lab with the lowest total effective price
+     // Prefer labs that cover more tests (coverage), then lowest total
+     let bestLabId: string | null = null;
+     let bestTotal = Infinity;
+     let bestCoverage = 0;
+
+     for (const lab of tableData.laboratories) {
+       let total = 0;
+       let coverage = 0;
+       for (const test of tableData.tests) {
          const price = customPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
-         if (price != null && price < cheapestPrice) {
-           cheapestPrice = price;
-           cheapestLabId = lab.id;
+         if (price != null) {
+           total += price;
+           coverage++;
          }
        }
-       if (cheapestLabId) {
-         next[test.id] = cheapestLabId;
+       // Prefer higher coverage first, then lower total price
+       if (coverage > bestCoverage || (coverage === bestCoverage && total < bestTotal)) {
+         bestCoverage = coverage;
+         bestTotal = total;
+         bestLabId = lab.id;
+       }
+     }
+
+     if (!bestLabId) return;
+
+     // Assign all available tests to this single lab
+     const next: Record<string, string> = {};
+     for (const test of tableData.tests) {
+       const price = customPrices[`${test.id}-${bestLabId}`] ?? test.prices[bestLabId];
+       if (price != null) {
+         next[test.id] = bestLabId;
        }
      }
      setSelections(next);
      setSelectionMode("CHEAPEST");
    }, [tableData, customPrices]);
 
-   // Preset: select quickest lab per test (by turnaround time)
+   // Preset: select the single fastest lab for ALL tests
    const handlePresetQuickest = useCallback(() => {
      if (!tableData) return;
-     const next: Record<string, string> = {};
-     for (const test of tableData.tests) {
-       let quickestLabId: string | null = null;
-       let quickestHours = Infinity;
-       for (const lab of tableData.laboratories) {
-         // Only consider labs that have a price for this test
-         if (test.prices[lab.id] == null) continue;
+
+     // Find the single lab with the lowest average turnaround time
+     // Prefer labs that cover more tests, then lowest avg TAT, tiebreak on price
+     let bestLabId: string | null = null;
+     let bestAvgTat = Infinity;
+     let bestCoverage = 0;
+     let bestTotal = Infinity;
+
+     for (const lab of tableData.laboratories) {
+       let totalHours = 0;
+       let tatCount = 0;
+       let coverage = 0;
+       let total = 0;
+       for (const test of tableData.tests) {
+         const price = customPrices[`${test.id}-${lab.id}`] ?? test.prices[lab.id];
+         if (price == null) continue;
+         coverage++;
+         total += price;
          const tat = test.turnaroundTimes?.[lab.id];
          const hours = parseTatToHours(tat);
-         if (hours < quickestHours) {
-           quickestHours = hours;
-           quickestLabId = lab.id;
+         if (hours < Infinity) {
+           totalHours += hours;
+           tatCount++;
          }
        }
-       if (quickestLabId) {
-         next[test.id] = quickestLabId;
+       const avgTat = tatCount > 0 ? totalHours / tatCount : Infinity;
+       // Prefer higher coverage, then lower avg TAT, then lower total price
+       if (
+         coverage > bestCoverage ||
+         (coverage === bestCoverage && avgTat < bestAvgTat) ||
+         (coverage === bestCoverage && avgTat === bestAvgTat && total < bestTotal)
+       ) {
+         bestCoverage = coverage;
+         bestAvgTat = avgTat;
+         bestTotal = total;
+         bestLabId = lab.id;
+       }
+     }
+
+     if (!bestLabId) return;
+
+     // Assign all available tests to this single lab
+     const next: Record<string, string> = {};
+     for (const test of tableData.tests) {
+       const price = customPrices[`${test.id}-${bestLabId}`] ?? test.prices[bestLabId];
+       if (price != null) {
+         next[test.id] = bestLabId;
        }
      }
      setSelections(next);
      setSelectionMode("FASTEST");
-   }, [tableData]);
+   }, [tableData, customPrices]);
 
    // Clear all selections
    const handleClearSelections = useCallback(() => {

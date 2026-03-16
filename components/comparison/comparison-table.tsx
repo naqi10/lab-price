@@ -136,28 +136,39 @@ export default function ComparisonTable({
   const [editingPrice, setEditingPrice] = useState<{ testId: string; labId: string } | null>(null);
   const hasSelections = !!selections && Object.keys(selections).length > 0;
 
-  // Keep only labs that have at least one priced test in the current table.
+  // When selections exist, only show tests that are selected (the selected lab carries them).
+  // Tests exclusive to a non-selected lab are hidden entirely.
+  const displayTests = useMemo(
+    () => hasSelections
+      ? data.tests.filter((test) => selections?.[test.id] != null)
+      : data.tests,
+    [data.tests, hasSelections, selections]
+  );
+
+  // Only show labs that have at least one priced test among the *displayed* tests.
+  // When a lab is selected, non-selected labs still show for price comparison,
+  // but only if they carry at least one of the displayed tests.
   const visibleLabs = useMemo(
     () =>
       data.laboratories.filter((lab) =>
-        data.tests.some((test) => getEffectivePrice(test.id, lab.id, test.prices[lab.id], customPrices) != null)
+        displayTests.some((test) => getEffectivePrice(test.id, lab.id, test.prices[lab.id], customPrices) != null)
       ),
-    [data.laboratories, data.tests, customPrices]
+    [data.laboratories, displayTests, customPrices]
   );
 
-  // Calculate effective totals per lab (accounting for custom prices)
+  // Calculate effective totals per lab — only for displayed tests
   const effectiveTotals = useMemo(() => {
     const totals: Record<string, number> = {};
     for (const lab of visibleLabs) {
       let total = 0;
-      for (const test of data.tests) {
+      for (const test of displayTests) {
         const price = getEffectivePrice(test.id, lab.id, test.prices[lab.id], customPrices);
         if (price != null) total += price;
       }
       totals[lab.id] = total;
     }
     return totals;
-  }, [visibleLabs, data.tests, customPrices]);
+  }, [visibleLabs, displayTests, customPrices]);
 
   // Calculate cheapest lab overall using effective totals
   const cheapestLabId = useMemo(() => {
@@ -189,7 +200,7 @@ export default function ComparisonTable({
     let labsWithTat = 0;
     for (const lab of visibleLabs) {
       const times: number[] = [];
-      for (const test of data.tests) {
+      for (const test of displayTests) {
         const tat = test.turnaroundTimes?.[lab.id];
         if (tat) {
           const hours = parseTatToHours(tat);
@@ -206,7 +217,7 @@ export default function ComparisonTable({
       }
     }
     return labsWithTat >= 2 ? quickestId : "";
-  }, [visibleLabs, data.tests]);
+  }, [visibleLabs, displayTests]);
 
   return (
     <div className="space-y-3">
@@ -322,7 +333,7 @@ export default function ComparisonTable({
                   }
                   // Track which bundle headers have already been rendered
                   const renderedBundleIds = new Set<string>();
-                  return data.tests.map((test, rowIdx) => {
+                  return displayTests.map((test, rowIdx) => {
                   const bundle = testToBundleMap.get(test.id);
                   const showBundleHeader = bundle && !renderedBundleIds.has(bundle.bundleId);
                   if (showBundleHeader) renderedBundleIds.add(bundle.bundleId);
@@ -610,7 +621,7 @@ export default function ComparisonTable({
                     Total
                   </td>
                   {visibleLabs.map((lab) => {
-                    const total  = effectiveTotals[lab.id] ?? data.totals[lab.id];
+                    const total = effectiveTotals[lab.id] ?? data.totals[lab.id];
                     const isBest = lab.id === data.bestLabId;
                     const diff   = total != null && !isBest ? total - bestTotal : 0;
                     const pct    = bestTotal > 0 && total != null && !isBest
