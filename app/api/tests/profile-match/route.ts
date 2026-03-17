@@ -147,8 +147,8 @@ export async function POST(req: NextRequest) {
               profileCode: { equals: hint, mode: "insensitive" as const },
             })),
             ...rawHints.flatMap((hint) => [
-              { dealName: { contains: hint, mode: "insensitive" } },
-              { description: { contains: hint, mode: "insensitive" } },
+              { dealName: { contains: hint, mode: "insensitive" as const } },
+              { description: { contains: hint, mode: "insensitive" as const } },
             ]),
           ],
         },
@@ -236,8 +236,8 @@ export async function POST(req: NextRequest) {
         PHOS: ["PO4"],
         LD: ["LDH"],
         LDH: ["LD"],
-        ELEC: ["LYTES"],
-        LYTES: ["ELEC"],
+        ELEC: ["LYTES", "UELER"],
+        LYTES: ["ELEC", "UELER"],
         CBC: ["FSC"],
         FSC: ["CBC"],
         PT: ["PTPT", "PTPTT"],
@@ -275,8 +275,6 @@ export async function POST(req: NextRequest) {
         FT4: ["T4F", "T4L", "T4FREE"],
         TAPRO: ["TPO", "ANTITPO"],
         TPO: ["TAPRO", "ANTITPO"],
-        ELEC: ["LYTES", "UELER"],
-        LYTES: ["ELEC", "UELER"],
       };
 
       const expandCandidateCodes = (code: string): string[] => {
