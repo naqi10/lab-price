@@ -14,6 +14,7 @@ export interface ProfileMatchResult {
   icon: string;
   profilePrice: number; // customRate
   sourceLabCode?: string | null;
+  normalizedSourceLabCode?: "CDL" | "DYNACARE" | null;
   profileCode?: string | null;
   testMappingIds: string[];
   // Enriched per-test detail
@@ -25,6 +26,8 @@ export interface ProfileMatchResult {
   }[];
   // Sum of individual chosen prices for the user's selected tests that are in this profile
   selectedIndividualSum: number;
+  matchedSelectedCount: number;
+  profileTestCount: number;
   extraIncludedCount: number;
   savingsAmount: number;
   isRecommended: boolean; // profilePrice < selectedIndividualSum
@@ -62,13 +65,24 @@ export async function POST(req: NextRequest) {
     };
 
     const body = await req.json();
-    const { testMappingIds, selectedPrices, profileHints } = body as {
+    const { testMappingIds, selectedPrices, profileHints, preferredLabCode } = body as {
       testMappingIds: string[];
       // price per testMappingId as chosen by the user (for savings comparison)
       selectedPrices: Record<string, number>;
       // optional user-entered profile hints (e.g. ITSS, GONO-CHLAM)
       profileHints?: string[];
+      // optional selected lab context from UI (CDL / DYNACARE)
+      preferredLabCode?: string | null;
     };
+    const normalizeLabCode = (code: string | null | undefined): "CDL" | "DYNACARE" | null => {
+      const c = (code ?? "").toUpperCase();
+      if (!c) return null;
+      if (c.includes("CDL")) return "CDL";
+      if (c.includes("DYN")) return "DYNACARE";
+      if (c === "QC") return "DYNACARE";
+      return null;
+    };
+    const preferredLab = normalizeLabCode(preferredLabCode);
 
     const selectedIds = Array.isArray(testMappingIds) ? testMappingIds : [];
     const selectedPriceMap = selectedPrices ?? {};
@@ -275,6 +289,12 @@ export async function POST(req: NextRequest) {
         FT4: ["T4F", "T4L", "T4FREE"],
         TAPRO: ["TPO", "ANTITPO"],
         TPO: ["TAPRO", "ANTITPO"],
+        IRON: ["TIBCP"],
+        TIBCP: ["IRON"],
+        B2GP: ["B2GPIGA", "B2GPIGM", "B2GPIGG"],
+        B2GPIGA: ["B2GP"],
+        B2GPIGM: ["B2GP"],
+        B2GPIGG: ["B2GP"],
       };
 
       const expandCandidateCodes = (code: string): string[] => {
@@ -435,20 +455,28 @@ export async function POST(req: NextRequest) {
         };
       }).filter(Boolean) as ProfileMatchResult["components"];
 
-      // Sum of user's individually chosen prices for the tests in this profile
-      // Only count tests that were actually selected by the user
-      const selectedIndividualSum = selectedIds.reduce(
+      const profileTestIds = new Set(b.testMappingIds ?? []);
+      const selectedIdsInProfile = selectedIds.filter((id) => profileTestIds.has(id));
+      const selectedIndividualSum = selectedIdsInProfile.reduce(
         (sum, id) => sum + (selectedPriceMap[id] ?? 0),
         0
       );
 
       const profilePrice = Number(b.customRate) || 0;
+      const matchedSelectedCount = selectedIdsInProfile.length;
+      const profileTestCount = b.testMappingIds?.length ?? 0;
       const extraIncludedCount = Math.max(
         0,
-        (b.testMappingIds?.length ?? 0) - selectedIds.length
+        profileTestCount - matchedSelectedCount
       );
       const savingsAmount = Math.max(0, selectedIndividualSum - profilePrice);
-      const isRecommended = profilePrice > 0 && profilePrice < selectedIndividualSum;
+      const coversAllSelected =
+        selectedIds.length > 0 && selectedIdsInProfile.length === selectedIds.length;
+      const isRecommended =
+        profilePrice > 0 &&
+        selectedIndividualSum > 0 &&
+        coversAllSelected &&
+        profilePrice < selectedIndividualSum;
 
       return {
         id: b.id,
@@ -458,10 +486,13 @@ export async function POST(req: NextRequest) {
         icon: b.icon,
         profilePrice,
         sourceLabCode: b.sourceLabCode,
+        normalizedSourceLabCode: normalizeLabCode(b.sourceLabCode),
         profileCode: b.profileCode,
         testMappingIds: b.testMappingIds ?? [],
         components,
         selectedIndividualSum,
+        matchedSelectedCount,
+        profileTestCount,
         extraIncludedCount,
         savingsAmount,
         isRecommended,
@@ -469,6 +500,11 @@ export async function POST(req: NextRequest) {
     });
 
     results.sort((a, b) => {
+      if (preferredLab) {
+        const aSameLab = a.normalizedSourceLabCode === preferredLab;
+        const bSameLab = b.normalizedSourceLabCode === preferredLab;
+        if (aSameLab !== bSameLab) return aSameLab ? -1 : 1;
+      }
       if (a.isRecommended !== b.isRecommended) return a.isRecommended ? -1 : 1;
       if (a.savingsAmount !== b.savingsAmount) return b.savingsAmount - a.savingsAmount;
       if (a.extraIncludedCount !== b.extraIncludedCount) return b.extraIncludedCount - a.extraIncludedCount;

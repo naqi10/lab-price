@@ -77,6 +77,7 @@ export interface BulkPreviewState {
 }
 
 type ResultTab = "individual" | "profiles";
+type ProfileLabCode = "CDL" | "DYNACARE" | null;
 
 interface BulkSearchPanelProps {
   onClose: () => void;
@@ -106,6 +107,26 @@ function normalizeBulkQuery(input: string): string {
     .trim();
 
   if (!n) return input;
+  if (/\b(b2gp|beta[\s-]?2.*glycoprote|glycoproteine?\s*i)\b/.test(n)) return "B2GP";
+  if (/\b(diab|diabetique\s*#?\s*1|diabetique\s*no?\s*1)\b/.test(n)) return "DIAB";
+  if (/\b(liv1|hepatique\s*#?\s*1)\b/.test(n)) return "LIV1";
+  if (/\b(panc1|panc)\b/.test(n)) return "PANC";
+  if (/\b(ren2|renal\s*#?\s*2|renal)\b/.test(n)) return "REN2";
+  if (/\b(bio1|biochimie\s*#?\s*1a)\b/.test(n)) return "BIO1";
+  if (/\b(chm1|biochimie\s*#?\s*1b)\b/.test(n)) return "CHM1";
+  if (/\b(chm2|biochimie\s*#?\s*2)\b/.test(n)) return "CHM2";
+  if (/\b(chm5|biochimie\s*#?\s*2.*electroly)\b/.test(n)) return "CHM5";
+  if (/\b(chl3|biochimie\s*#?\s*3.*electroly)\b/.test(n)) return "CHL3";
+  if (/\b(chp3|profil\s*general\s*#?\s*3|biochimie\s*#?\s*3.*profil)\b/.test(n)) return "CHP3";
+  if (/\b(fa12|vitamine?\s*b12.*folate|folate.*vitamine?\s*b12)\b/.test(n)) return "FA12";
+  if (/\b(irn1|fer\s*#?\s*1|iron\s*#?\s*1)\b/.test(n)) return "IRN1";
+  if (/\b(irn2|fer\s*#?\s*2|iron\s*#?\s*2)\b/.test(n)) return "IRN2";
+  if (/\b(irn3|fer\s*#?\s*3|iron\s*#?\s*3)\b/.test(n)) return "IRN3";
+  if (/\b(irn6|fer\s*#?\s*6|iron\s*#?\s*6)\b/.test(n)) return "IRN6";
+  if (/\b(ane1|anemie\s*#?\s*1)\b/.test(n)) return "ANE1";
+  if (/\b(ane3|anemie\s*#?\s*3)\b/.test(n)) return "ANE3";
+  if (/\b(ane4|anemie\s*#?\s*4)\b/.test(n)) return "ANE4";
+  if (/\b(fer|iron)\b/.test(n) && /\b(saturation|uibc|tibc|tibcp)\b/.test(n)) return "IRON";
   if (/\b(sma16|sma-?16|profil\s*sma-?16)\b/.test(n)) return "SMA16";
   if (/\b(sma5|sma-?5|profil\s*sma-?5)\b/.test(n)) return "SMA5";
   if (/\b(sma6|sma-?6|profil\s*sma-?6)\b/.test(n)) return "SMA6";
@@ -266,6 +287,7 @@ export default function BulkSearchPanel({
   const [profilesLoading, setProfilesLoading] = useState(false);
   const [showAlternatives, setShowAlternatives] = useState(false);
   const [activeTab, setActiveTab] = useState<ResultTab>("individual");
+  const [profileLabContext, setProfileLabContext] = useState<ProfileLabCode>(null);
   // serviceFee is now managed in the parent summary panel
   const lastResultsSignatureRef = useRef<string>("");
 
@@ -632,10 +654,11 @@ export default function BulkSearchPanel({
           return bestId;
         })();
 
-        const foundTests = results
+        const foundTestsAllLabs = results
           .filter((t): t is MatchedTest & { chosen: LabResult; testMappingId: string } =>
             t.found && !!t.chosen && !!t.testMappingId
-          )
+          );
+        const foundTests = foundTestsAllLabs
           .filter((t) =>
             !localPrimaryLabId || t.labResults.some((r) => r.labId === localPrimaryLabId)
           );
@@ -646,16 +669,33 @@ export default function BulkSearchPanel({
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .trim();
-          return /\b(itss|lft|lipid|lipid18|lipid6|cardiovasculaire|apolipoproteine|apob|crp[-\s]?hs|hs[-\s]?crp|sma16|sma5|sma6|sma7|th2|th6|thyroid|stone|urolith|24uphos|24ucrea|24uuric|oxaur|hepatique|celiac|coeliaq|fpsa|prostat|monop|monotest|osteop|osteopor|pren1|pren2|pren3|prenatal|profil|profile|bundle|gono[\s-]?chlam|std|sti)\b/.test(n);
+          return /\b(itss|lft|lipid|lipid18|lipid6|cardiovasculaire|apolipoproteine|apob|crp[-\s]?hs|hs[-\s]?crp|b2gp|glycoprote|diab|liv1|panc1|panc|ren2|bio1|chm1|chm2|chm5|chl3|chp3|biochimie|fa12|irn1|irn2|irn3|irn6|ane1|ane3|ane4|anemie|sma16|sma5|sma6|sma7|th2|th6|thyroid|stone|urolith|24uphos|24ucrea|24uuric|oxaur|hepatique|celiac|coeliaq|fpsa|prostat|monop|monotest|osteop|osteopor|pren1|pren2|pren3|prenatal|profil|profile|bundle|gono[\s-]?chlam|std|sti)\b/.test(n);
         });
 
-        if (foundTests.length > 1 || hasBundleHintInput) {
+        if (foundTestsAllLabs.length > 1 || hasBundleHintInput) {
           setProfilesLoading(true);
-          const ids = foundTests.map((t) => t.testMappingId);
+          const ids = foundTestsAllLabs.map((t) => t.testMappingId);
           const selectedPrices: Record<string, number> = {};
-          for (const t of foundTests) {
+          for (const t of foundTestsAllLabs) {
             selectedPrices[t.testMappingId] = t.chosen.price;
           }
+          const preferredLabCode: ProfileLabCode =
+            lp === "cdl"
+              ? "CDL"
+              : lp === "dynacare"
+              ? "DYNACARE"
+              : (() => {
+                  let cdl = 0;
+                  let dyn = 0;
+                  for (const t of foundTests) {
+                    const code = t.chosen.labCode.toUpperCase();
+                    if (code.includes("CDL")) cdl++;
+                    if (code.includes("DYN")) dyn++;
+                  }
+                  if (cdl === 0 && dyn === 0) return null;
+                  return cdl >= dyn ? "CDL" : "DYNACARE";
+                })();
+          setProfileLabContext(preferredLabCode);
           fetch("/api/tests/profile-match", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -663,6 +703,7 @@ export default function BulkSearchPanel({
               testMappingIds: ids,
               selectedPrices,
               profileHints: parsedNames,
+              preferredLabCode,
             }),
           })
             .then((r) => r.json())
@@ -687,6 +728,7 @@ export default function BulkSearchPanel({
           setMatchingProfiles([]);
           setSelectedProfileId(null);
           setShowAlternatives(false);
+          setProfileLabContext(null);
           setProfilesLoading(false);
         }
       } catch {
@@ -767,6 +809,29 @@ export default function BulkSearchPanel({
       bestProfile ??
       null,
     [matchingProfiles, selectedProfileId, bestProfile]
+  );
+  const topProfileId = matchingProfiles[0]?.id ?? null;
+  const alternativeProfiles = useMemo(
+    () => matchingProfiles.filter((p) => p.id !== selectedProfile?.id),
+    [matchingProfiles, selectedProfile]
+  );
+  const sameLabAlternatives = useMemo(
+    () =>
+      alternativeProfiles.filter(
+        (p) =>
+          !profileLabContext ||
+          (p.normalizedSourceLabCode ?? null) === profileLabContext
+      ),
+    [alternativeProfiles, profileLabContext]
+  );
+  const otherLabAlternatives = useMemo(
+    () =>
+      alternativeProfiles.filter(
+        (p) =>
+          !!profileLabContext &&
+          (p.normalizedSourceLabCode ?? null) !== profileLabContext
+      ),
+    [alternativeProfiles, profileLabContext]
   );
 
   const stepIdx = STEP_ORDER.indexOf(
@@ -1292,10 +1357,13 @@ export default function BulkSearchPanel({
                               <p className="text-sm font-semibold leading-snug">
                                 {selectedProfile.dealName}
                               </p>
-                              {selectedProfile.isRecommended && (
+                              <span className="inline-flex items-center gap-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded px-1.5 py-0.5">
+                                {selectedProfile.normalizedSourceLabCode ?? selectedProfile.sourceLabCode ?? "LAB"}
+                              </span>
+                              {selectedProfile.id === topProfileId && (
                                 <span className="inline-flex items-center gap-0.5 text-[10px] font-bold bg-emerald-600 text-white rounded px-1.5 py-0.5">
                                   <Star className="h-2.5 w-2.5" />
-                                  Offre recommandée
+                                  {selectedProfile.isRecommended ? "Offre recommandée" : "Meilleure offre"}
                                 </span>
                               )}
                             </div>
@@ -1309,11 +1377,9 @@ export default function BulkSearchPanel({
                                 </span>
                               ))}
                             </div>
-                            {selectedProfile.extraIncludedCount > 0 && (
-                              <p className="mt-1 text-[10px] text-muted-foreground">
-                                Inclut {selectedProfile.extraIncludedCount} test{selectedProfile.extraIncludedCount > 1 ? "s" : ""} supplémentaire{selectedProfile.extraIncludedCount > 1 ? "s" : ""}.
-                              </p>
-                            )}
+                            <p className="mt-1 text-[10px] text-muted-foreground">
+                              {selectedProfile.profileTestCount} test{selectedProfile.profileTestCount > 1 ? "s" : ""} dans ce profil
+                            </p>
                           </div>
                           <div className="shrink-0 text-right">
                             <p className="text-sm font-bold tabular-nums">
@@ -1351,33 +1417,111 @@ export default function BulkSearchPanel({
                         </div>
 
                         {showAlternatives && (
-                          <div className="mt-2 max-h-44 overflow-y-auto space-y-1.5 pr-1">
-                            {matchingProfiles
-                              .filter((p) => p.id !== selectedProfile?.id)
-                              .map((p) => (
+                          <div className="mt-2 max-h-56 overflow-y-auto space-y-2 pr-1">
+                            {sameLabAlternatives.length > 0 && (
+                              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+                                Même labo {profileLabContext ? `(${profileLabContext})` : ""}
+                              </p>
+                            )}
+                            {sameLabAlternatives.map((p) => (
                                 <div
                                   key={p.id}
-                                  className="flex items-center justify-between rounded-md border border-border/50 bg-background px-2.5 py-1.5"
+                                  className="flex items-start justify-between rounded-md border border-border/50 bg-background px-2.5 py-1.5"
                                 >
-                                  <div className="min-w-0">
-                                    <p className="text-xs font-medium truncate">{p.dealName}</p>
+                                  <div className="min-w-0 flex-1 pr-2">
+                                    <div className="flex items-center gap-1 flex-wrap">
+                                      <p className="text-xs font-medium truncate">{p.dealName}</p>
+                                      <span className="inline-flex items-center gap-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded px-1.5 py-0.5">
+                                        {p.normalizedSourceLabCode ?? p.sourceLabCode ?? "LAB"}
+                                      </span>
+                                    </div>
                                     <p className="text-[10px] text-muted-foreground tabular-nums">
                                       {formatCurrency(p.profilePrice)}
                                       {p.savingsAmount > 0 ? ` · économie ${formatCurrency(p.savingsAmount)}` : ""}
                                     </p>
+                                    <p className="text-[10px] text-muted-foreground">
+                                      {p.profileTestCount} test{p.profileTestCount > 1 ? "s" : ""} dans ce profil
+                                    </p>
+                                    {p.components.length > 0 && (
+                                      <div className="mt-1 max-h-20 overflow-y-auto pr-1">
+                                        <div className="flex flex-wrap gap-1">
+                                        {p.components.map((c) => (
+                                          <span
+                                            key={`${p.id}-${c.testMappingId}`}
+                                            className="text-[10px] bg-muted rounded px-1.5 py-0.5 text-muted-foreground"
+                                          >
+                                            {c.canonicalName}
+                                          </span>
+                                        ))}
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
                                   <button
                                     onClick={() => {
                                       setSelectedProfileId(p.id);
                                       setShowAlternatives(false);
                                     }}
-                                    className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
+                                    className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
                                     title="Choisir cette alternative"
                                   >
                                     <Plus className="h-3.5 w-3.5" />
                                   </button>
                                 </div>
                               ))}
+                            {otherLabAlternatives.length > 0 && (
+                              <>
+                                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide pt-1">
+                                  Autres labos
+                                </p>
+                                {otherLabAlternatives.map((p) => (
+                                  <div
+                                    key={p.id}
+                                    className="flex items-start justify-between rounded-md border border-border/50 bg-background px-2.5 py-1.5"
+                                  >
+                                    <div className="min-w-0 flex-1 pr-2">
+                                      <div className="flex items-center gap-1 flex-wrap">
+                                        <p className="text-xs font-medium truncate">{p.dealName}</p>
+                                        <span className="inline-flex items-center gap-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded px-1.5 py-0.5">
+                                          {p.normalizedSourceLabCode ?? p.sourceLabCode ?? "LAB"}
+                                        </span>
+                                      </div>
+                                      <p className="text-[10px] text-muted-foreground tabular-nums">
+                                        {formatCurrency(p.profilePrice)}
+                                        {p.savingsAmount > 0 ? ` · économie ${formatCurrency(p.savingsAmount)}` : ""}
+                                      </p>
+                                      <p className="text-[10px] text-muted-foreground">
+                                        {p.profileTestCount} test{p.profileTestCount > 1 ? "s" : ""} dans ce profil
+                                      </p>
+                                      {p.components.length > 0 && (
+                                        <div className="mt-1 max-h-20 overflow-y-auto pr-1">
+                                          <div className="flex flex-wrap gap-1">
+                                            {p.components.map((c) => (
+                                              <span
+                                                key={`${p.id}-${c.testMappingId}`}
+                                                className="text-[10px] bg-muted rounded px-1.5 py-0.5 text-muted-foreground"
+                                              >
+                                                {c.canonicalName}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <button
+                                      onClick={() => {
+                                        setSelectedProfileId(p.id);
+                                        setShowAlternatives(false);
+                                      }}
+                                      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
+                                      title="Choisir cette alternative"
+                                    >
+                                      <Plus className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </>
+                            )}
                           </div>
                         )}
                       </div>
