@@ -18,7 +18,6 @@ import {
   Loader2,
   Plus,
   AlertCircle,
-  ArrowLeft,
   AlertTriangle,
   Layers,
   Star,
@@ -896,13 +895,6 @@ export default function BulkSearchPanel({
     <div className="flex flex-col h-full">
       {/* Panel header */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-border/30">
-        <button
-          onClick={onClose}
-          className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-accent transition-colors shrink-0"
-          aria-label="Retour à la recherche"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </button>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold">Saisie en lot</p>
           <p className="text-xs text-muted-foreground/70">
