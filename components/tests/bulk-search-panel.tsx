@@ -711,12 +711,8 @@ export default function BulkSearchPanel({
               if (d.success) {
                 const profiles: ProfileMatchResult[] = d.data ?? [];
                 setMatchingProfiles(profiles);
-                const preferred =
-                  profiles.find((p) => p.isRecommended && p.extraIncludedCount > 0) ??
-                  profiles.find((p) => p.isRecommended) ??
-                  profiles[0] ??
-                  null;
-                setSelectedProfileId(preferred?.id ?? null);
+                // API is already cheapest-first; primary choice must be cheapest.
+                setSelectedProfileId(profiles[0]?.id ?? null);
                 setShowAlternatives((profiles.length ?? 0) > 1);
               }
               setProfilesLoading(false);
@@ -796,11 +792,7 @@ export default function BulkSearchPanel({
   const subtotal = includedTests
     .reduce((sum, t) => sum + (t.chosen?.price ?? 0), 0);
   const bestProfile = useMemo(
-    () =>
-      matchingProfiles.find((p) => p.isRecommended && p.extraIncludedCount > 0) ??
-      matchingProfiles.find((p) => p.isRecommended) ??
-      matchingProfiles[0] ??
-      null,
+    () => matchingProfiles[0] ?? null,
     [matchingProfiles]
   );
   const selectedProfile = useMemo(

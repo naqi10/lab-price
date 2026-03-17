@@ -499,19 +499,38 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    results.sort((a, b) => {
+    // Eligible profiles logic:
+    // 1) Allow partial matches (must match at least one selected test).
+    // 2) Apply extra-tests penalty:
+    //    - If profile adds too many extra tests (> 4), exclude it
+    //      unless profile price is strictly cheaper than the matched tests bought separately.
+    const eligibleResults = hasSelectedTests
+      ? results.filter((r) => {
+          if (r.matchedSelectedCount <= 0) return false;
+          const extraTests = r.profileTestCount - r.matchedSelectedCount;
+          if (extraTests > 4) {
+            return (
+              r.selectedIndividualSum > 0 &&
+              r.profilePrice > 0 &&
+              r.profilePrice < r.selectedIndividualSum
+            );
+          }
+          return true;
+        })
+      : results;
+
+    // STRICT RULE: cheapest-first among eligible profiles.
+    eligibleResults.sort((a, b) => {
+      if (a.profilePrice !== b.profilePrice) return a.profilePrice - b.profilePrice;
       if (preferredLab) {
         const aSameLab = a.normalizedSourceLabCode === preferredLab;
         const bSameLab = b.normalizedSourceLabCode === preferredLab;
         if (aSameLab !== bSameLab) return aSameLab ? -1 : 1;
       }
-      if (a.isRecommended !== b.isRecommended) return a.isRecommended ? -1 : 1;
-      if (a.savingsAmount !== b.savingsAmount) return b.savingsAmount - a.savingsAmount;
-      if (a.extraIncludedCount !== b.extraIncludedCount) return b.extraIncludedCount - a.extraIncludedCount;
-      return a.profilePrice - b.profilePrice;
+      return a.dealName.localeCompare(b.dealName);
     });
 
-    return NextResponse.json({ success: true, data: results });
+    return NextResponse.json({ success: true, data: eligibleResults });
   } catch (error) {
     console.error("[profile-match]", error);
     return NextResponse.json(
