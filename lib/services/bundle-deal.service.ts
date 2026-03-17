@@ -1,11 +1,19 @@
 import prisma from "@/lib/db";
 
+function normalizeSourceLabCode(code: string | null): string | null {
+  return code?.toUpperCase() === "QC" ? "DYNACARE" : code;
+}
+
 /** Return active bundle deals, ordered by sortOrder (for public display). */
 export async function getActiveBundleDeals() {
-  return prisma.bundleDeal.findMany({
+  const deals = await prisma.bundleDeal.findMany({
     where: { isActive: true },
     orderBy: { sortOrder: "asc" },
   });
+  return deals.map((deal) => ({
+    ...deal,
+    sourceLabCode: normalizeSourceLabCode(deal.sourceLabCode),
+  }));
 }
 
 /** Paginated bundle deals with optional search (for management page). */
@@ -35,7 +43,13 @@ export async function getBundleDeals(options?: {
     prisma.bundleDeal.count({ where }),
   ]);
 
-  return { deals, total };
+  return {
+    deals: deals.map((deal) => ({
+      ...deal,
+      sourceLabCode: normalizeSourceLabCode(deal.sourceLabCode),
+    })),
+    total,
+  };
 }
 
 /** Create a new bundle deal. Validates that all testMappingIds exist. */

@@ -200,7 +200,6 @@ export async function searchTests(
       LEFT JOIN "test_mappings" tm ON tm.id = tme."test_mapping_id"
       WHERE pl."is_active" = true
         AND l."deleted_at" IS NULL
-        AND (t.category IS NULL OR LOWER(t.category) NOT IN ('profil', 'profile'))
         ${labFilter}
         ${numericTokenFilter}
         AND (

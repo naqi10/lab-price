@@ -40,6 +40,7 @@ interface SearchResult {
 interface BundleSummary {
   id: string;
   dealName: string;
+  profileCode?: string | null;
   customRate: number;
   canonicalNames: string[];
   testMappingIds: string[];
@@ -330,6 +331,35 @@ export default function TestSearch({
   const totalGroupPages = Math.ceil(allGrouped.length / GROUPS_PER_PAGE);
   const grouped = allGrouped.slice((searchPage - 1) * GROUPS_PER_PAGE, searchPage * GROUPS_PER_PAGE);
 
+  const bundleMatches = useMemo(() => {
+    const nq = normalizeSearchText(debouncedQuery);
+    if (!nq || nq.length < 2 || !availableBundles?.length) return [];
+
+    const groupedMappingIds = new Set(
+      allGrouped.map((g) => g.testMappingId).filter(Boolean) as string[]
+    );
+
+    return availableBundles
+      .map((bundle) => {
+        const name = normalizeSearchText(bundle.dealName);
+        const code = normalizeSearchText(bundle.profileCode ?? "");
+        const components = normalizeSearchText(bundle.canonicalNames.join(" "));
+        const exact = name === nq || code === nq;
+        const prefix = name.startsWith(nq) || code.startsWith(nq);
+        const includes = name.includes(nq) || code.includes(nq) || components.includes(nq);
+        const score = exact ? 4 : prefix ? 3 : includes ? 2 : 0;
+        return { bundle, score };
+      })
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score || a.bundle.dealName.localeCompare(b.bundle.dealName))
+      .map((entry) => entry.bundle)
+      .filter((bundle) => {
+        if (!bundle.selfTestMappingId) return true;
+        return !groupedMappingIds.has(bundle.selfTestMappingId);
+      })
+      .slice(0, 10);
+  }, [availableBundles, debouncedQuery, allGrouped]);
+
   useEffect(() => {
     if (!openProfileKey) return;
     if (!allGrouped.some((g) => g.key === openProfileKey)) setOpenProfileKey(null);
@@ -381,7 +411,7 @@ export default function TestSearch({
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Rechercher un test…"
+          placeholder="Rechercher un test, profil ou code…"
           className="pl-9 h-11 text-base"
         />
         {query && (
@@ -616,8 +646,8 @@ export default function TestSearch({
                         inCart ? (
                           <button
                             onClick={() => {
-                              if (isProfile && matchingBundle) {
-                                onRemoveFromCart?.(matchingBundle.selfTestMappingId!);
+                              if (isProfile && matchingBundle && onAddBundle) {
+                                onAddBundle(matchingBundle);
                               } else {
                                 selectedMappingId && onRemoveFromCart?.(selectedMappingId);
                               }
@@ -719,8 +749,57 @@ export default function TestSearch({
         </div>
       )}
 
+      {!isLoading && bundleMatches.length > 0 && (
+        <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
+          <div className="px-3 py-2 border-b border-border/40 bg-muted/30">
+            <p className="text-xs font-medium text-muted-foreground">
+              Offres groupées correspondantes ({bundleMatches.length})
+            </p>
+          </div>
+          <ul className="divide-y divide-border/25">
+            {bundleMatches.map((bundle) => {
+              const inSelection = !!selectedBundleIds?.has(bundle.id);
+              return (
+                <li key={bundle.id} className="px-3 py-2.5 flex items-center gap-2.5">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold truncate">{bundle.dealName}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      {bundle.sourceLabCode && (
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+                          {bundle.sourceLabCode}
+                        </Badge>
+                      )}
+                      {bundle.profileCode && (
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
+                          {bundle.profileCode}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div className="shrink-0 flex items-center gap-2">
+                    <span className="text-sm font-bold tabular-nums">
+                      {formatCurrency(bundle.customRate)}
+                    </span>
+                    {onAddBundle && (
+                      <Button
+                        size="sm"
+                        variant={inSelection ? "default" : "outline"}
+                        className="h-8 px-2.5"
+                        onClick={() => onAddBundle(bundle)}
+                      >
+                        {inSelection ? "Ajouté" : "Ajouter"}
+                      </Button>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
       {/* ── Empty state ───────────────────────────────────────────── */}
-      {!isLoading && query.length >= 2 && allGrouped.length === 0 && (
+      {!isLoading && query.length >= 2 && allGrouped.length === 0 && bundleMatches.length === 0 && (
         <div className="rounded-xl border border-dashed border-border/40 px-4 py-8 text-center">
           <p className="text-sm text-muted-foreground">
             Aucun résultat pour &ldquo;{query}&rdquo;

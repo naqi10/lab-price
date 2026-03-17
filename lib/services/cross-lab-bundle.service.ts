@@ -45,8 +45,8 @@ function wordSimilarity(a: string, b: string): number {
 }
 
 /**
- * Compares CDL bundles against QC bundles using name similarity.
- * Returns matched pairs (similarity >= 0.4), CDL-only, and QC-only bundles.
+ * Compares CDL bundles against Dynacare bundles using name similarity.
+ * Returns matched pairs (similarity >= 0.4), CDL-only, and Dynacare-only bundles.
  */
 export async function compareBundlesAcrossLabs(): Promise<CrossLabBundleReport> {
   const allBundles = await prisma.bundleDeal.findMany({
@@ -65,7 +65,12 @@ export async function compareBundlesAcrossLabs(): Promise<CrossLabBundleReport> 
   });
 
   const cdlBundles = allBundles.filter((b) => b.sourceLabCode === "CDL").map(toSummary);
-  const qcBundles = allBundles.filter((b) => b.sourceLabCode === "QC").map(toSummary);
+  const qcBundles = allBundles
+    .filter((b) => {
+      const code = (b.sourceLabCode ?? "").toUpperCase();
+      return code === "QC" || code === "DYNACARE";
+    })
+    .map(toSummary);
   // Manually created bundles (no sourceLabCode) are excluded from cross-lab comparison
 
   const SIMILARITY_THRESHOLD = 0.4;

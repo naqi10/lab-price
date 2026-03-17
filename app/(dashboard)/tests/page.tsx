@@ -51,6 +51,7 @@ import {
   ClipboardList,
   FileText,
   List,
+  ListFilter,
   ListPlus,
   Sparkles,
   Undo2,
@@ -114,6 +115,7 @@ function UnifiedTestsContent() {
   // ── Bundle deals ─────────────────────────────────────────────────────────
   const [availableBundles, setAvailableBundles] = useState<ActiveDeal[]>([]);
   const [bundlesLoading, setBundlesLoading] = useState(true);
+  const [storedBundleCount, setStoredBundleCount] = useState<number | null>(null);
   const [selectedBundleIds, setSelectedBundleIds] = useState<Set<string>>(
     new Set(),
   );
@@ -122,7 +124,14 @@ function UnifiedTestsContent() {
     fetch("/api/tests/deals/active")
       .then((r) => r.json())
       .then((d) => {
-        if (d.success) setAvailableBundles(d.data || []);
+        if (d.success) {
+          setAvailableBundles(d.data || []);
+          setStoredBundleCount(
+            typeof d.meta?.storedActiveBundleCount === "number"
+              ? d.meta.storedActiveBundleCount
+              : null
+          );
+        }
       })
       .catch(() => {})
       .finally(() => setBundlesLoading(false));
@@ -525,7 +534,7 @@ function UnifiedTestsContent() {
 
   const hasAnySelection = items.length > 0 || selectedBundles.length > 0;
   const [showBundles, setShowBundles] = useState(false);
-  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkMode, setBulkMode] = useState(true);
   const [bulkPreview, setBulkPreview] = useState<BulkPreviewState>({
     mode: "individual",
     tests: [],
@@ -720,14 +729,6 @@ function UnifiedTestsContent() {
                 <h2 className="text-base font-semibold">Recherche de tests</h2>
                 <p className="text-xs text-muted-foreground/70">Recherchez et ajoutez des analyses</p>
               </div>
-              <button
-                onClick={() => setBulkMode(true)}
-                title="Saisie en lot"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/40 rounded-lg px-2.5 py-1.5 transition-colors hover:bg-primary/5"
-              >
-                <ListPlus className="h-3.5 w-3.5" />
-                En lot
-              </button>
             </div>
           )}
 
@@ -772,8 +773,8 @@ function UnifiedTestsContent() {
               >
                 <Package className="h-4 w-4 text-black" />
                 Voir les offres groupées
-                {!bundlesLoading && availableBundles.length > 0 && (
-                  <span className="text-sm text-slate-600">({availableBundles.length})</span>
+                {!bundlesLoading && (storedBundleCount ?? availableBundles.length) > 0 && (
+                  <span className="text-sm text-slate-600">({storedBundleCount ?? availableBundles.length})</span>
                 )}
               </button>
             ) : (
@@ -799,6 +800,9 @@ function UnifiedTestsContent() {
                   )}
                   {availableBundles.map((bundle) => {
                     const isSelected = selectedBundleIds.has(bundle.id);
+                    const allBundleTests = bundle.componentTests?.length
+                      ? bundle.componentTests.map((test) => test.name)
+                      : bundle.canonicalNames;
                     return (
                       <button
                         key={bundle.id}
@@ -839,20 +843,18 @@ function UnifiedTestsContent() {
                               {bundle.profileTurnaround && <span>- {bundle.profileTurnaround}</span>}
                             </p>
                           )}
-                          {bundle.componentTests && bundle.componentTests.length > 0 ? (
-                            <p className="text-sm text-slate-600 truncate mt-0.5">
-                              {bundle.componentTests
-                                .slice(0, 3)
-                                .map((test) => test.name)
-                                .join(" · ")}
-                              {bundle.componentTests.length > 3 && "…"}
-                            </p>
-                          ) : bundle.canonicalNames.length > 0 ? (
-                            <p className="text-sm text-slate-600 truncate mt-0.5">
-                              {bundle.canonicalNames.slice(0, 3).join(" · ")}
-                              {bundle.canonicalNames.length > 3 && "…"}
-                            </p>
-                          ) : null}
+                          {allBundleTests.length > 0 && (
+                            <div className="mt-1.5 flex flex-wrap gap-1">
+                              {allBundleTests.map((name) => (
+                                <span
+                                  key={`${bundle.id}-${name}`}
+                                  className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-700"
+                                >
+                                  {name}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
                         {isSelected ? (
                           <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0" />
@@ -958,21 +960,40 @@ function UnifiedTestsContent() {
                 {selectedBundles.map((bundle) => (
                   <div
                     key={bundle.id}
-                    className="flex items-center justify-between py-1.5 group"
+                    className="py-1.5 group"
                   >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Package className="h-3 w-3 text-primary/50 shrink-0" />
-                      <span className="text-xs text-foreground/70 truncate">{bundle.dealName}</span>
-                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0 shrink-0">
-                        {`${bundle.testMappingIds.length} tests`}
-                      </Badge>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Package className="h-3 w-3 text-primary/50 shrink-0" />
+                          <span className="text-xs text-foreground/70 font-medium">{bundle.dealName}</span>
+                          <Badge variant="secondary" className="text-[9px] px-1.5 py-0 shrink-0">
+                            {`${bundle.testMappingIds.length} tests`}
+                          </Badge>
+                        </div>
+                        {((bundle.componentTests?.length ?? 0) > 0 || bundle.canonicalNames.length > 0) && (
+                          <div className="mt-1 pl-5 flex flex-wrap gap-1">
+                            {(bundle.componentTests?.length
+                              ? bundle.componentTests.map((t) => t.name)
+                              : bundle.canonicalNames
+                            ).map((name) => (
+                              <span
+                                key={`${bundle.id}-${name}`}
+                                className="inline-flex items-center rounded-md border border-border/50 bg-muted/30 px-1.5 py-0.5 text-[10px] text-foreground/70"
+                              >
+                                {name}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => toggleBundle(bundle)}
+                        className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-destructive/30 bg-destructive/10 text-destructive/80 hover:bg-destructive/20 transition-colors shrink-0 ml-2 mt-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => toggleBundle(bundle)}
-                      className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-destructive/30 bg-destructive/10 text-destructive/80 hover:bg-destructive/20 transition-colors shrink-0 ml-2"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
                   </div>
                 ))}
             </div>
@@ -1048,6 +1069,33 @@ function UnifiedTestsContent() {
 
         {/* ════════════════ RIGHT: Summary ════════════════ */}
         <div className={`${bulkExpanded ? "order-2" : "order-3 lg:order-3 lg:col-span-2 xl:col-span-1"} space-y-4 xl:sticky xl:top-4 xl:self-start`}>
+          <div className="rounded-xl border border-border/60 bg-card/70 p-1">
+            <div className="grid grid-cols-2 gap-1">
+              <button
+                onClick={() => setBulkMode(true)}
+                className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                  bulkMode
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                }`}
+              >
+                <ListPlus className="h-3.5 w-3.5" />
+                En lot
+              </button>
+              <button
+                onClick={() => setBulkMode(false)}
+                className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                  !bulkMode
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                }`}
+              >
+                <ListFilter className="h-3.5 w-3.5" />
+                Simple
+              </button>
+            </div>
+          </div>
+
           {/* Summary card */}
           <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
             {/* Header */}
@@ -1062,7 +1110,7 @@ function UnifiedTestsContent() {
             </div>
 
             {/* Price display */}
-            <div className="px-5 py-6">
+            <div className="px-5 py-4">
               {bulkExpanded ? (
                 /* Bulk mode: show subtotal + editable service fee + total */
                 <div className="rounded-xl border border-primary/20 bg-primary/5 overflow-hidden">
