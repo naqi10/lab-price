@@ -342,9 +342,9 @@ export const QC_PROFILE_COMPONENTS: Record<string, string[]> = {
   "NGPCRD":   ["CMPCR", "GONOU"],
 
   // ANÉMIE
-  "ANEM1":    ["CBC", "SED", "IRON", "VB12", "FOL"],
+  "ANEM1":    ["CBC", "SED", "TIBCP", "VB12", "FOL"],
   "ANEM11":   ["SED", "CBC", "FERR"],
-  "ANEM8":    ["SED", "CBC", "FERR", "IRON"],
+  "ANEM8":    ["SED", "CBC", "FERR", "TIBCP"],
 
   // BIOCHIMIE
   "SMA12":    ["ACGL", "ALB", "ALKP", "AST", "BILIT", "CA", "CHOL", "CREA", "LD", "TP", "UREA", "URIC"],
@@ -360,8 +360,8 @@ export const QC_PROFILE_COMPONENTS: Record<string, string[]> = {
   "STDMU":    ["CMPCR", "GONOU"],
 
   // HÉPATITES
-  "HEPAB":    ["HBAB", "HBCS", "HBS"],
-  "HEPABC":   ["HBAB", "HBCS", "HBS"],
+  "HEPAB":    ["HBAB", "HBCS", "HBS", "HAVM"],
+  "HEPABC":   ["HBAB", "HBCS", "HBS", "HAVM", "HEPC"],
   "HEPB":     ["HBAB", "HBCS", "HBS"],
 
   // MALADIE CŒLIAQUE
@@ -401,25 +401,38 @@ export const QC_PROFILE_COMPONENTS: Record<string, string[]> = {
   "MONOP":    ["CBC", "MONO"],
 
   // OSTÉOPOROSE
-  "OSTEOP":   ["ALKP", "CA", "CREA", "PO4", "ALB", "TP", "SPEP"],
+  "OSTEOP":   [
+    "PTH",
+    "SPEP",
+    "CAI",
+    "ALB",
+    "ALKP",
+    "CA",
+    "CREA",
+    "PO4",
+    "TP",
+    "CAURAN",
+    "CREAURAN",
+    "PHOSURAN",
+  ],
 
   // PRÉNATAL
   "PREN1":    ["CBC", "BLDT", "ABSN"],
   "PREN2":    ["CBC", "BLDT", "ABSN", "RUB"],
-  "PREN3":    ["CBC", "BLDT", "ABSN", "RUB", "ACGL"],
+  "PREN3":    ["CBC", "BLDT", "ABSN", "RUB", "TOXG", "ACGL", "PCGL"],
 
   // SMA
-  "SMA16":    ["ACGL", "ALB", "ALKP", "AST", "BILIT", "CA", "CHOL", "CREA", "ELEC"],
+  "SMA16":    ["ACGL", "ALB", "ALKP", "AST", "BILIT", "CA", "CHOL", "CREA", "ELEC", "CO2P"],
   "SMA5":     ["ACGL", "CREA", "ELEC"],
   "SMA6":     ["ACGL", "UREA", "CREA", "ELEC"],
-  "SMA7":     ["ACGL", "UREA", "CREA", "ELEC"],
+  "SMA7":     ["ACGL", "UREA", "CREA", "ELEC", "CO2P"],
 
   // THYROÏDE
   "TH2":      ["TSH", "T4F"],
-  "TH6":      ["TSH", "T4F", "TPO"],
+  "TH6":      ["TSH", "T4F", "TAPRO"],
 
   // UROLITHIASE
-  "STONE":    ["CA", "PO4", "ELEC", "URIC", "URI"],
+  "STONE":    ["CA", "PO4", "ELEC", "URIC", "CA/U", "24UPHOS", "24UCREA", "24UURIC", "OXAUR", "URI"],
 };
 
 /**

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
-import { getProfileComponents } from "@/lib/data/profile-descriptions";
+import {
+  CDL_PROFILE_COMPONENTS,
+  QC_PROFILE_COMPONENTS,
+  getProfileComponents,
+} from "@/lib/data/profile-descriptions";
 
 export interface ProfileMatchResult {
   id: string;
@@ -28,7 +32,11 @@ export interface ProfileMatchResult {
 
 /**
  * POST /api/tests/profile-match
- * Body: { testMappingIds: string[], labPref?: "CDL"|"DYNACARE"|null }
+ * Body: {
+ *   testMappingIds: string[],
+ *   profileHints?: string[],
+ *   labPref?: "CDL"|"DYNACARE"|null
+ * }
  *
  * Returns bundle_deals where ALL of the submitted testMappingIds are contained
  * in the bundle's testMappingIds array (selected ⊆ profile).
@@ -37,14 +45,56 @@ export interface ProfileMatchResult {
  */
 export async function POST(req: NextRequest) {
   try {
+    const resolveProfileComponentCodes = (
+      profileCode: string | null,
+      sourceLabCode: string | null
+    ): string[] => {
+      if (!profileCode) return [];
+      const key = profileCode.toUpperCase();
+      const lab = sourceLabCode?.toUpperCase() ?? "";
+      if (lab === "QC" || lab === "DYNACARE" || lab === "DYN") {
+        return QC_PROFILE_COMPONENTS[key] ?? CDL_PROFILE_COMPONENTS[key] ?? [];
+      }
+      if (lab === "CDL") {
+        return CDL_PROFILE_COMPONENTS[key] ?? QC_PROFILE_COMPONENTS[key] ?? [];
+      }
+      return getProfileComponents(profileCode);
+    };
+
     const body = await req.json();
-    const { testMappingIds, selectedPrices } = body as {
+    const { testMappingIds, selectedPrices, profileHints } = body as {
       testMappingIds: string[];
       // price per testMappingId as chosen by the user (for savings comparison)
       selectedPrices: Record<string, number>;
+      // optional user-entered profile hints (e.g. ITSS, GONO-CHLAM)
+      profileHints?: string[];
     };
 
-    if (!testMappingIds || testMappingIds.length === 0) {
+    const selectedIds = Array.isArray(testMappingIds) ? testMappingIds : [];
+    const selectedPriceMap = selectedPrices ?? {};
+    const rawHints = (profileHints ?? [])
+      .map((h) => h?.toString().trim())
+      .filter((h): h is string => Boolean(h))
+      .map((h) => h.toUpperCase());
+    const compactToken = (value: string): string =>
+      value.toUpperCase().replace(/[^A-Z0-9]+/g, "");
+    const compactHintSet = new Set(rawHints.map(compactToken).filter(Boolean));
+    const stoneHintTokens = new Set([
+      "STONE",
+      "UROLITHIASE",
+      "UROLITHIASIS",
+      "24UPHOS",
+      "24UCREA",
+      "24UURIC",
+      "OXAUR",
+    ]);
+    const stoneHintTriggered = Array.from(compactHintSet).some((t) =>
+      Array.from(stoneHintTokens).some((s) => t.includes(s) || s.includes(t))
+    );
+    const hasSelectedTests = selectedIds.length > 0;
+    const hasHints = rawHints.length > 0;
+
+    if (!hasSelectedTests && !hasHints) {
       return NextResponse.json({ success: true, data: [] });
     }
 
@@ -60,11 +110,75 @@ export async function POST(req: NextRequest) {
       profileCode: string | null;
     };
 
-    // Prisma-native array containment match (avoids raw SQL failures / P2010).
-    const matchingBundles: BundleRow[] = await prisma.bundleDeal.findMany({
+    const matchingBundles: BundleRow[] = [];
+    const bundleById = new Map<string, BundleRow>();
+
+    if (hasSelectedTests) {
+      // Prisma-native array containment match (avoids raw SQL failures / P2010).
+      const selectedMatches = await prisma.bundleDeal.findMany({
+        where: {
+          isActive: true,
+          testMappingIds: { hasEvery: selectedIds },
+        },
+        select: {
+          id: true,
+          dealName: true,
+          description: true,
+          category: true,
+          icon: true,
+          customRate: true,
+          testMappingIds: true,
+          sourceLabCode: true,
+          profileCode: true,
+        },
+        orderBy: { customRate: "asc" },
+      });
+      for (const bundle of selectedMatches) {
+        bundleById.set(bundle.id, bundle);
+      }
+    }
+
+    if (hasHints) {
+      const hintMatches = await prisma.bundleDeal.findMany({
+        where: {
+          isActive: true,
+          OR: [
+            ...rawHints.map((hint) => ({
+              profileCode: { equals: hint, mode: "insensitive" as const },
+            })),
+            ...rawHints.flatMap((hint) => [
+              { dealName: { contains: hint, mode: "insensitive" } },
+              { description: { contains: hint, mode: "insensitive" } },
+            ]),
+          ],
+        },
+        select: {
+          id: true,
+          dealName: true,
+          description: true,
+          category: true,
+          icon: true,
+          customRate: true,
+          testMappingIds: true,
+          sourceLabCode: true,
+          profileCode: true,
+        },
+        orderBy: { customRate: "asc" },
+      });
+      for (const bundle of hintMatches) {
+        bundleById.set(bundle.id, bundle);
+      }
+    }
+
+    matchingBundles.push(...bundleById.values());
+
+    // Recovery / normalization path for profile bundles:
+    // resolve profile components from profileCode -> component test codes -> mapping IDs.
+    // This also fixes bundles seeded with stale or partial testMappingIds.
+    const profileBundles = await prisma.bundleDeal.findMany({
       where: {
         isActive: true,
-        testMappingIds: { hasEvery: testMappingIds },
+        profileCode: { not: null },
       },
       select: {
         id: true,
@@ -77,30 +191,9 @@ export async function POST(req: NextRequest) {
         sourceLabCode: true,
         profileCode: true,
       },
-      orderBy: { customRate: "asc" },
     });
 
-    // Recovery path for profiles seeded with empty test_mapping_ids:
-    // resolve profile components from profileCode -> component test codes -> mapping IDs.
-    const emptyBundles = await prisma.bundleDeal.findMany({
-      where: {
-        isActive: true,
-        profileCode: { not: null },
-        testMappingIds: { equals: [] },
-      },
-      select: {
-        id: true,
-        dealName: true,
-        description: true,
-        category: true,
-        icon: true,
-        customRate: true,
-        sourceLabCode: true,
-        profileCode: true,
-      },
-    });
-
-    if (emptyBundles.length > 0) {
+    if (profileBundles.length > 0) {
       const mappingCodes = await prisma.testMapping.findMany({
         where: { code: { not: null } },
         select: { id: true, code: true },
@@ -133,29 +226,116 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      const selectedSet = new Set(testMappingIds);
+      const selectedSet = new Set(selectedIds);
       const existingBundleIds = new Set(matchingBundles.map((b) => b.id));
+      const hintSet = new Set(rawHints);
 
-      for (const bundle of emptyBundles) {
-        const componentCodes = getProfileComponents(bundle.profileCode);
+      const componentCodeAliases: Record<string, string[]> = {
+        // Common chemistry code variants across labs/canonicals.
+        PO4: ["PHOS"],
+        PHOS: ["PO4"],
+        LD: ["LDH"],
+        LDH: ["LD"],
+        ELEC: ["LYTES"],
+        LYTES: ["ELEC"],
+        CBC: ["FSC"],
+        FSC: ["CBC"],
+        PT: ["PTPT", "PTPTT"],
+        PTT: ["PTPT", "PTPTT"],
+        PTPT: ["PT", "PTT"],
+        PTPTT: ["PT", "PTT"],
+        // STI bundle variants across labs.
+        CMPCR: ["CMPC", "CMPCU", "CGPCR1", "CGPCR2", "CGPCR3", "NGPCRD", "PCRCHSD", "STDMU"],
+        GONOU: ["GONO", "NGPCRD", "TGCD", "STDMU"],
+        // Hepatitis naming/code variants.
+        HBAB: ["ANHBS"],
+        ANHBS: ["HBAB"],
+        HBCS: ["HEPBC"],
+        HEPBC: ["HBCS"],
+        HAVM: ["HEPAM"],
+        HEPAM: ["HAVM"],
+        DEGLIAG: ["GLIA"],
+        GLIA: ["DEGLIAG"],
+        TRANSGLUT: ["GTTG"],
+        GTTG: ["TRANSGLUT"],
+        // Lipid / CRP variants.
+        LDLD: ["LDL"],
+        LDL: ["LDLD"],
+        CRPHS: ["CH4SC", "HSCRP", "CRPHS"],
+        CH4SC: ["CRPHS", "HSCRP"],
+        HSCRP: ["CRPHS", "CH4SC"],
+        MONO: ["MON+"],
+        "MON+": ["MONO"],
+        BLDT: ["BLOOD"],
+        BLOOD: ["BLDT"],
+        TOXG: ["TOXO"],
+        TOXO: ["TOXG"],
+        RUB: ["RUBEOLA", "RUBIGG"],
+        T4F: ["FT4", "T4L", "T4FREE"],
+        FT4: ["T4F", "T4L", "T4FREE"],
+        TAPRO: ["TPO", "ANTITPO"],
+        TPO: ["TAPRO", "ANTITPO"],
+        ELEC: ["LYTES", "UELER"],
+        LYTES: ["ELEC", "UELER"],
+      };
+
+      const expandCandidateCodes = (code: string): string[] => {
+        const upper = code.toUpperCase();
+        const aliases = componentCodeAliases[upper] ?? [];
+        return [upper, ...aliases];
+      };
+
+      for (const bundle of profileBundles) {
+        const componentCodes = resolveProfileComponentCodes(
+          bundle.profileCode,
+          bundle.sourceLabCode
+        );
         if (componentCodes.length === 0) continue;
 
+        // Resolve each logical component code to exactly one mapping id.
+        // This prevents alias expansion (e.g. CMPCR/CGPCR*/NGPCRD) from inflating
+        // a profile into many extra pseudo-components.
         const resolvedIds = Array.from(
           new Set(
             componentCodes
-              .map((code) => codeToMapping.get(code.toUpperCase()))
+              .map((code) => {
+                const candidateIds = expandCandidateCodes(code)
+                  .map((candidateCode) => codeToMapping.get(candidateCode))
+                  .filter((id): id is string => Boolean(id));
+                if (candidateIds.length === 0) return null;
+                const preferredSelected = candidateIds.find((id) => selectedSet.has(id));
+                return preferredSelected ?? candidateIds[0];
+              })
               .filter((id): id is string => Boolean(id))
           )
         );
 
         if (resolvedIds.length === 0) continue;
-        if (existingBundleIds.has(bundle.id)) continue;
 
         const resolvedSet = new Set(resolvedIds);
-        const coversAllSelected = testMappingIds.every((id) => selectedSet.has(id) && resolvedSet.has(id));
-        if (!coversAllSelected) continue;
-
-        matchingBundles.push({
+        const coversAllSelected = hasSelectedTests
+          ? selectedIds.every((id) => selectedSet.has(id) && resolvedSet.has(id))
+          : false;
+        const bundleProfileCode = (bundle.profileCode ?? "").toUpperCase();
+        const bundleDealName = (bundle.dealName ?? "").toUpperCase();
+        const bundleDesc = (bundle.description ?? "").toUpperCase();
+        const matchesHint = hasHints && Boolean(
+          (bundleProfileCode && hintSet.has(bundleProfileCode)) ||
+          compactHintSet.has(compactToken(bundleProfileCode)) ||
+          (bundleProfileCode === "STONE" && stoneHintTriggered) ||
+          rawHints.some((hint) =>
+            bundleDealName.includes(hint) || bundleDesc.includes(hint)
+          ) ||
+          rawHints.some((hint) => {
+            const compactHint = compactToken(hint);
+            if (!compactHint) return false;
+            return (
+              compactToken(bundleDealName).includes(compactHint) ||
+              compactToken(bundleDesc).includes(compactHint)
+            );
+          })
+        );
+        const normalizedBundle: BundleRow = {
           id: bundle.id,
           dealName: bundle.dealName,
           description: bundle.description ?? "",
@@ -165,8 +345,60 @@ export async function POST(req: NextRequest) {
           testMappingIds: resolvedIds,
           sourceLabCode: bundle.sourceLabCode,
           profileCode: bundle.profileCode,
-        });
+        };
+
+        if (existingBundleIds.has(bundle.id)) {
+          const idx = matchingBundles.findIndex((b) => b.id === bundle.id);
+          if (idx >= 0) matchingBundles[idx] = normalizedBundle;
+          continue;
+        }
+
+        if (!coversAllSelected && !matchesHint) continue;
+        matchingBundles.push(normalizedBundle);
         existingBundleIds.add(bundle.id);
+      }
+
+      // Safety net: when urolithiasis short-codes are entered, always surface STONE
+      // as an alternative profile even if several component tests are not directly
+      // discoverable through the generic test search endpoint.
+      if (stoneHintTriggered && !matchingBundles.some((b) => (b.profileCode ?? "").toUpperCase() === "STONE")) {
+        const stoneBundle = profileBundles.find(
+          (b) => (b.profileCode ?? "").toUpperCase() === "STONE"
+        );
+        if (stoneBundle) {
+          const stoneCodes = resolveProfileComponentCodes(
+            stoneBundle.profileCode,
+            stoneBundle.sourceLabCode
+          );
+          const stoneResolvedIds = Array.from(
+            new Set(
+              stoneCodes
+                .map((code) => {
+                  const candidateIds = expandCandidateCodes(code)
+                    .map((candidateCode) => codeToMapping.get(candidateCode))
+                    .filter((id): id is string => Boolean(id));
+                  if (candidateIds.length === 0) return null;
+                  const preferredSelected = candidateIds.find((id) => selectedSet.has(id));
+                  return preferredSelected ?? candidateIds[0];
+                })
+                .filter((id): id is string => Boolean(id))
+            )
+          );
+          if (stoneResolvedIds.length > 0) {
+            matchingBundles.push({
+              id: stoneBundle.id,
+              dealName: stoneBundle.dealName,
+              description: stoneBundle.description ?? "",
+              category: stoneBundle.category ?? "Profil",
+              icon: stoneBundle.icon ?? "🧪",
+              customRate: Number(stoneBundle.customRate ?? 0),
+              testMappingIds: stoneResolvedIds,
+              sourceLabCode: stoneBundle.sourceLabCode,
+              profileCode: stoneBundle.profileCode,
+            });
+            existingBundleIds.add(stoneBundle.id);
+          }
+        }
       }
     }
 
@@ -207,15 +439,15 @@ export async function POST(req: NextRequest) {
 
       // Sum of user's individually chosen prices for the tests in this profile
       // Only count tests that were actually selected by the user
-      const selectedIndividualSum = testMappingIds.reduce(
-        (sum, id) => sum + (selectedPrices[id] ?? 0),
+      const selectedIndividualSum = selectedIds.reduce(
+        (sum, id) => sum + (selectedPriceMap[id] ?? 0),
         0
       );
 
       const profilePrice = Number(b.customRate) || 0;
       const extraIncludedCount = Math.max(
         0,
-        (b.testMappingIds?.length ?? 0) - testMappingIds.length
+        (b.testMappingIds?.length ?? 0) - selectedIds.length
       );
       const savingsAmount = Math.max(0, selectedIndividualSum - profilePrice);
       const isRecommended = profilePrice > 0 && profilePrice < selectedIndividualSum;

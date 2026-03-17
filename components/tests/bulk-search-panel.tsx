@@ -98,6 +98,103 @@ function isDynacare(code: string, name: string) {
   );
 }
 
+function normalizeBulkQuery(input: string): string {
+  const n = input
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+
+  if (!n) return input;
+  if (/\b(sma16|sma-?16|profil\s*sma-?16)\b/.test(n)) return "SMA16";
+  if (/\b(sma5|sma-?5|profil\s*sma-?5)\b/.test(n)) return "SMA5";
+  if (/\b(sma6|sma-?6|profil\s*sma-?6)\b/.test(n)) return "SMA6";
+  if (/\b(sma7|sma-?7|profil\s*sma-?7)\b/.test(n)) return "SMA7";
+  if (/\b(th2|thyroidien\s*no?\s*2|thyroid.*2)\b/.test(n)) return "TH2";
+  if (/\b(th6|thyroidien\s*no?\s*6|thyroid.*6)\b/.test(n)) return "TH6";
+  if (/\b(stone|urolithiase|urolithiasis)\b/.test(n)) return "STONE";
+  if (/\b(celiac|coeliaque|coeliaq|celiaque|maladie\s*coeliaque)\b/.test(n)) {
+    if (/\b(depistage|screen)\b/.test(n)) return "CELISCRE";
+    return "CELIAC";
+  }
+  if (/\b(itss|gono[\s-]?chlam|its|sti|std)\b/.test(n)) return "ITSS";
+  if (/\b(pren1|prenatal\s*no?\s*1|profil\s*prenatal\s*no?\s*1)\b/.test(n)) return "PREN1";
+  if (/\b(pren2|prenatal\s*no?\s*2|profil\s*prenatal\s*no?\s*2)\b/.test(n)) return "PREN2";
+  if (/\b(pren3|prenatal\s*no?\s*3|profil\s*prenatal\s*no?\s*3)\b/.test(n)) return "PREN3";
+  if (/\b(monop|profil\s*monotest)\b/.test(n)) return "MONOP";
+  if (/\b(osteop|osteoporose|osteoporosis|profil\s*osteop)\b/.test(n)) return "OSTEOP";
+  if (/\b(fpsa[_\s-]?prof|profil\s*marqueurs?\s*prostatiques)\b/.test(n)) return "FPSA_PROF";
+  if (/\b(lft|profil\s*hepatique|hepatic\s*panel|foie)\b/.test(n)) return "LFT";
+  if (/\b(lipid18|lipid-?18|lipidique.*18|cardiovasculaire.*18)\b/.test(n)) return "LIPID18";
+  if (/\b(lipid6|lipid-?6|lipidique.*6|cardiovasculaire.*6)\b/.test(n)) return "LIPID6";
+  if (/\b(lipid|profil\s*lipidique|cardiovasculaire)\b/.test(n)) return "LIPID";
+  if (/\b(hemogramme|hemogram|fsc|cbc|formule sanguine)\b/.test(n)) return "CBC";
+  if (/\b(vitesse.*sedimentation|sedimentation|vitesse sed)\b/.test(n)) return "SED";
+  if (/\b(tibcp|tibc|uibc|fer total)\b/.test(n)) return "TIBCP";
+  if (/\b(inr|temps quick|prothrombine|pt)\b/.test(n)) return "PT";
+  if (/\b(ptt|tca)\b/.test(n)) return "PTT";
+  if (/\b(anti[\s-]?hbs|hbs\s*antibod|anticorps.*hbs)\b/.test(n)) return "ANHBS";
+  if (/\b(anti[\s-]?hbc|hbc\s*antibod|anticorps.*hbc)\b/.test(n)) return "HEPBC";
+  if (/\b(hbs\s*antigen|hbsag|antigene.*hbs)\b/.test(n)) return "HBS";
+  if (/\b(hepatite?\s*a.*igm|anti.*hepatite?\s*a.*igm|havm|hepam)\b/.test(n)) return "HAVM";
+  if (/\b(hepatite?\s*c.*anticorps|anti.*hepatite?\s*c|hepc|hcv\s*antibod)\b/.test(n)) return "HEPC";
+  if (/\b(antigene?\s*hbs|hbsag|hbs\s*antigen)\b/.test(n)) return "HBS";
+  if (/\b(hba1c|hbaic|a1c|hemoglobine?\s*a1c|hemoglobin\s*a1c)\b/.test(n)) return "HBA1C";
+  if (/\b(cholesterol|cholesterole|chol)\b/.test(n)) return "CHOL";
+  if (/\b(triglycerides?|triglycerides?|trig)\b/.test(n)) return "TRIG";
+  if (/\b(haute\s*sensibilite|high\s*sensitivity|crp[-\s]?hs|hs[-\s]?crp)\b/.test(n)) return "CRPHS";
+  if (/\b(apolipoproteine?\s*b|apob)\b/.test(n)) return "APOB";
+  if (/\b(cholesterol\s*hdl|\bhdl\b)\b/.test(n)) return "HDL";
+  if (/\b(cholesterol\s*ldl|\bldl\b)\b/.test(n)) return "LDLD";
+  if (/\b(aps\s*libre|free\s*psa)\b/.test(n)) return "FPSA";
+  if (/\b(aps\s*totale?|psa\s*total)\b/.test(n)) return "PSA";
+  if (/\b(anticorps\s*maternel|recherche\s*d.?anticorps)\b/.test(n)) return "ABSN";
+  if (/\b(groupe\s*sanguin|facteur\s*rh|blood\s*group)\b/.test(n)) return "BLOOD";
+  if (/\b(rubeole|rubella)\b/.test(n)) return "RUB";
+  if (/\b(toxoplasmose|toxo)\b/.test(n)) return "TOXG";
+  if (/\b(glucose\s*pc|postprand)\b/.test(n)) return "PCGL";
+  if (/\b(t4\s*libre|free\s*t4|ft4)\b/.test(n)) return "T4F";
+  if (/\b(anti[\s-]?microsomes?\s*thyroid|anti[\s-]?tpo|tpo)\b/.test(n)) return "TAPRO";
+  if (/\b(co2\s*totale?|bicarbonate)\b/.test(n)) return "CO2P";
+  if (/\b(creatinine.*urines?\s*de\s*24|24h.*creatinine|24ucrea)\b/.test(n)) return "24UCREA";
+  if (/\b(phosphore.*urines?\s*de\s*24|24h.*phosphore|24uphos)\b/.test(n)) return "24UPHOS";
+  if (/\b(acide\s*urique.*urines?\s*de\s*24|24h.*urique|24uuric)\b/.test(n)) return "24UURIC";
+  if (/\b(oxalates?.*urines?\s*de\s*24|24h.*oxal|oxaur)\b/.test(n)) return "OXAUR";
+  if (/\b(calcium.*urines?\s*de\s*24|24h.*calcium|ca\/u)\b/.test(n)) return "CA/U";
+  if (/\b(monotest)\b/.test(n)) return "MONO";
+  if (/\b(phosphore|phosphate)\b/.test(n) && !/\b(urine|urinaire|hasard|random)\b/.test(n)) return "PO4";
+  if (/\b(calcium\s*ionise)\b/.test(n)) return "CAI";
+  if (/\b(electrophorese\s*des?\s*proteines?|electrophorese\s*proteines?)\b/.test(n)) return "SPEP";
+  if (/\b(calcium.*(urine|urinaire).*(hasard|random)|cauran)\b/.test(n)) return "CAURAN";
+  if (/\b(creatinine.*(urine|urinaire).*(hasard|random)|creauran)\b/.test(n)) return "CREAURAN";
+  if (/\b(phosphore.*(urine|urinaire).*(hasard|random)|phosuran)\b/.test(n)) return "PHOSURAN";
+  if (/\b(pth|parathyr)\b/.test(n)) return "PTH";
+  if (/\b(alt|sgpt)\b/.test(n)) return "ALT";
+  if (/\b(ast|sgot)\b/.test(n)) return "AST";
+  if (/\b(gamma.*gt|gamma[-\s]?gt|ggt)\b/.test(n)) return "GGT";
+  if (/\b(ldh|lactate.*dehydrogen|dehydrogenase)\b/.test(n)) return "LD";
+  if (/\b(phosphatase.*alcaline|alkaline.*phosphatase|alkp)\b/.test(n)) return "ALKP";
+  if (/\b(bilirubine?\s*totale?|total\s*bilirubin)\b/.test(n)) return "BILIT";
+  if (/\b(vih|hiv|virus.*immunodeficience)\b/.test(n)) return "HIV";
+  if (/\b(syph|treponem|rpr|vdrl)\b/.test(n)) return "SYPEIA";
+  if (/\b(urine analysis|urinalysis|analyse d.?urine|analysis urine)\b/.test(n)) return "URI";
+  if (/\b(creatinine|creatinin|crea)\b/.test(n)) return "CREA";
+  if (/\b(iga\s*totales?|immunoglobuline?\s*iga)\b/.test(n)) return "IGA";
+  if (/\b(transglutaminase|anti[\s-]?transglut)\b/.test(n)) return "TRANSGLUT";
+  if (/\b(gliadine).*(igg)\b/.test(n) || /\b(anti[\s-]?gliadine).*(igg)\b/.test(n)) return "DEGLIAG";
+  if (/\b(gliadine).*(iga)\b/.test(n) || /\b(anti[\s-]?gliadine).*(iga)\b/.test(n)) return "GLIA";
+  if (/\b(vitamine?\s*b12|vitamin\s*b12|vb12)\b/.test(n)) return "VB12";
+  if (/\b(folate|folates|acide folique|folique)\b/.test(n)) return "FOL";
+  if (/\b(ferritine|ferritin|ferr)\b/.test(n)) return "FERR";
+  if (/\b(culture genitale?|culture genital|stdmu)\b/.test(n)) return "STDMU";
+  if (/\b(chlamydia|neisseria|gonorrh|gonorrhoeae|taan)\b/.test(n)) return "NGPCRD";
+  if (/\b(electrolytes?|electrolytes?)\b/.test(n)) {
+    if (/\b(urine|urinaire)\b/.test(n)) return "UELE";
+    return "LYTES";
+  }
+  return input;
+}
+
 // ── Selection logic ──────────────────────────────────────────────────────────
 
 function chooseBest(
@@ -253,7 +350,8 @@ export default function BulkSearchPanel({
       const searchResults = await Promise.all(
         names.map(async (name) => {
           try {
-            const r = await fetch(`/api/tests?q=${encodeURIComponent(name)}&limit=10`);
+              const q = normalizeBulkQuery(name);
+              const r = await fetch(`/api/tests?q=${encodeURIComponent(q)}&limit=10`);
             const d = await r.json();
             if (!d.success || !d.data?.length) return { inputName: name, candidates: [] as Candidate[] };
 
@@ -261,6 +359,7 @@ export default function BulkSearchPanel({
             const groupBestRank = new Map<string, number>();
             const groupCanonical = new Map<string, string>();
             const groupTubeType = new Map<string, string | null>();
+            const groupCode = new Map<string, string>();
 
             for (let i = 0; i < d.data.length; i++) {
               const t = d.data[i];
@@ -278,9 +377,13 @@ export default function BulkSearchPanel({
                 groupCanonical.set(t.testMappingId, t.canonicalName);
               if (!groupTubeType.has(t.testMappingId))
                 groupTubeType.set(t.testMappingId, t.tubeType ?? null);
+              if (t.code && !groupCode.has(t.testMappingId))
+                groupCode.set(t.testMappingId, t.code);
             }
 
             const qWords = name.toLowerCase().replace(/[^a-z0-9]/g, " ").split(/\s+/).filter(Boolean);
+            const normalized = normalizeBulkQuery(name).toUpperCase().trim();
+            const isCodeLike = /^[A-Z0-9]{2,16}$/.test(normalized);
             const wordPrecision = (canonical: string): number => {
               const cWords = canonical.toLowerCase().replace(/[^a-z0-9]/g, " ").split(/\s+/).filter(Boolean);
               if (cWords.length === 0) return 0;
@@ -296,8 +399,15 @@ export default function BulkSearchPanel({
               const rank = groupBestRank.get(mid) ?? 0;
               const rankScore = 1 - rank / Math.max(d.data.length, 1);
               const precision = wordPrecision(groupCanonical.get(mid) ?? "");
+              const code = (groupCode.get(mid) ?? "").toUpperCase();
+              const exactCodeBoost = isCodeLike && code === normalized ? 5 : 0;
+              const startsWithPenalty =
+                isCodeLike && normalized.length >= 3 && code.startsWith(normalized) && code !== normalized
+                  ? -1
+                  : 0;
               candidates.push({
-                testMappingId: mid, score: rankScore * 0.2 + precision * 0.8,
+                testMappingId: mid,
+                score: exactCodeBoost + startsWithPenalty + rankScore * 0.2 + precision * 0.8,
                 labResults, canonicalName: groupCanonical.get(mid) ?? null, tubeType: groupTubeType.get(mid) ?? null,
               });
             }
@@ -354,7 +464,7 @@ export default function BulkSearchPanel({
           parsedNames.map(async (name): Promise<SearchResult> => {
             try {
               const r = await fetch(
-                `/api/tests?q=${encodeURIComponent(name)}&limit=10`
+                `/api/tests?q=${encodeURIComponent(normalizeBulkQuery(name))}&limit=10`
               );
               const d = await r.json();
               if (!d.success || !d.data?.length) return { inputName: name, candidates: [] };
@@ -364,6 +474,7 @@ export default function BulkSearchPanel({
               const groupBestRank = new Map<string, number>();
               const groupCanonical = new Map<string, string>();
               const groupTubeType = new Map<string, string | null>();
+              const groupCode = new Map<string, string>();
               const totalResults = d.data.length;
 
               for (let i = 0; i < d.data.length; i++) {
@@ -390,11 +501,16 @@ export default function BulkSearchPanel({
                 if (!groupTubeType.has(t.testMappingId)) {
                   groupTubeType.set(t.testMappingId, t.tubeType ?? null);
                 }
+                if (t.code && !groupCode.has(t.testMappingId)) {
+                  groupCode.set(t.testMappingId, t.code);
+                }
               }
 
               // Score each candidate group
               const qWords = name.toLowerCase()
                 .replace(/[^a-z0-9]/g, " ").split(/\s+/).filter(Boolean);
+              const normalized = normalizeBulkQuery(name).toUpperCase().trim();
+              const isCodeLike = /^[A-Z0-9]{2,16}$/.test(normalized);
 
               const wordPrecision = (canonical: string): number => {
                 const cWords = canonical.toLowerCase()
@@ -412,7 +528,13 @@ export default function BulkSearchPanel({
                 const rank = groupBestRank.get(mid) ?? 0;
                 const rankScore = 1 - rank / Math.max(totalResults, 1);
                 const precision = wordPrecision(groupCanonical.get(mid) ?? "");
-                const score = rankScore * 0.2 + precision * 0.8;
+                const code = (groupCode.get(mid) ?? "").toUpperCase();
+                const exactCodeBoost = isCodeLike && code === normalized ? 5 : 0;
+                const startsWithPenalty =
+                  isCodeLike && normalized.length >= 3 && code.startsWith(normalized) && code !== normalized
+                    ? -1
+                    : 0;
+                const score = exactCodeBoost + startsWithPenalty + rankScore * 0.2 + precision * 0.8;
                 candidates.push({
                   testMappingId: mid,
                   score,
@@ -518,7 +640,16 @@ export default function BulkSearchPanel({
             !localPrimaryLabId || t.labResults.some((r) => r.labId === localPrimaryLabId)
           );
 
-        if (foundTests.length > 0) {
+        const hasBundleHintInput = parsedNames.some((raw) => {
+          const n = raw
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+          return /\b(itss|lft|lipid|lipid18|lipid6|cardiovasculaire|apolipoproteine|apob|crp[-\s]?hs|hs[-\s]?crp|sma16|sma5|sma6|sma7|th2|th6|thyroid|stone|urolith|24uphos|24ucrea|24uuric|oxaur|hepatique|celiac|coeliaq|fpsa|prostat|monop|monotest|osteop|osteopor|pren1|pren2|pren3|prenatal|profil|profile|bundle|gono[\s-]?chlam|std|sti)\b/.test(n);
+        });
+
+        if (foundTests.length > 1 || hasBundleHintInput) {
           setProfilesLoading(true);
           const ids = foundTests.map((t) => t.testMappingId);
           const selectedPrices: Record<string, number> = {};
@@ -528,7 +659,11 @@ export default function BulkSearchPanel({
           fetch("/api/tests/profile-match", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ testMappingIds: ids, selectedPrices }),
+            body: JSON.stringify({
+              testMappingIds: ids,
+              selectedPrices,
+              profileHints: parsedNames,
+            }),
           })
             .then((r) => r.json())
             .then((d) => {
@@ -541,7 +676,7 @@ export default function BulkSearchPanel({
                   profiles[0] ??
                   null;
                 setSelectedProfileId(preferred?.id ?? null);
-                setShowAlternatives(false);
+                setShowAlternatives((profiles.length ?? 0) > 1);
               }
               setProfilesLoading(false);
             })
@@ -552,6 +687,7 @@ export default function BulkSearchPanel({
           setMatchingProfiles([]);
           setSelectedProfileId(null);
           setShowAlternatives(false);
+          setProfilesLoading(false);
         }
       } catch {
         setStep("lab");
@@ -762,18 +898,17 @@ export default function BulkSearchPanel({
               placeholder={"TSH\nFER\nGlucose\nHémogramme\nBilirubine totale"}
               rows={8}
               className="font-mono text-sm resize-none"
+              spellCheck={false}
+              autoCorrect="off"
+              autoCapitalize="off"
+              autoComplete="off"
               autoFocus
             />
             {parsedNames.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {parsedNames.map((n, i) => (
-                  <span
-                    key={i}
-                    className="inline-flex items-center text-xs bg-muted rounded-md px-2 py-0.5 text-foreground/80"
-                  >
-                    {n}
-                  </span>
-                ))}
+              <div className="rounded-md border border-border/60 bg-muted/20 px-2.5 py-1.5">
+                <p className="text-xs text-muted-foreground">
+                  {parsedNames.length} ligne{parsedNames.length > 1 ? "s" : ""} detectee{parsedNames.length > 1 ? "s" : ""} (sans suggestion automatique)
+                </p>
               </div>
             )}
             <div className="flex items-center justify-between pt-1">
@@ -1209,7 +1344,9 @@ export default function BulkSearchPanel({
                             onClick={() => setShowAlternatives((v) => !v)}
                             className="text-[11px] font-medium text-primary hover:text-primary/80"
                           >
-                            {showAlternatives ? "Masquer" : "Voir alternatives"}
+                            {showAlternatives
+                              ? "Masquer"
+                              : `Voir alternatives (${matchingProfiles.length - 1})`}
                           </button>
                         </div>
 
