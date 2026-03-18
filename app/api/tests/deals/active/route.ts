@@ -220,9 +220,32 @@ export async function GET() {
       const components = profileCodeToComponents.get(profileCode.toUpperCase()) ?? [];
       const componentNames = profileCodeToComponentNames.get(profileCode.toUpperCase()) ?? [];
       const explicitCodes = getProfileComponents(profileCode);
+      const componentCodeAliases: Record<string, string[]> = {
+        ESTR: ["ESTRA"],
+        ESTRA: ["ESTR"],
+        "DH-S": ["DHEAS", "DHEA-S"],
+        "DHEA-S": ["DHEAS", "DH-S"],
+        DHEAS: ["DH-S", "DHEA-S"],
+        ANDR: ["ANDRO"],
+        ANDRO: ["ANDR"],
+        ACGL: ["AC"],
+        AC: ["ACGL"],
+        LASE: ["LIP"],
+        LIP: ["LASE"],
+        THAB: ["TAPRO"],
+      };
+      const mapCodeToId = (code: string): string | null => {
+        const upper = code.toUpperCase();
+        const candidates = [upper, ...(componentCodeAliases[upper] ?? [])];
+        for (const candidate of candidates) {
+          const id = codeToMappingId.get(candidate);
+          if (id) return id;
+        }
+        return null;
+      };
       const ids = new Set<string>();
       for (const code of components) {
-        const id = codeToMappingId.get(code.toUpperCase());
+        const id = mapCodeToId(code);
         if (id) ids.add(id);
       }
       for (const componentName of componentNames) {
@@ -230,7 +253,7 @@ export async function GET() {
         if (id) ids.add(id);
       }
       for (const code of explicitCodes) {
-        const id = codeToMappingId.get(code.toUpperCase());
+        const id = mapCodeToId(code);
         if (id) ids.add(id);
       }
       return Array.from(ids);

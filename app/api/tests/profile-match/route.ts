@@ -30,7 +30,20 @@ export interface ProfileMatchResult {
   profileTestCount: number;
   extraIncludedCount: number;
   savingsAmount: number;
-  isRecommended: boolean; // profilePrice < selectedIndividualSum
+  isRecommended: boolean; // blendedTotal < totalSelectedIndividualSum
+  coveredTestIds: string[];
+  remainingTestIds: string[];
+  remainingIndividualSum: number;
+  totalSelectedIndividualSum: number;
+  blendedTotal: number;
+  blendedSavings: number;
+}
+
+export interface ProfileMatchResponse {
+  recommendedProfile: ProfileMatchResult | null;
+  coveredTestIds: string[];
+  remainingTestIds: string[];
+  profiles: ProfileMatchResult[];
 }
 
 /**
@@ -41,10 +54,10 @@ export interface ProfileMatchResult {
  *   labPref?: "CDL"|"DYNACARE"|null
  * }
  *
- * Returns bundle_deals where ALL of the submitted testMappingIds are contained
- * in the bundle's testMappingIds array (selected ⊆ profile).
- *
- * Uses PostgreSQL array containment: test_mapping_ids @> ARRAY[...]::uuid[]
+ * Returns eligible profiles for the requested lab, plus a cart split:
+ * - recommendedProfile: cheapest valid profile
+ * - coveredTestIds: selected test IDs covered by that profile
+ * - remainingTestIds: selected test IDs not covered (must stay individual)
  */
 export async function POST(req: NextRequest) {
   try {
@@ -83,9 +96,19 @@ export async function POST(req: NextRequest) {
       return null;
     };
     const preferredLab = normalizeLabCode(preferredLabCode);
+    const labFilterValues =
+      preferredLab === "CDL"
+        ? ["CDL"]
+        : preferredLab === "DYNACARE"
+        ? ["DYNACARE", "DYN", "QC"]
+        : null;
 
     const selectedIds = Array.isArray(testMappingIds) ? testMappingIds : [];
     const selectedPriceMap = selectedPrices ?? {};
+    const totalSelectedIndividualSum = selectedIds.reduce(
+      (sum, id) => sum + (selectedPriceMap[id] ?? 0),
+      0
+    );
     const rawHints = (profileHints ?? [])
       .map((h) => h?.toString().trim())
       .filter((h): h is string => Boolean(h))
@@ -132,7 +155,10 @@ export async function POST(req: NextRequest) {
       const selectedMatches = await prisma.bundleDeal.findMany({
         where: {
           isActive: true,
-          testMappingIds: { hasEvery: selectedIds },
+          testMappingIds: { hasSome: selectedIds },
+          ...(labFilterValues
+            ? { sourceLabCode: { in: labFilterValues } }
+            : {}),
         },
         select: {
           id: true,
@@ -156,6 +182,9 @@ export async function POST(req: NextRequest) {
       const hintMatches = await prisma.bundleDeal.findMany({
         where: {
           isActive: true,
+          ...(labFilterValues
+            ? { sourceLabCode: { in: labFilterValues } }
+            : {}),
           OR: [
             ...rawHints.map((hint) => ({
               profileCode: { equals: hint, mode: "insensitive" as const },
@@ -193,6 +222,9 @@ export async function POST(req: NextRequest) {
       where: {
         isActive: true,
         profileCode: { not: null },
+        ...(labFilterValues
+          ? { sourceLabCode: { in: labFilterValues } }
+          : {}),
       },
       select: {
         id: true,
@@ -295,6 +327,19 @@ export async function POST(req: NextRequest) {
         B2GPIGA: ["B2GP"],
         B2GPIGM: ["B2GP"],
         B2GPIGG: ["B2GP"],
+        // Hormone / profile variants frequently seen in profile specs.
+        ESTR: ["ESTRA"],
+        ESTRA: ["ESTR"],
+        "DH-S": ["DHEAS", "DHEA-S"],
+        "DHEA-S": ["DHEAS", "DH-S"],
+        DHEAS: ["DH-S", "DHEA-S"],
+        ANDR: ["ANDRO"],
+        ANDRO: ["ANDR"],
+        ACGL: ["AC"],
+        AC: ["ACGL"],
+        LASE: ["LIP"],
+        LIP: ["LASE"],
+        THAB: ["TAPRO"],
       };
 
       const expandCandidateCodes = (code: string): string[] => {
@@ -331,8 +376,8 @@ export async function POST(req: NextRequest) {
         if (resolvedIds.length === 0) continue;
 
         const resolvedSet = new Set(resolvedIds);
-        const coversAllSelected = hasSelectedTests
-          ? selectedIds.every((id) => selectedSet.has(id) && resolvedSet.has(id))
+        const overlapsSelected = hasSelectedTests
+          ? selectedIds.some((id) => selectedSet.has(id) && resolvedSet.has(id))
           : false;
         const bundleProfileCode = (bundle.profileCode ?? "").toUpperCase();
         const bundleDealName = (bundle.dealName ?? "").toUpperCase();
@@ -367,11 +412,17 @@ export async function POST(req: NextRequest) {
 
         if (existingBundleIds.has(bundle.id)) {
           const idx = matchingBundles.findIndex((b) => b.id === bundle.id);
-          if (idx >= 0) matchingBundles[idx] = normalizedBundle;
+          // Keep DB-seeded bundle mapping IDs when present; only recover/replace if missing.
+          if (idx >= 0) {
+            const existing = matchingBundles[idx];
+            if ((existing.testMappingIds?.length ?? 0) === 0) {
+              matchingBundles[idx] = normalizedBundle;
+            }
+          }
           continue;
         }
 
-        if (!coversAllSelected && !matchesHint) continue;
+        if (!overlapsSelected && !matchesHint) continue;
         matchingBundles.push(normalizedBundle);
         existingBundleIds.add(bundle.id);
       }
@@ -457,7 +508,12 @@ export async function POST(req: NextRequest) {
 
       const profileTestIds = new Set(b.testMappingIds ?? []);
       const selectedIdsInProfile = selectedIds.filter((id) => profileTestIds.has(id));
+      const remainingTestIds = selectedIds.filter((id) => !profileTestIds.has(id));
       const selectedIndividualSum = selectedIdsInProfile.reduce(
+        (sum, id) => sum + (selectedPriceMap[id] ?? 0),
+        0
+      );
+      const remainingIndividualSum = remainingTestIds.reduce(
         (sum, id) => sum + (selectedPriceMap[id] ?? 0),
         0
       );
@@ -470,13 +526,12 @@ export async function POST(req: NextRequest) {
         profileTestCount - matchedSelectedCount
       );
       const savingsAmount = Math.max(0, selectedIndividualSum - profilePrice);
-      const coversAllSelected =
-        selectedIds.length > 0 && selectedIdsInProfile.length === selectedIds.length;
+      const blendedTotal = profilePrice + remainingIndividualSum;
+      const blendedSavings = Math.max(0, totalSelectedIndividualSum - blendedTotal);
       const isRecommended =
         profilePrice > 0 &&
-        selectedIndividualSum > 0 &&
-        coversAllSelected &&
-        profilePrice < selectedIndividualSum;
+        totalSelectedIndividualSum > 0 &&
+        blendedTotal < totalSelectedIndividualSum;
 
       return {
         id: b.id,
@@ -496,41 +551,86 @@ export async function POST(req: NextRequest) {
         extraIncludedCount,
         savingsAmount,
         isRecommended,
+        coveredTestIds: selectedIdsInProfile,
+        remainingTestIds,
+        remainingIndividualSum,
+        totalSelectedIndividualSum,
+        blendedTotal,
+        blendedSavings,
       };
     });
 
-    // Eligible profiles logic:
-    // 1) Allow partial matches (must match at least one selected test).
-    // 2) Apply extra-tests penalty:
-    //    - If profile adds too many extra tests (> 4), exclude it
-    //      unless profile price is strictly cheaper than the matched tests bought separately.
-    const eligibleResults = hasSelectedTests
+    // Eligibility policy (bulk):
+    // 1) Profile must be strictly cheaper than buying all selected tests individually.
+    // 2) Allow at most 2 extra tests in the profile (keeps recommendations focused).
+    // 3) Prefer full-coverage profiles (contains all selected tests). If none exist,
+    //    fall back to partial profiles that still satisfy 1) and 2).
+    const strictCoverageEligible = hasSelectedTests
       ? results.filter((r) => {
-          if (r.matchedSelectedCount <= 0) return false;
-          const extraTests = r.profileTestCount - r.matchedSelectedCount;
-          if (extraTests > 4) {
-            return (
-              r.selectedIndividualSum > 0 &&
-              r.profilePrice > 0 &&
-              r.profilePrice < r.selectedIndividualSum
-            );
-          }
-          return true;
+          const cheaperThanAllIndividuals =
+            r.profilePrice > 0 &&
+            r.totalSelectedIndividualSum > 0 &&
+            r.blendedTotal < r.totalSelectedIndividualSum;
+          const coversAllSelected = r.matchedSelectedCount === selectedIds.length;
+          const withinExtraLimit = r.extraIncludedCount <= 2;
+          return cheaperThanAllIndividuals && coversAllSelected && withinExtraLimit;
         })
       : results;
 
-    // STRICT RULE: cheapest-first among eligible profiles.
-    eligibleResults.sort((a, b) => {
-      if (a.profilePrice !== b.profilePrice) return a.profilePrice - b.profilePrice;
-      if (preferredLab) {
-        const aSameLab = a.normalizedSourceLabCode === preferredLab;
-        const bSameLab = b.normalizedSourceLabCode === preferredLab;
-        if (aSameLab !== bSameLab) return aSameLab ? -1 : 1;
+    const partialCoverageEligible = hasSelectedTests
+      ? results.filter((r) => {
+          const cheaperThanAllIndividuals =
+            r.profilePrice > 0 &&
+            r.totalSelectedIndividualSum > 0 &&
+            r.blendedTotal < r.totalSelectedIndividualSum;
+          const withinExtraLimit = r.extraIncludedCount <= 2;
+          return cheaperThanAllIndividuals && r.matchedSelectedCount > 0 && withinExtraLimit;
+        })
+      : results;
+
+    const eligibleResults =
+      hasSelectedTests && strictCoverageEligible.length > 0
+        ? strictCoverageEligible
+        : partialCoverageEligible;
+
+    // Strict lab isolation:
+    // if preferred lab is provided, only that lab can pass.
+    const labIsolatedResults = preferredLab
+      ? eligibleResults.filter(
+          (r) => r.normalizedSourceLabCode === preferredLab
+        )
+      : eligibleResults;
+
+    // Ranking:
+    // - more selected tests covered first
+    // - fewer extras next
+    // - then cheapest blended total
+    labIsolatedResults.sort((a, b) => {
+      if (a.matchedSelectedCount !== b.matchedSelectedCount) {
+        return b.matchedSelectedCount - a.matchedSelectedCount;
       }
+      if (a.extraIncludedCount !== b.extraIncludedCount) {
+        return a.extraIncludedCount - b.extraIncludedCount;
+      }
+      if (a.blendedTotal !== b.blendedTotal) return a.blendedTotal - b.blendedTotal;
+      if (a.profilePrice !== b.profilePrice) return a.profilePrice - b.profilePrice;
       return a.dealName.localeCompare(b.dealName);
     });
 
-    return NextResponse.json({ success: true, data: eligibleResults });
+    const recommendedProfile = labIsolatedResults[0] ?? null;
+    const responsePayload: ProfileMatchResponse = {
+      recommendedProfile,
+      coveredTestIds: recommendedProfile?.coveredTestIds ?? [],
+      remainingTestIds: recommendedProfile?.remainingTestIds ?? [],
+      profiles: labIsolatedResults,
+    };
+
+    return NextResponse.json({
+      success: true,
+      data: responsePayload,
+      // Backward-compatible alias for older consumers.
+      profiles: labIsolatedResults,
+    });
   } catch (error) {
     console.error("[profile-match]", error);
     return NextResponse.json(

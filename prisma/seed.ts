@@ -10,7 +10,12 @@ import {
   normalizeForLookup,
 } from "../lib/data/canonical-test-registry.js";
 import { cdlSeedData, qcSeedData } from "./seed1.js";
-import { CDL_PROFILE_DESCRIPTIONS, QC_PROFILE_DESCRIPTIONS } from "../lib/data/profile-descriptions.js";
+import {
+  CDL_PROFILE_COMPONENTS,
+  CDL_PROFILE_DESCRIPTIONS,
+  QC_PROFILE_COMPONENTS,
+  QC_PROFILE_DESCRIPTIONS,
+} from "../lib/data/profile-descriptions.js";
 
 const connectionString = process.env.DATABASE_URL!;
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
@@ -655,10 +660,36 @@ async function main() {
   }
 
   function resolveComponentIds(componentCodes: string[]): string[] {
+    const componentCodeAliases: Record<string, string[]> = {
+      // Hormone/profile code variants
+      ESTR: ["ESTRA"],
+      ESTRA: ["ESTR"],
+      "DH-S": ["DHEAS", "DHEA-S"],
+      "DHEA-S": ["DHEAS", "DH-S"],
+      DHEAS: ["DH-S", "DHEA-S"],
+      ANDR: ["ANDRO"],
+      ANDRO: ["ANDR"],
+      ACGL: ["AC"],
+      AC: ["ACGL"],
+      LASE: ["LIP"],
+      LIP: ["LASE"],
+      THAB: ["TAPRO"],
+    };
+
+    const expandCandidateCodes = (code: string): string[] => {
+      const upper = code.toUpperCase();
+      return [upper, ...(componentCodeAliases[upper] ?? [])];
+    };
+
     const ids = new Set<string>();
     for (const code of componentCodes) {
-      const id = codeToMappingId.get(code.toUpperCase());
-      if (id) ids.add(id);
+      for (const candidateCode of expandCandidateCodes(code)) {
+        const id = codeToMappingId.get(candidateCode);
+        if (id) {
+          ids.add(id);
+          break;
+        }
+      }
     }
     return Array.from(ids);
   }
@@ -679,7 +710,9 @@ async function main() {
     const category = detectBundleCategory(p.name);
 
     // Try: componentCodes from seed1 → else parse name
-    const compCodes = cdlProfileComponentMap.get(p.code);
+    const compCodes =
+      cdlProfileComponentMap.get(p.code) ??
+      CDL_PROFILE_COMPONENTS[p.code.toUpperCase()];
     const testMappingIds = compCodes
       ? resolveComponentIds(compCodes)
       : resolveFromName(p.name);
@@ -708,7 +741,9 @@ async function main() {
     const category = detectBundleCategory(p.name);
 
     // Try: componentCodes from seed1 → else parse parenthesized name
-    const compCodes = qcComponentMap.get(p.code);
+    const compCodes =
+      qcComponentMap.get(p.code) ??
+      QC_PROFILE_COMPONENTS[p.code.toUpperCase()];
     let testMappingIds: string[];
     if (compCodes) {
       testMappingIds = resolveComponentIds(compCodes);

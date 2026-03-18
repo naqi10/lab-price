@@ -595,6 +595,9 @@ function UnifiedTestsContent() {
   const handleEmailOpen = useCallback(() => {
     if (bulkExpanded && bulkPreview.mode === "profile" && bulkPreview.selectedProfileId) {
       handleBulkAddProfile(bulkPreview.selectedProfileId);
+      if (bulkPreview.tests.length > 0) {
+        handleBulkAdd(bulkPreview.tests);
+      }
       setPendingEmailAfterBulk(true);
       return;
     }
