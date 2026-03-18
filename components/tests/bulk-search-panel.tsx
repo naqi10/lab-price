@@ -21,6 +21,7 @@ import {
   Layers,
   Star,
   ListChecks,
+  Plus,
 } from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -280,7 +281,9 @@ export default function BulkSearchPanel({
   const [priority, setPriority] = useState<PriorityPreference>("cheaper");
   const [matchedTests, setMatchedTests] = useState<MatchedTest[]>([]);
   const [matchingProfiles, setMatchingProfiles] = useState<ProfileMatchResult[]>([]);
+  const [nearbyProfiles, setNearbyProfiles] = useState<ProfileMatchResult[]>([]);
   const [recommendedProfile, setRecommendedProfile] = useState<ProfileMatchResult | null>(null);
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [coveredTestIds, setCoveredTestIds] = useState<string[]>([]);
   const [remainingTestIds, setRemainingTestIds] = useState<string[]>([]);
   const [profilesLoading, setProfilesLoading] = useState(false);
@@ -466,7 +469,9 @@ export default function BulkSearchPanel({
     async (lp: LabPreference, pr: PriorityPreference) => {
       setStep("searching");
       setMatchingProfiles([]);
+      setNearbyProfiles([]);
       setRecommendedProfile(null);
+      setSelectedProfileId(null);
       setCoveredTestIds([]);
       setRemainingTestIds([]);
       setViewMode("individual");
@@ -730,6 +735,11 @@ export default function BulkSearchPanel({
                   : Array.isArray(d.profiles)
                   ? d.profiles
                   : [];
+                const alternativesFromApi: ProfileMatchResult[] = Array.isArray(payload?.alternativeProfiles)
+                  ? payload.alternativeProfiles
+                  : Array.isArray(d.alternativeProfiles)
+                  ? d.alternativeProfiles
+                  : [];
                 const apiRecommended: ProfileMatchResult | null =
                   payload?.recommendedProfile ?? profiles[0] ?? null;
                 const apiCoveredTestIds: string[] = Array.isArray(payload?.coveredTestIds)
@@ -740,12 +750,14 @@ export default function BulkSearchPanel({
                   : apiRecommended?.remainingTestIds ?? [];
 
                 setMatchingProfiles(profiles);
+                setNearbyProfiles(alternativesFromApi);
                 setRecommendedProfile(apiRecommended);
+                setSelectedProfileId(apiRecommended?.id ?? profiles[0]?.id ?? null);
                 setCoveredTestIds(apiCoveredTestIds);
                 setRemainingTestIds(apiRemainingTestIds);
                 // Never auto-switch tabs; user controls when to open Profile view.
                 setViewMode("individual");
-                setShowAlternatives((profiles?.length ?? 0) > 1);
+                setShowAlternatives((alternativesFromApi?.length ?? 0) > 0);
               }
               setProfilesLoading(false);
             })
@@ -754,7 +766,9 @@ export default function BulkSearchPanel({
             });
         } else {
           setMatchingProfiles([]);
+          setNearbyProfiles([]);
           setRecommendedProfile(null);
+          setSelectedProfileId(null);
           setCoveredTestIds([]);
           setRemainingTestIds([]);
           setProfilesLoading(false);
@@ -825,13 +839,38 @@ export default function BulkSearchPanel({
   const singleLabCount = excludedTests.length;
   const individualSubtotal = includedTests.reduce((sum, t) => sum + (t.chosen?.price ?? 0), 0);
   const bestProfile = useMemo(
-    () => recommendedProfile ?? matchingProfiles[0] ?? null,
-    [recommendedProfile, matchingProfiles]
+    () => recommendedProfile ?? matchingProfiles[0] ?? nearbyProfiles[0] ?? null,
+    [recommendedProfile, matchingProfiles, nearbyProfiles]
   );
   const alternativeProfiles = useMemo(
-    () => matchingProfiles.filter((p) => p.id !== bestProfile?.id),
-    [matchingProfiles, bestProfile]
+    () =>
+      Array.from(
+        new Map(
+          [...nearbyProfiles, ...matchingProfiles]
+            .filter((p) => p.id !== bestProfile?.id)
+            .map((p) => [p.id, p])
+        ).values()
+      ),
+    [nearbyProfiles, matchingProfiles, bestProfile]
   );
+  const allProfilesById = useMemo(
+    () =>
+      new Map(
+        [bestProfile, ...alternativeProfiles]
+          .filter((p): p is ProfileMatchResult => Boolean(p))
+          .map((p) => [p.id, p])
+      ),
+    [bestProfile, alternativeProfiles]
+  );
+  const activeProfile = useMemo(
+    () =>
+      (selectedProfileId ? allProfilesById.get(selectedProfileId) : null) ??
+      bestProfile ??
+      null,
+    [selectedProfileId, allProfilesById, bestProfile]
+  );
+  const activeCoveredTestIds = activeProfile?.coveredTestIds ?? coveredTestIds;
+  const activeRemainingTestIds = activeProfile?.remainingTestIds ?? remainingTestIds;
   const testByMappingId = useMemo(() => {
     const map = new Map<string, MatchedTest & { chosen: LabResult; testMappingId: string }>();
     for (const t of includedTests) {
@@ -841,16 +880,16 @@ export default function BulkSearchPanel({
     return map;
   }, [includedTests]);
   const remainingTests = useMemo(
-    () => remainingTestIds
+    () => activeRemainingTestIds
       .map((id) => testByMappingId.get(id))
       .filter((t): t is MatchedTest & { chosen: LabResult; testMappingId: string } => Boolean(t)),
-    [remainingTestIds, testByMappingId]
+    [activeRemainingTestIds, testByMappingId]
   );
   const remainingSubtotal = useMemo(
     () => remainingTests.reduce((sum, t) => sum + t.chosen.price, 0),
     [remainingTests]
   );
-  const profileSubtotal = (bestProfile?.profilePrice ?? 0) + remainingSubtotal;
+  const profileSubtotal = (activeProfile?.profilePrice ?? 0) + remainingSubtotal;
   const allIndividualsSubtotal = individualSubtotal;
 
   const stepIdx = STEP_ORDER.indexOf(
@@ -899,7 +938,7 @@ export default function BulkSearchPanel({
       .map((t) => `${t.testMappingId}:${t.laboratoryId}:${t.price}`)
       .join("|");
 
-    if (viewMode === "profile" && bestProfile) {
+    if (viewMode === "profile" && activeProfile) {
       const remainingTestsPayload = remainingTests.map((t) => ({
         testMappingId: t.testMappingId,
         name: t.canonicalName || t.inputName,
@@ -918,9 +957,9 @@ export default function BulkSearchPanel({
         mode: "profile",
         tests: remainingTestsPayload,
         subtotal: profileSubtotal,
-        selectedProfileId: bestProfile.id,
-        selectedProfileName: bestProfile.dealName,
-      }, `results:profile:${bestProfile.id}:${profileSubtotal}:${remainingSignature}`);
+        selectedProfileId: activeProfile.id,
+        selectedProfileName: activeProfile.dealName,
+      }, `results:profile:${activeProfile.id}:${profileSubtotal}:${remainingSignature}`);
       return;
     }
 
@@ -931,7 +970,7 @@ export default function BulkSearchPanel({
       selectedProfileId: null,
       selectedProfileName: null,
     }, `results:individual:${individualSubtotal}:${testsSignature}`);
-  }, [step, individualSubtotal, viewMode, bestProfile, includedTests, remainingTests, profileSubtotal]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [step, individualSubtotal, viewMode, activeProfile, includedTests, remainingTests, profileSubtotal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex flex-col h-full">
@@ -1245,7 +1284,8 @@ export default function BulkSearchPanel({
                       <p className="text-xs text-emerald-800">
                         Meilleure offre profil:{" "}
                         <span className="font-semibold">{bestProfile.dealName}</span>
-                        {coveredTestIds.length > 0 && ` · ${coveredTestIds.length}/${foundCount} couverts`}
+                        {bestProfile.coveredTestIds.length > 0 &&
+                          ` · ${bestProfile.coveredTestIds.length}/${foundCount} couverts`}
                         {bestProfile.blendedSavings > 0 && ` · économie ${formatCurrency(bestProfile.blendedSavings)}`}
                       </p>
                       <button
@@ -1354,7 +1394,7 @@ export default function BulkSearchPanel({
                       Recherche des profils correspondants...
                     </p>
                   </div>
-                ) : !bestProfile ? (
+                ) : !activeProfile ? (
                   <div className="flex flex-col items-center justify-center py-8 gap-2 text-center">
                     <Layers className="h-8 w-8 text-muted-foreground/30" />
                     <p className="text-sm text-muted-foreground">
@@ -1380,6 +1420,11 @@ export default function BulkSearchPanel({
                               <Star className="h-2.5 w-2.5" />
                               Offre recommandée
                             </span>
+                            {selectedProfileId === bestProfile.id && (
+                              <span className="inline-flex items-center gap-0.5 text-[10px] font-medium bg-emerald-100 text-emerald-800 rounded px-1.5 py-0.5">
+                                Auto-sélectionné
+                              </span>
+                            )}
                           </div>
                           <div className="flex flex-wrap gap-1 mt-1.5">
                             {bestProfile.components.map((c) => (
@@ -1392,7 +1437,7 @@ export default function BulkSearchPanel({
                             ))}
                           </div>
                           <p className="mt-1 text-[10px] text-muted-foreground">
-                            {coveredTestIds.length}/{foundCount} tests couverts par le profil
+                            {bestProfile.coveredTestIds.length}/{foundCount} tests couverts par le profil
                           </p>
                         </div>
                         <div className="shrink-0 text-right">
@@ -1412,6 +1457,24 @@ export default function BulkSearchPanel({
                         </div>
                       </div>
                     </div>
+
+                    {activeProfile.id !== bestProfile.id && (
+                      <div className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-2.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-xs text-foreground">
+                            Profil sélectionné:{" "}
+                            <span className="font-semibold">{activeProfile.dealName}</span>
+                          </p>
+                          <button
+                            onClick={() => setSelectedProfileId(bestProfile.id)}
+                            className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:text-primary/80"
+                          >
+                            <Plus className="h-3 w-3" />
+                            Revenir au Best Offer
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="rounded-lg border border-border/40 bg-muted/20 px-3 py-2.5">
                       <p className="text-[11px] font-medium text-muted-foreground mb-2">
@@ -1491,6 +1554,7 @@ export default function BulkSearchPanel({
                         {showAlternatives && (
                           <div className="mt-2 max-h-64 overflow-y-auto space-y-2 pr-1">
                             {alternativeProfiles.map((p) => {
+                              const isSelected = selectedProfileId === p.id;
                               const altRemainingTests = p.remainingTestIds
                                 .map((id) => testByMappingId.get(id))
                                 .filter((t): t is MatchedTest & { chosen: LabResult; testMappingId: string } => Boolean(t));
@@ -1503,7 +1567,11 @@ export default function BulkSearchPanel({
                               return (
                                 <div
                                   key={p.id}
-                                  className="rounded-md border border-border/50 bg-background px-2.5 py-2"
+                                  className={`rounded-md border px-2.5 py-2 ${
+                                    isSelected
+                                      ? "border-primary/40 bg-primary/5"
+                                      : "border-border/50 bg-background"
+                                  }`}
                                 >
                                   <div className="flex items-start justify-between gap-2">
                                     <div className="min-w-0 flex-1">
@@ -1537,6 +1605,22 @@ export default function BulkSearchPanel({
                                             ))}
                                           </div>
                                         </div>
+                                      )}
+                                    </div>
+                                    <div className="shrink-0">
+                                      {isSelected ? (
+                                        <span className="inline-flex items-center text-[10px] font-medium rounded border border-primary/40 bg-primary/10 text-primary px-1.5 py-0.5">
+                                          Sélectionné
+                                        </span>
+                                      ) : (
+                                        <button
+                                          onClick={() => setSelectedProfileId(p.id)}
+                                          className="inline-flex items-center gap-1 rounded border border-primary/30 bg-primary/5 px-1.5 py-1 text-[10px] font-medium text-primary hover:bg-primary/10"
+                                          aria-label={`Sélectionner ${p.dealName}`}
+                                        >
+                                          <Plus className="h-3 w-3" />
+                                          Choisir
+                                        </button>
                                       )}
                                     </div>
                                   </div>

@@ -44,6 +44,7 @@ export interface ProfileMatchResponse {
   coveredTestIds: string[];
   remainingTestIds: string[];
   profiles: ProfileMatchResult[];
+  alternativeProfiles: ProfileMatchResult[];
 }
 
 /**
@@ -471,13 +472,70 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    if (matchingBundles.length === 0) {
+    // Catalog availability guard:
+    // only recommend profile bundles that can be verified by either:
+    // 1) active profile tests for the same lab, or
+    // 2) canonical profile definitions for that lab (CDL/QC maps).
+    // This avoids false negatives when active profile tests are incomplete.
+    let effectiveBundles = matchingBundles;
+    const matchedProfileCodes = Array.from(
+      new Set(
+        matchingBundles
+          .filter((b) => Boolean(b.profileCode))
+          .map((b) => (b.profileCode ?? "").toUpperCase())
+          .filter(Boolean)
+      )
+    );
+    if (matchedProfileCodes.length > 0) {
+      const activeProfileTests = await prisma.test.findMany({
+        where: {
+          priceList: { isActive: true },
+          code: { in: matchedProfileCodes },
+          OR: [
+            { category: { equals: "Profil", mode: "insensitive" } },
+            { category: { equals: "Profile", mode: "insensitive" } },
+          ],
+        },
+        select: {
+          code: true,
+          priceList: { select: { laboratory: { select: { code: true } } } },
+        },
+      });
+      const availableProfileKeys = new Set<string>();
+      for (const t of activeProfileTests) {
+        if (!t.code) continue;
+        const lab = normalizeLabCode(t.priceList?.laboratory?.code);
+        if (!lab) continue;
+        availableProfileKeys.add(`${lab}:${t.code.toUpperCase()}`);
+      }
+      const isKnownProfileForLab = (lab: "CDL" | "DYNACARE", code: string): boolean => {
+        const upper = code.toUpperCase();
+        if (lab === "CDL") return Boolean(CDL_PROFILE_COMPONENTS[upper]);
+        return Boolean(QC_PROFILE_COMPONENTS[upper] || CDL_PROFILE_COMPONENTS[upper]);
+      };
+
+      // Apply the guard only when we can actually verify availability.
+      if (availableProfileKeys.size > 0) {
+        effectiveBundles = matchingBundles.filter((bundle) => {
+          if (!bundle.profileCode) return true;
+          const lab = normalizeLabCode(bundle.sourceLabCode);
+          if (!lab) return true;
+          const code = bundle.profileCode.toUpperCase();
+          return (
+            availableProfileKeys.has(`${lab}:${code}`) ||
+            isKnownProfileForLab(lab, code)
+          );
+        });
+      }
+    }
+
+    if (effectiveBundles.length === 0) {
       return NextResponse.json({ success: true, data: [] });
     }
 
     // Collect all unique testMappingIds across matched bundles for batch lookup
     const allIds = new Set<string>();
-    for (const b of matchingBundles) {
+    for (const b of effectiveBundles) {
       for (const id of b.testMappingIds ?? []) allIds.add(id);
     }
 
@@ -492,7 +550,7 @@ export async function POST(req: NextRequest) {
     });
     const canonicalMap = new Map(canonicals.map((c) => [c.id, c]));
 
-    const results: ProfileMatchResult[] = matchingBundles.map((b) => {
+    const results: ProfileMatchResult[] = effectiveBundles.map((b) => {
       const components = (b.testMappingIds ?? []).map((id) => {
         const c = canonicalMap.get(id);
         if (!c) return null;
@@ -562,9 +620,8 @@ export async function POST(req: NextRequest) {
 
     // Eligibility policy (bulk):
     // 1) Profile must be strictly cheaper than buying all selected tests individually.
-    // 2) Allow at most 2 extra tests in the profile (keeps recommendations focused).
-    // 3) Prefer full-coverage profiles (contains all selected tests). If none exist,
-    //    fall back to partial profiles that still satisfy 1) and 2).
+    // 2) Prefer full-coverage profiles (contains all selected tests). If none exist,
+    //    fall back to partial profiles that still satisfy 1).
     const strictCoverageEligible = hasSelectedTests
       ? results.filter((r) => {
           const cheaperThanAllIndividuals =
@@ -572,8 +629,7 @@ export async function POST(req: NextRequest) {
             r.totalSelectedIndividualSum > 0 &&
             r.blendedTotal < r.totalSelectedIndividualSum;
           const coversAllSelected = r.matchedSelectedCount === selectedIds.length;
-          const withinExtraLimit = r.extraIncludedCount <= 2;
-          return cheaperThanAllIndividuals && coversAllSelected && withinExtraLimit;
+          return cheaperThanAllIndividuals && coversAllSelected;
         })
       : results;
 
@@ -583,8 +639,7 @@ export async function POST(req: NextRequest) {
             r.profilePrice > 0 &&
             r.totalSelectedIndividualSum > 0 &&
             r.blendedTotal < r.totalSelectedIndividualSum;
-          const withinExtraLimit = r.extraIncludedCount <= 2;
-          return cheaperThanAllIndividuals && r.matchedSelectedCount > 0 && withinExtraLimit;
+          return cheaperThanAllIndividuals && r.matchedSelectedCount > 0;
         })
       : results;
 
@@ -601,28 +656,58 @@ export async function POST(req: NextRequest) {
         )
       : eligibleResults;
 
+    const labIsolatedAllResults = preferredLab
+      ? results.filter((r) => r.normalizedSourceLabCode === preferredLab)
+      : results;
+
     // Ranking:
-    // - more selected tests covered first
-    // - fewer extras next
-    // - then cheapest blended total
+    // - cheapest blended total first (what customer actually pays)
+    // - then more selected tests covered
+    // - then fewer extras
     labIsolatedResults.sort((a, b) => {
+      if (a.blendedTotal !== b.blendedTotal) return a.blendedTotal - b.blendedTotal;
       if (a.matchedSelectedCount !== b.matchedSelectedCount) {
         return b.matchedSelectedCount - a.matchedSelectedCount;
       }
       if (a.extraIncludedCount !== b.extraIncludedCount) {
         return a.extraIncludedCount - b.extraIncludedCount;
       }
-      if (a.blendedTotal !== b.blendedTotal) return a.blendedTotal - b.blendedTotal;
       if (a.profilePrice !== b.profilePrice) return a.profilePrice - b.profilePrice;
       return a.dealName.localeCompare(b.dealName);
     });
 
     const recommendedProfile = labIsolatedResults[0] ?? null;
+    const nearbyAlternativeProfiles = hasSelectedTests
+      ? [...labIsolatedAllResults]
+          .filter((r) => {
+            if (r.matchedSelectedCount <= 0) return false;
+            return (
+              r.profilePrice > 0 &&
+              r.totalSelectedIndividualSum > 0 &&
+              r.blendedTotal < r.totalSelectedIndividualSum
+            );
+          })
+          .sort((a, b) => {
+            if (a.blendedTotal !== b.blendedTotal) return a.blendedTotal - b.blendedTotal;
+            if (a.matchedSelectedCount !== b.matchedSelectedCount) {
+              return b.matchedSelectedCount - a.matchedSelectedCount;
+            }
+            if (a.extraIncludedCount !== b.extraIncludedCount) {
+              return a.extraIncludedCount - b.extraIncludedCount;
+            }
+            if (a.profilePrice !== b.profilePrice) return a.profilePrice - b.profilePrice;
+            return a.dealName.localeCompare(b.dealName);
+          })
+      : [];
+
     const responsePayload: ProfileMatchResponse = {
       recommendedProfile,
       coveredTestIds: recommendedProfile?.coveredTestIds ?? [],
       remainingTestIds: recommendedProfile?.remainingTestIds ?? [],
       profiles: labIsolatedResults,
+      alternativeProfiles: nearbyAlternativeProfiles.filter(
+        (p) => p.id !== recommendedProfile?.id
+      ).slice(0, 30),
     };
 
     return NextResponse.json({
@@ -630,6 +715,7 @@ export async function POST(req: NextRequest) {
       data: responsePayload,
       // Backward-compatible alias for older consumers.
       profiles: labIsolatedResults,
+      alternativeProfiles: responsePayload.alternativeProfiles,
     });
   } catch (error) {
     console.error("[profile-match]", error);
