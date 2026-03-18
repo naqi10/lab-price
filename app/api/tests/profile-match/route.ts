@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
         return QC_PROFILE_COMPONENTS[key] ?? CDL_PROFILE_COMPONENTS[key] ?? [];
       }
       if (lab === "CDL") {
-        return CDL_PROFILE_COMPONENTS[key] ?? QC_PROFILE_COMPONENTS[key] ?? [];
+        return CDL_PROFILE_COMPONENTS[key] ?? [];
       }
       return getProfileComponents(profileCode);
     };
@@ -341,6 +341,10 @@ export async function POST(req: NextRequest) {
         LASE: ["LIP"],
         LIP: ["LASE"],
         THAB: ["TAPRO"],
+        // Microalbumin code variants across CDL / Dynacare.
+        "A/CU": ["MIALBP", "UACR"],
+        MIALBP: ["A/CU", "UACR"],
+        UACR: ["MIALBP", "A/CU"],
       };
 
       const expandCandidateCodes = (code: string): string[] => {
@@ -413,11 +417,22 @@ export async function POST(req: NextRequest) {
 
         if (existingBundleIds.has(bundle.id)) {
           const idx = matchingBundles.findIndex((b) => b.id === bundle.id);
-          // Keep DB-seeded bundle mapping IDs when present; only recover/replace if missing.
           if (idx >= 0) {
             const existing = matchingBundles[idx];
-            if ((existing.testMappingIds?.length ?? 0) === 0) {
+            const existingLen = existing.testMappingIds?.length ?? 0;
+            // Replace if: (a) existing has no IDs, or (b) resolved covers more selected tests.
+            if (existingLen === 0) {
               matchingBundles[idx] = normalizedBundle;
+            } else if (hasSelectedTests) {
+              const existingCoverage = selectedIds.filter((id) =>
+                (existing.testMappingIds ?? []).includes(id)
+              ).length;
+              const resolvedCoverage = selectedIds.filter((id) =>
+                resolvedSet.has(id)
+              ).length;
+              if (resolvedCoverage > existingCoverage) {
+                matchingBundles[idx] = normalizedBundle;
+              }
             }
           }
           continue;
@@ -529,6 +544,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Drop any bundle that has no resolved test IDs (prevents phantom profiles).
+    effectiveBundles = effectiveBundles.filter(
+      (b) => (b.testMappingIds?.length ?? 0) > 0
+    );
+
     if (effectiveBundles.length === 0) {
       return NextResponse.json({ success: true, data: [] });
     }
@@ -624,12 +644,16 @@ export async function POST(req: NextRequest) {
     //    fall back to partial profiles that still satisfy 1).
     const strictCoverageEligible = hasSelectedTests
       ? results.filter((r) => {
-          const cheaperThanAllIndividuals =
+          const coversAllSelected = r.matchedSelectedCount === selectedIds.length;
+          // Allow equal-cost when the profile covers all selected tests
+          // (user pays no more than individual prices AND gains extra tests for free).
+          const costEligible =
             r.profilePrice > 0 &&
             r.totalSelectedIndividualSum > 0 &&
-            r.blendedTotal < r.totalSelectedIndividualSum;
-          const coversAllSelected = r.matchedSelectedCount === selectedIds.length;
-          return cheaperThanAllIndividuals && coversAllSelected;
+            (coversAllSelected
+              ? r.blendedTotal <= r.totalSelectedIndividualSum
+              : r.blendedTotal < r.totalSelectedIndividualSum);
+          return costEligible && coversAllSelected;
         })
       : results;
 

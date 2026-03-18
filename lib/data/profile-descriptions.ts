@@ -248,10 +248,10 @@ export const CDL_PROFILE_COMPONENTS: Record<string, string[]> = {
   "CHM5":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC"],
   "CHL3":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC", "CHOL", "TRIG"],
   "CHP3":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC", "CHOL", "TRIG", "CBC", "URI"],
-  "BIO3":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC", "CHOL", "TRIG", "LD"],
+  "BIO3":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC", "CHOL", "TRIG", "LD", "GLOB"],
   "CHM4":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "CHOL", "TRIG", "HDL", "LDLD", "NHDL"],
   "CHL4":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC", "CHOL", "TRIG", "HDL", "LDLD", "NHDL"],
-  "BIO4":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC", "CHOL", "TRIG", "HDL", "LDLD", "NHDL", "LD"],
+  "BIO4":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC", "CHOL", "TRIG", "HDL", "LDLD", "NHDL", "LD", "GLOB"],
   "CH4U":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC", "CHOL", "TRIG", "HDL", "LDLD", "NHDL", "CBC"],
   "CHP4":   ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC", "CHOL", "TRIG", "HDL", "LDLD", "NHDL", "CBC", "URI"],
   "CHP4T":  ["ACGL", "UREA", "CREA", "ALT", "AST", "GGT", "ALB", "BILIT", "CA", "ALKP", "TP", "URIC", "PO4", "ELEC", "CHOL", "TRIG", "HDL", "LDLD", "NHDL", "CBC", "URI", "TSH"],
@@ -287,9 +287,9 @@ export const CDL_PROFILE_COMPONENTS: Record<string, string[]> = {
   "CHP1":   ["ALB", "ALKP", "ALT", "AST", "GGT", "CA", "CREA", "ACGL", "BILIT", "TP", "UREA", "ELEC", "CBC", "URI"],
   "FIN1":   ["ALB", "ALKP", "ALT", "AST", "GGT", "CA", "CREA", "ACGL", "BILIT", "TP", "UREA", "ELEC", "CBC", "URI", "CRP"],
   "CHP2":   ["ALB", "ALKP", "ALT", "AST", "GGT", "CA", "CREA", "ACGL", "BILIT", "TP", "UREA", "ELEC", "CBC", "URI", "URIC", "PO4"],
-  "CH4SC":  ["ALB", "ALKP", "ALT", "AST", "GGT", "CA", "CREA", "ACGL", "BILIT", "TP", "UREA", "ELEC", "CBC", "URI", "URIC", "PO4", "CHOL", "TRIG", "HDL", "LDLD", "CRPHS"],
-  "GN5":    ["ALB", "ALKP", "ALT", "AST", "GGT", "CA", "CREA", "ACGL", "BILIT", "TP", "UREA", "ELEC", "CBC", "URI", "URIC", "PO4", "CHOL", "TRIG", "HDL", "LDLD", "LD"],
-  "PNL6":   ["ALB", "ALKP", "ALT", "AST", "GGT", "CA", "CREA", "ACGL", "BILIT", "TP", "UREA", "ELEC", "CBC", "URI", "URIC", "PO4", "CHOL", "TRIG", "HDL", "LDLD", "LD"],
+  "CH4SC":  ["ALB", "ALKP", "ALT", "AST", "GGT", "CA", "CREA", "ACGL", "BILIT", "TP", "UREA", "ELEC", "CBC", "URI", "URIC", "PO4", "CHOL", "TRIG", "HDL", "LDLD", "NHDL", "CRPHS"],
+  "GN5":    ["ALB", "ALKP", "ALT", "AST", "GGT", "CA", "CREA", "ACGL", "BILIT", "TP", "UREA", "ELEC", "CBC", "URI", "URIC", "PO4", "CHOL", "TRIG", "HDL", "LDLD", "NHDL", "LD", "GLOB"],
+  "PNL6":   ["ALB", "ALKP", "ALT", "AST", "GGT", "CA", "CREA", "ACGL", "BILIT", "TP", "UREA", "ELEC", "CBC", "URI", "URIC", "PO4", "CHOL", "TRIG", "HDL", "LDLD", "NHDL", "LD"],
 
   // HÉMATOLOGIE
   "CBCS":   ["CBC", "SED"],
@@ -369,7 +369,7 @@ export const QC_PROFILE_COMPONENTS: Record<string, string[]> = {
   "CELIAC":   ["IGA", "TRANSGLUT", "DEGLIAG", "GLIA"],
 
   // DIABÈTE
-  "DIAB":     ["ACGL", "UREA", "CREA", "ELEC", "HBA1C", "URI", "A/CU"],
+  "DIAB":     ["ACGL", "UREA", "CREA", "ELEC", "HBA1C", "URI", "MIALBP"],
   "DIAB6":    ["ACGL", "HBA1C"],
 
   // FERTILITÉ

@@ -73,6 +73,8 @@ export interface BulkPreviewState {
   subtotal: number;
   selectedProfileId: string | null;
   selectedProfileName: string | null;
+  /** Total entered tests (all found, including those covered by a profile). */
+  totalTests: number;
 }
 
 type ViewMode = "individual" | "profile";
@@ -916,6 +918,7 @@ export default function BulkSearchPanel({
         subtotal: 0,
         selectedProfileId: null,
         selectedProfileName: null,
+        totalTests: 0,
       }, "not-results");
       return;
     }
@@ -959,6 +962,7 @@ export default function BulkSearchPanel({
         subtotal: profileSubtotal,
         selectedProfileId: activeProfile.id,
         selectedProfileName: activeProfile.dealName,
+        totalTests: includedTests.length,
       }, `results:profile:${activeProfile.id}:${profileSubtotal}:${remainingSignature}`);
       return;
     }
@@ -969,6 +973,7 @@ export default function BulkSearchPanel({
       subtotal: individualSubtotal,
       selectedProfileId: null,
       selectedProfileName: null,
+      totalTests: tests.length,
     }, `results:individual:${individualSubtotal}:${testsSignature}`);
   }, [step, individualSubtotal, viewMode, activeProfile, includedTests, remainingTests, profileSubtotal]); // eslint-disable-line react-hooks/exhaustive-deps
 

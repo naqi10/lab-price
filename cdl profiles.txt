@@ -1,0 +1,569 @@
+[
+  {
+    "category": "ANALYSE D’URINE",
+    "name": "ANALYSE ET CULTURE D’URINE",
+    "code": "URC+",
+    "description": "Analyse d’urine, culture d’urine.",
+    "price": 90.00
+  },
+  {
+    "category": "ANÉMIE",
+    "name": "VITAMINE B12 ET ACIDE FOLIQUE",
+    "code": "FA12",
+    "description": "Vitamine B12, acide folique.",
+    "price": 140.00
+  },
+  {
+    "category": "ANÉMIE",
+    "name": "FER #2",
+    "code": "IRN2",
+    "description": "FSC, ferritine.",
+    "price": 125.00
+  },
+  {
+    "category": "ANÉMIE",
+    "name": "FER",
+    "code": "IRON",
+    "description": "Fer total, % de saturation, UIBC, TIBC.",
+    "price": 85.00
+  },
+  {
+    "category": "ANÉMIE",
+    "name": "FER #6",
+    "code": "IRN6",
+    "description": "PROFIL FER [IRON] + ferritine.",
+    "price": 145.00
+  },
+  {
+    "category": "ANÉMIE",
+    "name": "FER #1",
+    "code": "IRN1",
+    "description": "PROFIL FER [IRON] + FSC, ferritine.",
+    "price": 165.00
+  },
+  {
+    "category": "ANÉMIE",
+    "name": "ANÉMIE #1",
+    "code": "ANE1",
+    "description": "PROFIL FER [IRON] + FSC, réticulocytes.",
+    "price": 155.00
+  },
+  {
+    "category": "ANÉMIE",
+    "name": "ANÉMIE #4",
+    "code": "ANE4",
+    "description": "PROFIL FER [IRON] + FSC, réticulocytes, ferritine.",
+    "price": 210.00
+  },
+  {
+    "category": "ANÉMIE",
+    "name": "ANÉMIE #3",
+    "code": "ANE3",
+    "description": "PROFIL FER [IRON] + FSC, acide folique, réticulocytes, vitamine B12, ferritine.",
+    "price": 260.00
+  },
+  {
+    "category": "ANÉMIE",
+    "name": "FER #3",
+    "code": "IRN3",
+    "description": "PROFIL FER [IRON] + FSC, acide folique, vitamine B12, ferritine.",
+    "price": 235.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "BETA 2 GLYCOPROTÉINE I ANTICORPS",
+    "code": "B2GP",
+    "description": "Beta-2 glycoprotéine I, IgA/IgG/IgM",
+    "price": 155.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "DIABÉTIQUE #1",
+    "code": "DIAB",
+    "description": "Glucose, hémoglobine A1c (glyquée).",
+    "price": 105.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "HÉPATIQUE #1",
+    "code": "LIV1",
+    "description": "Phosphatase alcaline, ALT, AST, GGT, bilirubine totale.",
+    "price": 115.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "PANCRÉATIQUE",
+    "code": "PANC",
+    "description": "Amylase, lipase.",
+    "price": 90.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "RÉNAL #2",
+    "code": "REN2",
+    "description": "Sodium, potassium, chlorure, urée, créatinine.",
+    "price": 105.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "BIOCHIMIE #1A",
+    "code": "BIO1",
+    "description": "Glucose, urée, créatinine, ALT, acide urique, électrolytes.",
+    "price": 115.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "BIOCHIMIE #1B",
+    "code": "CHM1",
+    "description": "Glucose, urée, créatinine, ALT, AST, GGT, albumine, bilirubine totale, calcium, phosphatase alcaline, protéines totales.",
+    "price": 115.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "BIOCHIMIE #2",
+    "code": "CHM2",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore.",
+    "price": 125.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "BIOCHIMIE #2 AVEC ELECTROLYTES",
+    "code": "CHM5",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore, électrolytes.",
+    "price": 140.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "BIOCHIMIE #3 AVEC ELECTROLYTES",
+    "code": "CHL3",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore, électrolytes, cholestérol total, triglycérides.",
+    "price": 160.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "GENERAL BIOCHEMISTRY #3",
+    "code": "CHP3",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore, électrolytes, cholestérol total, triglycérides, FSC, analyse d’urine.",
+    "price": 210.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "BIOCHIMIE #3",
+    "code": "BIO3",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore, électrolytes, cholestérol total, triglycérides, LDH, globulines.",
+    "price": 155.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "BIOCHIMIE #4",
+    "code": "CHM4",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore, cholestérol total, triglycérides, HDL & LDL, non-HDL, facteurs de risque.",
+    "price": 155.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "BIOCHIMIE #4 AVEC ÉLECTROLYTES",
+    "code": "CHL4",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore, électrolytes, cholestérol total, triglycérides, HDL & LDL, non-HDL, facteurs de risque.",
+    "price": 170.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "BIOCHIMIE #4",
+    "code": "BIO4",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore, électrolytes, cholestérol total, triglycérides, HDL & LDL, non-HDL, facteurs de risque, globulines, LDH.",
+    "price": 170.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "COMPLETE BIOCHEMISTRY, WITHOUT URINE",
+    "code": "CH4U",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphate, électrolytes, cholestérol total, triglycérides, HDL & LDL, non-HDL, facteurs de risque, FSC.",
+    "price": 215.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "COMPLETE BIOCHEMISTRY",
+    "code": "CHP4",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore, électrolytes, cholestérol total, triglycérides, HDL & LDL, non-HDL, facteurs de risque, FSC, analyse d’urine.",
+    "price": 230.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "COMPLETE BIOCHEMISTRY GENERAL & TSH",
+    "code": "CHP4T",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore, électrolytes, cholestérol total, triglycérides, HDL & LDL, non-HDL, facteurs de risque, FSC, analyse d’urine, TSH.",
+    "price": 300.00
+  },
+  {
+    "category": "BIOCHIMIE",
+    "name": "COMPLETE BIOCHEMISTRY + TSH & PSA",
+    "code": "CHP4A",
+    "description": "PROFIL BIOCHIMIE #1B [CHM1] + acide urique, phosphore, électrolytes, cholestérol total, triglycérides, HDL & LDL, non-HDL + facteurs de risque, FSC, analyse d’urine, TSH, APS.",
+    "price": 320.00
+  },
+  {
+    "category": "COAGULATION",
+    "name": "COAGULOGRAMME",
+    "code": "COAG",
+    "description": "FSC, fibrinogène, PT/INR, PTT.",
+    "price": 155.00
+  },
+  {
+    "category": "COAGULATION",
+    "name": "PT ET PTT",
+    "code": "PTPT",
+    "description": "PT/INR, PTT.",
+    "price": 70.00
+  },
+  {
+    "category": "CYTOLOGIE",
+    "name": "TEST PAP THIN PREP + HPV DNA",
+    "code": "PAPTHPV",
+    "description": "Test Pap ThinPrep et virus du papillome humain (VPH).",
+    "price": 245.00
+  },
+  {
+    "category": "CYTOLOGIE",
+    "name": "VPH DNA, TEST PAP THINPREP EN CASCADE",
+    "code": "PVTP",
+    "description": "Virus du papillome humain (VPH), test Pap ThinPrep en cascade.",
+    "price": 185.00
+  },
+  {
+    "category": "CYTOLOGIE",
+    "name": "TEST PAP THIN PREP, VPH DNA EN CASCADE",
+    "code": "TPPV",
+    "description": "Test Pap ThinPrep, virus du papillome humain (VPH) en cascade.",
+    "price": 170.00
+  },
+  {
+    "category": "DÉPISTAGE PRÉNATAUX",
+    "name": "PRÉNATAL #1",
+    "code": "PREN",
+    "description": "FSC, groupe sanguin & Rh, hépatite B antigène de surface, syphilis, rubéole IgG, recherche d’anticorps.",
+    "price": 285.00
+  },
+  {
+    "category": "DÉPISTAGE PRÉNATAUX",
+    "name": "PRÉNATAL, GLUCOSE AC",
+    "code": "PRENG",
+    "description": "PROFIL PRÉNATAL #1 [PREN] + glucose AC.",
+    "price": 300.00
+  },
+  {
+    "category": "DÉPISTAGE PRÉNATAUX",
+    "name": "PRÉNATAL #3",
+    "code": "DAL2",
+    "description": "PROFIL PRÉNATAL #1 [PREN] + VIH, analyse, culture d’urine.",
+    "price": 390.00
+  },
+  {
+    "category": "DÉPISTAGE PRÉNATAUX",
+    "name": "PRÉNATAL #3, GLUCOSE",
+    "code": "DAL2G",
+    "description": "PROFIL PRÉNATAL #1 [PREN] + VIH, analyse d’urine, culture d’urine, glucose.",
+    "price": 410.00
+  },
+  {
+    "category": "DÉPISTAGES PRÉNATAUX NON-INVASIFS",
+    "name": "PANORAMA®",
+    "code": "PANO",
+    "description": "Dépistage prénatal des troubles génétiques via ADN placentaire.",
+    "price": 610.00
+  },
+  {
+    "category": "DÉPISTAGES PRÉNATAUX NON-INVASIFS",
+    "name": "PANORAMA® ET MICRODÉLÉTIONS",
+    "code": "PANOE",
+    "description": "Panorama approfondit. Dépistage prénatal des troubles génétiques (voir PANORAMA). Microdélétions : 22q11.2 - Syndrome de Di George, syndrome de monosomie 1p36, syndrome d’Angelman, syndrome de Prader- Willi, syndrome du Cri-du-chat.",
+    "price": 810.00
+  },
+  {
+    "category": "DÉPISTAGES PRÉNATAUX NON-INVASIFS",
+    "name": "HARMONY®",
+    "code": "HARMP",
+    "description": "Dépistage prénatal des troubles génétiques via ADN placentaire",
+    "price": 555.00
+  },
+  {
+    "category": "DROGUES D’ABUS",
+    "name": "DROGUES DANS LES CHEVEUX",
+    "code": "DRUGH",
+    "description": "Amphétamines, cannabis, cocaïne, opiaciés, phencyclidine.",
+    "price": 270.00
+  },
+  {
+    "category": "DROGUES D’ABUS",
+    "name": "DROGUES 4 TESTS #1",
+    "code": "DAU450",
+    "description": "Amphétamines (1000 ng/mL), cannabis (50 ng/mL), cocaïne (300 ng/mL), opiaciés (300 ng/mL).",
+    "price": 195.00
+  },
+  {
+    "category": "DROGUES D’ABUS",
+    "name": "DROGUES 5 TESTS #1",
+    "code": "DAUP",
+    "description": "PROFIL DROGUES 4 TESTS #1 [DAU450] + éthanol (3 mmol/L).",
+    "price": 205.00
+  },
+  {
+    "category": "DROGUES D’ABUS",
+    "name": "DROGUES 5 TESTS #2",
+    "code": "DAUB50",
+    "description": "PROFIL DROGUES 4 TESTS #1 [DAU450] + phencyclidine (25 ng/mL).",
+    "price": 200.00
+  },
+  {
+    "category": "ÉCHOGRAPHIES",
+    "name": "ÉCHOGRAPHIE ENDOVAGINALE ET PELVIENNE",
+    "code": "ENDPE",
+    "description": "N/A",
+    "price": 190.00
+  },
+  {
+    "category": "ÉCHOGRAPHIES",
+    "name": "ÉCHOGRAPHIE ENDOVAGINALE",
+    "code": "ENDV",
+    "description": "N/A",
+    "price": 185.00
+  },
+  {
+    "category": "ÉCHOGRAPHIES",
+    "name": "ÉCHOGRAPHIE OBSTÉTRICALE, 1er Trimestre",
+    "code": "1TRI",
+    "description": "Entre 11.3 et 13.6 semaines de grossesse.",
+    "price": 175.00
+  },
+  {
+    "category": "ÉCHOGRAPHIES",
+    "name": "ÉCHOGRAPHIE OBSTÉTRICALE, 2ème Trimestre",
+    "code": "2TRI",
+    "description": "Entre 18 semaines et 22.6 semaines de grossesse.",
+    "price": 235.00
+  },
+  {
+    "category": "ÉCHOGRAPHIES",
+    "name": "ÉCHOGRAPHIE OBSTÉTRICALE, 3ème Trimestre",
+    "code": "3TRI",
+    "description": "Après 34 semaines de grossesse.",
+    "price": 235.00
+  },
+  {
+    "category": "ÉCHOGRAPHIES",
+    "name": "ÉCHOGRAPHIE DE VIABILITÉ DATATION",
+    "code": "VIAB",
+    "description": "N/A",
+    "price": 155.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE",
+    "name": "FERTILITÉ #1",
+    "code": "FERT",
+    "description": "FSH, LH.",
+    "price": 150.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE",
+    "name": "MÉNOPAUSE #1",
+    "code": "MEN1",
+    "description": "PROFIL FERTILITÉ #1 [FERT] + estradiol.",
+    "price": 205.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE",
+    "name": "MÉNOPAUSE #3",
+    "code": "MEN3",
+    "description": "PROFIL FERTILITÉ #1 [FERT] + estradiol, progestérone.",
+    "price": 240.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE",
+    "name": "MÉNOPAUSE #2",
+    "code": "MEN2",
+    "description": "PROFIL FERTILITÉ #1 [FERT] + estradiol, DHEA-S, progestérone.",
+    "price": 300.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE",
+    "name": "MÉNOPAUSE #4",
+    "code": "MEN4",
+    "description": "PROFIL FERTILITÉ #1 [FERT] + estradiol, DHEA-s, testosterone totale, prolactine, androstenedione.",
+    "price": 400.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE THYROÏDE",
+    "name": "THYROÏDE #1, CASCADE",
+    "code": "THY1R",
+    "description": "TSH, T4 libre sera effectuée si le TSH anormal",
+    "price": 145.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE THYROÏDE",
+    "name": "THYROÏDE #2, CASCADE",
+    "code": "THY2R",
+    "description": "TSH, T4 libre sera effectué si TSH est anormal et finalement le T3 libre sera effectué si le T4 libre est anormal.",
+    "price": 140.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE THYROÏDE",
+    "name": "THYROÏDE #3, CASCADE",
+    "code": "THY3R",
+    "description": "TSH, T4 libre et T3 libre seront effectuées d’emblée si le TSH anormal.",
+    "price": 140.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE THYROÏDE",
+    "name": "THYROÏDE #1",
+    "code": "THY1",
+    "description": "TSH, T4 libre",
+    "price": 150.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE THYROÏDE",
+    "name": "THYROÏDE #3",
+    "code": "THY3",
+    "description": "PROFIL THYROÏDE #1 [THY1] + T3 libre",
+    "price": 210.00
+  },
+  {
+    "category": "ENDOCRINOLOGIE THYROÏDE",
+    "name": "THYROÏDE #4",
+    "code": "THY4",
+    "description": "PROFIL THYROÏDE #1 [THY1] + T3 libre, anticorps thyroïdiens.",
+    "price": 250.00
+  },
+  {
+    "category": "GÉNÉRAL",
+    "name": "GÉNÉRAL #3, SANS URINE",
+    "code": "CH3U",
+    "description": "Albumine, phosphatase alcaline, ALT, AST, GGT, calcium, créatinine, glucose, bilirubine totale, protéines totales, urée, électrolytes, FSC, acide urique, phosphore, cholestérol total, triglycérides.",
+    "price": 180.00
+  },
+  {
+    "category": "GÉNÉRAL",
+    "name": "GÉNÉRAL #1",
+    "code": "CHP1",
+    "description": "Albumine, phosphatase alcaline, ALT, AST, GGT, calcium, créatinine, glucose, bilirubine totale, protéines totales, urée, électrolytes, FSC, analyse d’urine.",
+    "price": 185.00
+  },
+  {
+    "category": "GÉNÉRAL",
+    "name": "GÉNÉRAL #1, CRP",
+    "code": "FIN1",
+    "description": "PROFIL GÉNÉRAL #1 [CHP1] + protéine C-réactive.",
+    "price": 215.00
+  },
+  {
+    "category": "GÉNÉRAL",
+    "name": "GÉNÉRAL #2",
+    "code": "CHP2",
+    "description": "PROFIL GÉNÉRAL #1 [CHP1] + acide urique, phosphore.",
+    "price": 205.00
+  },
+  {
+    "category": "GÉNÉRAL",
+    "name": "COMPLET, CRP ULTRASENSIBLE",
+    "code": "CH4SC",
+    "description": "PROFIL GÉNÉRAL #1 [CHP1] + acide urique, phosphore, cholestérol total, triglycérides, HDL & LDL, non-HDL, protéine C-réactive ultra sensible.",
+    "price": 245.00
+  },
+  {
+    "category": "GÉNÉRAL",
+    "name": "GÉNÉRAL #5",
+    "code": "GN5",
+    "description": "PROFIL GÉNÉRAL #1 [CHP1] + acide urique, phosphore, cholestérol total, triglycérides, HDL & LDL, non-HDL, LDH, globulines.",
+    "price": 235.00
+  },
+  {
+    "category": "GÉNÉRAL",
+    "name": "GÉNÉRAL #6",
+    "code": "PNL6",
+    "description": "PROFIL GÉNÉRAL #1 [CHP1] + acide urique, phosphore, cholestérol total, triglycérides, HDL & LDL, non-HDL, LDH.",
+    "price": 220.00
+  },
+  {
+    "category": "HÉMATOLOGIE",
+    "name": "FORMULE SANGUINE COMPLÈTE ET SÉDIMENTATION",
+    "code": "CBCS",
+    "description": "Formule sanguine complète, sédimentation.",
+    "price": 98.00
+  },
+  {
+    "category": "HÉMATOLOGIE",
+    "name": "MONOTEST #1",
+    "code": "MON+",
+    "description": "Formule sanguine complète, monotest.",
+    "price": 120.00
+  },
+  {
+    "category": "IMMUNOLOGIE",
+    "name": "MALADIE CŒLIAQUE",
+    "code": "CELP",
+    "description": "Albumine, électrophorèse des protéines (serum), anti-gliadine IgA, immunoglobulines IgA, anti-transglutaminase IgA.",
+    "price": 365.00
+  },
+  {
+    "category": "RISQUE CARDIOVASCULAIRE",
+    "name": "RISQUE CARDIOVASCULAIRE #1",
+    "code": "CVRK",
+    "description": "Cholestérol, triglycérides, HDL & LDL, non-HDL, facteurs de risque.",
+    "price": 95.00
+  },
+  {
+    "category": "RISQUE CARDIOVASCULAIRE",
+    "name": "RISQUE CARDIOVASCULAIRE #2 PLUS APOB",
+    "code": "CVK2",
+    "description": "PROFIL RISQUE CARDIOVASCULAIRE #1 [CVRK] + apolipoprotéine B.",
+    "price": 155.00
+  },
+  {
+    "category": "RISQUE CARDIOVASCULAIRE",
+    "name": "CCL4",
+    "code": "CCL4",
+    "description": "PROFIL RISQUE CARDIOVASCULAIRE #1 [CVRK] + ALT, CK",
+    "price": 150.00
+  },
+  {
+    "category": "SÉROLOGIE",
+    "name": "CHLAMYDIA, GONORRHÉE PAR PCR 1 échantillon",
+    "code": "CGPCR1",
+    "description": "Chlamydia par PCR, gonorrhée par PCR",
+    "price": 145.00
+  },
+  {
+    "category": "SÉROLOGIE",
+    "name": "CHLAMYDIA, GONORRHÉE PAR PCR 2 échantillons",
+    "code": "CGPCR2",
+    "description": "Chlamydia par PCR, gonorrhée par PCR",
+    "price": 230.00
+  },
+  {
+    "category": "SÉROLOGIE",
+    "name": "CHLAMYDIA, GONORRHÉE PAR PCR 3 échantillons",
+    "code": "CGPCR3",
+    "description": "Chlamydia par PCR, gonorrhée par PCR",
+    "price": 310.00
+  },
+  {
+    "category": "SÉROLOGIE",
+    "name": "HÉPATITE B AIGÜE",
+    "code": "HPBA",
+    "description": "Hépatite B antigène de surface, hépatite B anticorps de surface, hépatite B anticorps total.",
+    "price": 225.00
+  },
+  {
+    "category": "SÉROLOGIE",
+    "name": "MTS #2, FEMME",
+    "code": "STD2",
+    "description": "Chlamydia et gonorrhée par PCR, culture vaginale.",
+    "price": 210.00
+  },
+  {
+    "category": "SÉROLOGIE",
+    "name": "MTS #1, VIH – HOMME",
+    "code": "STDMH",
+    "description": "Chlamydia et gonorrhée par PCR, syphilis PCR, VIH",
+    "price": 255.00
+  }
+]

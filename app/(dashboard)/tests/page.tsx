@@ -541,6 +541,7 @@ function UnifiedTestsContent() {
     subtotal: 0,
     selectedProfileId: null,
     selectedProfileName: null,
+    totalTests: 0,
   });
   const [serviceFee, setServiceFee] = useState(30);
   const [pendingEmailAfterBulk, setPendingEmailAfterBulk] = useState(false);
@@ -554,6 +555,7 @@ function UnifiedTestsContent() {
         subtotal: 0,
         selectedProfileId: null,
         selectedProfileName: null,
+        totalTests: 0,
       });
     }
   }, [bulkMode]);
@@ -1119,7 +1121,7 @@ function UnifiedTestsContent() {
                 <div className="rounded-xl border border-primary/20 bg-primary/5 overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-2.5 border-b border-primary/10">
                     <span className="text-[11px] text-muted-foreground">
-                      Sous-total ({bulkPreview.tests.length} test{bulkPreview.tests.length !== 1 ? "s" : ""})
+                      Sous-total ({bulkPreview.totalTests} test{bulkPreview.totalTests !== 1 ? "s" : ""})
                     </span>
                     <span className="text-sm tabular-nums font-medium">{formatCurrency(bulkPreview.subtotal)}</span>
                   </div>
@@ -1173,7 +1175,7 @@ function UnifiedTestsContent() {
                   <span className="text-xs text-muted-foreground/70">Tests sélectionnés</span>
                 </div>
                 <span className="text-sm font-bold tabular-nums">
-                  {bulkExpanded ? bulkPreview.tests.length : allTestMappingIds.length}
+                  {bulkExpanded ? bulkPreview.totalTests : allTestMappingIds.length}
                 </span>
               </div>
               <div className="flex items-center justify-between">

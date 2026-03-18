@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
           t.name,
           t.code,
           t.category,
-          t.price,
+          COALESCE(tme.price, t.price) AS price,
           t.unit,
           t."turnaround_time" AS "turnaroundTime",
           t."tube_type" AS "tubeType",

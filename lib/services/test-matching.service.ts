@@ -181,7 +181,7 @@ export async function searchTests(
         t.name,
         t.code,
         t.category,
-        t.price,
+        COALESCE(tme.price, t.price) AS price,
         t.unit,
         t."price_list_id" AS "priceListId",
         l.id AS "laboratoryId",
